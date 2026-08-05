@@ -1,0 +1,767 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{1C04880B-880D-887C-1189-9E7C7D91937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Container">
+      <UniqueIdentifier>{EE9EC1F2-5A5F-3D29-239A-86A68F198205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Flag">
+      <UniqueIdentifier>{25B0F519-117D-5025-3A96-3ECD26C285B3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Format">
+      <UniqueIdentifier>{D40F626E-C0C7-A3BB-29CF-7C1715A63EAC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Format\Json">
+      <UniqueIdentifier>{FD1F06AB-69AB-736F-72BC-F663DEC6CF6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Format\Toml">
+      <UniqueIdentifier>{7F8A0BAB-EB15-796F-F426-FC636031D56F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Logger">
+      <UniqueIdentifier>{6BE25A7C-579A-9CC9-C0A1-7525AC7837BA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Math">
+      <UniqueIdentifier>{755AF919-6127-5425-8A40-42CD766C89B3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Math\Transform">
+      <UniqueIdentifier>{80882A90-6C6C-EBE5-D5CC-E538C1CFD567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Pointer">
+      <UniqueIdentifier>{0C69C83B-781E-4131-0113-3B086DC73735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Random">
+      <UniqueIdentifier>{4C4A6089-3802-A2D6-A109-7B328DE03CC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Reflection">
+      <UniqueIdentifier>{5671C239-423F-B63F-2BD3-2666174092A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\String">
+      <UniqueIdentifier>{228B0F8D-0E43-51DA-774A-2A366321ECCA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Time">
+      <UniqueIdentifier>{3A52FD19-261F-5825-4F38-46CD3B648DB3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\TracePoint">
+      <UniqueIdentifier>{E475B9D8-D043-ADDE-B9D7-1D05A5448943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Traits">
+      <UniqueIdentifier>{2231378F-0EE9-78DC-77F0-513863C713CD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Uuid">
+      <UniqueIdentifier>{2211FE19-0EDE-5825-37F7-46CD23238EB3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{4995DAC4-B574-5960-BE8C-E4362AEBBFC1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Application">
+      <UniqueIdentifier>{8C06398F-F867-169D-81D5-5C4FED354D5C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets">
+      <UniqueIdentifier>{0BF038FD-F7BD-2C03-E051-9D29CCBE0868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets\Base">
+      <UniqueIdentifier>{750B70F3-E16C-4D01-6ADA-93B3D63A84C0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets\Handle">
+      <UniqueIdentifier>{A6FC9C9D-1269-5898-DB5C-F0F547887A00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets\Importer">
+      <UniqueIdentifier>{6C624006-D899-889D-E1A3-ECC04D5AAF96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets\Manager">
+      <UniqueIdentifier>{35071ED2-2101-4724-0A6E-DD34F606AD90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Assets\Texture">
+      <UniqueIdentifier>{6BF009F7-57EA-3249-4057-C9592CF098B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Core">
+      <UniqueIdentifier>{416F811B-2DD2-10C0-D657-4976C299DC42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Core\Configuration">
+      <UniqueIdentifier>{885E23F6-746E-CFC6-DD27-34E5C956BE5F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Core\Utility">
+      <UniqueIdentifier>{84DE849A-706D-0E64-198C-225F05FA1E0A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Editor">
+      <UniqueIdentifier>{5FE67805-4BB4-6C0B-3448-DD3120B54870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Editor\Slate">
+      <UniqueIdentifier>{E73DA716-D3CC-30E0-7CEB-44DB68594186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Editor\Slate\Renderer">
+      <UniqueIdentifier>{6D153023-D92D-174D-A2DA-A6E60EB2ABE6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Framework">
+      <UniqueIdentifier>{06010B18-7217-09AE-BB8E-94CF27E4D935}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Framework\Core">
+      <UniqueIdentifier>{1EB98B3D-0AB3-B48F-F31F-4BA0DFB81AFC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Framework\Unit">
+      <UniqueIdentifier>{9592953D-818C-BE8F-6AF9-54A0569224FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics">
+      <UniqueIdentifier>{A95F8942-9558-A894-BE8A-8D19AAE287A0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics\Buffer">
+      <UniqueIdentifier>{72894218-DEC0-8AAF-E7CA-EED25381B1A8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics\Core">
+      <UniqueIdentifier>{A1B5ED67-0D22-A962-D615-41C04241CBCA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics\Pipeline">
+      <UniqueIdentifier>{EEB52E9A-5A78-6224-A328-F1B00F2A3B02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Platform">
+      <UniqueIdentifier>{BDD343C3-A9CC-6215-D2FE-479ABE564221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Platform\Input">
+      <UniqueIdentifier>{7C9D5E71-6897-87C3-5104-1ED43D9DED2F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Scheduler">
+      <UniqueIdentifier>{77699C32-E37F-9AC8-2CF7-25EA984C6B50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Scheduler\Common">
+      <UniqueIdentifier>{CF4A5744-BB6F-A6C4-E4BA-8B54D03EA5E2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Scheduler\Cpu">
+      <UniqueIdentifier>{AE3E2D95-1AAB-E88F-E39E-80ED4FCA0AF8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Scheduler\Gpu">
+      <UniqueIdentifier>{B24F2D95-1EBC-E88F-E7AF-80ED53DB0AF8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Script">
+      <UniqueIdentifier>{6DC71326-5995-072C-4229-78522E96E390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World">
+      <UniqueIdentifier>{C042198D-2C03-95C3-F53D-DE4061BDD99F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World\Component">
+      <UniqueIdentifier>{228B8DEB-8EC2-D582-97CC-39A60383FC7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World\Component\Transform">
+      <UniqueIdentifier>{6D3561EC-D9A3-B66B-228D-716B8E3AAC07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World\Entity">
+      <UniqueIdentifier>{0CB727AC-F845-B175-A164-C5708DD2C11B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World\Scene">
+      <UniqueIdentifier>{DDBFE8EE-4921-C6FC-D28E-0CAF3EEFFCBB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lib\CXXAttribute.hpp">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Container\IndexAllocator.h">
+      <Filter>Lib\Container</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Flag\Flag.h">
+      <Filter>Lib\Flag</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Json\JsonFile.h">
+      <Filter>Lib\Format\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Json\JsonNode.h">
+      <Filter>Lib\Format\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Json\JsonReader.h">
+      <Filter>Lib\Format\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Json\JsonUtil.h">
+      <Filter>Lib\Format\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Json\JsonWriter.h">
+      <Filter>Lib\Format\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Toml\TomlFile.h">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Toml\TomlNode.h">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Toml\TomlReader.h">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Format\Toml\TomlUtil.h">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Logger\CrashHandler.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Logger\LoggerUtil.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Logger\StreamLogger.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Color3.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Color4.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\MathConstants.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\MathFunctions.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Matrix4x4.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Quaternion.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Transform\Basis.h">
+      <Filter>Lib\Math\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Transform\Transform3d.h">
+      <Filter>Lib\Math\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Transform\Transformation3d.h">
+      <Filter>Lib\Math\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Vector2.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Vector3.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\Vector4.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\VectorComparison.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Pointer\ReferencePointer.h">
+      <Filter>Lib\Pointer</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Random\Random.h">
+      <Filter>Lib\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Reflection\EnumUtil.h">
+      <Filter>Lib\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Reflection\TypeInfo.h">
+      <Filter>Lib\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\String\NumericConverter.h">
+      <Filter>Lib\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\String\UnicodeConverter.h">
+      <Filter>Lib\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Time\LocalTimePoint.h">
+      <Filter>Lib\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Time\RunTimeTracker.h">
+      <Filter>Lib\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Time\TimePoint.h">
+      <Filter>Lib\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Time\TimeUnit.h">
+      <Filter>Lib\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\TracePoint\TracePoint.h">
+      <Filter>Lib\TracePoint</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Traits\Concept.h">
+      <Filter>Lib\Traits</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Uuid\Uuid.h">
+      <Filter>Lib\Uuid</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Application\FrameClock.h">
+      <Filter>Runtime\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Application\Viewport.h">
+      <Filter>Runtime\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\AssetUtil.h">
+      <Filter>Runtime\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Base\AssetTraits.h">
+      <Filter>Runtime\Assets\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Base\BaseAsset.h">
+      <Filter>Runtime\Assets\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Base\BaseAssetMetadata.h">
+      <Filter>Runtime\Assets\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Handle\AssetHandle.h">
+      <Filter>Runtime\Assets\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Importer\TextureImporter.h">
+      <Filter>Runtime\Assets\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Manager\AssetFactory.h">
+      <Filter>Runtime\Assets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Manager\AssetStorage.h">
+      <Filter>Runtime\Assets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Texture\Texture.h">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Texture\TextureBuilder.h">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Texture\TextureMetadata.h">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Texture\TextureTraits.h">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Core\Configuration\Configuration.h">
+      <Filter>Runtime\Core\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Core\Utility\ComPtr.h">
+      <Filter>Runtime\Core\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.h">
+      <Filter>Runtime\Editor\Slate\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\SlateIcon.h">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Foundation.hpp">
+      <Filter>Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Framework\Core\Context.h">
+      <Filter>Runtime\Framework\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Framework\Core\IUnit.h">
+      <Filter>Runtime\Framework\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Framework\Core\Pipeline.h">
+      <Filter>Runtime\Framework\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Framework\Unit\EngineUnit.h">
+      <Filter>Runtime\Framework\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Framework\Unit\WindowUnit.h">
+      <Filter>Runtime\Framework\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\FrameResource.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\Resource.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\SwapChain.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core.h">
+      <Filter>Runtime\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\DebugLayer.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\DebugReporter.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\Descriptor.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\DescriptorAllocator.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\DescriptorHeaps.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\Device.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\GraphicsCommandContext.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\InfoQueue.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\ShaderBlob.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Core\ShaderCompiler.h">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\GraphicsUtil.h">
+      <Filter>Runtime\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Pipeline\BlendState.h">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Pipeline\GraphicsPipelineState.h">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Pipeline\RootSignature.h">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\PixEvent.h">
+      <Filter>Runtime\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\Gamepad.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\InputId.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\InputSystem.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\InputUtil.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\Keyboard.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Input\Mouse.h">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\WinApp.h">
+      <Filter>Runtime\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Platform\Window.h">
+      <Filter>Runtime\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Common\TaskPriority.h">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Common\TaskState.h">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Common\WorkerThread.h">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Cpu\CpuScheduler.h">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Cpu\CpuTask.h">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Cpu\CpuTaskScheduler.h">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Cpu\CpuWorkerThread.h">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Gpu\GpuScheduler.h">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Gpu\GpuTask.h">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Gpu\GpuTaskScheduler.h">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\Gpu\GpuWorkerThread.h">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Scheduler\System.h">
+      <Filter>Runtime\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Script\HostfxrHandle.h">
+      <Filter>Runtime\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Script\HostfxrModule.h">
+      <Filter>Runtime\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Component\BaseComponent.h">
+      <Filter>Runtime\World\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Component\ComponentAllocator.h">
+      <Filter>Runtime\World\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Component\ComponentHandle.h">
+      <Filter>Runtime\World\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Component\ComponentStorage.h">
+      <Filter>Runtime\World\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Component\Transform\TransformComponent.h">
+      <Filter>Runtime\World\Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Entity\EntityBehaviour.h">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Entity\EntityHandle.h">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Entity\EntityStorage.h">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Scene\BaseScene.h">
+      <Filter>Runtime\World\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\World\Scene\SceneContext.h">
+      <Filter>Runtime\World\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\SlateTypes.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyle.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleIO.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWidget.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateDecl.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
+      <Filter>Lib\Format\Json</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Format\Json\JsonNode.cpp">
+      <Filter>Lib\Format\Json</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Format\Toml\TomlFile.cpp">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Format\Toml\TomlNode.cpp">
+      <Filter>Lib\Format\Toml</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Logger\CrashHandler.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Logger\LoggerUtil.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Logger\StreamLogger.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Reflection\TypeInfo.cpp">
+      <Filter>Lib\Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\String\NumericConverter.cpp">
+      <Filter>Lib\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\String\UnicodeConverter.cpp">
+      <Filter>Lib\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Time\LocalTimePoint.cpp">
+      <Filter>Lib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Time\RunTimeTracker.cpp">
+      <Filter>Lib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Time\TimePoint.cpp">
+      <Filter>Lib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Uuid\Uuid.cpp">
+      <Filter>Lib\Uuid</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Application\FrameClock.cpp">
+      <Filter>Runtime\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Application\Viewport.cpp">
+      <Filter>Runtime\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Base\BaseAsset.cpp">
+      <Filter>Runtime\Assets\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Base\BaseAssetMetadata.cpp">
+      <Filter>Runtime\Assets\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Handle\AssetHandle.cpp">
+      <Filter>Runtime\Assets\Handle</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Importer\TextureImporter.cpp">
+      <Filter>Runtime\Assets\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Manager\AssetFactory.cpp">
+      <Filter>Runtime\Assets\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Manager\AssetStorage.cpp">
+      <Filter>Runtime\Assets\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Texture\Texture.cpp">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Texture\TextureBuilder.cpp">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Texture\TextureMetadata.cpp">
+      <Filter>Runtime\Assets\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Core\Configuration\Configuration.cpp">
+      <Filter>Runtime\Core\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Core\Utility\ComPtr.cpp">
+      <Filter>Runtime\Core\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.cpp">
+      <Filter>Runtime\Editor\Slate\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\SlateIcon.cpp">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Framework\Core\Context.cpp">
+      <Filter>Runtime\Framework\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp">
+      <Filter>Runtime\Framework\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Framework\Unit\EngineUnit.cpp">
+      <Filter>Runtime\Framework\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Framework\Unit\WindowUnit.cpp">
+      <Filter>Runtime\Framework\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\DimensionBuffer.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\FrameResource.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\SwapChain.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core.cpp">
+      <Filter>Runtime\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\DebugLayer.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\DebugReporter.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\Descriptor.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\DescriptorAllocator.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\DescriptorHeaps.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\Device.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\GraphicsCommandContext.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\InfoQueue.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\ShaderBlob.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Core\ShaderCompiler.cpp">
+      <Filter>Runtime\Graphics\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Pipeline\BlendState.cpp">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Pipeline\GraphicsPipelineState.cpp">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Pipeline\RootSignature.cpp">
+      <Filter>Runtime\Graphics\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\PixEvent.cpp">
+      <Filter>Runtime\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Input\Gamepad.cpp">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Input\InputSystem.cpp">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Input\InputUtil.cpp">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Input\Keyboard.cpp">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Input\Mouse.cpp">
+      <Filter>Runtime\Platform\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\WinApp.cpp">
+      <Filter>Runtime\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Platform\Window.cpp">
+      <Filter>Runtime\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Common\WorkerThread.cpp">
+      <Filter>Runtime\Scheduler\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Cpu\CpuScheduler.cpp">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Cpu\CpuTask.cpp">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Cpu\CpuTaskScheduler.cpp">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Cpu\CpuWorkerThread.cpp">
+      <Filter>Runtime\Scheduler\Cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Gpu\GpuScheduler.cpp">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Gpu\GpuTask.cpp">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Gpu\GpuTaskScheduler.cpp">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\Gpu\GpuWorkerThread.cpp">
+      <Filter>Runtime\Scheduler\Gpu</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Scheduler\System.cpp">
+      <Filter>Runtime\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Script\HostfxrHandle.cpp">
+      <Filter>Runtime\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Script\HostfxrModule.cpp">
+      <Filter>Runtime\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Component\ComponentAllocator.cpp">
+      <Filter>Runtime\World\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Component\ComponentHandle.cpp">
+      <Filter>Runtime\World\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Component\ComponentStorage.cpp">
+      <Filter>Runtime\World\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp">
+      <Filter>Runtime\World\Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Entity\EntityBehaviour.cpp">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Entity\EntityHandle.cpp">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Entity\EntityStorage.cpp">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Scene\SceneContext.cpp">
+      <Filter>Runtime\World\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\SlateTypes.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyle.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleIO.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
+  </ItemGroup>
+</Project>

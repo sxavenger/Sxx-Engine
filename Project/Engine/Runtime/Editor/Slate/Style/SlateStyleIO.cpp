@@ -1,0 +1,14 @@
+#include "SlateStyleIO.h"
+SXAVENGER_ENGINE_USING_(Editor)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// StyleIO class methods
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Slate::Style::Metrics& Slate::StyleIO::GetMetrics() {
+	return Style::GetStyle().metrics;
+}
+
+Slate::Style::Colors& Slate::StyleIO::GetColors() {
+	return Style::GetStyle().colors;
+}
