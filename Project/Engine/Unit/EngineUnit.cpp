@@ -67,8 +67,11 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 }
 
 void EngineUnit::InitEngine() {
+
 	StreamLogger::Init();
 	CrashHandler::Install();
+
+	StreamLogger::Info("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
 
 	configuration_.Load("Engine/Packages/config/Graphics.toml");
 	configuration_.Load("Engine/Packages/config/Application.toml");
