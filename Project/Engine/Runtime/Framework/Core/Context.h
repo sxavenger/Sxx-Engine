@@ -46,6 +46,9 @@ public:
 		template <Unit T>
 		RefPtr<T> Get() const;
 
+		template <Unit T>
+		bool Contains() const;
+
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
@@ -77,6 +80,10 @@ public:
 	//! @retval nullptr Unitが存在しない場合はnullptrを返却.
 	template <Unit T>
 	static RefPtr<T> GetUnit() { return pool_.Get<T>(); }
+
+	//! @brief Unitが登録されているかどうかを取得する
+	template <Unit T>
+	static bool HasUnit() { return pool_.Contains<T>(); }
 
 private:
 
@@ -120,6 +127,11 @@ RefPtr<T> Context::UnitPool::Get() const {
 	}
 
 	return static_cast<T*>(pointers_.at(type));
+}
+
+template <Unit T>
+bool Context::UnitPool::Contains() const {
+	return pointers_.contains(TypeInfo::GetType<T>());
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

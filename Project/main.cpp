@@ -5,8 +5,10 @@
 #include "Game/Unit/SandboxUnit.h"
 
 //* engine [framework]
-#include <Runtime/Framework/Core/Context.h>
-#include <Runtime/Framework/Unit/EngineUnit.h>
+#include <Engine/Runtime/Framework/Core/Context.h>
+
+//* engine [unit]
+#include <Engine/Unit/EngineUnit.h>
 
 //* windows
 #include <windows.h>
@@ -16,7 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	Sxx::Framework::Context::Push<Sxx::Framework::EngineUnit>();
+	Sxx::Framework::Context::Push<Sxx::EngineUnit>();
 	Sxx::Framework::Context::Push<SandboxUnit>();
 
 	Sxx::Framework::Context::Run();
