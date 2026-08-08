@@ -15,6 +15,10 @@ SXAVENGER_ENGINE_USING_(Editor)
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
 
+//* c++
+#include <algorithm>
+#include <cfloat>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // [ImGuiRenderer] Descriptors structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +66,10 @@ void Slate::ImGuiRenderer::Init() {
 
 void Slate::ImGuiRenderer::Shutdown() {
 	if (context_ != nullptr) {
+		//!< contextはnative windowごとに存在するため, 破棄対象を必ずcurrentにしてから終了する.
+		//!< これを行わないと, 別windowのbackend dataを破棄してしまう.
+		ImGui::SetCurrentContext(context_);
+
 		ImGui_ImplDX12_Shutdown(); //!< ImGuiのDX12レンダラーを終了.
 		ImGui::DestroyContext(context_); //!< contextの破棄.
 	}
@@ -74,10 +82,51 @@ void Slate::ImGuiRenderer::SetCurrentContext() {
 	ImGui::SetCurrentContext(context_); //!< ImGuiの現在のコンテキストを設定.
 }
 
+void Slate::ImGuiRenderer::BeginFrame(const Vector2f& displaySize, float deltaTime) {
+	if (context_ == nullptr) {
+		return; //!< contextが未初期化の場合は何もしない.
+	}
+
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+
+	StreamLogger::Assert(!isActiveFrame_, "ImGui frame is already active. (BeginFrame/EndFrame is not paired correctly)");
+
+	if (isActiveFrame_) {
+		return; //!< 多重にNewFrameが呼ばれるのを防ぐ.
+	}
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize             = ImVec2(displaySize.x, displaySize.y);
+	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+	io.DeltaTime               = std::max(deltaTime, FLT_MIN); //!< ImGuiはDeltaTime > 0を要求するため, 0を渡さないようにする.
+
+	ImGui_ImplDX12_NewFrame();
+	ImGui::NewFrame();
+
+	isActiveFrame_ = true; //!< フレームが開始されたことを記録.
+}
+
+void Slate::ImGuiRenderer::EndFrame(const Graphics::GraphicsCommandContext& context) {
+	if (!isActiveFrame_) {
+		return; //!< フレームが開始されていない場合は何もしない.
+	}
+
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+
+	StreamLogger::Assert(!isOpenRegion_, "ImGui region is still open. (BeginRegion/EndRegion is not paired correctly)");
+
+	ImGui::Render();
+
+	context.SetDescriptorHeaps(Graphics::Core::GetDescriptorHeaps()); //!< ImGuiの描画に必要なDescriptorHeapsを設定.
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), context.GetCommandList().Get());
+
+	isActiveFrame_ = false; //!< フレームが終了したことを記録.
+}
+
 void Slate::ImGuiRenderer::DrawRect(const Geometry& geometry, const Color4f& color) {
 	ImVec2 a(geometry.absolutePosition.x, geometry.absolutePosition.y);
 	ImVec2 b(geometry.absolutePosition.x + geometry.localSize.x, geometry.absolutePosition.y + geometry.localSize.y);
-	GetTargetDrawList()->AddRectFilled(a, b, ImGui::ColorConvertFloat4ToU32(ImColor(color.r, color.g, color.b, color.a)));
+	GetTargetDrawList()->AddRectFilled(a, b, Slate::ImGuiRenderer::ToDrawColor(color));
 }
 
 void Slate::ImGuiRenderer::DrawRoundedRect(const Geometry& geometry, const Color4f& color, float rounding, Corner corner) {
@@ -91,29 +140,44 @@ void Slate::ImGuiRenderer::DrawRoundedRect(const Geometry& geometry, const Color
 	if (corner.Test(CornerFlags::BottomLeft))  flags |= ImDrawFlags_RoundCornersBottomLeft;
 	if (corner.Test(CornerFlags::BottomRight)) flags |= ImDrawFlags_RoundCornersBottomRight;
 
-	GetTargetDrawList()->AddRectFilled(a, b, ImGui::ColorConvertFloat4ToU32(ImColor(color.r, color.g, color.b, color.a)), rounding, flags);
+	GetTargetDrawList()->AddRectFilled(a, b, Slate::ImGuiRenderer::ToDrawColor(color), rounding, flags);
 }
 
 void Slate::ImGuiRenderer::DrawBorder(const Geometry& geometry, const Color4f& color, float thickness) {
 	ImVec2 a(geometry.absolutePosition.x, geometry.absolutePosition.y);
 	ImVec2 b(geometry.absolutePosition.x + geometry.localSize.x, geometry.absolutePosition.y + geometry.localSize.y);
 
-	GetTargetDrawList()->AddRect(a, b, ImGui::ColorConvertFloat4ToU32(ImColor(color.r, color.g, color.b, color.a)), 0.0f, ImDrawFlags_None, thickness);
+	GetTargetDrawList()->AddRect(a, b, Slate::ImGuiRenderer::ToDrawColor(color), 0.0f, ImDrawFlags_None, thickness);
 }
 
 void Slate::ImGuiRenderer::DrawLine(const Vector2f& p1, const Vector2f& p2, const Color4f& color, float thickness) {
 	ImVec2 a(p1.x, p1.y);
 	ImVec2 b(p2.x, p2.y);
 
-	GetTargetDrawList()->AddLine(a, b, ImGui::ColorConvertFloat4ToU32(ImColor(color.r, color.g, color.b, color.a)), thickness);
+	GetTargetDrawList()->AddLine(a, b, Slate::ImGuiRenderer::ToDrawColor(color), thickness);
 }
 
 void Slate::ImGuiRenderer::DrawTextA(const Vector2f& position, const std::string_view& text, const Color4f& color, float fontSize) {
-	GetTargetDrawList()->AddText(ImGui::GetFont(), fontSize, ImVec2(position.x, position.y), ImGui::ColorConvertFloat4ToU32(ImColor(color.r, color.g, color.b, color.a)), text.data(), text.data() + text.size());
+	GetTargetDrawList()->AddText(ImGui::GetFont(), fontSize, ImVec2(position.x, position.y), Slate::ImGuiRenderer::ToDrawColor(color), text.data(), text.data() + text.size());
 }
 
 void Slate::ImGuiRenderer::DrawTextU8(const Vector2f& position, const std::u8string_view& text, const Color4f& color, float fontSize) {
 	DrawTextA(position, reinterpret_cast<const char*>(text.data()), color, fontSize); //!< UTF-8文字列をchar*にキャストしてDrawTextAを呼び出す.
+}
+
+Vector2f Slate::ImGuiRenderer::MeasureTextA(const std::string_view& text, float fontSize) {
+	SetCurrentContext(); //!< フォントはコンテキストごとなので、計測前に切り替える.
+
+	const ImVec2 size = ImGui::GetFont()->CalcTextSizeA(
+		fontSize, FLT_MAX, 0.0f, text.data(), text.data() + text.size()
+	);
+	return { size.x, size.y };
+}
+
+Vector2f Slate::ImGuiRenderer::MeasureTextU8(const std::u8string_view& text, float fontSize) {
+	return MeasureTextA(
+		std::string_view(reinterpret_cast<const char*>(text.data()), text.size()), fontSize
+	); //!< UTF-8文字列をchar*にキャストしてMeasureTextAを呼び出す.
 }
 
 bool Slate::ImGuiRenderer::BeginRegion(const char* id, const Geometry& geometry) {
@@ -167,6 +231,55 @@ void Slate::ImGuiRenderer::EndRegion() {
 	target_ = DrawTarget::Background; //!< 描画ターゲットを背景に戻す.
 }
 
+void Slate::ImGuiRenderer::InjectMousePosition(const Vector2f& position) {
+	if (context_ == nullptr) {
+		return; //!< contextが未初期化の場合は何もしない.
+	}
+
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+	ImGui::GetIO().AddMousePosEvent(position.x, position.y);
+}
+
+void Slate::ImGuiRenderer::InjectMouseButton(int32_t index, bool isDown) {
+	if (context_ == nullptr) {
+		return; //!< contextが未初期化の場合は何もしない.
+	}
+
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+	ImGui::GetIO().AddMouseButtonEvent(index, isDown);
+}
+
+void Slate::ImGuiRenderer::InjectMouseWheel(float horizontal, float vertical) {
+	if (context_ == nullptr) {
+		return; //!< contextが未初期化の場合は何もしない.
+	}
+
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+	ImGui::GetIO().AddMouseWheelEvent(horizontal, vertical);
+}
+
+bool Slate::ImGuiRenderer::IsInteracting() {
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+
+	if (!isActiveFrame_) {
+		return false; //!< フレーム外ではIsAnyItemActive()等の呼び出しが不正なため.
+	}
+
+	// io.WantCaptureMouseは前フレームのマウス位置を基にNewFrame()内で計算されるため1フレーム古く、
+	// ドラッグ操作が固まる原因になるので使わない.
+	return ImGui::IsAnyItemActive() || ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+}
+
+bool Slate::ImGuiRenderer::WantCaptureKeyboard() {
+	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
+
+	if (!isActiveFrame_) {
+		return false; //!< フレーム外ではWantCaptureKeyboardの値が不定なため.
+	}
+
+	return ImGui::GetIO().WantCaptureKeyboard;
+}
+
 void Slate::ImGuiRenderer::CreateContext() {
 	context_ = ImGui::CreateContext();
 	ImGui::SetCurrentContext(context_);
@@ -201,7 +314,10 @@ void Slate::ImGuiRenderer::LoadFont() {
 		std::filesystem::path filepath = "Engine/Packages/fonts/MPLUS1p-Regular.ttf";
 
 		ImFontConfig conf = font;
-		font.MergeMode = true;
+		conf.MergeMode = true; //!< 先に読み込んだfontへ統合する.
+		//!< note: ここをfont.MergeModeにすると, confのMergeModeがfalseのままで別のfontが作られる.
+		//!<       すると後続のicon fontもそちらへ統合され, GetFont()が返す先頭のfontに
+		//!<       日本語もiconも入らなくなる. (iconが描画されない原因だった)
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),
@@ -238,7 +354,13 @@ void Slate::ImGuiRenderer::InitContext() {
 	info.Device            = Graphics::Core::GetDevice().GetDevice();
 	info.CommandQueue      = Graphics::Core::GetCommandContextDirect().GetCommandQueue();
 	info.NumFramesInFlight = Graphics::kFrameCount;
-	info.RTVFormat         = DXGI_FORMAT_R8G8B8A8_UNORM; //!< TODO: formatをuser側で設定できるように変更.
+	//!< PSOのRTV formatは, 実際にbindされるRTVのformatと完全に一致していなければ
+	//!< DrawIndexedInstancedが EXECUTION ERROR #613 で失敗する.
+	//!< SwapChain::Initは RTVを ConvertToLinearFormat(format) で生成するため, ここも同じ変換を通す.
+	//!< XXX: SwapChain::Resizeは ConvertToSRGBFormat(format_) を使っており, Initと不一致.
+	//!<      resize後に#613が再発するため, SwapChain側をLinearに揃える必要がある.
+	//!< TODO: formatをuser側で設定できるように変更. (SwapChainのformatと二重管理になっているため.)
+	info.RTVFormat         = Graphics::ConvertToSRGBFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
 	info.DSVFormat         = DXGI_FORMAT_UNKNOWN;
 
 	info.UserData = &descriptors_; //!< Descriptors構造体のポインタを設定.
@@ -265,6 +387,13 @@ void Slate::ImGuiRenderer::InitContext() {
 
 	bool result = ImGui_ImplDX12_Init(&info);
 	StreamLogger::Assert(result, "failed to initialize ImGui DX12 renderer.");
+}
+
+uint32_t Slate::ImGuiRenderer::ToDrawColor(const Color4f& color) {
+	//!< RTVがsRGB formatのため, 書き込み時にGPUがlinear->sRGB変換を行う.
+	//!< Styleの色はsRGB値なので, linearへ戻してから渡さないと二重にガンマがかかる.
+	const Color4f linear = Slate::ConvertToLinearColor(color);
+	return ImGui::ColorConvertFloat4ToU32(ImColor(linear.r, linear.g, linear.b, linear.a));
 }
 
 RefPtr<ImDrawList> Slate::ImGuiRenderer::GetTargetDrawList() {

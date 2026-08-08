@@ -234,6 +234,16 @@ namespace Slate {
 
 	};
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Utility methods
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	//! @brief sRGB色をlinear色へ変換する.
+	//! @note SwapChainのRTVがsRGB formatのため, 書き込み時にGPUがlinear->sRGBの変換を行う.
+	//!       Styleの色は 0x20 のようなsRGBのバイト値をそのまま保持しているため, 描画前にlinearへ戻さないと
+	//!       二重にガンマがかかって明るく見えてしまう. alphaはガンマの対象外なので変換しない.
+	Color4f ConvertToLinearColor(const Color4f& color);
+
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

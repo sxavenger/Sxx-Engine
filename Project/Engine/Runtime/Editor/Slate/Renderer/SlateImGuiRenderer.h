@@ -25,6 +25,11 @@
 struct ImDrawList;
 struct ImGuiContext;
 
+//!< engine関係のクラスの前方宣言
+namespace Sxx::Graphics {
+	class GraphicsCommandContext;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,6 +91,17 @@ namespace Slate {
 
 		void SetCurrentContext();
 
+		//* frame option *//
+
+		//! @brief ImGuiのフレームを開始する.
+		//! @note プラットフォームバックエンドを使わないため、表示サイズとdeltaTimeは呼び出し側が渡す.
+		void BeginFrame(const Vector2f& displaySize, float deltaTime);
+
+		//! @brief ImGuiのフレームを終了し、DrawDataをコマンドリストに記録する.
+		void EndFrame(const Graphics::GraphicsCommandContext& context);
+
+		bool IsActiveFrame() const { return isActiveFrame_; }
+
 		//* window render option *//
 
 		void DrawRect(const Geometry& geometry, const Color4f& color);
@@ -99,6 +115,14 @@ namespace Slate {
 		void DrawTextA(const Vector2f& position, const std::string_view& text, const Color4f& color, float fontSize);
 		void DrawTextU8(const Vector2f& position, const std::u8string_view& text, const Color4f& color, float fontSize);
 
+		//* measure option *//
+
+		//! @brief 文字列を描画したときの大きさを返す.
+		//! @note レイアウトで使う. タブの幅はタブ名の実寸から決まるため、
+		//!       描画と同じフォント・同じサイズで計測する必要がある.
+		Vector2f MeasureTextA(const std::string_view& text, float fontSize);
+		Vector2f MeasureTextU8(const std::u8string_view& text, float fontSize);
+
 		void SetDrawTarget(DrawTarget target) { target_ = target; }
 
 		//* region option *//
@@ -110,6 +134,26 @@ namespace Slate {
 		//! @brief ImGuiの描画領域を終了する.
 		//! @note BeginRegionと必ずペアで呼ぶ.
 		void EndRegion();
+
+		//* input option *//
+
+		//! @brief マウス位置をImGuiに通知する.
+		void InjectMousePosition(const Vector2f& position);
+
+		//! @brief マウスボタンの状態をImGuiに通知する.
+		//! @param index 0:左 1:右 2:中
+		void InjectMouseButton(int32_t index, bool isDown);
+
+		//! @brief マウスホイールの回転量をImGuiに通知する.
+		void InjectMouseWheel(float horizontal, float vertical);
+
+		//! @brief ImGuiのウィジェットが操作中かどうか.
+		//! @note Slate側の入力ルーティングで使う. マウス位置による判定はSlate側のヒットテストが行うため、
+		//!       ここでは「ImGuiがアクティブに操作を握っているか」だけを見る.
+		bool IsInteracting();
+
+		//! @brief ImGuiがキーボード入力を要求しているかどうか.
+		bool WantCaptureKeyboard();
 
 	private:
 
@@ -144,6 +188,10 @@ namespace Slate {
 		void InitContext();
 
 		//* render helper methods *//
+
+		//! @brief Slateの色(sRGB)をImGuiの描画色へ変換する.
+		//! @note sRGB RTVへの書き込みでガンマが二重にかからないよう, linearへ戻してから渡す.
+		static uint32_t ToDrawColor(const Color4f& color);
 
 		RefPtr<ImDrawList> GetTargetDrawList();
 

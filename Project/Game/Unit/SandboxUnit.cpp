@@ -4,14 +4,14 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* engine [graphics]
-#include <Runtime/Graphics/Core.h>
+#include <Engine/Runtime/Graphics/Core.h>
 
 //* engine [framework]
-#include <Runtime/Framework/Core/Context.h>
-#include <Runtime/Framework/Unit/WindowUnit.h>
+#include <Engine/Runtime/Framework/Core/Context.h>
 
-//* engine [editor]
-#include <Runtime/Editor/Slate/Renderer/SlateImGuiRenderer.h>
+//* engine [unit]
+#include <Engine/Unit/WindowUnit.h>
+#include <Engine/Unit/SlateEditorUnit.h>
 
 //* lib
 #include <Lib/Format/Json/JsonFile.h>
@@ -21,8 +21,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 SandboxUnit::SandboxUnit() {
+#ifdef DEVELOPMENT
+	Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+#else
 	//!< windowの追加
-	Sxx::Framework::Context::Push<Sxx::Framework::WindowUnit>();
+	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
+#endif
 }
 
 SandboxUnit::~SandboxUnit() {
@@ -49,13 +53,16 @@ void SandboxUnit::RenderSandbox() {
 
 	auto& context = Sxx::Graphics::Core::GetCommandContextDirect();
 
-	RefPtr<Sxx::Framework::WindowUnit> unit
-		= Sxx::Framework::Context::GetUnit<Sxx::Framework::WindowUnit>(); //!< windowを管理しているunitを取得.
+	if (Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>()) {
 
-	auto& viewport = unit->GetViewport();
+		RefPtr<Sxx::WindowUnit> unit
+			= Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>(); //!< windowを管理しているunitを取得.
 
-	auto& buffer = viewport.GetCurrentBackBuffer();
-	buffer.TransitionRenderTarget(context);
-	buffer.ClearRenderTarget(context, Color4f::Convert(0x9BA8A8FF));
-	buffer.TransitionPresent(context);
+		auto& viewport = unit->GetViewport();
+
+		auto& buffer = viewport.GetCurrentBackBuffer();
+		buffer.TransitionRenderTarget(context);
+		buffer.ClearRenderTarget(context, Color4f::Convert(0x9BA8A8FF));
+		buffer.TransitionPresent(context);
+	}
 }

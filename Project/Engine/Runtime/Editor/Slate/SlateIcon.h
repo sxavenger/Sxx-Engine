@@ -9,6 +9,7 @@
 //* c++
 #include <cstdint>
 #include <array>
+#include <format>
 #include <string_view>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +93,9 @@ namespace Slate {
 		// using
 		//-----------------------------------------------------------------------------------------
 
-		using Data = std::array<char8_t, 5>;
+		//!< UTF-8のbyte列. iconは最大4byteなので終端を含めて5byteで足りる.
+		//!< note: char8_tではなくcharにしている. std::formatやstd::stringと直接繋がるため.
+		using Data = std::array<char, 5>;
 
 	public:
 
@@ -100,9 +103,14 @@ namespace Slate {
 		// public methods
 		//=========================================================================================
 
-		std::u8string_view Get() const noexcept { return std::u8string_view(data.data()); }
+		//! @brief UTF-8文字列として取得する.
+		//! @note dataは0初期化されており終端が保証されるため, 文字列として扱える.
+		std::string_view Get() const noexcept { return std::string_view(data.data()); }
 
 		static Data Encode(Icon icon) noexcept;
+
+		//! @brief Iconから生成する.
+		static IconGlyph Make(Icon icon) noexcept { return IconGlyph{ IconGlyph::Encode(icon) }; }
 
 		//=========================================================================================
 		// public variables
@@ -117,10 +125,29 @@ namespace Slate {
 		//=========================================================================================
 
 		//! @brief UTF-8の継続バイトを生成
-		static char8_t Continuation(uint32_t value) noexcept;
+		static char Continuation(uint32_t value) noexcept;
 
 	};
 
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Icon formatter
+////////////////////////////////////////////////////////////////////////////////////////////
+//! @brief Iconをstd::formatへ埋め込めるようにする.
+//! @note tabのtitleは std::string なので, iconは文字列の一部として好きな位置に入れられる.
+//!       ex. panel->Title(std::format("{} Viewport", Slate::Icon::Videocam));
+//!       ex. panel->Title(std::format("{} {}", Slate::Icon::Folder, name));
+template <>
+struct std::formatter<SXAVENGER_ENGINE Editor::Slate::Icon, char>
+	: std::formatter<std::string_view, char> {
+
+	template <class Context>
+	auto format(SXAVENGER_ENGINE Editor::Slate::Icon icon, Context& context) const {
+		const SXAVENGER_ENGINE Editor::Slate::IconGlyph glyph = SXAVENGER_ENGINE Editor::Slate::IconGlyph::Make(icon);
+		return std::formatter<std::string_view, char>::format(glyph.Get(), context);
+	}
+
+};

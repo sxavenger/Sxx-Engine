@@ -117,9 +117,6 @@ namespace Slate {
 			float tabRounding      = 3.0f;  //!< 上端だけ丸める.
 			float tabAccentH       = 2.0f;  //!< フォーカス中タブ上端の色帯.
 			float tabUnderlineSize = 1.0f;  //!< タブバー下端の線の太さ（0 で消える）.
-			float tabIconSize      = 16.0f; //!< タブ名の前に置く Material Icon の描画サイズ.
-			float tabIconOffsetY   = 0.0f;  //!< アイコンの縦位置の微調整（+で下へ）.
-			float tabIconGap       = 3.0f;  //!< アイコンとタブ名の間隔.
 			float tabCloseSize     = 12.0f; //!< × ボタン.
 			float tabPaddingX      = 8.0f;
 

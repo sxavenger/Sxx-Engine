@@ -91,17 +91,23 @@
     <Filter Include="Runtime\Editor\Slate">
       <UniqueIdentifier>{E73DA716-D3CC-30E0-7CEB-44DB68594186}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Editor\Slate\Docking">
+      <UniqueIdentifier>{F5FE946D-E1B9-8419-8A71-FD63760BCFA9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Editor\Slate\Renderer">
       <UniqueIdentifier>{6D153023-D92D-174D-A2DA-A6E60EB2ABE6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Editor\Slate\Style">
+      <UniqueIdentifier>{87E3EFC1-73F3-9B92-DCAC-00B1C8DB8A2B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Editor\Slate\Widgets">
+      <UniqueIdentifier>{4D643816-391F-28C2-E2D6-A00CCE707252}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\Framework">
       <UniqueIdentifier>{06010B18-7217-09AE-BB8E-94CF27E4D935}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\Framework\Core">
       <UniqueIdentifier>{1EB98B3D-0AB3-B48F-F31F-4BA0DFB81AFC}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Runtime\Framework\Unit">
-      <UniqueIdentifier>{9592953D-818C-BE8F-6AF9-54A0569224FC}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\Graphics">
       <UniqueIdentifier>{A95F8942-9558-A894-BE8A-8D19AAE287A0}</UniqueIdentifier>
@@ -150,6 +156,9 @@
     </Filter>
     <Filter Include="Runtime\World\Scene">
       <UniqueIdentifier>{DDBFE8EE-4921-C6FC-D28E-0CAF3EEFFCBB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Unit">
+      <UniqueIdentifier>{A58D8D7C-91C4-8E0D-3AB1-741026C70A0F}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -324,11 +333,59 @@
     <ClInclude Include="Runtime\Core\Utility\ComPtr.h">
       <Filter>Runtime\Core\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockPanel.h">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.h">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDocking.h">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateSplitter.h">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.h">
       <Filter>Runtime\Editor\Slate\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Editor\Slate\SlateIcon.h">
       <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\SlateTypes.h">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\SlateApplication.h">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.h">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyle.h">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleIO.h">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateDecl.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateOverlay.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWidget.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWindow.h">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Foundation.hpp">
       <Filter>Runtime</Filter>
@@ -341,12 +398,6 @@
     </ClInclude>
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h">
       <Filter>Runtime\Framework\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Runtime\Framework\Unit\EngineUnit.h">
-      <Filter>Runtime\Framework\Unit</Filter>
-    </ClInclude>
-    <ClInclude Include="Runtime\Framework\Unit\WindowUnit.h">
-      <Filter>Runtime\Framework\Unit</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
@@ -507,14 +558,13 @@
     <ClInclude Include="Runtime\World\Scene\SceneContext.h">
       <Filter>Runtime\World\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Editor\Slate\SlateTypes.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyle.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleIO.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWidget.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateDecl.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWindow.h" />
+    <ClInclude Include="Unit\EngineUnit.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit\WindowUnit.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit\SlateEditorUnit.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -598,23 +648,59 @@
     <ClCompile Include="Runtime\Core\Utility\ComPtr.cpp">
       <Filter>Runtime\Core\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockPanel.cpp">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.cpp">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDocking.cpp">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateSplitter.cpp">
+      <Filter>Runtime\Editor\Slate\Docking</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.cpp">
       <Filter>Runtime\Editor\Slate\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Editor\Slate\SlateIcon.cpp">
       <Filter>Runtime\Editor\Slate</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\SlateTypes.cpp">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\SlateApplication.cpp">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.cpp">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyle.cpp">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleIO.cpp">
+      <Filter>Runtime\Editor\Slate\Style</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.cpp">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.cpp">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateOverlay.cpp">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.cpp">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp">
+      <Filter>Runtime\Editor\Slate\Widgets</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Framework\Core\Context.cpp">
       <Filter>Runtime\Framework\Core</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp">
       <Filter>Runtime\Framework\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Framework\Unit\EngineUnit.cpp">
-      <Filter>Runtime\Framework\Unit</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Framework\Unit\WindowUnit.cpp">
-      <Filter>Runtime\Framework\Unit</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Graphics\Buffer\DimensionBuffer.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
@@ -757,11 +843,12 @@
     <ClCompile Include="Runtime\World\Scene\SceneContext.cpp">
       <Filter>Runtime\World\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Editor\Slate\SlateTypes.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyle.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleIO.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
+    <ClCompile Include="Unit\EngineUnit.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit\WindowUnit.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit\SlateEditorUnit.cpp" />
   </ItemGroup>
 </Project>

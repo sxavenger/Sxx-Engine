@@ -31,11 +31,31 @@ namespace Slate {
 		//=========================================================================================
 
 
+		//* widget methods *//
+
+		Vector2f ComputeDesiredSize(float scale, ImGuiRenderer* renderer) const override;
+
+		void OnArrangeChildren(const Geometry& allotted, ArrangedChildren& out) const override;
+
+		int32_t OnPaint(const PaintArguments& arguments, const Geometry& geometry, ImGuiRenderer* renderer, int32_t layer) const override;
+
 		//* pointer option *//
 
 		void SetPointer(WidgetPointer pointer) { pointer_ = std::move(pointer); }
 
 		const WidgetPointer& GetPointer() const { return pointer_; }
+
+		//* client option *//
+
+		//! @brief クライアント領域の大きさを設定する.
+		//! @note ネイティブウィンドウのリサイズに追従させるため、毎フレーム設定してよい.
+		void SetClientSize(const Vector2f& size) { clientSize_ = size; }
+
+		const Vector2f& GetClientSize() const { return clientSize_; }
+
+		void SetDpiScale(float scale) { dpiScale_ = scale; }
+
+		float GetDpiScale() const { return dpiScale_; }
 
 	private:
 

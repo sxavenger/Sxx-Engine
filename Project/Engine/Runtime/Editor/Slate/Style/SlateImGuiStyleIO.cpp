@@ -4,6 +4,9 @@ SXAVENGER_ENGINE_USING_(Editor)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* slate
+#include "../SlateTypes.h"
+
 //* imgui
 #include <imgui.h>
 
@@ -19,7 +22,12 @@ namespace {
 	// methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	ImColor ToImCol(const Color4f& c) { return ImColor(c.r, c.g, c.b, c.a); }
+	//! @brief SlateのStyle色(sRGB)をImGuiのstyle色へ変換する.
+	//! @note RTVがsRGB formatのため, linearへ戻してから渡さないと二重にガンマがかかって明るくなる.
+	ImColor ToImCol(const Color4f& c) {
+		const Color4f linear = Slate::ConvertToLinearColor(c);
+		return ImColor(linear.r, linear.g, linear.b, linear.a);
+	}
 
 }
 
