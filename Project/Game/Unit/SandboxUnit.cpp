@@ -22,7 +22,8 @@
 
 SandboxUnit::SandboxUnit() {
 #ifdef DEVELOPMENT
-	//Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+	// TODO: EditorのUnitを追加する
+	Sxx::Framework::Context::Push<Sxx::WindowUnit>(); //!< 仮で通常windowを追加する.
 #else
 	//!< windowの追加
 	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
