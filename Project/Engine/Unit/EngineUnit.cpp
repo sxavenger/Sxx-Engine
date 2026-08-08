@@ -1,5 +1,5 @@
 #include "EngineUnit.h"
-SXAVENGER_ENGINE_USING_(Framework)
+SXAVENGER_ENGINE_USING
 
 //-----------------------------------------------------------------------------------------
 // include
@@ -33,9 +33,9 @@ EngineUnit::~EngineUnit() {
 	TermEngine(); //!< エンジンの終了処理
 }
 
-void EngineUnit::Setup(Pipeline& pipeline) {
+void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 
-	pipeline.SetProcess(Phase::BeginFrame, Priority::Highest, [this]() {
+	pipeline.SetProcess(Framework::Phase::BeginFrame, Framework::Priority::Highest, [this]() {
 		//!< フレームクロックの更新処理
 		frameClock_.BeginFrame();
 
@@ -43,17 +43,17 @@ void EngineUnit::Setup(Pipeline& pipeline) {
 		Sxx::Graphics::Core::BeginFrame();
 	});
 
-	pipeline.SetProcess(Phase::EndFrame, Priority::Highest, [this]() {
+	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
 		//!< graphicsの終了frame処理
 		Sxx::Graphics::Core::SubmitDirectQueue();
 	});
 
-	pipeline.SetProcess(Phase::EndFrame, Priority::Lowest, [this]() {
+	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Lowest, [this]() {
 		//!< フレームクロックの更新処理
 		frameClock_.EndFrame();
 	});
 
-	pipeline.SetProcess(Phase::Terminate, Priority::Highest, [this]() {
+	pipeline.SetProcess(Framework::Phase::Terminate, Framework::Priority::Highest, [this]() {
 		//!< Worldの終了処理.
 		Sxx::World::EntityStorage::GetInstance()->Destroy();
 		Sxx::World::ComponentStorage::GetInstance()->Destroy();

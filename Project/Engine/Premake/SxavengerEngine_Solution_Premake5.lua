@@ -45,6 +45,9 @@ project "SxavengerEngine"
 		"%{prj.location}/Runtime/**.cpp",
 		"%{prj.location}/Runtime/**.h",
 		"%{prj.location}/Runtime/**.hpp",
+
+		"%{prj.location}/Unit/**.cpp",
+		"%{prj.location}/Unit/**.h",
 	}
 
 	-- 追加include --
