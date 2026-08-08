@@ -9,9 +9,6 @@ SXAVENGER_ENGINE_USING_(Platform)
 #include <Lib/Math/VectorComparison.h>
 #include <Lib/Pointer/ReferencePointer.h>
 
-//* windows
-#include <windowsx.h> //!< GET_X_LPARAM / GET_Y_LPARAM
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Window class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,17 +43,8 @@ void Window::Create(
 	//!< windowスタイルの設定
 	style_ = style;
 
-	//!< borderlessの判定
-	//!< Titlebar(WS_CAPTION)を持たないtop level windowをborderlessとして扱う.
-	//!< Popup(全画面)とChildは非クライアント領域を持たないため対象外とし, 既存の挙動を維持する.
-	isBorderless_ = !style_.Test(Style::Titlebar) && !style_.Any(Style::Popup) && !style_.Any(Style::Child);
-
 	//!< ウィンドウサイズの調整
-	if (!isBorderless_) {
-		//!< borderlessはWM_NCCALCSIZEで非クライアント領域を潰すため, window sizeとclient sizeが一致する.
-		//!< そのため調整を行わない.
-		AdjustWindowRect(&rect, static_cast<DWORD>(style_), false);
-	}
+	AdjustWindowRect(&rect, static_cast<DWORD>(style_), false);
 	Vector2ui size = Window::ConvertClientSize(rect);
 
 	//!< windowの生成
@@ -74,15 +62,6 @@ void Window::Create(
 		this
 	);
 	StreamLogger::Assert(hwnd_ != nullptr, "window create failed.");
-
-	if (isBorderless_) {
-		//!< frameを再計算させ, WM_NCCALCSIZEの結果を反映させる.
-		//!< 生成中の最初のWM_NCCALCSIZEはWM_CREATE(instanceの関連付け)より前に届くため処理できない.
-		SetWindowPos(
-			hwnd_, nullptr, 0, 0, 0, 0,
-			SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE
-		);
-	}
 
 	StreamLogger::Info(
 		L"Platform::Window | window create succeeded. name: {}, hwnd: {:p}", name, static_cast<const void*>(hwnd_)
@@ -175,24 +154,12 @@ LRESULT Window::WindowProcMain(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	Message message = Window::GetMessageCode(msg); //!< WindowsのメッセージコードをWindow::Messageに変換する
 
 	if (window != nullptr) {
-		//!< Resizeは消費されるまで保持する. 毎messageでNoneに戻すと, resizeの直後に来る他のmessageで
-		//!< 消えてしまい, swap chainがwindowのサイズに追従できない. (Window::ConsumeEventで消費する)
-		if (window->event_ != Event::Resize) {
-			window->event_ = Event::None; //!< eventを初期化する
-		}
+		window->event_ = Event::None; //!< eventを初期化する
 	}
 
 	//if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 	//	return true;
 	//}
-
-	//!< borderless windowの非クライアント領域処理 (borderlessでない場合は何も行わない)
-	if (window != nullptr) {
-		LRESULT result = 0;
-		if (window->ProcessBorderlessMessage(hwnd, message, wparam, lparam, result)) {
-			return result;
-		}
-	}
 
 	switch (message) {
 		case Message::Create:
@@ -209,35 +176,15 @@ LRESULT Window::WindowProcMain(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				return 0;
 			}
 
-		case Message::EnterSizeMove:
-			{ //!< サイズ変更や移動のmodal loopに入った場合, loop中のWM_SIZEを無視するようにする
-				if (window != nullptr) {
-					window->isSizeMoving_ = true;
-				}
-			}
-			break;
-
 		case Message::ExitSizeMove:
 			{ //!< windowのサイズ変更や移動が終了した場合, instanceにリサイズ処理を行う
+				if (wparam == SIZE_MINIMIZED) {
+					break; //!< 最小化されたときはリサイズ処理を行わない
+				}
+
 				if (window != nullptr) {
-					window->isSizeMoving_ = false;
 					window->UpdateRect(Window::GetCurrentClientRect(hwnd)); //!< rectを更新する
 				}
-			}
-			break;
-
-		case Message::Size:
-			{ //!< 最大化 / スナップ / SetWindowPosはmodal loopを通らずWM_EXITSIZEMOVEが来ないため,
-			  //!< ここでrectを更新する. これが無いとGetClient()が古い値を返し, swap chainが追従しない.
-				if (window == nullptr || window->isSizeMoving_) {
-					break; //!< drag中はloopの終了時にまとめて処理する
-				}
-
-				if (wparam == SIZE_MINIMIZED) {
-					break; //!< 最小化ではclient領域が0になるためresizeしない
-				}
-
-				window->UpdateRect(Window::GetCurrentClientRect(hwnd)); //!< rectを更新する
 			}
 			break;
 	}
@@ -253,19 +200,7 @@ LRESULT Window::WindowProcSub(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	Message message = Window::GetMessageCode(msg); //!< WindowsのメッセージコードをWindow::Messageに変換する
 
 	if (window != nullptr) {
-		//!< Resizeは消費されるまで保持する. 毎messageでNoneに戻すと, resizeの直後に来る他のmessageで
-		//!< 消えてしまい, swap chainがwindowのサイズに追従できない. (Window::ConsumeEventで消費する)
-		if (window->event_ != Event::Resize) {
-			window->event_ = Event::None; //!< eventを初期化する
-		}
-	}
-
-	//!< borderless windowの非クライアント領域処理 (borderlessでない場合は何も行わない)
-	if (window != nullptr) {
-		LRESULT result = 0;
-		if (window->ProcessBorderlessMessage(hwnd, message, wparam, lparam, result)) {
-			return result;
-		}
+		window->event_ = Event::None; //!< eventを初期化する
 	}
 
 	switch (message) {
@@ -283,35 +218,15 @@ LRESULT Window::WindowProcSub(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				return 0;
 			}
 
-		case Message::EnterSizeMove:
-			{ //!< サイズ変更や移動のmodal loopに入った場合, loop中のWM_SIZEを無視するようにする
-				if (window != nullptr) {
-					window->isSizeMoving_ = true;
-				}
-			}
-			break;
-
 		case Message::ExitSizeMove:
 			{ //!< windowのサイズ変更や移動が終了した場合, instanceにリサイズ処理を行う
+				if (wparam == SIZE_MINIMIZED) {
+					break; //!< 最小化されたときはリサイズ処理を行わない
+				}
+				
 				if (window != nullptr) {
-					window->isSizeMoving_ = false;
 					window->UpdateRect(Window::GetCurrentClientRect(hwnd)); //!< rectを更新する
 				}
-			}
-			break;
-
-		case Message::Size:
-			{ //!< 最大化 / スナップ / SetWindowPosはmodal loopを通らずWM_EXITSIZEMOVEが来ないため,
-			  //!< ここでrectを更新する. これが無いとGetClient()が古い値を返し, swap chainが追従しない.
-				if (window == nullptr || window->isSizeMoving_) {
-					break; //!< drag中はloopの終了時にまとめて処理する
-				}
-
-				if (wparam == SIZE_MINIMIZED) {
-					break; //!< 最小化ではclient領域が0になるためresizeしない
-				}
-
-				window->UpdateRect(Window::GetCurrentClientRect(hwnd)); //!< rectを更新する
 			}
 			break;
 	}
@@ -329,124 +244,6 @@ WNDPROC Window::GetWindowProcFunction(Category category) {
 
 		default:
 			StreamLogger::Exception("category is not valid.");
-	}
-}
-
-bool Window::ProcessBorderlessMessage(HWND hwnd, Message message, WPARAM wparam, LPARAM lparam, LRESULT& result) {
-	if (!isBorderless_) {
-		return false; //!< borderlessでない場合は既存の挙動を一切変更しない
-	}
-
-	switch (message) {
-		case Message::NcCalcSize:
-			{ //!< 非クライアント領域を消し, クライアント領域をwindow全体に広げる
-				if (wparam != TRUE) {
-					break; //!< rgrc[0]のみが有効な形式でない場合は既定の処理に任せる
-				}
-
-				NCCALCSIZE_PARAMS* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam);
-
-				if (IsZoomed(hwnd)) {
-					//!< 最大化時のwindow矩形はframeの分だけwork areaより大きい.
-					//!< そのままクライアントにするとtaskbarを覆ってしまうため, frame分だけ内側に寄せる.
-					const LONG frameX = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-					const LONG frameY = GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-
-					params->rgrc[0].left   += frameX;
-					params->rgrc[0].right  -= frameX;
-					params->rgrc[0].top    += frameY;
-					params->rgrc[0].bottom -= frameY;
-				}
-
-				//!< rgrc[0]を書き換えずに返すことで, 非クライアント領域が無くなる
-				result = 0;
-				return true;
-			}
-
-		case Message::NcHitTest:
-			{ //!< WS_CAPTIONが無いためリサイズ枠とcaptionを自前で返す
-				result = Window::HitTestNonClient(hwnd, lparam, nonClientHitTest_);
-				return true;
-			}
-
-		case Message::SetCursor:
-			{ //!< クライアント領域のカーソル形状をアプリ側の要求で決める
-				if (LOWORD(lparam) != HTCLIENT || cursorQuery_ == nullptr) {
-					break; //!< リサイズ枠などはOSの矢印カーソルに任せる
-				}
-
-				POINT point = {};
-				if (!GetCursorPos(&point) || !ScreenToClient(hwnd, &point)) {
-					break;
-				}
-
-				const CursorShape shape = cursorQuery_(
-					Vector2i{ static_cast<std::int32_t>(point.x), static_cast<std::int32_t>(point.y) }
-				);
-
-				SetCursor(LoadCursorW(nullptr, Window::ConvertCursorResource(shape)));
-
-				result = TRUE;
-				return true;
-			}
-
-		default:
-			break;
-	}
-
-	return false;
-}
-
-LRESULT Window::HitTestNonClient(HWND hwnd, LPARAM lparam, const NonClientHitTest& function) {
-	//!< lparamはscreen座標なのでclient座標へ変換する
-	POINT point = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	ScreenToClient(hwnd, &point);
-
-	RECT client = Window::GetCurrentClientRect(hwnd);
-
-	if (!IsZoomed(hwnd)) {
-		//!< 最大化中はリサイズできないため枠判定を行わない
-		const bool left   = point.x <  client.left   + kResizeBorder;
-		const bool right  = point.x >= client.right  - kResizeBorder;
-		const bool top    = point.y <  client.top    + kResizeBorder;
-		const bool bottom = point.y >= client.bottom - kResizeBorder;
-
-		//!< 角を先に判定する. (辺を先に返すと角が掴めない)
-		if (top    && left)  { return HTTOPLEFT; }
-		if (top    && right) { return HTTOPRIGHT; }
-		if (bottom && left)  { return HTBOTTOMLEFT; }
-		if (bottom && right) { return HTBOTTOMRIGHT; }
-
-		//!< 枠判定はcaption判定より先に行う
-		if (left)   { return HTLEFT; }
-		if (right)  { return HTRIGHT; }
-		if (top)    { return HTTOP; }
-		if (bottom) { return HTBOTTOM; }
-	}
-
-	if (function == nullptr) {
-		return HTCLIENT; //!< callback未設定の場合はすべてクライアント領域として扱う
-	}
-
-	switch (function(Vector2i{ static_cast<std::int32_t>(point.x), static_cast<std::int32_t>(point.y) })) {
-		case NonClientArea::Caption:
-			return HTCAPTION; //!< dragでの移動, double clickでの最大化, snapをOSに任せる
-
-		case NonClientArea::Client:
-		default:
-			return HTCLIENT;
-	}
-}
-
-LPCWSTR Window::ConvertCursorResource(CursorShape shape) {
-	switch (shape) {
-		case CursorShape::SizeWE: return IDC_SIZEWE;
-		case CursorShape::SizeNS: return IDC_SIZENS;
-		case CursorShape::Hand:   return IDC_HAND;
-		case CursorShape::IBeam:  return IDC_IBEAM;
-
-		case CursorShape::Arrow:
-		default:                  return IDC_ARROW;
 	}
 }
 

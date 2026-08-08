@@ -233,24 +233,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Assets\Texture\TextureTraits.h" />
     <ClInclude Include="Runtime\Core\Configuration\Configuration.h" />
     <ClInclude Include="Runtime\Core\Utility\ComPtr.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockPanel.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDocking.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateSplitter.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.h" />
-    <ClInclude Include="Runtime\Editor\Slate\SlateApplication.h" />
-    <ClInclude Include="Runtime\Editor\Slate\SlateIcon.h" />
-    <ClInclude Include="Runtime\Editor\Slate\SlateTypes.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyle.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleIO.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateDecl.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateOverlay.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWidget.h" />
-    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWindow.h" />
     <ClInclude Include="Runtime\Foundation.hpp" />
     <ClInclude Include="Runtime\Framework\Core\Context.h" />
     <ClInclude Include="Runtime\Framework\Core\IUnit.h" />
@@ -309,7 +291,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\World\Scene\BaseScene.h" />
     <ClInclude Include="Runtime\World\Scene\SceneContext.h" />
     <ClInclude Include="Unit\EngineUnit.h" />
-    <ClInclude Include="Unit\SlateEditorUnit.h" />
     <ClInclude Include="Unit\WindowUnit.h" />
   </ItemGroup>
   <ItemGroup>
@@ -340,22 +321,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Assets\Texture\TextureMetadata.cpp" />
     <ClCompile Include="Runtime\Core\Configuration\Configuration.cpp" />
     <ClCompile Include="Runtime\Core\Utility\ComPtr.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockPanel.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDocking.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateSplitter.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\SlateApplication.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\SlateIcon.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\SlateTypes.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyle.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleIO.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateOverlay.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Context.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\DimensionBuffer.cpp" />
@@ -406,7 +371,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\World\Entity\EntityStorage.cpp" />
     <ClCompile Include="Runtime\World\Scene\SceneContext.cpp" />
     <ClCompile Include="Unit\EngineUnit.cpp" />
-    <ClCompile Include="Unit\SlateEditorUnit.cpp" />
     <ClCompile Include="Unit\WindowUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
