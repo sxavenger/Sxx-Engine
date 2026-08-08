@@ -6,112 +6,155 @@
 //* time
 #include "TimeUnit.h"
 
+//* lib
+#include <Lib/CXXAttribute.hpp>
+
 //* c++
 #include <concepts>
 #include <algorithm>
 #include <cmath>
 
+//-----------------------------------------------------------------------------------------
+// forward
+//-----------------------------------------------------------------------------------------
+
+template <TimeUnit, std::integral>
+struct DEPRECATED("not defined") TimePointIntegral; //!< 必要であれば整数型の検討.
+
+template <TimeUnit, std::floating_point>
+struct TimePointFloatingPoint;
+
 ////////////////////////////////////////////////////////////////////////////////////////////
-// TimePoint structure
+// TimePointFloatingPoint structure
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <TimeUnit Unit, std::floating_point T>
-struct TimePoint {
-	// TODO: Integer型を扱うTimePointIntegral型を作成する.
-public:
+//! @brief 時間点を表す構造体 (浮動小数点型)
+template <TimeUnit Unit, std::floating_point Type>
+struct TimePointFloatingPoint {
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	constexpr TimePoint() noexcept = default;
+	//* constructor *//
+
+	constexpr TimePointFloatingPoint() noexcept = default;
 
 	//* time point methods *//
 
-	constexpr void Reset() noexcept { time = {}; }
+	void Reset() noexcept { *this = TimePointFloatingPoint{}; }
 
-	//* operator [assignment] <T> *//
+	//* operator [copy / move] <TimePointFloatingPoint> *//
 
-	constexpr TimePoint(T time) noexcept : time(time) {}
-	constexpr TimePoint& operator=(T time) noexcept { this->time = time; return *this; }
+	constexpr TimePointFloatingPoint(const TimePointFloatingPoint&) noexcept            = default;
+	constexpr TimePointFloatingPoint& operator=(const TimePointFloatingPoint&) noexcept = default;
 
-	//* operator [assignment / move] <TimePoint> *//
+	constexpr TimePointFloatingPoint(TimePointFloatingPoint&&) noexcept            = default;
+	constexpr TimePointFloatingPoint& operator=(TimePointFloatingPoint&&) noexcept = default;
 
-	constexpr TimePoint(const TimePoint&) noexcept            = default;
-	constexpr TimePoint& operator=(const TimePoint&) noexcept = default;
+	//* operator [assignment] <Type> *//
 
-	constexpr TimePoint(TimePoint&&) noexcept            = default;
-	constexpr TimePoint& operator=(TimePoint&&) noexcept = default;
+	constexpr TimePointFloatingPoint(Type _time) noexcept : time(_time) {}
+	constexpr TimePointFloatingPoint& operator=(Type _time) noexcept { time = _time; return *this; }
 
-	//* operator [conversion] <T> *//
+	//* operator [conversion] <TimePointFloatingPoint> *//
 
-	constexpr operator T() const noexcept { return time; }
-
-	//* operator [conversion] <TimePoint<U, U>> *//
-
-	template <TimeUnit To>
-	constexpr operator TimePoint<To, T>() const noexcept {
-		return TimePoint<To, T>(time * TimeUtil::ConvertFactor<Unit, To, T>());
+	template <TimeUnit T>
+	constexpr operator TimePointFloatingPoint<T, Type>() const noexcept {
+		return TimePointFloatingPoint<T, Type>(time * TimeUtil::ConvertFactorFloatingPoint<Unit, T, Type>());
 	}
 
-	template <std::floating_point U>
-	constexpr operator TimePoint<Unit, U>() const noexcept {
-		return TimePoint<Unit, U>(static_cast<U>(time));
+	template <std::floating_point T>
+	constexpr operator TimePointFloatingPoint<Unit, T>() const noexcept {
+		return TimePointFloatingPoint<Unit, T>(static_cast<T>(time));
 	}
 
-	template <TimeUnit To, std::floating_point U>
-	constexpr operator TimePoint<To, U>() const noexcept {
-		return TimePoint<To, U>(static_cast<U>(time) * TimeUtil::ConvertFactor<Unit, To, U>());
+	template <TimeUnit T, std::floating_point U>
+	constexpr operator TimePointFloatingPoint<T, U>() const noexcept {
+		return TimePointFloatingPoint<T, U>(static_cast<U>(time) * TimeUtil::ConvertFactorFloatingPoint<Unit, T, U>());
 	}
 
-	//* operator [arithmetic] <TimePoint> *//
+	//* operator [unary] *//
 
-	constexpr TimePoint operator+(const TimePoint& rhs) const noexcept { return TimePoint(time + rhs.time); }
-	constexpr TimePoint& operator+=(const TimePoint& rhs) noexcept { time += rhs.time; return *this; }
+	constexpr TimePointFloatingPoint operator+() const noexcept { return *this; }
+	constexpr TimePointFloatingPoint operator-() const noexcept { return TimePointFloatingPoint(-time); }
 
-	constexpr TimePoint operator-(const TimePoint& rhs) const noexcept { return TimePoint(time - rhs.time); }
-	constexpr TimePoint& operator-=(const TimePoint& rhs) noexcept { time -= rhs.time; return *this; }
+	//* operator [arithmetic] <TimePointFloatingPoint> *//
 
-	//* operator [arithmetic] <T> *//
+	constexpr TimePointFloatingPoint operator+(const TimePointFloatingPoint& rhs) const noexcept { return TimePointFloatingPoint(time + rhs.time); }
+	constexpr TimePointFloatingPoint& operator+=(const TimePointFloatingPoint& rhs) noexcept { time += rhs.time; return *this; }
 
-	constexpr TimePoint operator*(T v) const noexcept { return TimePoint(time * v); }
-	constexpr TimePoint& operator*=(T v) noexcept { time *= v; return *this; }
+	constexpr TimePointFloatingPoint operator-(const TimePointFloatingPoint& rhs) const noexcept { return TimePointFloatingPoint(time - rhs.time); }
+	constexpr TimePointFloatingPoint& operator-=(const TimePointFloatingPoint& rhs) noexcept { time -= rhs.time; return *this; }
 
-	constexpr TimePoint operator/(T v) const noexcept { return TimePoint(time / v); }
-	constexpr TimePoint& operator/=(T v) noexcept { time /= v; return *this; }
+	//* operator [arithmetic] <Type> *//
 
-	//* operator [comparison] <TimePoint> *//
+	constexpr TimePointFloatingPoint operator*(Type rhs) const noexcept { return TimePointFloatingPoint(time * rhs); }
+	constexpr TimePointFloatingPoint& operator*=(Type rhs) noexcept { time *= rhs; return *this; }
 
-	constexpr bool operator==(const TimePoint& rhs) const noexcept { return time == rhs.time; }
-	constexpr bool operator!=(const TimePoint& rhs) const noexcept { return time != rhs.time; }
+	constexpr TimePointFloatingPoint operator/(Type rhs) const noexcept { return TimePointFloatingPoint(time / rhs); }
+	constexpr TimePointFloatingPoint& operator/=(Type rhs) noexcept { time /= rhs; return *this; }
 
-	constexpr bool operator<(const TimePoint& rhs) const noexcept { return time < rhs.time; }
-	constexpr bool operator<=(const TimePoint& rhs) const noexcept { return time <= rhs.time; }
+	//* operator [comparison] <TimePointFloatingPoint> *//
 
-	constexpr bool operator>(const TimePoint& rhs) const noexcept { return time > rhs.time; }
-	constexpr bool operator>=(const TimePoint& rhs) const noexcept { return time >= rhs.time; }
+	constexpr bool operator==(const TimePointFloatingPoint& rhs) const noexcept { return time == rhs.time; }
+	constexpr bool operator!=(const TimePointFloatingPoint& rhs) const noexcept { return time != rhs.time; }
+
+	constexpr bool operator<(const TimePointFloatingPoint& rhs) const noexcept { return time < rhs.time; }
+	constexpr bool operator<=(const TimePointFloatingPoint& rhs) const noexcept { return time <= rhs.time; }
+
+	constexpr bool operator>(const TimePointFloatingPoint& rhs) const noexcept { return time > rhs.time; }
+	constexpr bool operator>=(const TimePointFloatingPoint& rhs) const noexcept { return time >= rhs.time; }
+
+	//* algorithm methods *//
+
+	static constexpr TimePointFloatingPoint Min(const TimePointFloatingPoint& lhs, const TimePointFloatingPoint& rhs) noexcept {
+		return std::min(lhs.time, rhs.time);
+	}
+
+	static constexpr TimePointFloatingPoint Max(const TimePointFloatingPoint& lhs, const TimePointFloatingPoint& rhs) noexcept {
+		return std::max(lhs.time, rhs.time);
+	}
+
+	static constexpr TimePointFloatingPoint Clamp(const TimePointFloatingPoint& v, const TimePointFloatingPoint& low, const TimePointFloatingPoint& high) noexcept {
+		return TimePointFloatingPoint(std::clamp(v.time, low.time, high.time));
+	}
 
 	//* mathmatical methods *//
 
-	static constexpr TimePoint Min(const TimePoint& x, const TimePoint& y) noexcept { return std::min(x, y); }
-	static constexpr TimePoint Max(const TimePoint& x, const TimePoint& y) noexcept { return std::max(x, y); }
-	static constexpr TimePoint Clamp(const TimePoint& x, const TimePoint& min, const TimePoint& max) noexcept { return std::clamp(x, min, max); }
+	static constexpr TimePointFloatingPoint Abs(const TimePointFloatingPoint& v) noexcept {
+		return TimePointFloatingPoint(std::abs(v.time));
+	}
 
-	static constexpr TimePoint Mod(const TimePoint& x, const TimePoint& y) noexcept { return TimePoint(std::fmod(x.time, y.time)); }
+	static constexpr TimePointFloatingPoint Floor(const TimePointFloatingPoint& v) noexcept {
+		return TimePointFloatingPoint(std::floor(v.time));
+	}
+
+	static constexpr TimePointFloatingPoint Ceil(const TimePointFloatingPoint& v) noexcept {
+		return TimePointFloatingPoint(std::ceil(v.time));
+	}
+
+	static constexpr TimePointFloatingPoint Round(const TimePointFloatingPoint& v) noexcept {
+		return TimePointFloatingPoint(std::round(v.time));
+	}
+
+	static constexpr TimePointFloatingPoint Mod(const TimePointFloatingPoint& v, Type divisor) noexcept {
+		return TimePointFloatingPoint(std::fmod(v.time, divisor));
+	}
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
-	T time = {};
+	Type time{ 0.0 }; //!< 時間点 (単位は Unit に依存する.)
 
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////
-// TimePoint structure utility aliases
-////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------
+// using
+//-----------------------------------------------------------------------------------------
 
 template <TimeUnit Unit>
-using TimePointf = TimePoint<Unit, float>;
+using TimePointf = TimePointFloatingPoint<Unit, float>;
 
 template <TimeUnit Unit>
-using TimePointd = TimePoint<Unit, double>;
+using TimePointd = TimePointFloatingPoint<Unit, double>;

@@ -11,9 +11,9 @@
 // TimeUnit enum class
 ////////////////////////////////////////////////////////////////////////////////////////////
 enum class TimeUnit : uint8_t {
-	Second,
-	Millisecond,
 	Microsecond,
+	Millisecond,
+	Second
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,25 +22,47 @@ enum class TimeUnit : uint8_t {
 namespace TimeUtil {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// Factor structure
+	// Factor <floating_point> structure
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	template <TimeUnit>
-	struct Factor;
+	template <TimeUnit, std::floating_point>
+	struct FactorFloatingPoint;
 
-	template <>
-	struct Factor<TimeUnit::Second> {
-		static constexpr double factor = 1e0;
+	template <std::floating_point T>
+	struct FactorFloatingPoint<TimeUnit::Microsecond, T> {
+		static constexpr T factor = T(1.0); //!< microsecond factor (基準単位として扱う.)
 	};
 
-	template <>
-	struct Factor<TimeUnit::Millisecond> {
-		static constexpr double factor = 1e3;
+	template <std::floating_point T>
+	struct FactorFloatingPoint<TimeUnit::Millisecond, T> {
+		static constexpr T factor = T(1e3);
 	};
 
-	template <>
-	struct Factor<TimeUnit::Microsecond> {
-		static constexpr double factor = 1e6;
+	template <std::floating_point T>
+	struct FactorFloatingPoint<TimeUnit::Second, T> {
+		static constexpr T factor = T(1e6);
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Factor <integral> structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	template <TimeUnit, std::integral>
+	struct FactorIntegral;
+
+	template <std::integral T>
+	struct FactorIntegral<TimeUnit::Microsecond, T> {
+		static constexpr T factor = T(1); //!< microsecond factor (基準単位として扱う.)
+	};
+
+	template <std::integral T>
+	struct FactorIntegral<TimeUnit::Millisecond, T> {
+		static constexpr T factor = T(1e3);
+	};
+
+	template <std::integral T>
+	struct FactorIntegral<TimeUnit::Second, T> {
+		static constexpr T factor = T(1e6);
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,13 +70,20 @@ namespace TimeUtil {
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	template <TimeUnit From, TimeUnit To, std::floating_point T>
-	constexpr T ConvertFactor() {
-		constexpr double fromFactor = Factor<From>::factor;
-		constexpr double toFactor   = Factor<To>::factor;
+	constexpr T ConvertFactorFloatingPoint() {
+		constexpr T from = FactorFloatingPoint<From, T>::factor;
+		constexpr T to   = FactorFloatingPoint<To, T>::factor;
 
-		return static_cast<T>(toFactor / fromFactor);
+		return from / to;
 	}
 
+	template <TimeUnit From, TimeUnit To, std::integral T>
+	constexpr T ConvertFactorIntegral() {
+		constexpr T from = FactorIntegral<From, T>::factor;
+		constexpr T to   = FactorIntegral<To, T>::factor;
+
+		return from / to;
+	}
 
 }
 
