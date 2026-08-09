@@ -1,0 +1,3 @@
+[Platform] # Platform関係の設定
+[Platform.InputContext] # InputContext関係の設定
+mode = "Async" # InputContextのモードを設定。Asyncは非同期更新、Syncは同期です。
