@@ -26,9 +26,9 @@ SXAVENGER_ENGINE_USING_(Editor)
 const Graphics::Descriptor::Handle& Slate::ImGuiRenderer::Descriptors::Allocate() {
 
 	//!< SRV用のDescriptorを確保.
-	Graphics::Descriptor descriptor = Graphics::Core::AllocateDescriptor(Graphics::DescriptorCategory::SRV); 
+	Graphics::Descriptor descriptor = Graphics::Core::AllocateDescriptor(Graphics::DescriptorCategory::SRV);
 	descriptors.emplace_back(std::move(descriptor));
-	
+
 	return descriptors.back().GetHandle(); //!< 追加したDescriptorのハンドルを返す.
 }
 
@@ -50,7 +50,7 @@ void Slate::ImGuiRenderer::Init() {
 	}
 
 	IMGUI_CHECKVERSION(); //!< imguiのバージョンチェック.
-	
+
 	CreateContext(); //!< contextの作成.
 
 	//!< ImGuiIOの設定.
@@ -73,7 +73,7 @@ void Slate::ImGuiRenderer::Shutdown() {
 		ImGui_ImplDX12_Shutdown(); //!< ImGuiのDX12レンダラーを終了.
 		ImGui::DestroyContext(context_); //!< contextの破棄.
 	}
-	
+
 	context_ = nullptr;
 }
 
@@ -245,7 +245,7 @@ bool Slate::ImGuiRenderer::BeginRegion(const char* id, const Geometry& geometry)
 		| ImGuiWindowFlags_NoBackground
 		| ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_NoBringToFrontOnFocus;
-	// slate側が背景やレイアウトを管理するため、ImGui側では背景やレイアウトの管理を行わないようにする.
+	//!< slate側が背景やレイアウトを管理するため、ImGui側では背景やレイアウトの管理を行わないようにする.
 
 	//!< windowのスタイルの指定.
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -308,8 +308,8 @@ bool Slate::ImGuiRenderer::IsInteracting() {
 		return false; //!< フレーム外ではIsAnyItemActive()等の呼び出しが不正なため.
 	}
 
-	// io.WantCaptureMouseは前フレームのマウス位置を基にNewFrame()内で計算されるため1フレーム古く、
-	// ドラッグ操作が固まる原因になるので使わない.
+	//!< io.WantCaptureMouseは前フレームのマウス位置を基にNewFrame()内で計算されるため1フレーム古く、
+	//!<       ドラッグ操作が固まる原因になるので使わない.
 	return ImGui::IsAnyItemActive() || ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
 }
 
@@ -334,19 +334,22 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 	float baseFontSize = StyleIO::GetMetrics().fontBody; //!< 基準となるフォントサイズを取得.
 
+	//!< TODO: fontのパスと基準サイズからの倍率をConfigurationで管理できるようにする.
+	//!<       以下3ブロックのfilepathと baseFontSize への係数がその対象.
+
 	ImFontConfig font = {};
 	font.FontDataOwnedByAtlas = false; //!< フォントデータの所有権をImFontAtlasに渡さない. (自前で管理する)
 
 	{ //!< 英数fontの読み込み. (Roboto-Regular.ttf)
 
-		std::filesystem::path filepath = "Engine/Packages/fonts/Roboto-Regular.ttf"; // TODO: フォントのパスはConfigで管理するようにする.
+		std::filesystem::path filepath = "Engine/Packages/fonts/Roboto-Regular.ttf";
 
 		ImFontConfig conf = font;
 		conf.MergeMode = false;
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),
-			baseFontSize * 1.0f, //!< TODO: fontsizeを基準からの倍率で指定できるようにする.
+			baseFontSize * 1.0f,
 			&conf
 		);
 		StreamLogger::Assert(pointer != nullptr, std::format("failed to load font. filepath: {}", filepath.generic_string()));
@@ -364,7 +367,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),
-			baseFontSize * 1.0f, //!< TODO: fontsizeを基準からの倍率で指定できるようにする.
+			baseFontSize * 1.0f,
 			&conf
 		);
 		StreamLogger::Assert(pointer != nullptr, std::format("failed to load font. filepath: {}", filepath.generic_string()));
@@ -382,7 +385,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),
-			baseFontSize * 1.2f, //!< TODO: fontsizeを基準からの倍率で指定できるようにする.
+			baseFontSize * 1.2f,
 			&conf,
 			kIconRanges
 		);
@@ -399,9 +402,9 @@ void Slate::ImGuiRenderer::InitContext() {
 	info.NumFramesInFlight = Graphics::kFrameCount;
 	//!< PSOのRTV formatは, 実際にbindされるRTVのformatと完全に一致していなければ
 	//!< DrawIndexedInstancedが EXECUTION ERROR #613 で失敗する.
-	//!< SwapChain::Initは RTVを ConvertToLinearFormat(format) で生成するため, ここも同じ変換を通す.
-	//!< XXX: SwapChain::Resizeは ConvertToSRGBFormat(format_) を使っており, Initと不一致.
-	//!<      resize後に#613が再発するため, SwapChain側をLinearに揃える必要がある.
+	//!< note: SwapChainのresource自体は ConvertToLinearFormat で作られるが(FLIP_DISCARDが
+	//!<       sRGB backbufferを許さないため), bindされるRTVは Init / Resize ともに
+	//!<       ConvertToSRGBFormat で生成される. 合わせるべき相手はresourceではなくRTV側.
 	//!< TODO: formatをuser側で設定できるように変更. (SwapChainのformatと二重管理になっているため.)
 	info.RTVFormat         = Graphics::ConvertToSRGBFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
 	info.DSVFormat         = DXGI_FORMAT_UNKNOWN;

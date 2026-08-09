@@ -355,7 +355,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Editor\EditorTestMainMenu.cpp" />
     <ClCompile Include="Runtime\Editor\EditorTestPanel.cpp" />
     <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockLayout.cpp" />
-    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockPanel.cpp" />
     <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.cpp" />
     <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDocking.cpp" />
     <ClCompile Include="Runtime\Editor\Slate\Docking\SlateSplitter.cpp" />

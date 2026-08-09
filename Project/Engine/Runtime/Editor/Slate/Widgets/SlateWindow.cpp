@@ -18,7 +18,7 @@ Vector2f Slate::Window::ComputeDesiredSize(float scale, ImGuiRenderer* renderer)
 		pointer_->CacheDesiredSize(size);
 	}
 
-	// ルートはネイティブウィンドウのクライアントサイズに固定され、子の希望サイズには従わない.
+	//!< ルートはネイティブウィンドウのクライアントサイズに固定され、子の希望サイズには従わない.
 	return clientSize_;
 }
 

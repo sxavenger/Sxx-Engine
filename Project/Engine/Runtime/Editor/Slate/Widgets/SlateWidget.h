@@ -94,7 +94,7 @@ namespace Slate {
 
 		virtual void OnArrangeChildren(const Geometry& /*allotted*/, ArrangedChildren& /*out*/) const {}
 
-		//* paint opiton *//
+		//* paint option *//
 
 		virtual int32_t OnPaint(const PaintArguments& /*arguments*/, const Geometry& /*geometry*/, ImGuiRenderer* /*renderer*/, int32_t /*layer*/) const = 0;
 

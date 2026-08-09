@@ -1432,7 +1432,6 @@ void SlateEditorUnit::UpdateInput(EditorWindow& window) {
 	//!<       理由: Platform::InputのMouse/Keyboardは単一のCooperativeLevel windowを前提としており,
 	//!<       Editorのようにwindowが動的に増減する構成ではhwndを切り替えるたびにAcquireが外れ,
 	//!<       tab選択やwindowの最大化といった単発clickを取り落とすため.
-	//!< TODO: 現在この経路はwheel入力に未対応. (WM_MOUSEWHEELの配送が必要)
 
 	if (window.root == nullptr) {
 		return;
