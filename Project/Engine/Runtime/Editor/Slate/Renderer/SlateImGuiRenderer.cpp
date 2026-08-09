@@ -82,7 +82,7 @@ void Slate::ImGuiRenderer::SetCurrentContext() {
 	ImGui::SetCurrentContext(context_); //!< ImGuiの現在のコンテキストを設定.
 }
 
-void Slate::ImGuiRenderer::BeginFrame(const Vector2f& displaySize, float deltaTime) {
+void Slate::ImGuiRenderer::BeginFrame(const Vector2f& displaySize, TimePointf<TimeUnit::Second> deltaTime) {
 	if (context_ == nullptr) {
 		return; //!< contextが未初期化の場合は何もしない.
 	}
@@ -98,7 +98,7 @@ void Slate::ImGuiRenderer::BeginFrame(const Vector2f& displaySize, float deltaTi
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize             = ImVec2(displaySize.x, displaySize.y);
 	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-	io.DeltaTime               = std::max(deltaTime, FLT_MIN); //!< ImGuiはDeltaTime > 0を要求するため, 0を渡さないようにする.
+	io.DeltaTime               = std::max(deltaTime.time, std::numeric_limits<float>::min()); //!< ImGuiはDeltaTime > 0を要求するため, 0を渡さないようにする.
 
 	ImGui_ImplDX12_NewFrame();
 	ImGui::NewFrame();
@@ -158,7 +158,21 @@ void Slate::ImGuiRenderer::DrawLine(const Vector2f& p1, const Vector2f& p2, cons
 }
 
 void Slate::ImGuiRenderer::DrawTextA(const Vector2f& position, const std::string_view& text, const Color4f& color, float fontSize) {
-	GetTargetDrawList()->AddText(ImGui::GetFont(), fontSize, ImVec2(position.x, position.y), Slate::ImGuiRenderer::ToDrawColor(color), text.data(), text.data() + text.size());
+
+	//!< 引数の評価順は未規定なので, GetTargetDrawList()(内部でSetCurrentContextする)より先に
+	//!< ImGui::GetFont()が評価され得る. そうなると別windowのcontextのfontを掴んでしまい,
+	//!< atlasがwindowごとに独立しているためグリフが出ない / 化ける.
+	//!< contextを切り替えてからfontを取り, 順序を確定させる.
+	RefPtr<ImDrawList> drawList = GetTargetDrawList();
+
+	if (drawList == nullptr) {
+		return;
+	}
+
+	drawList->AddText(
+		ImGui::GetFont(), fontSize, ImVec2(position.x, position.y),
+		Slate::ImGuiRenderer::ToDrawColor(color), text.data(), text.data() + text.size()
+	);
 }
 
 void Slate::ImGuiRenderer::DrawTextU8(const Vector2f& position, const std::u8string_view& text, const Color4f& color, float fontSize) {
@@ -339,7 +353,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),
-			baseFontSize * 1.0f, //!< TODO: fontsizeを基準からの倍率で指定できるようにする.
+			baseFontSize * 1.2f, //!< TODO: fontsizeを基準からの倍率で指定できるようにする.
 			&conf,
 			kIconRanges
 		);

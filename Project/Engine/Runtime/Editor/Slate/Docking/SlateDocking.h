@@ -59,6 +59,12 @@ namespace Slate {
 	constexpr float kDockZoneMarkerGap     = 8.0f;  //!< マーカー間の隙間.
 	constexpr int32_t kDockZoneMarkerCount = 5;
 
+	//!< マーカーの一辺の下限. 分割されたスタックでも狙える大きさを保つ.
+	constexpr float kDockZoneMarkerMinSize = 22.0f;
+
+	//!< マーカーの当たり判定を見た目より広げる量. (Splitterの GrabSize と同じ考え方)
+	constexpr float kDockZoneMarkerGrabPadding = 6.0f;
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// DockZoneMarker structure
 	////////////////////////////////////////////////////////////////////////////////////////////

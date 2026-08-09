@@ -12,6 +12,7 @@
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>
+#include <Lib/Time/TimePoint.h>
 
 //* c++
 #include <cstdint>
@@ -95,7 +96,7 @@ namespace Slate {
 
 		//! @brief ImGuiのフレームを開始する.
 		//! @note プラットフォームバックエンドを使わないため、表示サイズとdeltaTimeは呼び出し側が渡す.
-		void BeginFrame(const Vector2f& displaySize, float deltaTime);
+		void BeginFrame(const Vector2f& displaySize, TimePointf<TimeUnit::Second> deltaTime);
 
 		//! @brief ImGuiのフレームを終了し、DrawDataをコマンドリストに記録する.
 		void EndFrame(const Graphics::GraphicsCommandContext& context);

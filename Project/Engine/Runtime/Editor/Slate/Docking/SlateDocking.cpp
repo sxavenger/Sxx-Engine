@@ -21,11 +21,20 @@ void Slate::BuildDockZoneMarkers(const Geometry& area, DockZoneMarker out[kDockZ
 	if (minSide > 0.0f && minSide < needed) {
 		m = minSide / 3.5f;
 	}
-	if (m < 8.0f) {
-		m = 8.0f;
+
+	//!< 分割されたスタックは矩形が小さく, 上の式だとマーカーが数pxまで縮んで狙えなくなる.
+	//!< 隙間を詰めてでも掴める大きさを保つ. 領域より大きくなる場合だけ更に縮める.
+	if (m < kDockZoneMarkerMinSize) {
+		m = kDockZoneMarkerMinSize;
 	}
 
-	const float gap = m + (m / kDockZoneMarkerSize) * kDockZoneMarkerGap;
+	if (minSide > 0.0f && m * 3.0f > minSide) {
+		m = minSide / 3.0f; //!< それでも収まらないなら領域に合わせる. (隙間は0になる)
+	}
+
+	//!< マーカーが小さいときは隙間も詰める. 中央と上下左右が離れすぎると狙いづらい.
+	const float gapScale = (m < kDockZoneMarkerSize) ? (m / kDockZoneMarkerSize) : 1.0f;
+	const float gap      = m + gapScale * kDockZoneMarkerGap;
 	const Vector2f center{ area.absolutePosition.x + area.localSize.x * 0.5f,
 							area.absolutePosition.y + area.localSize.y * 0.5f };
 
@@ -55,8 +64,20 @@ Slate::DockZone Slate::HitTestDockZoneMarkers(const Geometry& area, Vector2f poi
 	DockZoneMarker markers[kDockZoneMarkerCount];
 	BuildDockZoneMarkers(area, markers);
 
+	//!< 当たり判定は見た目より広げる. 見た目どおりの矩形だと縁で外して狙いづらい.
+	//!< note: 中央のマーカーを優先したいので, 判定は BuildDockZoneMarkers の順序
+	//!<       (Center -> Left -> Right -> Top -> Bottom) のまま前から見る.
 	for (const DockZoneMarker& marker : markers) {
-		if (marker.box.ContainsAbsolute(point)) {
+
+		const Geometry grab = Geometry{
+			{ marker.box.absolutePosition.x - kDockZoneMarkerGrabPadding,
+			  marker.box.absolutePosition.y - kDockZoneMarkerGrabPadding },
+			{ marker.box.localSize.x + kDockZoneMarkerGrabPadding * 2.0f,
+			  marker.box.localSize.y + kDockZoneMarkerGrabPadding * 2.0f },
+			marker.box.scale
+		};
+
+		if (grab.ContainsAbsolute(point)) {
 			return marker.zone;
 		}
 	}

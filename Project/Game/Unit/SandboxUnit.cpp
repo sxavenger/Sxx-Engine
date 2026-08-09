@@ -11,7 +11,7 @@
 
 //* engine [unit]
 #include <Engine/Unit/WindowUnit.h>
-//#include <Engine/Unit/SlateEditorUnit.h>
+#include <Engine/Unit/SlateEditorUnit.h>
 
 //* lib
 #include <Lib/Format/Json/JsonFile.h>
@@ -22,8 +22,7 @@
 
 SandboxUnit::SandboxUnit() {
 #ifdef DEVELOPMENT
-	// TODO: EditorのUnitを追加する
-	Sxx::Framework::Context::Push<Sxx::WindowUnit>(); //!< 仮で通常windowを追加する.
+	Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
 #else
 	//!< windowの追加
 	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
