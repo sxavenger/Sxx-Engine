@@ -115,6 +115,10 @@ namespace Slate {
 		static constexpr float kTabMinWidth       = 72.0f; //!< タブ幅の下限.
 		static constexpr float kTabMinShrunkWidth = 28.0f; //!< 幅が足りないときに縮めてでも表示する下限.
 
+		//!< × を出すために最低限残したい文字の幅.
+		//!< これを下回るなら × を省く. 出すと右端から詰めるため文字に重なって読めなくなる.
+		static constexpr float kTabMinTextWidth = 24.0f;
+
 	private:
 
 		//=========================================================================================

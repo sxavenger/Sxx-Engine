@@ -115,6 +115,12 @@ namespace Slate {
 
 		static constexpr float kMinRatio = 0.05f;
 
+		//!< 片側に必ず残すピクセル幅の下限.
+		//!< 比率だけの下限だと入れ子のsplitterで掛け算になり, 数pxまで潰せてしまう.
+		//!< そこまで狭めるとタブバーにタブが1枚も置けず, タブを切り替える手段が失われる.
+		//!< note: DockTabStack::kTabMinShrunkWidth(28) + 余白 + × が収まる幅にしている.
+		static constexpr float kMinChildSize = 96.0f;
+
 	private:
 
 		//=========================================================================================
@@ -137,6 +143,10 @@ namespace Slate {
 		//=========================================================================================
 
 		static float Clamp(float ratio);
+
+		//! @brief 使える幅が分かっているときの比率のクランプ.
+		//! @note 比率の下限とピクセルの下限の両方を満たす値へ丸める.
+		static float ClampWithSize(float ratio, float usable);
 
 		//! @brief 仕切りの描画. 装飾は付けず, 状態を色だけで示す.
 		//!        通常: 背景色(パネル間の溝として見える) / ホバー: 明るいグレー / ドラッグ: 青.

@@ -480,7 +480,7 @@
     <ClInclude Include="Runtime\Platform\Input\InputId.h">
       <Filter>Runtime\Platform\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Platform\Input\InputSystem.h">
+    <ClInclude Include="Runtime\Platform\Input\InputContext.h">
       <Filter>Runtime\Platform\Input</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Platform\Input\InputUtil.h">
@@ -582,6 +582,15 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Editor\Slate\SlateEditorPanel.h">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\EditorTestPanel.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateEditorMenuBar.h">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Editor\EditorTestMainMenu.h" />
+    <ClInclude Include="Runtime\Platform\Input\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -794,7 +803,7 @@
     <ClCompile Include="Runtime\Platform\Input\Gamepad.cpp">
       <Filter>Runtime\Platform\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Platform\Input\InputSystem.cpp">
+    <ClCompile Include="Runtime\Platform\Input\InputContext.cpp">
       <Filter>Runtime\Platform\Input</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Platform\Input\InputUtil.cpp">
@@ -884,5 +893,14 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Editor\Slate\SlateEditorPanel.cpp">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\EditorTestPanel.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateEditorMenuBar.cpp">
+      <Filter>Runtime\Editor\Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Editor\EditorTestMainMenu.cpp" />
+    <ClCompile Include="Runtime\Platform\Input\Input.cpp" />
   </ItemGroup>
 </Project>

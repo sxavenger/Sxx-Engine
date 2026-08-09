@@ -182,10 +182,6 @@ LRESULT Window::WindowProcMain(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		}
 	}
 
-	//if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-	//	return true;
-	//}
-
 	//!< borderless windowの非クライアント領域処理 (borderlessでない場合は何も行わない)
 	if (window != nullptr) {
 		LRESULT result = 0;

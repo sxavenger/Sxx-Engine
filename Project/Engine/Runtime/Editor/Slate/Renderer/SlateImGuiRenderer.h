@@ -126,6 +126,15 @@ namespace Slate {
 
 		void SetDrawTarget(DrawTarget target) { target_ = target; }
 
+		//* clip option *//
+
+		//! @brief 描画を矩形の内側に制限する.
+		//! @note EndClipRectと必ず対で呼ぶ. はみ出す描画(縮んだタブの文字など)を切り取るために使う.
+		//!       現在のDrawTargetのdraw listへ積むため, Begin〜Endの間でDrawTargetを変えないこと.
+		void BeginClipRect(const Geometry& geometry);
+
+		void EndClipRect();
+
 		//* region option *//
 
 		//! @brief ImGuiの描画領域を開始する.

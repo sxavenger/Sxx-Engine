@@ -194,6 +194,35 @@ Vector2f Slate::ImGuiRenderer::MeasureTextU8(const std::u8string_view& text, flo
 	); //!< UTF-8文字列をchar*にキャストしてMeasureTextAを呼び出す.
 }
 
+void Slate::ImGuiRenderer::BeginClipRect(const Geometry& geometry) {
+
+	RefPtr<ImDrawList> drawList = GetTargetDrawList();
+
+	if (drawList == nullptr) {
+		return;
+	}
+
+	const ImVec2 min(geometry.absolutePosition.x, geometry.absolutePosition.y);
+	const ImVec2 max(
+		geometry.absolutePosition.x + geometry.localSize.x,
+		geometry.absolutePosition.y + geometry.localSize.y
+	);
+
+	//!< 既にある領域と積を取る. 外側のclipを無視して広げてしまわないようにする.
+	drawList->PushClipRect(min, max, true);
+}
+
+void Slate::ImGuiRenderer::EndClipRect() {
+
+	RefPtr<ImDrawList> drawList = GetTargetDrawList();
+
+	if (drawList == nullptr) {
+		return;
+	}
+
+	drawList->PopClipRect();
+}
+
 bool Slate::ImGuiRenderer::BeginRegion(const char* id, const Geometry& geometry) {
 	StreamLogger::Assert(!isOpenRegion_, "ImGui region is already open."); //!< 既に描画領域が開かれている場合はエラー.
 

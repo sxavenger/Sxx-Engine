@@ -21,9 +21,14 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/Editor/Slate/Docking/SlateDockPanel.h>
 #include <Runtime/Editor/Slate/Docking/SlateDockTabStack.h>
 #include <Runtime/Editor/Slate/Docking/SlateSplitter.h>
+#include <Runtime/Editor/Slate/SlateEditorPanel.h>
+#include <Runtime/Editor/Slate/SlateEditorMenuBar.h>
+#include <Runtime/Editor/EditorTestPanel.h>
+#include <Runtime/Editor/EditorTestMainMenu.h>
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/String/UnicodeConverter.h>
 #include <Lib/Time/TimePoint.h>
 
 //* imgui
@@ -56,27 +61,6 @@ namespace {
 
 namespace {
 
-	//!< UTF-8の文字列をwindow名(UTF-16)へ変換する.
-	std::wstring ConvertToWide(const std::string& text) {
-
-		if (text.empty()) {
-			return L"Panel";
-		}
-
-		const int32_t length = ::MultiByteToWideChar(
-			CP_UTF8, 0, text.data(), static_cast<int32_t>(text.size()), nullptr, 0
-		);
-
-		if (length <= 0) {
-			return L"Panel";
-		}
-
-		std::wstring result(static_cast<size_t>(length), L'\0');
-		::MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int32_t>(text.size()), result.data(), length);
-
-		return result;
-	}
-
 	//!< cursorのscreen座標を取得する.
 	Vector2i GetCursorPosition() {
 
@@ -88,6 +72,22 @@ namespace {
 
 		return { static_cast<int32_t>(point.x), static_cast<int32_t>(point.y) };
 	}
+
+	//!< EditorPanelを継承したpanelの実例.
+	//!< OnDraw()の中はImGuiの呼び出しを並べるだけでよい. Begin / Endは基底が面倒を見る.
+	class StyleEditorPanel final
+		: public Editor::Slate::EditorPanel {
+	public:
+
+		StyleEditorPanel() {
+			SetTitle(std::format("{} Style", Editor::Slate::Icon::Settings));
+		}
+
+		void OnDraw() override {
+			Editor::Slate::StyleEditor::Draw();
+		}
+
+	};
 
 	//!< screen座標をclient座標へ変換する.
 	//!< @retval false client領域の外.
@@ -192,6 +192,9 @@ void SlateEditorUnit::InitEditor() {
 		return;
 	}
 
+	//!< 既定のmain menu bar. 差し替えるなら SetMenuBar<T>() を呼ぶ.
+	SetMenuBar<Editor::EditorTestMainMenu>();
+
 	BuildLayout(*window);
 
 	frameTracker_.Start(); //!< frame間の時間の計測を開始する.
@@ -233,6 +236,19 @@ void SlateEditorUnit::UpdateEditor() {
 		UpdateInput(*window);
 	}
 
+	//!< main menu barの更新.
+	if (menuBar_ != nullptr) {
+		menuBar_->OnUpdate();
+	}
+
+	//!< EditorPanelの更新. 描画に依存しない処理をここで回す.
+	//!< note: tabが裏に隠れていても呼ぶ. 描画は OnDraw() 側でImGuiのframe内で行われる.
+	for (const Editor::Slate::EditorPanelPointer& panel : panels_) {
+		if (panel != nullptr) {
+			panel->OnUpdate();
+		}
+	}
+
 	//!< windowのdrag移動とドッキングの判定.
 	//!< 入力の配送より後に行う理由:
 	//!<   1. dropはwidget treeを差し替えるため, widgetの走査の外でなければならない.
@@ -266,20 +282,13 @@ void SlateEditorUnit::RenderEditor() {
 		RenderWindow(*window, deltaTime);
 	}
 
-	//!< 全windowのcommand listをまとめてGPUへ投入する.
-	//!< note: このprojectで描画を行うUnitはSlateEditorUnitのみで, queueへ投入する処理が
-	//!<       他に存在しない. 呼ばないとcommand listが実行されず空のback bufferがPresentされる.
-	//!<
-	//!< Core::SubmitDirectQueue()は ExecuteAll() を呼ぶ. ExecuteAllは Reset(currentAllocatorIndex_)
-	//!< を通るため, 「今投入したばかりのfence」をCPUが待つ = 毎frame GPUの完了を待って停止する.
-	//!< ここは破棄の同期点ではないので待つ必要がなく, ExecuteAdvance()で次のallocatorへ進める.
-	//!< 次のallocatorのfenceは数frame前のものなので, 実質待たずにCPUとGPUが重なる.
-	//!< note: allocatorCountが1だとnextが自分自身になり ExecuteAll と同じ挙動になる.
-	//!<       Packages/config/Graphics.toml の allocatorCount を kFrameCount 以上にすること.
-	//!< TODO: 他のUnitがframeの投入を担うようになったら, この呼び出しを削除して二重実行を避ける.
-	Graphics::GraphicsCommandContext& submit = Graphics::Core::GetCommandContextDirect();
-	submit.ExecuteAdvance();
-	submit.SetDescriptorHeaps(Graphics::Core::GetDescriptorHeaps()); //!< Resetで外れるため貼り直す.
+	//!< note: queueへの投入はここでは行わない.
+	//!<       EngineUnitが Phase::EndFrame / Priority::Highest で SubmitDirectQueue() を呼ぶ.
+	//!<       ここでも投入すると二重になり, 空のcommand listを実行して余計にGPUを待つ.
+	//!<       順序は Render(記録) -> EndFrame/Highest(投入) -> EndFrame/Normal(Present) で正しい.
+	//!< note: EngineUnitが使う SubmitDirectQueue() は ExecuteAll() なので毎frame GPUの完了を待つ.
+	//!<       CPUとGPUを重ねたい場合はEngineUnit側を ExecuteAdvance() にし,
+	//!<       Packages/config/Graphics.toml の allocatorCount を kFrameCount 以上にする.
 }
 
 void SlateEditorUnit::RenderWindow(EditorWindow& window, TimePointf<TimeUnit::Second> deltaTime) {
@@ -699,9 +708,10 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 		Editor::Slate::Decl<Editor::Slate::VerticalBox> box;
 		box->AddSlot().AutoSize().Content(CreateTitleBar(window, false));
 
-		Editor::Slate::Decl<Editor::Slate::ImGuiMenuBar> menuBar;
-		menuBar->Draw([]() { SlateEditorUnit::DrawMainMenu(); });
-		box->AddSlot().AutoSize().Content(menuBar.pointer);
+		//!< menu barは設定されているときだけ積む.
+		if (menuBar_ != nullptr) {
+			box->AddSlot().AutoSize().Content(menuBar_->GetWidget());
+		}
 
 		if (dock != nullptr) {
 			box->AddSlot().Fill(1.0f).Content(dock);
@@ -759,70 +769,67 @@ void SlateEditorUnit::BuildLayout(EditorWindow& window) {
 	//!< main windowのlayout. splitterで左右に分割し, それぞれにtab stackを置く.
 	//!< note: アイコンは専用APIではなくtitleの文字列に埋め込む. 位置も個数も自由に決められる.
 
-	Editor::Slate::Decl<Editor::Slate::DockTabStack> left;
+	Editor::Slate::Decl<Editor::Slate::DockTabStack> stack;
 	{
-		Editor::Slate::Decl<Editor::Slate::DockPanel> panel;
-		panel->Title(std::format("{} Viewport", Editor::Slate::Icon::Videocam));
-		panel->Closable(false); //!< 固定tabとして扱う.
-		left->AddPanel(panel.pointer);
-	}
-	{
-		Editor::Slate::Decl<Editor::Slate::DockPanel> panel;
-		panel->Title(std::format("{} Content Browser", Editor::Slate::Icon::Folder));
-		left->AddPanel(panel.pointer);
+		//!< EditorPanelを継承したpanelの例. titleとtab色はpanel側のconstructorで決まる.
+		//!< note: layoutを組んでいる途中でdockRootがまだ無いためAddPanel()は使えない.
+		//!<       ここではpanelを直接作ってtab stackへ入れ, 所有だけpanels_へ預ける.
+		const Editor::Slate::EditorPanelPointer test = std::make_shared<Editor::EditorTestPanel>();
+		panels_.push_back(test);
+		stack->AddPanel(test->GetDockPanel());
 	}
 
-	Editor::Slate::Decl<Editor::Slate::DockTabStack> right;
 	{
-		Editor::Slate::Decl<Editor::Slate::DockPanel> panel;
-		panel->Title(std::format("{} Outliner", Editor::Slate::Icon::Hierarchy));
-		right->AddPanel(panel.pointer);
-	}
-	{
-		//!< Styleの調整タブ. 起動確認のために中身を入れておく.
-		Editor::Slate::Decl<Editor::Slate::ImGuiWidget> content;
-		content->Draw([]() { Editor::Slate::StyleEditor::Draw(); });
-
-		Editor::Slate::Decl<Editor::Slate::DockPanel> panel;
-		panel->Title(std::format("{} Style", Editor::Slate::Icon::Settings));
-		panel->Content(content.pointer);
-		right->AddPanel(panel.pointer);
+		//!< Styleの調整タブ. EditorPanelを継承して作る例になっている.
+		//!< note: layoutを組んでいる途中なのでdockRootがまだ無く, AddPanel()は使えない.
+		//!<       ここではpanelを直接作ってtab stackへ入れ, 所有だけpanels_へ預ける.
+		const Editor::Slate::EditorPanelPointer style = std::make_shared<StyleEditorPanel>();
+		panels_.push_back(style);
+		stack->AddPanel(style->GetDockPanel());
 	}
 
-	Editor::Slate::Decl<Editor::Slate::Splitter> splitter;
-	splitter->SetOrientation(Editor::Slate::Splitter::Orientation::Horizontal);
-	splitter->SetChildren(left.pointer, right.pointer);
-	splitter->SetRatio(0.7f);
-
-	window.dockRoot = splitter.pointer;
+	window.dockRoot = stack.pointer;
 	RebuildWindowChrome(window); //!< chromeで包んでrootへ設定する.
 
 	ApplyDockingHostToWindow(window); //!< 生成した全tab stackへ切り離し要求の通知先を配る.
 }
 
-void SlateEditorUnit::DrawMainMenu() {
+////////////////////////////////////////////////////////////////////////////////////////////
+// SlateEditorUnit class panel methods
+////////////////////////////////////////////////////////////////////////////////////////////
 
-	//!< note: ImGuiMenuBarがBeginMenuBarまで面倒を見るため, ここはmenuの中身だけを書く.
-	if (ImGui::BeginMenu("File")) {
-		ImGui::MenuItem("New Scene");
-		ImGui::MenuItem("Open Scene...");
-		ImGui::Separator();
-		ImGui::MenuItem("Save");
-		ImGui::EndMenu();
+void SlateEditorUnit::SetMenuBar(const Editor::Slate::EditorMenuBarPointer& menuBar) {
+
+	menuBar_ = menuBar;
+
+	//!< 既に生成済みのmain windowがあればchromeを巻き直して反映する.
+	//!< note: RefPtrをconstにすると operator*() const が const T& を返すため,
+	//!<       非constの参照を取る関数へ渡せない. ここはconstを付けないこと.
+	if (RefPtr<EditorWindow> window = GetMainEditorWindow()) {
+		RebuildWindowChrome(*window);
+	}
+}
+
+void SlateEditorUnit::AddPanel(const Editor::Slate::EditorPanelPointer& panel, RefPtr<EditorWindow> window) {
+
+	if (panel == nullptr) {
+		return;
 	}
 
-	if (ImGui::BeginMenu("Edit")) {
-		ImGui::MenuItem("Undo");
-		ImGui::MenuItem("Redo");
-		ImGui::EndMenu();
+	//!< panelの所有はUnitが持つ. widgetはweak_ptrで参照するため, ここが唯一の所有者になる.
+	//!< tabを閉じてもインスタンスは残るので, 後から同じpanelを開き直せる.
+	if (std::find(panels_.begin(), panels_.end(), panel) == panels_.end()) {
+		panels_.push_back(panel);
 	}
 
-	if (ImGui::BeginMenu("Window")) {
-		ImGui::MenuItem("Viewport");
-		ImGui::MenuItem("Outliner");
-		ImGui::MenuItem("Style");
-		ImGui::EndMenu();
+	EditorWindow* target = (window != nullptr) ? window.Get() : GetMainEditorWindow().Get();
+
+	if (target == nullptr) {
+		StreamLogger::Warning("SlateEditorUnit | AddPanel called before the main window is created.");
+		return;
 	}
+
+	AddPanelToEditorWindow(*target, panel->GetDockPanel());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -925,7 +932,7 @@ void SlateEditorUnit::ProcessTearOffRequest(const TearOffRequest& request) {
 	ApplyDockingHostToWindow(source);
 
 	//!< 新しいsub windowを生成する. titleは引き出したpanel名にする.
-	RefPtr<EditorWindow> torn = CreateEditorWindow(ConvertToWide(request.panel->GetTitle()), kTearOffClientSize);
+	RefPtr<EditorWindow> torn = CreateEditorWindow(UnicodeConverter::ConvertW(request.panel->GetTitle()), kTearOffClientSize);
 
 	if (torn == nullptr) {
 		AddPanelToEditorWindow(source, request.panel); //!< 生成に失敗した場合は元のwindowへ戻す.
@@ -1352,20 +1359,35 @@ void SlateEditorUnit::SetWindowDragOpacity(EditorWindow& window, bool isDragging
 	}
 }
 
-Editor::Slate::Geometry SlateEditorUnit::GetDockArea(const EditorWindow& window) {
+float SlateEditorUnit::GetChromeTopHeight(const EditorWindow& window) const {
+
+	if (!window.isMain) {
+		return 0.0f; //!< sub windowはOverlayで全面に敷いているためchromeは高さを取らない.
+	}
+
+	float height = Editor::Slate::TitleBar::Height();
+
+	//!< menu barは設定されているときだけ積まれる. (RebuildWindowChromeと必ず一致させる)
+	if (menuBar_ != nullptr) {
+		const float menuBarHeight = menuBar_->GetHeight();
+		height += (menuBarHeight > 0.0f) ? menuBarHeight : Editor::Slate::ImGuiMenuBar::Height();
+	}
+
+	return height;
+}
+
+Editor::Slate::Geometry SlateEditorUnit::GetDockArea(const EditorWindow& window) const {
 
 	if (window.root == nullptr) {
 		return {};
 	}
 
 	//!< dockRootが実際に置かれている矩形. chromeの分だけclientより小さい.
-	//!< main windowはTitleBarとMenuBarを縦に積んでいるためその高さだけ下がる.
+	//!< main windowはTitleBarと(あれば)MenuBarを縦に積んでいるためその高さだけ下がる.
 	//!< sub windowはOverlayで全面に敷いているためclient全体と一致する.
 	const Vector2f client = window.root->GetClientSize();
 
-	const float chromeTop = window.isMain
-		? (Editor::Slate::TitleBar::Height() + Editor::Slate::ImGuiMenuBar::Height())
-		: 0.0f;
+	const float chromeTop = GetChromeTopHeight(window);
 
 	Editor::Slate::Geometry area = {};
 	area.absolutePosition        = { 0.0f, chromeTop };
@@ -1406,8 +1428,11 @@ bool SlateEditorUnit::ContainsScreenPoint(const EditorWindow& window, const Vect
 
 void SlateEditorUnit::UpdateInput(EditorWindow& window) {
 
-	//!< TODO: Platform::InputSystemはEngineUnitのprivate memberでgetterが無いため, WinAPIを直接
-	//!<       pollingしている. InputSystemが公開されたら Platform::Mouse へ移行する.
+	//!< note: Editor専用の入力取得としてWinAPIを直接pollingしている. Platform::Inputは使用しない.
+	//!<       理由: Platform::InputのMouse/Keyboardは単一のCooperativeLevel windowを前提としており,
+	//!<       Editorのようにwindowが動的に増減する構成ではhwndを切り替えるたびにAcquireが外れ,
+	//!<       tab選択やwindowの最大化といった単発clickを取り落とすため.
+	//!< TODO: 現在この経路はwheel入力に未対応. (WM_MOUSEWHEELの配送が必要)
 
 	if (window.root == nullptr) {
 		return;

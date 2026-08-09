@@ -131,58 +131,97 @@ int32_t Slate::DockTabStack::OnPaint(const PaintArguments& arguments, const Geom
 	renderer->DrawRect(barGeometry, Style::GetStyle().colors.tabBar);
 
 	//!< タブを左から並べる(矩形をキャッシュしてヒットテストに使う).
-	tabRects_.clear();
-	closeRects_.clear();
+	const float tabGap = Style::GetStyle().metrics.tabGap;
+	const float left   = geometry.absolutePosition.x;
 
-	//!< ウィンドウ操作ボタンが重なる分は使わない.
-	const float usableRight = geometry.absolutePosition.x + geometry.localSize.x - tabBarRightInset_;
-	float x = geometry.absolutePosition.x + Style::GetStyle().metrics.tabGap;
+	//!< 右端に空ける幅は, タブが1枚も置けなくなるほど大きくしない.
+	//!< sub windowのボタン幅(132px)は狭いスタックだとバー全体を食い潰し, 全タブが消えてしまう.
+	const float maxInset = geometry.localSize.x - kTabMinShrunkWidth - tabGap * 2.0f;
+	const float inset    = (tabBarRightInset_ < maxInset) ? tabBarRightInset_ : ((maxInset > 0.0f) ? maxInset : 0.0f);
 
-	for (size_t i = 0; i < panels_.size(); ++i) {
-		const auto& panel    = panels_[i];
-		const bool isActive  = (static_cast<int32_t>(i) == active_);
-		const bool isHover   = (static_cast<int32_t>(i) == hoverIndex_);
+	const float usableRight = left + geometry.localSize.x - inset;
 
-		//!< iconはtitleに含まれるため, 実寸の計測だけで幅が決まる.
-		const Vector2f textSize = renderer->MeasureTextA(panel->GetTitle(), Style::GetStyle().metrics.fontBody);
+	//!< 指定した添字から並べる. 収まらなかった分は空矩形にする.
+	//!< @retval activeなタブを描けたかどうか.
+	const auto layoutTabs = [&](size_t startIndex) -> bool {
 
-		//!< 幅 = 余白 + 文字 + 余白 + ×(あるときだけ).
-		const bool showClose = panel->IsClosable() && (isActive || isHover);
-		float w = TabPaddingX() * 2.0f + textSize.x;
+		tabRects_.clear();
+		closeRects_.clear();
 
-		if (panel->IsClosable()) {
-			w += Style::GetStyle().metrics.paddingM + Style::GetStyle().metrics.tabCloseSize;
+		bool isActiveVisible = (active_ < 0);
+		float x              = left + tabGap;
+
+		for (size_t i = 0; i < startIndex && i < panels_.size(); ++i) {
+			tabRects_.push_back(Geometry{}); //!< 添字を保つため空矩形を積む.
+			closeRects_.push_back(Geometry{});
 		}
-		if (w < kTabMinWidth) {
-			w = kTabMinWidth;
-		}
 
-		//!< 幅が足りない場合は「消さずに詰める」.
-		//!< ここでスキップするとタブが画面から消えて操作できなくなる.
-		if (x + w > usableRight) {
-			const float remain = usableRight - x;
+		for (size_t i = startIndex; i < panels_.size(); ++i) {
+			const auto& panel   = panels_[i];
+			const bool isActive = (static_cast<int32_t>(i) == active_);
+			const bool isHover  = (static_cast<int32_t>(i) == hoverIndex_);
 
-			if (remain < kTabMinShrunkWidth) {
-				//!< 表示できる余地が無い. 以降のタブも同様なので打ち切る.
-				//!< (添字を保つため空矩形を積む)
-				for (size_t k = i; k < panels_.size(); ++k) {
-					tabRects_.push_back(Geometry{});
-					closeRects_.push_back(Geometry{});
-				}
-				break;
+			//!< iconはtitleに含まれるため, 実寸の計測だけで幅が決まる.
+			const Vector2f textSize = renderer->MeasureTextA(panel->GetTitle(), Style::GetStyle().metrics.fontBody);
+
+			//!< 幅 = 余白 + 文字 + 余白 + ×(あるときだけ).
+			const bool showClose = panel->IsClosable() && (isActive || isHover);
+			float w = TabPaddingX() * 2.0f + textSize.x;
+
+			if (panel->IsClosable()) {
+				w += Style::GetStyle().metrics.paddingM + Style::GetStyle().metrics.tabCloseSize;
+			}
+			//!< note: 幅が足りず縮められた場合, × はPaintTab側で自動的に省かれる.
+			//!<       (× を出すと文字に重なるため)
+			if (w < kTabMinWidth) {
+				w = kTabMinWidth;
 			}
 
-			w = remain; //!< 収まる幅に縮めて描く.
+			//!< 幅が足りない場合は「消さずに詰める」.
+			if (x + w > usableRight) {
+				const float remain = usableRight - x;
+
+				if (remain < kTabMinShrunkWidth) {
+					//!< 表示できる余地が無い. 以降のタブも同様なので打ち切る.
+					//!< note: activeなタブがここに来た場合は, 呼び出し側が
+					//!<       layoutTabs(active_) で並べ直すため左端から描かれる.
+					//!<       Splitterのピクセル下限(kMinChildSize)があるので, 並べ直せば必ず収まる.
+					for (size_t k = i; k < panels_.size(); ++k) {
+						tabRects_.push_back(Geometry{});
+						closeRects_.push_back(Geometry{});
+					}
+					break;
+				}
+
+				w = remain; //!< 収まる幅に縮めて描く.
+			}
+
+			const Geometry tab{ { x, geometry.absolutePosition.y }, { w, TabBarHeight() }, geometry.scale };
+			tabRects_.push_back(tab);
+
+			PaintTab(renderer, tab, *panel, isActive, IsPanelFocused(*panel), showClose);
+			x += w + tabGap;
+
+			if (isActive) {
+				isActiveVisible = true;
+			}
 		}
 
-		const Geometry tab{ { x, geometry.absolutePosition.y }, { w, TabBarHeight() }, geometry.scale };
-		tabRects_.push_back(tab);
+		tabsWidth_ = x - left; //!< タブが占めた幅.
+		return isActiveVisible;
+	};
 
-		PaintTab(renderer, tab, *panel, isActive, IsPanelFocused(*panel), showClose);
-		x += w + Style::GetStyle().metrics.tabGap;
+	//!< タブバーの外へはみ出す描画を切り取る.
+	//!< 幅が足りないタブは文字や × がスタックの外へ溢れ, 隣のパネルや仕切りの上に重なる.
+	renderer->BeginClipRect(barGeometry);
+
+	//!< まず先頭から並べる. activeなタブが溢れて描けなかった場合は, そこから並べ直す.
+	//!< (エディタの「アクティブタブへスクロールする」挙動と同じ)
+	if (!layoutTabs(0) && active_ > 0) {
+		layoutTabs(static_cast<size_t>(active_));
 	}
 
-	tabsWidth_ = x - geometry.absolutePosition.x; //!< タブが占めた幅.
+	renderer->EndClipRect();
 
 	//!< タブバーとパネルの境界. アクティブタブの区間だけ線を切って
 	//!< タブとパネル本体が地続きに見えるようにする(UE5 と同じ表現).
@@ -340,16 +379,44 @@ void Slate::DockTabStack::PaintTab(ImGuiRenderer* renderer, const Geometry& tab,
 	//!< 主要な文字色である colors.text を使う(TitleBar の PaintGlyph と同じ扱い).
 	const Color4f ink = isActive ? Style::GetStyle().colors.text : Style::GetStyle().colors.textDim;
 
+	const float closeSize = Style::GetStyle().metrics.tabCloseSize;
+
+	//!< タブが狭いときは × を出さない.
+	//!< 出すと文字と同じ位置に重なって読めなくなる. (右端から詰めるため文字へ食い込む)
+	//!< note: 文字を最低 kTabMinTextWidth だけ残せるかで判定する.
+	const float closeNeeded = Style::GetStyle().metrics.paddingM + closeSize;
+	const bool  hasCloseRoom
+		= (tab.localSize.x - TabPaddingX() * 2.0f - closeNeeded) >= kTabMinTextWidth;
+
+	const bool drawClose = showClose && hasCloseRoom;
+
 	//!< タブ名. iconはtitleに含まれる文字として一緒に描かれる.
 	//!< note: iconのfontは本文と同じatlasへmergeされているため, 1回のDrawTextAで混在して描ける.
+	//!< note: 文字がタブより長い場合はタブバーのclipで切り取られる. (OnPaint側でBeginClipRect)
+	//!<       × の下へ潜り込まないよう, 文字の領域だけ更にclipする.
 	const Vector2f textSize = renderer->MeasureTextA(panel.GetTitle(), Style::GetStyle().metrics.fontBody);
-	renderer->DrawTextA({ cursorX, cy - textSize.y * 0.5f }, panel.GetTitle(), ink, Style::GetStyle().metrics.fontBody);
+
+	const float textRight = drawClose
+		? (tab.absolutePosition.x + tab.localSize.x - TabPaddingX() - closeNeeded)
+		: (tab.absolutePosition.x + tab.localSize.x - TabPaddingX());
+
+	const Geometry textClip = {
+		{ cursorX, tab.absolutePosition.y },
+		{ (textRight > cursorX) ? (textRight - cursorX) : 0.0f, tab.localSize.y },
+		tab.scale
+	};
+
+	if (textClip.localSize.x > 0.0f) {
+		renderer->BeginClipRect(textClip);
+		renderer->DrawTextA({ cursorX, cy - textSize.y * 0.5f }, panel.GetTitle(), ink, Style::GetStyle().metrics.fontBody);
+		renderer->EndClipRect();
+	}
 
 	//!< × ボタン(右端).
 	Geometry closeRect{};
 
-	if (showClose) {
-		const float cs = Style::GetStyle().metrics.tabCloseSize;
+	if (drawClose) {
+		const float cs = closeSize;
 		closeRect = Geometry{
 			{ tab.absolutePosition.x + tab.localSize.x - TabPaddingX() - cs, cy - cs * 0.5f },
 			{ cs, cs }, tab.scale };

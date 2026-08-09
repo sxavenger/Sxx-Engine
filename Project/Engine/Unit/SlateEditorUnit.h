@@ -21,6 +21,8 @@
 #include <Runtime/Editor/Slate/Renderer/SlateImGuiRenderer.h>
 #include <Runtime/Editor/Slate/Widgets/SlateWindow.h>
 #include <Runtime/Editor/Slate/Docking/SlateDocking.h>
+#include <Runtime/Editor/Slate/SlateEditorPanel.h>
+#include <Runtime/Editor/Slate/SlateEditorMenuBar.h>
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>
@@ -32,7 +34,9 @@
 #include <cstddef>
 #include <list>
 #include <memory>
+#include <concepts>
 #include <string>
+#include <utility>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,6 +208,37 @@ public:
 
 	RefPtr<EditorWindow> GetMainEditorWindow() const;
 
+	//* panel option *//
+
+	//! @brief EditorPanelを継承したpanelをtabとして追加する.
+	//! @note panelの寿命はUnitが持つ. tabを閉じてもインスタンスは破棄されないため,
+	//!       同じpanelを後から開き直せる.
+	//! @param window 追加先. nullptrならmain window.
+	//! @retval 追加したpanel. 追加に失敗した場合はnullptr.
+	template <class T, class... Args>
+		requires std::derived_from<T, Editor::Slate::EditorPanel>
+	std::shared_ptr<T> AddPanel(Args&&... args);
+
+	//! @brief 生成済みのpanelをtabとして追加する.
+	void AddPanel(const Editor::Slate::EditorPanelPointer& panel, RefPtr<EditorWindow> window = nullptr);
+
+	//! @brief Unitが保持しているpanelの一覧.
+	const std::vector<Editor::Slate::EditorPanelPointer>& GetPanels() const { return panels_; }
+
+	//* menu bar option *//
+
+	//! @brief EditorMenuBarを継承したmain menu barを設定する.
+	//! @note main windowのchromeへ組み込まれる. 設定しなければmenu barは出ない.
+	//! @retval 設定したmenu bar.
+	template <class T, class... Args>
+		requires std::derived_from<T, Editor::Slate::EditorMenuBar>
+	std::shared_ptr<T> SetMenuBar(Args&&... args);
+
+	//! @brief 生成済みのmenu barを設定する.
+	void SetMenuBar(const Editor::Slate::EditorMenuBarPointer& menuBar);
+
+	const Editor::Slate::EditorMenuBarPointer& GetMenuBar() const { return menuBar_; }
+
 	const std::list<EditorWindowPointer>& GetEditorWindows() const { return windows_; }
 
 private:
@@ -243,6 +278,15 @@ private:
 	WindowDrag windowDrag_ = {}; //!< 自前で移動中のwindow.
 
 	bool isPreviousLeftButtonDown_ = false; //!< windowのdrag開始のedge検出用.
+
+	//* panels *//
+
+	//!< EditorPanelを継承したpanelの所有者. widgetはweak_ptrで参照するため,
+	//!< ここが唯一の所有者になる. tabを閉じてもインスタンスは残る.
+	std::vector<Editor::Slate::EditorPanelPointer> panels_;
+
+	//!< main menu bar. 設定されていなければchromeへ積まない.
+	Editor::Slate::EditorMenuBarPointer menuBar_ = nullptr;
 
 	//* runtime parameter *//
 
@@ -301,10 +345,6 @@ private:
 	//! @brief widget treeを構築する.
 	void BuildLayout(EditorWindow& window);
 
-	//! @brief main menu barの中身を描く.
-	//! @note ImGuiMenuBarがBeginMenuBarまで面倒を見るため, ここはmenuの中身だけを書く.
-	static void DrawMainMenu();
-
 	//* docking helper methods *//
 
 	void EnqueueTearOff(EditorWindow* source, Editor::Slate::DockPanelPointer panel, Vector2f clientPosition);
@@ -359,9 +399,20 @@ private:
 	//! @brief drag中のwindowを半透明にする. (下に隠れたマーカーを見えるようにする)
 	static void SetWindowDragOpacity(EditorWindow& window, bool isDragging);
 
+	//* input helper methods *//
+
+	//! @brief 仮想keyが押下されているかを返す.
+	//! @note Editor専用のpolling. Platform::Inputは使わない.
+	//!       (DirectInput経由ではGetDeviceStateの失敗を拾えずclickが死ぬ事例があったため)
+	static bool IsVirtualKeyDown(int32_t key);
+
 	//! @brief dockRootが実際に置かれている矩形を返す.
 	//! @note chromeの分だけclientより小さい. ここがずれるとマーカーの描画位置と当たり判定がずれる.
-	static Editor::Slate::Geometry GetDockArea(const EditorWindow& window);
+	//! @note menu barの有無を見るためstaticにできない.
+	Editor::Slate::Geometry GetDockArea(const EditorWindow& window) const;
+
+	//! @brief main windowのchromeがclientの上端から占める高さ.
+	float GetChromeTopHeight(const EditorWindow& window) const;
 
 	static bool CanDockInto(const EditorWindow* dragged, const EditorWindow* target);
 
@@ -369,10 +420,32 @@ private:
 
 	//* input helper methods *//
 
-	//! @brief 仮想keyが押下されているかを返す.
-	//! @note TODO: Platform::InputSystemが公開されたら Platform::Mouse / Keyboard へ移行する.
-	static bool IsVirtualKeyDown(int32_t key);
-
 };
+
+////////////////////////////////////////////////////////////////////////////////////////
+// SlateEditorUnit class template methods
+////////////////////////////////////////////////////////////////////////////////////////
+
+template <class T, class... Args>
+	requires std::derived_from<T, Editor::Slate::EditorPanel>
+std::shared_ptr<T> SlateEditorUnit::AddPanel(Args&&... args) {
+
+	std::shared_ptr<T> panel = std::make_shared<T>(std::forward<Args>(args)...);
+
+	AddPanel(panel, nullptr);
+
+	return panel;
+}
+
+template <class T, class... Args>
+	requires std::derived_from<T, Editor::Slate::EditorMenuBar>
+std::shared_ptr<T> SlateEditorUnit::SetMenuBar(Args&&... args) {
+
+	std::shared_ptr<T> menuBar = std::make_shared<T>(std::forward<Args>(args)...);
+
+	SetMenuBar(Editor::Slate::EditorMenuBarPointer(menuBar));
+
+	return menuBar;
+}
 
 SXAVENGER_ENGINE_NAMESPACE_END
