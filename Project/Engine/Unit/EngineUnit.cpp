@@ -38,9 +38,9 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 	pipeline.SetProcess(Framework::Phase::BeginFrame, Framework::Priority::Highest, [this]() {
 		//!< フレームクロックの更新処理
 		frameClock_.BeginFrame();
-
-		//!< graphicsのdeviceの状態をチェックする.
-		Sxx::Graphics::Core::CheckDeviceStatus();
+		
+		Sxx::Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
+		Sxx::Graphics::Core::IncrementFrame(); //!< frameを更新する.
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
@@ -48,6 +48,7 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 		Sxx::Graphics::Core::SubmitDirectQueueAdvance();
 
 		Sxx::Graphics::Core::FreeDescriptor(); //!< descriptorの解放処理
+		Sxx::Graphics::Core::FreeResource();   //!< resourceの解放処理
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Lowest, [this]() {

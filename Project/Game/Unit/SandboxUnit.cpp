@@ -41,6 +41,14 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 
 void SandboxUnit::InitSandbox() {
 	Sxx::Graphics::Descriptor descriptor = Sxx::Graphics::Core::AllocateDescriptor(Sxx::Graphics::DescriptorCategory::SRV_CBV_UAV);
+	Sxx::Graphics::ResourceHandle handle = Sxx::Graphics::Core::AllocateResource(1,
+		Sxx::Graphics::ResourceDesc::CreateBufferDesc(
+			D3D12_HEAP_TYPE_DEFAULT,
+			1024,
+			D3D12_RESOURCE_FLAG_NONE,
+			D3D12_RESOURCE_STATE_COMMON
+		)
+	);
 }
 
 void SandboxUnit::TermSandbox() {

@@ -488,6 +488,8 @@
     </ClInclude>
     <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceAllocator.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceDesc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -720,5 +722,7 @@
     </ClCompile>
     <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp" />
   </ItemGroup>
 </Project>

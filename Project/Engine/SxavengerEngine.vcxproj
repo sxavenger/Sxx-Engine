@@ -238,6 +238,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Framework\Core\IUnit.h" />
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceAllocator.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceDesc.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\SwapChain.h" />
     <ClInclude Include="Runtime\Graphics\Core.h" />
@@ -324,6 +326,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Framework\Core\Context.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\SwapChain.cpp" />
     <ClCompile Include="Runtime\Graphics\Core.cpp" />

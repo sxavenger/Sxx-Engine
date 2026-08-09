@@ -25,8 +25,6 @@ DescriptorAllocator::~DescriptorAllocator() {
 	StreamLogger::Info(
 		"Graphics::DescriptorAllocator<{}> | terminate.", category_
 	);
-
-
 }
 
 void DescriptorAllocator::Init(
@@ -72,24 +70,31 @@ Descriptor DescriptorAllocator::Allocate() {
 }
 
 void DescriptorAllocator::Release(Descriptor::Handle&& handle) {
+	if (!handle.HasHandle()) {
+		StreamLogger::Warning(
+			"Graphics::DescriptorAllocator<{}> | release descriptor handle. handle is not valid.", category_
+		);
+		return;
+	}
+
 	StreamLogger::Debug(
-		"Graphics::DescriptorAllocator<{}> | release descriptor handle. index: {},", category_, handle.index
+		"Graphics::DescriptorAllocator<{}> | release descriptor handle. index: {},", category_, handle.GetIndex()
 	);
 
-	freeQueue_.emplace(handle); //!< 解放されたhandleをキューに追加する.
+	freeQueue_.emplace(handle.GetIndex()); //!< 解放されたindexをキューに追加する.
 	handle.Reset();
 }
 
 void DescriptorAllocator::Free() {
 	while (!freeQueue_.empty()) {
-		Descriptor::Handle handle = freeQueue_.front();
+		UINT index = freeQueue_.front();
 		freeQueue_.pop();
 
 		StreamLogger::Debug(
-			"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, handle.index
+			"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, index
 		);
 
-		allocator_.Free(handle.index);
+		allocator_.Free(index);
 	}
 }
 

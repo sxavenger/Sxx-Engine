@@ -199,15 +199,17 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFile(const std::filesystem::pat
 
 Graphics::Resource TextureBuilder::CreateTextureResource(const std::string_view& name, const Texture::Description& description) {
 
-	Graphics::Resource resource = Graphics::Resource::CreateTexture(
+	Graphics::Resource resource = Graphics::Resource::CreateCommitted(
 		Graphics::Core::GetDevice(),
-		description.dimension,
-		description.size.x, description.size.y, description.GetDepthOrArraySize(),
-		description.miplevels,
-		description.format,
-		D3D12_RESOURCE_FLAG_NONE,
-		D3D12_RESOURCE_STATE_COMMON,
-		std::nullopt
+		Graphics::ResourceDesc::CreateTextureDesc(
+			description.dimension,
+			description.size.x, description.size.y, description.GetDepthOrArraySize(),
+			description.miplevels,
+			description.format,
+			D3D12_RESOURCE_FLAG_NONE,
+			D3D12_RESOURCE_STATE_COMMON,
+			std::nullopt
+		)
 	);
 
 	resource.SetName(std::format("Asset::Texture | {}", name));
@@ -228,12 +230,14 @@ Graphics::Resource TextureBuilder::UploadResourceData(const Graphics::GraphicsCo
 	ComPtrUtil::Assert(hr, L"texture prepare upload failed.");
 
 	//!< upload用の中間bufferを作成
-	Graphics::Resource intermediate = Graphics::Resource::CreateDimensionBuffer(
+	Graphics::Resource intermediate = Graphics::Resource::CreateCommitted(
 		Graphics::Core::GetDevice(),
-		D3D12_HEAP_TYPE_UPLOAD,
-		GetRequiredIntermediateSize(resource.Get(), 0, static_cast<UINT>(subresources.size())), //!< 中間bufferのサイズを計算
-		D3D12_RESOURCE_FLAG_NONE,
-		D3D12_RESOURCE_STATE_COPY_SOURCE
+		Graphics::ResourceDesc::CreateBufferDesc(
+			D3D12_HEAP_TYPE_UPLOAD,
+			GetRequiredIntermediateSize(resource.Get(), 0, static_cast<UINT>(subresources.size())), //!< 中間bufferのサイズを計算
+			D3D12_RESOURCE_FLAG_NONE,
+			D3D12_RESOURCE_STATE_COPY_SOURCE
+		)
 	);
 	intermediate.SetName(L"Asset::Texture | Upload Intermediate Resource");
 

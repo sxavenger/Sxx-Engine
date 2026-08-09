@@ -72,7 +72,7 @@ private:
 	//* allocator *//
 
 	IndexAllocator<UINT> allocator_;
-	std::queue<Descriptor::Handle> freeQueue_; //!< 解放されたindexのキュー.
+	std::queue<UINT> freeQueue_; //!< 解放されたindexのキュー.
 
 	//* parameter *//
 

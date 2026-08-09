@@ -102,6 +102,22 @@ GraphicsCommandContext& Core::GetCommandContextDirect() {
 	return contexts_[EnumUtil<GraphicsCommandType>::Cast(GraphicsCommandType::Direct)];
 }
 
+ResourceHandle Core::AllocateResource(uint8_t count, const ResourceDesc& desc) {
+	return resourceAllocator_.Allocate(count, device_, desc);
+}
+
+void Core::FreeResource() {
+	resourceAllocator_.Free();
+}
+
+void Core::IncrementFrame() {
+	resourceAllocator_.IncrementFrame();
+}
+
+ResourceAllocator& Core::GetResourceAllocator() {
+	return resourceAllocator_;
+}
+
 ShaderBlob Core::CompileShader(const std::filesystem::path& filepath, CompileProfile profile, const std::wstring& entryPoint) {
 	return shaderCompiler_.Compile(filepath, profile, entryPoint);
 }

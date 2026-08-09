@@ -122,78 +122,20 @@ Resource Resource::Wrap(ComPtr<ID3D12Resource>&& resource, D3D12_RESOURCE_STATES
 	return res;
 }
 
-Resource Resource::CreateCommitted(
-	const Device& device,
-	const D3D12_HEAP_PROPERTIES& prop, const D3D12_RESOURCE_DESC& desc, D3D12_RESOURCE_STATES state,
-	const std::optional<D3D12_CLEAR_VALUE>& clearValue) {
+Resource Resource::CreateCommitted(const Device& device, const ResourceDesc& desc) {
 
 	ComPtr<ID3D12Resource> resource;
 
 	//!< resourceの作成
 	auto hr = device.GetDevice()->CreateCommittedResource(
-		&prop,
+		&desc.prop,
 		D3D12_HEAP_FLAG_NONE,
-		&desc,
-		state,
-		clearValue.has_value() ? &clearValue.value() : nullptr,
+		&desc.desc,
+		desc.state,
+		desc.GetClearValue(),
 		IID_PPV_ARGS(resource.GetAddressOf())
 	);
 	ComPtrUtil::Assert(hr, L"resource create failed.");
 
-	return Resource::Wrap(std::move(resource), state);
-
-}
-
-Resource Resource::CreateDimensionBuffer(
-	const Device& device,
-	D3D12_HEAP_TYPE type,
-	size_t size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES state) {
-
-	//!< 制約
-	StreamLogger::Assert(size != 0, "buffer size is zero.");
-
-	//!< propの設定
-	D3D12_HEAP_PROPERTIES prop = {};
-	prop.Type = type;
-
-	//!< descの設定
-	D3D12_RESOURCE_DESC desc = {};
-	desc.Dimension        = D3D12_RESOURCE_DIMENSION_BUFFER;
-	desc.Flags            = flags;
-	desc.Width            = size;
-	desc.Height           = 1;
-	desc.DepthOrArraySize = 1;
-	desc.MipLevels        = 1;
-	desc.SampleDesc.Count = 1;
-	desc.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	//!< resourceの生成
-	return Resource::CreateCommitted(device, prop, desc, state, std::nullopt);
-}
-
-Resource Resource::CreateTexture(
-	const Device& device,
-	D3D12_RESOURCE_DIMENSION dimension,
-	UINT width, UINT height, UINT16 depthOrArraySize, UINT16 miplevels,
-	DXGI_FORMAT format,
-	D3D12_RESOURCE_FLAGS flags,
-	D3D12_RESOURCE_STATES state,
-	const std::optional<D3D12_CLEAR_VALUE>& clearValue) {
-
-	//!< propの設定
-	D3D12_HEAP_PROPERTIES prop = {};
-	prop.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-	//!< descの設定
-	D3D12_RESOURCE_DESC desc = {};
-	desc.Dimension        = dimension;
-	desc.Flags            = flags;
-	desc.Width            = width;
-	desc.Height           = height;
-	desc.DepthOrArraySize = depthOrArraySize;
-	desc.MipLevels        = miplevels;
-	desc.Format           = format;
-	desc.SampleDesc.Count = 1;
-
-	return Resource::CreateCommitted(device, prop, desc, state, clearValue);
+	return Resource::Wrap(std::move(resource), desc.state);
 }

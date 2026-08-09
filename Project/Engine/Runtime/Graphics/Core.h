@@ -16,6 +16,10 @@
 #include "Core/GraphicsCommandContext.h"
 #include "Core/ShaderCompiler.h"
 
+//* graphics [buffer]
+#include "Buffer/ResourceHandle.h"
+#include "Buffer/ResourceAllocator.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Core/Configuration/Configuration.h>
@@ -75,6 +79,16 @@ public:
 
 	static GraphicsCommandContext& GetCommandContextDirect();
 
+	//* resource allocator option *//
+
+	static ResourceHandle AllocateResource(uint8_t count, const ResourceDesc& desc);
+
+	static void FreeResource();
+
+	static void IncrementFrame();
+
+	static ResourceAllocator& GetResourceAllocator();
+
 	//* shader compiler option *//
 
 	static ShaderBlob CompileShader(
@@ -101,6 +115,8 @@ private:
 	static inline DescriptorHeaps descriptorHeaps_;
 	static inline GraphicsCommandContext contexts_[EnumUtil<GraphicsCommandType>::GetCount()]; //!< GraphicsCommandContextの配列.
 	//!< copy, computeは非同期側の使用を想定.
+
+	static inline ResourceAllocator resourceAllocator_;
 
 	static inline ShaderCompiler shaderCompiler_;
 
