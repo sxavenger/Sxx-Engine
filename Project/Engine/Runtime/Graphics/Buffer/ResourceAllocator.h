@@ -52,7 +52,7 @@ public:
 
 	//* allocator option *//
 
-	ResourceHandle Allocate(uint8_t count, const Device& device, const ResourceDesc& desc);
+	ResourceHandle Allocate(const Device& device, const ResourceDesc& desc, uint8_t count);
 
 	void Release(ResourceHandle::Handle&& handle);
 

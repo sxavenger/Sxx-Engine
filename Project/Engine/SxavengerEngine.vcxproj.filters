@@ -109,6 +109,12 @@
     <Filter Include="Runtime\Platform\Input">
       <UniqueIdentifier>{7C9D5E71-6897-87C3-5104-1ED43D9DED2F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Rendering">
+      <UniqueIdentifier>{D64D3C62-4264-3AF8-8BDB-C519F7300B80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Rendering\Cache">
+      <UniqueIdentifier>{5999462F-C5D0-8EC6-CEDA-F2E93A91B5BF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Scheduler">
       <UniqueIdentifier>{77699C32-E37F-9AC8-2CF7-25EA984C6B50}</UniqueIdentifier>
     </Filter>
@@ -330,6 +336,15 @@
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceAllocator.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceDesc.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Graphics\Buffer\SwapChain.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClInclude>
@@ -404,6 +419,9 @@
     </ClInclude>
     <ClInclude Include="Runtime\Platform\Window.h">
       <Filter>Runtime\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h">
+      <Filter>Runtime\Rendering\Cache</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h">
       <Filter>Runtime\Scheduler\Common</Filter>
@@ -486,10 +504,6 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\ResourceAllocator.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\ResourceDesc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -582,6 +596,15 @@
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Graphics\Buffer\SwapChain.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClCompile>
@@ -650,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="Runtime\Platform\Window.cpp">
       <Filter>Runtime\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp">
+      <Filter>Runtime\Rendering\Cache</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp">
       <Filter>Runtime\Scheduler\Common</Filter>
@@ -720,9 +746,5 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp" />
   </ItemGroup>
 </Project>

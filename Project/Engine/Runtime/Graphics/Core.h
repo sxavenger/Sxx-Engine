@@ -81,7 +81,7 @@ public:
 
 	//* resource allocator option *//
 
-	static ResourceHandle AllocateResource(uint8_t count, const ResourceDesc& desc);
+	static ResourceHandle AllocateResource(const ResourceDesc& desc, uint8_t count = 1);
 
 	static void FreeResource();
 

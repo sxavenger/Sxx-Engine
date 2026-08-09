@@ -24,7 +24,7 @@ ResourceAllocator::~ResourceAllocator() {
 	StreamLogger::Info("Graphics::ResourceAllocator | terminate.");
 }
 
-ResourceHandle ResourceAllocator::Allocate(uint8_t count, const Device& device, const ResourceDesc& desc) {
+ResourceHandle ResourceAllocator::Allocate(const Device& device, const ResourceDesc& desc, uint8_t count) {
 
 	ResourceHandle::Handle handle;
 	handle.index = allocator_.Allocate(); //!< indexの取得.

@@ -102,8 +102,8 @@ GraphicsCommandContext& Core::GetCommandContextDirect() {
 	return contexts_[EnumUtil<GraphicsCommandType>::Cast(GraphicsCommandType::Direct)];
 }
 
-ResourceHandle Core::AllocateResource(uint8_t count, const ResourceDesc& desc) {
-	return resourceAllocator_.Allocate(count, device_, desc);
+ResourceHandle Core::AllocateResource(const ResourceDesc& desc, uint8_t count) {
+	return resourceAllocator_.Allocate(device_, desc, count);
 }
 
 void Core::FreeResource() {

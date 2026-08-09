@@ -18,7 +18,7 @@ TaskState::State TaskHandle::GetState() const {
 
 void TaskHandle::Wait() const {
 	if (pointer_ == nullptr) {
-		StreamLogger::Warning("TaskHandle | task handle has no state. wait is ignored.");
+		StreamLogger::Warning("Scheduler::TaskHandle | task handle has no state. wait is ignored.");
 		return; //!< stateがnullptrの場合は何もしない.
 	}
 

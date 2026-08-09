@@ -40,13 +40,13 @@ void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
 	const TextureMetadata::ReferenceData& reference = texture->metadata_.GetReferenceData(); //!< 参照データの取得
 
 	//!< 画像ファイルの読み込み
-	DirectX::ScratchImage image = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
+	texture->image_ = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
 
-	if (reference.encoding != Graphics::GetColorEncoding(image.GetMetadata().format)) {
+	if (reference.encoding != Graphics::GetColorEncoding(texture->image_.GetMetadata().format)) {
 		StreamLogger::Warning("Asset::TextureBuilder | encoding is mismatched. filepath: {}", texture->GetFilepath().generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
 	}
 
-	texture->description_ = Texture::Description::Parse(image.GetMetadata()); //!< descriptionの設定
+	texture->description_ = Texture::Description::Parse(texture->image_.GetMetadata()); //!< descriptionの設定
 
 	StreamLogger::Info("Asset::TextureBuilder | texture build completed. name: {}", texture->GetName());
 }
@@ -195,117 +195,4 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFile(const std::filesystem::pat
 		return TextureBuilder::LoadTextureFromWIC(directory, reference);
 	}
 	
-}
-
-Graphics::Resource TextureBuilder::CreateTextureResource(const std::string_view& name, const Texture::Description& description) {
-
-	Graphics::Resource resource = Graphics::Resource::CreateCommitted(
-		Graphics::Core::GetDevice(),
-		Graphics::ResourceDesc::CreateTextureDesc(
-			description.dimension,
-			description.size.x, description.size.y, description.GetDepthOrArraySize(),
-			description.miplevels,
-			description.format,
-			D3D12_RESOURCE_FLAG_NONE,
-			D3D12_RESOURCE_STATE_COMMON,
-			std::nullopt
-		)
-	);
-
-	resource.SetName(std::format("Asset::Texture | {}", name));
-	return resource;
-}
-
-Graphics::Resource TextureBuilder::UploadResourceData(const Graphics::GraphicsCommandContext& context, const Graphics::Resource& resource, const DirectX::ScratchImage& image) {
-
-	//!< subresourceの準備
-	std::vector<D3D12_SUBRESOURCE_DATA> subresources = {};
-	auto hr = DirectX::PrepareUpload(
-		Graphics::Core::GetDevice().GetDevice(),
-		image.GetImages(),
-		image.GetImageCount(),
-		image.GetMetadata(),
-		subresources
-	);
-	ComPtrUtil::Assert(hr, L"texture prepare upload failed.");
-
-	//!< upload用の中間bufferを作成
-	Graphics::Resource intermediate = Graphics::Resource::CreateCommitted(
-		Graphics::Core::GetDevice(),
-		Graphics::ResourceDesc::CreateBufferDesc(
-			D3D12_HEAP_TYPE_UPLOAD,
-			GetRequiredIntermediateSize(resource.Get(), 0, static_cast<UINT>(subresources.size())), //!< 中間bufferのサイズを計算
-			D3D12_RESOURCE_FLAG_NONE,
-			D3D12_RESOURCE_STATE_COPY_SOURCE
-		)
-	);
-	intermediate.SetName(L"Asset::Texture | Upload Intermediate Resource");
-
-	//!< subresourceをuploadする
-	UpdateSubresources(
-		context.GetCommandList(),
-		resource.Get(),
-		intermediate.Get(),
-		0,
-		0,
-		static_cast<UINT>(subresources.size()),
-		subresources.data()
-	);
-
-	return intermediate;
-}
-
-void TextureBuilder::CreateDescriptor(Graphics::Descriptor& descriptor, const Graphics::Resource& resource, const Texture::Description& description) {
-
-	if (!descriptor.HasHandle()) {
-		//!< descriptorが未割り当ての場合は新規に割り当てる
-		descriptor = Graphics::Core::AllocateDescriptor(Graphics::DescriptorCategory::SRV);
-	}
-
-	//!< descの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-	desc.Format                  = description.format;
-	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	desc.ViewDimension           = description.GetSRVDimension();
-
-	switch (desc.ViewDimension) { //!< 各dimensionに応じてdescを設定
-		//!< miplevelをすべて使用, arrayの場合はsizeを設定.
-		case D3D12_SRV_DIMENSION_TEXTURE1D:
-			desc.Texture1D.MipLevels = std::numeric_limits<UINT>::max();
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURE1DARRAY:
-			desc.Texture1DArray.MipLevels = std::numeric_limits<UINT>::max();
-			desc.Texture1DArray.ArraySize = description.arraySize;
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURE2D:
-			desc.Texture2D.MipLevels = std::numeric_limits<UINT>::max();
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURE2DARRAY:
-			desc.Texture2DArray.MipLevels = std::numeric_limits<UINT>::max();
-			desc.Texture2DArray.ArraySize = description.arraySize;
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURECUBE:
-			desc.TextureCube.MipLevels = std::numeric_limits<UINT>::max();
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURECUBEARRAY:
-			desc.TextureCubeArray.MipLevels = std::numeric_limits<UINT>::max();
-			desc.TextureCubeArray.NumCubes  = description.arraySize / 6; //!< 6面を1つのcubeとして扱うため, arraySizeを6で割る
-			break;
-
-		case D3D12_SRV_DIMENSION_TEXTURE3D:
-			desc.Texture3D.MipLevels = std::numeric_limits<UINT>::max();
-			break;
-	}
-
-	//!< descriptorの作成
-	Graphics::Core::GetDevice().GetDevice()->CreateShaderResourceView(
-		resource.Get(),
-		&desc,
-		descriptor.GetCPUHandle()
-	);
 }

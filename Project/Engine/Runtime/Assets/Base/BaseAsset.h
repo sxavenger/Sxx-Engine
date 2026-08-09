@@ -63,6 +63,10 @@ public:
 
 	Scheduler::TaskState::Pointer GetStatePointer() const { return state_.pointer; }
 
+	//* address option *//
+
+	uintptr_t GetAddress() const { return reinterpret_cast<uintptr_t>(this); }
+
 private:
 
 	//=========================================================================================
