@@ -47,9 +47,9 @@ public:
 
 	static void Term();
 
-	static void BeginFrame();
-
 	//* device option *//
+
+	static void CheckDeviceStatus();
 
 	static Device& GetDevice();
 
@@ -57,13 +57,19 @@ public:
 
 	static Descriptor AllocateDescriptor(DescriptorCategory category);
 
+	static void FreeDescriptor();
+
 	static DescriptorHeaps& GetDescriptorHeaps();
 
 	//* command context option *//
 
-	static void SubmitQueue(GraphicsCommandType type);
+	static void SubmitQueueAdvance(GraphicsCommandType type);
 
-	static void SubmitDirectQueue();
+	static void SubmitQueueWait(GraphicsCommandType type);
+
+	static void SubmitDirectQueueAdvance();
+
+	static void SubmitDirectQueueWait();
 
 	static GraphicsCommandContext& GetCommandContext(GraphicsCommandType type);
 

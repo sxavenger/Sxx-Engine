@@ -486,6 +486,8 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -716,5 +718,7 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp" />
   </ItemGroup>
 </Project>

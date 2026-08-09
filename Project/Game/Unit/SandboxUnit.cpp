@@ -40,7 +40,7 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 }
 
 void SandboxUnit::InitSandbox() {
-
+	Sxx::Graphics::Descriptor descriptor = Sxx::Graphics::Core::AllocateDescriptor(Sxx::Graphics::DescriptorCategory::SRV_CBV_UAV);
 }
 
 void SandboxUnit::TermSandbox() {

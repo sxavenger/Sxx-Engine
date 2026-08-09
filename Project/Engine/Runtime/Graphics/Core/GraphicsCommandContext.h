@@ -77,11 +77,11 @@ public:
 
 	void SetDescriptorHeaps(const DescriptorHeaps& heaps) const;
 
-	//! @brief コマンドアロケータを切り替える.
-	void ExecuteAdvance();
+	//! @brief コマンドリストを実行し, 次のコマンドアロケータへ移行する.
+	void SubmitAdvance();
 
-	//! @brief コマンドアロケータを全て実行する.
-	void ExecuteAll();
+	//! @brief コマンドリストを実行し, GPUの処理完了まで待機する.
+	void SubmitWait();
 
 	RefPtr<ID3D12GraphicsCommandList6> GetCommandList() const { return commandList_.Get(); }
 

@@ -13,6 +13,8 @@ SXAVENGER_ENGINE_USING_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 DescriptorAllocator::~DescriptorAllocator() {
+	Free(); //!< 解放されていないDescriptorがある場合は解放する.
+
 	if (allocator_.GetUsedCount() != 0) {
 		StreamLogger::Warning(
 			"Graphics::DescriptorAllocator<{}> | descriptor leak detected. used count: {}.", category_, allocator_.GetUsedCount()
@@ -69,14 +71,26 @@ Descriptor DescriptorAllocator::Allocate() {
 	return Descriptor(this, handle);
 }
 
-void DescriptorAllocator::Free(Descriptor::Handle&& handle) {
-	allocator_.Free(handle.index); //!< indexの解放.
-
+void DescriptorAllocator::Release(Descriptor::Handle&& handle) {
 	StreamLogger::Debug(
-		"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, handle.index
+		"Graphics::DescriptorAllocator<{}> | release descriptor handle. index: {},", category_, handle.index
 	);
 
+	freeQueue_.emplace(handle); //!< 解放されたhandleをキューに追加する.
 	handle.Reset();
+}
+
+void DescriptorAllocator::Free() {
+	while (!freeQueue_.empty()) {
+		Descriptor::Handle handle = freeQueue_.front();
+		freeQueue_.pop();
+
+		StreamLogger::Debug(
+			"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, handle.index
+		);
+
+		allocator_.Free(handle.index);
+	}
 }
 
 bool DescriptorAllocator::CheckShaderVisible(DescriptorCategory type) {

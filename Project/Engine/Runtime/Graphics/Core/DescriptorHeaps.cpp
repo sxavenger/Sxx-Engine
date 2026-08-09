@@ -66,6 +66,12 @@ NODISCARD Descriptor DescriptorHeaps::Allocate(DescriptorCategory category) {
 	return pools_[EnumUtil<DescriptorCategory>::Cast(category)].Allocate(); //!< categoryに対応するdescriptor poolからdescriptorを割り当てる.
 }
 
+void DescriptorHeaps::Free() {
+	for (uint8_t i = 0; i < EnumUtil<DescriptorCategory>::GetCount(); ++i) {
+		pools_[i].Free(); //!< 各descriptor poolの解放処理を実行する.
+	}
+}
+
 DescriptorAllocator& DescriptorHeaps::GetAllocator(DescriptorCategory category) {
 	return pools_[EnumUtil<DescriptorCategory>::Cast(category)]; //!< categoryに対応するdescriptor poolの参照を返す.
 }

@@ -73,6 +73,8 @@ public:
 
 	NODISCARD Descriptor Allocate(DescriptorCategory category);
 
+	void Free();
+
 	//* descriptor allocator option *//
 
 	DescriptorAllocator& GetAllocator(DescriptorCategory category);

@@ -38,21 +38,19 @@ void Core::Init(const Configuration& config) {
 void Core::Term() {
 
 	for (uint8_t i = 0; i < EnumUtil<GraphicsCommandType>::GetCount(); ++i) {
-		contexts_[i].ExecuteAll(); //!< CommandListを全て実行する.
+		contexts_[i].SubmitWait(); //!< CommandListを全て実行する.
 	}
-	
+
 	StreamLogger::Info("Graphics::Core | graphics terminated.");
 }
 
-void Core::BeginFrame() {
-	{
-		Device::Status status = device_.CheckDeviceStatus(); //!< デバイスの状態をチェックする.
+void Core::CheckDeviceStatus() {
+	Device::Status status = device_.CheckDeviceStatus(); //!< デバイスの状態をチェックする.
 
-		if (status == Device::Status::Removed) {
-			StreamLogger::Exception(
-				"graphics device removed."
-			); //!< デバイスが削除された場合は例外を投げる.
-		}
+	if (status == Device::Status::Removed) {
+		StreamLogger::Exception(
+			"graphics device removed."
+		); //!< デバイスが削除された場合は例外を投げる.
 	}
 }
 
@@ -64,20 +62,36 @@ Descriptor Core::AllocateDescriptor(DescriptorCategory category) {
 	return descriptorHeaps_.Allocate(category);
 }
 
+void Core::FreeDescriptor() {
+	descriptorHeaps_.Free();
+}
+
 DescriptorHeaps& Core::GetDescriptorHeaps() {
 	return descriptorHeaps_;
 }
 
-void Core::SubmitQueue(GraphicsCommandType type) {
-	contexts_[EnumUtil<GraphicsCommandType>::Cast(type)].ExecuteAll();
+void Core::SubmitQueueAdvance(GraphicsCommandType type) {
+	contexts_[EnumUtil<GraphicsCommandType>::Cast(type)].SubmitAdvance();
 
 	if (type != GraphicsCommandType::Copy) {
 		contexts_[EnumUtil<GraphicsCommandType>::Cast(type)].SetDescriptorHeaps(descriptorHeaps_);
 	}
 }
 
-void Core::SubmitDirectQueue() {
-	Core::SubmitQueue(GraphicsCommandType::Direct);
+void Core::SubmitQueueWait(GraphicsCommandType type) {
+	contexts_[EnumUtil<GraphicsCommandType>::Cast(type)].SubmitWait();
+
+	if (type != GraphicsCommandType::Copy) {
+		contexts_[EnumUtil<GraphicsCommandType>::Cast(type)].SetDescriptorHeaps(descriptorHeaps_);
+	}
+}
+
+void Core::SubmitDirectQueueAdvance() {
+	Core::SubmitQueueAdvance(GraphicsCommandType::Direct);
+}
+
+void Core::SubmitDirectQueueWait() {
+	Core::SubmitQueueWait(GraphicsCommandType::Direct);
 }
 
 GraphicsCommandContext& Core::GetCommandContext(GraphicsCommandType type) {

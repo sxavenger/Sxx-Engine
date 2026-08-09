@@ -49,7 +49,7 @@ Descriptor::~Descriptor() {
 
 void Descriptor::Reset() {
 	if (handle_.HasHandle()) {
-		allocator_->Free(std::move(handle_)); //!< デスクリプタの解放.
+		allocator_->Release(std::move(handle_)); //!< デスクリプタの解放.
 	}
 
 	allocator_ = nullptr;
