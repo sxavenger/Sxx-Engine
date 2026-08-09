@@ -42,6 +42,8 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 
 		//!< graphicsの開始frame処理
 		Sxx::Graphics::Core::BeginFrame();
+
+		Sxx::Platform::Input::Update(); //!< 入力の更新処理
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
