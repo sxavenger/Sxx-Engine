@@ -220,7 +220,7 @@ void SlateEditorUnit::UpdateEditor() {
 		//!< 待たずに解放すると EXECUTION ERROR #921 になるため, resizeが起きるframeだけ先に待つ.
 		//!< note: SubmitDirectQueue -> ExecuteAll -> Reset -> WaitGpu でCPU側が待機する.
 		if (window->viewport.GetWindow().GetEvent() == Platform::Window::Event::Resize) {
-			Graphics::Core::SubmitDirectQueue();
+			Graphics::Core::SubmitDirectQueueWait();
 		}
 
 		window->viewport.Update(); //!< resizeが発生していればswap chainを追従させる.
@@ -424,7 +424,7 @@ void SlateEditorUnit::TermEditor() {
 
 	//!< 全windowのGPU resourceを解放する前にGPUの完了を待つ. (理由はCollectClosedWindowsと同じ)
 	if (!windows_.empty()) {
-		Graphics::Core::SubmitDirectQueue();
+		Graphics::Core::SubmitDirectQueueWait();
 	}
 
 	for (const EditorWindowPointer& window : windows_) {
@@ -537,7 +537,7 @@ void SlateEditorUnit::CollectClosedWindows() {
 	//!< swap chainのback bufferとImGuiのGPU resourceを解放する前にGPUの完了を待つ.
 	//!< 直前のPresentがback bufferを参照したままなので, 待たずに解放すると
 	//!< EXECUTION ERROR #921 (OBJECT_DELETED_WHILE_STILL_IN_USE) になる.
-	Graphics::Core::SubmitDirectQueue();
+	Graphics::Core::SubmitDirectQueueWait();
 
 	for (EditorWindow* request : closeRequests_) {
 

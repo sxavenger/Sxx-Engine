@@ -79,7 +79,7 @@ void EngineUnit::InitEngine() {
 
 	StreamLogger::Info("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
 
-  configuration_.Load("Engine/Packages/config/Platform.toml");
+	configuration_.Load("Engine/Packages/config/Platform.toml");
 	configuration_.Load("Engine/Packages/config/Graphics.toml");
 	configuration_.Load("Engine/Packages/config/Application.toml");
 	// TODO: engine関係のファイルがGameからの相対パス指定なので修正する
