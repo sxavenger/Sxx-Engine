@@ -29,5 +29,8 @@
 #define SXAVENGER_ENGINE \
 	Sxx::
 
+#define SXAVENGER_ENGINE_(category) \
+	Sxx::category::
+
 //!< [Sxavenger Engine / Sxx Engine] namespace
 namespace Sxx {}

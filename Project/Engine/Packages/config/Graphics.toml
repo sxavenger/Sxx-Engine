@@ -1,0 +1,53 @@
+[Graphics] # Graphics関係の設定
+[Graphics.PixEvent] # PIXイベントの設定
+enable = false
+
+	[Graphics.PixEvent.Debug]
+	enable = true
+
+	[Graphics.PixEvent.DebugEvent]
+	enable = true
+
+[Graphics.DebugLayer] # デバッグレイヤーの設定
+enable                   = false
+enableGpuBasedValidation = false
+
+	[Graphics.DebugLayer.Debug]
+	enable                   = true
+	enableGpuBasedValidation = true
+
+[Graphics.Device] # デバイスの設定
+allowTearing    = true
+shaderModelTier = "D3D_SHADER_MODEL_6_8"
+
+[Graphics.InfoQueue] # 情報キューの設定
+breakSeverity  = [ "D3D12_MESSAGE_SEVERITY_CORRUPTION", "D3D12_MESSAGE_SEVERITY_ERROR" ]
+filterSeverity = [ "D3D12_MESSAGE_SEVERITY_INFO" ]
+filterId       = []
+
+	[Graphics.InfoQueue.Debug]
+	breakSeverity = [ "D3D12_MESSAGE_SEVERITY_CORRUPTION", "D3D12_MESSAGE_SEVERITY_ERROR", "D3D12_MESSAGE_SEVERITY_WARNING" ]
+
+[Graphics.DescriptorHeaps] # デスクリプタヒープの設定
+descriptorCapacityRTV         = 12
+descriptorCapacityDSV         = 12
+descriptorCapacityCBV_SRV_UAV = 128
+
+[Graphics.GraphicsCommandContext] # コマンドの設定
+	[Graphics.GraphicsCommandContext.Direct] # ダイレクトコマンドの設定
+	# allocator は kFrameCount 以下に設定する.
+	# 1 だと ExecuteAdvance() の next が自分自身になり, 毎frame CPU が GPU の完了を待って停止する.
+	allocatorCount = 2
+
+	[Graphics.GraphicsCommandContext.Compute] # コンピュートコマンドの設定
+	allocatorCount = 1
+
+	[Graphics.GraphicsCommandContext.Copy] # コピーコマンドの設定
+	allocatorCount = 1
+
+[Graphics.ShaderCompiler] # シェーダーコンパイラーの設定
+model = "D3D_SHADER_MODEL_6_8"
+optimize = true
+
+	[Graphics.ShaderCompiler.Debug]
+	optimize = false

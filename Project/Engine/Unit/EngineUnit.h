@@ -10,9 +10,6 @@
 //* engine [core]
 #include <Runtime/Core/Configuration/Configuration.h>
 
-//* engine [platform]
-#include <Runtime/Platform/Input/InputSystem.h>
-
 //* engine [application]
 #include <Runtime/Application/FrameClock.h>
 
@@ -46,8 +43,6 @@ private:
 	//=========================================================================================
 
 	Configuration configuration_; //!< エンジンの設定情報
-
-	Platform::InputSystem input_;
 
 	Application::FrameClock frameClock_; //!< フレームクロック
 

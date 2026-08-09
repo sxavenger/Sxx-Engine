@@ -233,6 +233,31 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Assets\Texture\TextureTraits.h" />
     <ClInclude Include="Runtime\Core\Configuration\Configuration.h" />
     <ClInclude Include="Runtime\Core\Utility\ComPtr.h" />
+    <ClInclude Include="Runtime\Editor\EditorTestMainMenu.h" />
+    <ClInclude Include="Runtime\Editor\EditorTestPanel.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockLayout.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockPanel.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateDocking.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Docking\SlateSplitter.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateApplication.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateIcon.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateJson.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateTypes.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyle.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleEditor.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Style\SlateStyleIO.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateDecl.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateImGuiMenuBar.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateImGuiWidget.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateOverlay.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWidget.h" />
+    <ClInclude Include="Runtime\Editor\Slate\Widgets\SlateWindow.h" />
     <ClInclude Include="Runtime\Foundation.hpp" />
     <ClInclude Include="Runtime\Framework\Core\Context.h" />
     <ClInclude Include="Runtime\Framework\Core\IUnit.h" />
@@ -259,8 +284,9 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Graphics\Pipeline\RootSignature.h" />
     <ClInclude Include="Runtime\Graphics\PixEvent.h" />
     <ClInclude Include="Runtime\Platform\Input\Gamepad.h" />
+    <ClInclude Include="Runtime\Platform\Input\Input.h" />
     <ClInclude Include="Runtime\Platform\Input\InputId.h" />
-    <ClInclude Include="Runtime\Platform\Input\InputSystem.h" />
+    <ClInclude Include="Runtime\Platform\Input\InputContext.h" />
     <ClInclude Include="Runtime\Platform\Input\InputUtil.h" />
     <ClInclude Include="Runtime\Platform\Input\Keyboard.h" />
     <ClInclude Include="Runtime\Platform\Input\Mouse.h" />
@@ -293,7 +319,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\World\Scene\BaseScene.h" />
     <ClInclude Include="Runtime\World\Scene\SceneContext.h" />
     <ClInclude Include="Unit\EngineUnit.h" />
+    <ClInclude Include="Unit\SlateEditorUnit.h" />
     <ClInclude Include="Unit\WindowUnit.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateEditorPanel.h" />
+    <ClInclude Include="Runtime\Editor\Slate\SlateEditorMenuBar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp" />
@@ -323,6 +352,29 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Assets\Texture\TextureMetadata.cpp" />
     <ClCompile Include="Runtime\Core\Configuration\Configuration.cpp" />
     <ClCompile Include="Runtime\Core\Utility\ComPtr.cpp" />
+    <ClCompile Include="Runtime\Editor\EditorTestMainMenu.cpp" />
+    <ClCompile Include="Runtime\Editor\EditorTestPanel.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockLayout.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockPanel.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDockTabStack.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateDocking.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Docking\SlateSplitter.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Renderer\SlateImGuiRenderer.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateApplication.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateIcon.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateJson.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateTypes.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateImGuiStyleIO.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyle.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleEditor.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Style\SlateStyleIO.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateBoxPanel.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateCompoundWidget.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateImGuiMenuBar.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateImGuiWidget.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateOverlay.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateTitleBar.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Context.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp" />
@@ -346,7 +398,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Graphics\Pipeline\RootSignature.cpp" />
     <ClCompile Include="Runtime\Graphics\PixEvent.cpp" />
     <ClCompile Include="Runtime\Platform\Input\Gamepad.cpp" />
-    <ClCompile Include="Runtime\Platform\Input\InputSystem.cpp" />
+    <ClCompile Include="Runtime\Platform\Input\Input.cpp" />
+    <ClCompile Include="Runtime\Platform\Input\InputContext.cpp" />
     <ClCompile Include="Runtime\Platform\Input\InputUtil.cpp" />
     <ClCompile Include="Runtime\Platform\Input\Keyboard.cpp" />
     <ClCompile Include="Runtime\Platform\Input\Mouse.cpp" />
@@ -375,7 +428,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\World\Entity\EntityStorage.cpp" />
     <ClCompile Include="Runtime\World\Scene\SceneContext.cpp" />
     <ClCompile Include="Unit\EngineUnit.cpp" />
+    <ClCompile Include="Unit\SlateEditorUnit.cpp" />
     <ClCompile Include="Unit\WindowUnit.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateEditorPanel.cpp" />
+    <ClCompile Include="Runtime\Editor\Slate\SlateEditorMenuBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Externals\DirectXTex\DirectXTex.vcxproj">

@@ -6,11 +6,19 @@
 //* input
 #include "InputUtil.h"
 
-//* externals
+//* engine
+#include <Runtime/Foundation.hpp>
+
+//* magic_enum
 #include <magic_enum.hpp>
 
 //* c++
 #include <cstdint>
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Sxavenger Engine namespace
+////////////////////////////////////////////////////////////////////////////////////////////
+SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Platform)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // KeyId enum class
@@ -184,36 +192,6 @@ enum class GamepadButtonId : uint32_t {
 	Y = XINPUT_GAMEPAD_Y,
 };
 
-template <> //!< magic_enumの範囲を調整
-struct magic_enum::customize::enum_range<GamepadButtonId> {
-	static constexpr auto min = XINPUT_GAMEPAD_DPAD_UP;
-	static constexpr auto max = XINPUT_GAMEPAD_Y;
-};
-
-template<>
-constexpr magic_enum::customize::customize_t magic_enum::customize::enum_name<GamepadButtonId>(GamepadButtonId value) noexcept {
-	switch (value) {
-		case GamepadButtonId::Up:
-		case GamepadButtonId::Down:
-		case GamepadButtonId::Left:
-		case GamepadButtonId::Right:
-		case GamepadButtonId::Back:
-		case GamepadButtonId::Start:
-		case GamepadButtonId::LS:
-		case GamepadButtonId::RS:
-		case GamepadButtonId::LB:
-		case GamepadButtonId::RB:
-		case GamepadButtonId::A:
-		case GamepadButtonId::B:
-		case GamepadButtonId::X:
-		case GamepadButtonId::Y:
-			return default_tag;
-
-		default:
-			return invalid_tag;
-	}
-};
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // GamepadTriggerId enum class
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,4 +207,43 @@ enum class GamepadStickId : uint8_t {
 	Left,
 	Right,
 };
+
+SXAVENGER_ENGINE_NAMESPACE_END
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// magic_enum customize
+////////////////////////////////////////////////////////////////////////////////////////////
+//! @brief magic_enumのカスタマイズ用.
+namespace magic_enum::customize {
+
+	template <> //!< magic_enumの範囲を調整
+	struct enum_range<SXAVENGER_ENGINE_(Platform) GamepadButtonId> {
+		static constexpr auto min = XINPUT_GAMEPAD_DPAD_UP;
+		static constexpr auto max = XINPUT_GAMEPAD_Y;
+	};
+
+	template<>
+	constexpr customize_t enum_name<SXAVENGER_ENGINE_(Platform) GamepadButtonId>(SXAVENGER_ENGINE_(Platform) GamepadButtonId value) noexcept {
+		switch (value) {
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Up:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Down:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Left:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Right:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Back:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Start:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::LS:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::RS:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::LB:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::RB:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::A:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::B:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::X:
+			case SXAVENGER_ENGINE_(Platform) GamepadButtonId::Y:
+				return default_tag;
+
+			default:
+				return invalid_tag;
+		}
+	};
+}
 

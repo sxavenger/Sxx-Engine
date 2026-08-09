@@ -1,0 +1,11 @@
+{
+	"uuid": "00000000-0000-0000-0000-000000000001",
+	"type": "Texture",
+	"metadata": {
+		"reference": {
+			"filepath": "uvchecker.png",
+			"encoding": "Lightness", //!< sRGB読み込み
+			"isGenerateMipmaps": false
+		}
+	}
+}
