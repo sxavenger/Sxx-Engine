@@ -33,17 +33,21 @@ public:
 
 	static void Shutdown();
 
+	static void Update();
+
+	static void SetWindow(HWND hwnd);
+
 	//* keyboard input option *//
 
-	static const Keyboard& GetKeyboard() { return context_.GetKeyboard(); }
+	static const Keyboard& GetKeyboard();
 
 	//* mouse input option *//
 
-	static const Mouse& GetMouse() { return context_.GetMouse(); }
+	static const Mouse& GetMouse();
 
 	//* gamepad input option *//
 
-	static const Gamepad& GetGamepad(uint8_t number) { return context_.GetGamepad(number); }
+	static const Gamepad& GetGamepad(uint8_t number);
 
 private:
 
