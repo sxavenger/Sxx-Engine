@@ -1,0 +1,10 @@
+[Application] # アプリケーション関係の設定
+[Application.FrameClock] # フレーム時間の設定
+enableFrameLimit = false
+enableFixedDeltaTime = false
+
+	[Application.FrameClock.Debug]
+	enableFrameLimit = true # フレーム制限を有効化する
+	frameRateLimit = 60 # フレームレート制限を60FPSに設定する
+	enableFixedDeltaTime = false # 固定デルタタイムを有効化する
+	fixedDeltaTime = 0.0166667 # 固定デルタタイムを1/60秒に設定する

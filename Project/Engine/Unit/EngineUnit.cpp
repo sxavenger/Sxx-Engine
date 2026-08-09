@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING
 //-----------------------------------------------------------------------------------------
 //* engine [platform]
 #include <Runtime/Platform/WinApp.h>
+#include <Runtime/Platform/Input/Input.h>
 
 //* engine [graphics]
 #include <Runtime/Graphics/Core.h>
@@ -38,6 +39,8 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 	pipeline.SetProcess(Framework::Phase::BeginFrame, Framework::Priority::Highest, [this]() {
 		//!< フレームクロックの更新処理
 		frameClock_.BeginFrame();
+
+		Sxx::Platform::Input::Update(); //!< 入力の更新処理
 		
 		Sxx::Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
 		Sxx::Graphics::Core::IncrementFrame(); //!< frameを更新する.
@@ -76,13 +79,13 @@ void EngineUnit::InitEngine() {
 
 	StreamLogger::Info("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
 
+	configuration_.Load("Engine/Packages/config/Platform.toml");
 	configuration_.Load("Engine/Packages/config/Graphics.toml");
 	configuration_.Load("Engine/Packages/config/Application.toml");
 	// TODO: engine関係のファイルがGameからの相対パス指定なので修正する
 
 	Platform::WinApp::Init();
-
-	input_.Init(Platform::InputSystem::Mode::Async);
+	Platform::Input::Init(configuration_);
 
 	Graphics::Core::Init(configuration_);
 
@@ -95,7 +98,7 @@ void EngineUnit::TermEngine() {
 
 	Graphics::Core::Term();
 
-	input_.Shutdown();
+	Platform::Input::Shutdown();
 
 	Platform::WinApp::Term();
 
