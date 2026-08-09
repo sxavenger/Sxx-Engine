@@ -12,9 +12,11 @@
 
 //* engine
 #include <Runtime/Foundation.hpp>
+#include <Runtime/Core/Configuration/Configuration.h>
 
 //* c++
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include <array>
 
@@ -24,17 +26,43 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Platform)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// InputSystem class
+// InputContext class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class InputSystem final {
+class InputContext final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// Mode enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Mode : bool {
-		Main, //!< メインスレッドで更新
+		Sync, //!< メインスレッドで更新
 		Async //!< 非同期スレッドで更新
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Settings structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct Settings {
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		void Parse(const toml::table& config);
+
+		static Settings ParseFromConfig(const Configuration& config);
+
+		static void Log(const Settings& settings);
+
+		//=========================================================================================
+		// public variables
+		//=========================================================================================
+
+		static inline constexpr Configuration::Path kConfigPath{ "Platform.InputContext" }; //!< 設定のパス.
+
+		Mode mode = Mode::Sync; //!< 入力の更新モード.
+
 	};
 
 public:
@@ -43,7 +71,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	void Init(Mode mode);
+	void Init(const Configuration& config);
 
 	void Shutdown();
 
@@ -85,11 +113,11 @@ private:
 	std::thread thread_;
 	std::mutex mutex_;
 
-	bool isTerminate_ = false;
+	std::atomic<bool> running_ = false;
 
-	//* paraemter *//
+	//* settings *//
 
-	Mode mode_;
+	Settings settings_;
 
 	//=========================================================================================
 	// private methods

@@ -3,38 +3,47 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* input
+#include "InputId.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "Gamepad.h"
+#include "InputContext.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Framework/Core/IUnit.h>
-
-//* engine [core]
 #include <Runtime/Core/Configuration/Configuration.h>
-
-//* engine [application]
-#include <Runtime/Application/FrameClock.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
-SXAVENGER_ENGINE_NAMESPACE_BEGIN
+SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Platform)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// EngineUnit class
+// Input class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class EngineUnit final
-	: public Framework::IUnit {
+class Input {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	EngineUnit();
-	~EngineUnit();
+	static void Init(const Configuration& config);
 
-	//* unit methods *//
+	static void Shutdown();
 
-	void Setup(Framework::Pipeline& pipeline) override;
+	//* keyboard input option *//
+
+	static const Keyboard& GetKeyboard() { return context_.GetKeyboard(); }
+
+	//* mouse input option *//
+
+	static const Mouse& GetMouse() { return context_.GetMouse(); }
+
+	//* gamepad input option *//
+
+	static const Gamepad& GetGamepad(uint8_t number) { return context_.GetGamepad(number); }
 
 private:
 
@@ -42,17 +51,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	Configuration configuration_; //!< エンジンの設定情報
-
-	Application::FrameClock frameClock_; //!< フレームクロック
-
-	//=========================================================================================
-	// private methods
-	//=========================================================================================
-
-	void InitEngine();
-
-	void TermEngine();
+	static inline InputContext context_; //!< 入力コンテキスト
 
 };
 

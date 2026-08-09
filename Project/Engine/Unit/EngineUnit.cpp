@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING
 //-----------------------------------------------------------------------------------------
 //* engine [platform]
 #include <Runtime/Platform/WinApp.h>
+#include <Runtime/Platform/Input/Input.h>
 
 //* engine [graphics]
 #include <Runtime/Graphics/Core.h>
@@ -70,13 +71,13 @@ void EngineUnit::InitEngine() {
 	StreamLogger::Init();
 	CrashHandler::Install();
 
+	configuration_.Load("Engine/Packages/config/Platform.toml");
 	configuration_.Load("Engine/Packages/config/Graphics.toml");
 	configuration_.Load("Engine/Packages/config/Application.toml");
 	// TODO: engine関係のファイルがGameからの相対パス指定なので修正する
 
 	Platform::WinApp::Init();
-
-	input_.Init(Platform::InputSystem::Mode::Async);
+	Platform::Input::Init(configuration_);
 
 	Graphics::Core::Init(configuration_);
 
@@ -89,7 +90,7 @@ void EngineUnit::TermEngine() {
 
 	Graphics::Core::Term();
 
-	input_.Shutdown();
+	Platform::Input::Shutdown();
 
 	Platform::WinApp::Term();
 
