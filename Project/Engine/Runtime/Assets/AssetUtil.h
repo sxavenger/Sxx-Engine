@@ -53,7 +53,7 @@ static inline Uuid kAssetNullUuid = { NULL, NULL, NULL, NULL, NULL };
 // methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-static FileType CheckFileType(const std::filesystem::path& extension) noexcept {
+inline FileType CheckFileType(const std::filesystem::path& extension) noexcept {
 	return (extension == kAssetFileExtension) ? FileType::Asset : FileType::Other; //!< 拡張子が".asset"の場合はAsset, それ以外はOther
 }
 

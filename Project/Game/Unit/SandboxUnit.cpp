@@ -9,6 +9,14 @@
 //* engine [framework]
 #include <Engine/Runtime/Framework/Core/Context.h>
 
+//* engine [assets]
+#include <Engine/Runtime/Assets/Texture/Texture.h>
+#include <Engine/Runtime/Assets/Handle/AssetHandle.h>
+#include <Engine/Runtime/Assets/Importer/TextureImporter.h>
+
+//* engine [rendering]
+#include <Engine/Runtime/Rendering/Cache/TextureCache.h>
+
 //* engine [unit]
 #include <Engine/Unit/WindowUnit.h>
 #include <Engine/Unit/SlateEditorUnit.h>
@@ -40,7 +48,14 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 }
 
 void SandboxUnit::InitSandbox() {
+	Sxx::Assets::AssetHandle<Sxx::Assets::Texture> handle
+		= Sxx::Assets::TextureImporter::Import("Engine/Packages/textures/common/uvchecker.asset");
 
+	Sxx::Rendering::TextureCache cache;
+
+	if (cache.GetAddress() != handle.Get()->GetAddress()) {
+		cache.Cache(handle.WaitGet());
+	}
 }
 
 void SandboxUnit::TermSandbox() {

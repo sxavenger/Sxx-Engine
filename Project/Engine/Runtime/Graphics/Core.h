@@ -16,6 +16,10 @@
 #include "Core/GraphicsCommandContext.h"
 #include "Core/ShaderCompiler.h"
 
+//* graphics [buffer]
+#include "Buffer/ResourceHandle.h"
+#include "Buffer/ResourceAllocator.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Core/Configuration/Configuration.h>
@@ -47,9 +51,9 @@ public:
 
 	static void Term();
 
-	static void BeginFrame();
-
 	//* device option *//
+
+	static void CheckDeviceStatus();
 
 	static Device& GetDevice();
 
@@ -57,17 +61,33 @@ public:
 
 	static Descriptor AllocateDescriptor(DescriptorCategory category);
 
+	static void FreeDescriptor();
+
 	static DescriptorHeaps& GetDescriptorHeaps();
 
 	//* command context option *//
 
-	static void SubmitQueue(GraphicsCommandType type);
+	static void SubmitQueueAdvance(GraphicsCommandType type);
 
-	static void SubmitDirectQueue();
+	static void SubmitQueueWait(GraphicsCommandType type);
+
+	static void SubmitDirectQueueAdvance();
+
+	static void SubmitDirectQueueWait();
 
 	static GraphicsCommandContext& GetCommandContext(GraphicsCommandType type);
 
 	static GraphicsCommandContext& GetCommandContextDirect();
+
+	//* resource allocator option *//
+
+	static ResourceHandle AllocateResource(const ResourceDesc& desc, uint8_t count = 1);
+
+	static void FreeResource();
+
+	static void IncrementFrame();
+
+	static ResourceAllocator& GetResourceAllocator();
 
 	//* shader compiler option *//
 
@@ -95,6 +115,8 @@ private:
 	static inline DescriptorHeaps descriptorHeaps_;
 	static inline GraphicsCommandContext contexts_[EnumUtil<GraphicsCommandType>::GetCount()]; //!< GraphicsCommandContextの配列.
 	//!< copy, computeは非同期側の使用を想定.
+
+	static inline ResourceAllocator resourceAllocator_;
 
 	static inline ShaderCompiler shaderCompiler_;
 

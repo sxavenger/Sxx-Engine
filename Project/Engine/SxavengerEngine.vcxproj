@@ -262,9 +262,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Framework\Core\Context.h" />
     <ClInclude Include="Runtime\Framework\Core\IUnit.h" />
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\FrameResource.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceAllocator.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceDesc.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ResourceHandle.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\SwapChain.h" />
     <ClInclude Include="Runtime\Graphics\Core.h" />
     <ClInclude Include="Runtime\Graphics\Core\DebugLayer.h" />
@@ -291,6 +292,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Platform\Input\Mouse.h" />
     <ClInclude Include="Runtime\Platform\WinApp.h" />
     <ClInclude Include="Runtime\Platform\Window.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskPriority.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskState.h" />
@@ -375,9 +377,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Context.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\DimensionBuffer.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\FrameResource.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\ResourceHandle.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\SwapChain.cpp" />
     <ClCompile Include="Runtime\Graphics\Core.cpp" />
     <ClCompile Include="Runtime\Graphics\Core\DebugLayer.cpp" />
@@ -402,6 +405,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Platform\Input\Mouse.cpp" />
     <ClCompile Include="Runtime\Platform\WinApp.cpp" />
     <ClCompile Include="Runtime\Platform\Window.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\WorkerThread.cpp" />
     <ClCompile Include="Runtime\Scheduler\Cpu\CpuScheduler.cpp" />

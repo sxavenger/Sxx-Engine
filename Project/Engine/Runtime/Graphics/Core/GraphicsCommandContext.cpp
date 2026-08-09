@@ -126,7 +126,7 @@ void GraphicsCommandContext::SetDescriptorHeaps(const DescriptorHeaps& heaps) co
 	commandList_->SetDescriptorHeaps(static_cast<UINT>(descriptorHeaps.size()), descriptorHeaps.data());
 }
 
-void GraphicsCommandContext::ExecuteAdvance() {
+void GraphicsCommandContext::SubmitAdvance() {
 	Execute();
 	Signal();
 
@@ -134,12 +134,11 @@ void GraphicsCommandContext::ExecuteAdvance() {
 	Reset(next);
 }
 
-void GraphicsCommandContext::ExecuteAll() {
+void GraphicsCommandContext::SubmitWait() {
 	Execute();
 	Signal();
 
-	Reset(currentAllocatorIndex_);
-	//!< 全てのアロケータがGPUに処理されるのを待つ.
+	Reset(currentAllocatorIndex_); //!< すべてのアロケータがGPUに処理されるのを待つ.
 }
 
 bool GraphicsCommandContext::CheckSupportType(GraphicsCommandType request) const {

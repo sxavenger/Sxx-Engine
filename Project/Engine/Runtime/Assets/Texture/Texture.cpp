@@ -73,4 +73,24 @@ Texture::Description Texture::Description::Parse(const DirectX::TexMetadata & me
 // Texture class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const DirectX::ScratchImage& Texture::GetImage() const {
+	Scheduler::TaskHandle handle = BaseAsset::GetTaskHandle();
 
+	if (handle != Scheduler::TaskState::State::Completed) {
+		StreamLogger::Warning("Asset::Texture | texture image is not ready. name: {}, state: {}", GetName(), handle.GetState());
+		handle.Wait(); //!< imageが準備できるまで待機
+	}
+
+	return image_;
+}
+
+const Texture::Description& Texture::GetDescription() const {
+	Scheduler::TaskHandle handle = BaseAsset::GetTaskHandle();
+
+	if (handle != Scheduler::TaskState::State::Completed) {
+		StreamLogger::Warning("Asset::Texture | texture description is not ready. name: {}, state: {}", GetName(), handle.GetState());
+		handle.Wait(); //!< descriptionが準備できるまで待機
+	}
+
+	return description_;
+}

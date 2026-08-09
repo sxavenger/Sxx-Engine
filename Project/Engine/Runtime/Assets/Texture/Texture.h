@@ -82,6 +82,14 @@ public:
 	Texture(const BaseAssetMetadata& metadata) noexcept : BaseAsset(metadata) {}
 	~Texture() noexcept override = default;
 
+	//* metadata option *//
+
+	//* texture image option *//
+
+	const DirectX::ScratchImage& GetImage() const;
+
+	const Description& GetDescription() const;
+
 private:
 
 	//=========================================================================================

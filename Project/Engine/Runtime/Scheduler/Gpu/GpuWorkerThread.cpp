@@ -45,5 +45,5 @@ void GpuWorkerThread::ThreadProcMain(const Function& function) const {
 	}
 
 	task->Execute(Graphics::Core::GetCommandContext(type_)); //!< taskの実行
-	Graphics::Core::SubmitQueue(type_); //!< command queueのsubmit
+	Graphics::Core::SubmitQueueWait(type_); //!< command queueのsubmit
 }

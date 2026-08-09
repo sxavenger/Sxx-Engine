@@ -50,21 +50,6 @@ private:
 	static DirectX::ScratchImage LoadTextureFromWIC(const std::filesystem::path& directory, const TextureMetadata::ReferenceData& reference);
 	static DirectX::ScratchImage LoadTextureFile(const std::filesystem::path& directory, const TextureMetadata::ReferenceData& reference);
 
-	// vvv 廃止予定(GPU側のResource管理は別のクラスに任せる) vvv //
-
-	//* resource methods *//
-
-	DEPRECATED("Use GPU-side resource management instead")
-	static Graphics::Resource CreateTextureResource(const std::string_view& name, const Texture::Description& description);
-
-	DEPRECATED("Use GPU-side resource management instead")
-	NODISCARD static Graphics::Resource UploadResourceData(const Graphics::GraphicsCommandContext& context, const Graphics::Resource& resource, const DirectX::ScratchImage& image);
-
-	//* descriptor methods *//
-
-	DEPRECATED("Use GPU-side resource management instead")
-	static void CreateDescriptor(Graphics::Descriptor& descriptor, const Graphics::Resource& resource, const Texture::Description& description);
-
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

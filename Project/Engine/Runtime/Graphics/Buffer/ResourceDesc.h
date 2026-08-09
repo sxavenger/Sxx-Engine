@@ -5,12 +5,12 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
-#include "../Core/GraphicsCommandContext.h"
-#include "Resource.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
+
+//* c++
+#include <optional>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -18,33 +18,28 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// FrameResource class
+// ResourceDesc structure
 ////////////////////////////////////////////////////////////////////////////////////////////
-class FrameResource final {
-	// TODO: ダブルバッファリング用のResourceを管理するクラスを作成する.
+struct ResourceDesc final {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	//* resource create option *//
+	//* desc methods *//
 
-	static Resource CreateCommitted(
-		const Device& device,
-		const D3D12_HEAP_PROPERTIES& prop, const D3D12_RESOURCE_DESC& desc,
-		D3D12_RESOURCE_STATES state,
-		const std::optional<D3D12_CLEAR_VALUE>& clearValue = std::nullopt
-	);
+	const D3D12_CLEAR_VALUE* GetClearValue() const;
+	
+	//* desc option *//
 
-	static Resource CreateDimensionBuffer(
-		const Device& device,
+	static ResourceDesc CreateBufferDesc(
 		D3D12_HEAP_TYPE type,
-		size_t size, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES state
+		size_t size,
+		D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES state
 	);
 
-	static Resource CreateTexture(
-		const Device& device,
+	static ResourceDesc CreateTextureDesc(
 		D3D12_RESOURCE_DIMENSION dimension,
 		UINT width, UINT height, UINT16 depthOrArraySize, UINT16 miplevels,
 		DXGI_FORMAT format,
@@ -52,13 +47,15 @@ public:
 		const std::optional<D3D12_CLEAR_VALUE>& clearValue = std::nullopt
 	);
 
-private:
-
 	//=========================================================================================
-	// private variables
+	// public variables
 	//=========================================================================================
 
-	std::array<Resource, kFrameCount> resources_;
+	D3D12_HEAP_PROPERTIES prop  = {};
+	D3D12_RESOURCE_DESC desc    = {};
+	D3D12_RESOURCE_STATES state = D3D12_RESOURCE_STATE_COMMON;
+
+	std::optional<D3D12_CLEAR_VALUE> clearValue = std::nullopt;
 
 };
 

@@ -48,7 +48,9 @@ public:
 
 	NODISCARD Descriptor Allocate();
 
-	void Free(Descriptor::Handle&& handle);
+	void Release(Descriptor::Handle&& handle);
+
+	void Free();
 
 	RefPtr<ID3D12DescriptorHeap> GetDescriptorHeap() const { return descriptorHeap_.Get(); }
 
@@ -70,6 +72,7 @@ private:
 	//* allocator *//
 
 	IndexAllocator<UINT> allocator_;
+	std::queue<UINT> freeQueue_; //!< 解放されたindexのキュー.
 
 	//* parameter *//
 
