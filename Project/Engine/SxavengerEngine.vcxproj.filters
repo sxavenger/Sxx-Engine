@@ -327,12 +327,6 @@
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h">
       <Filter>Runtime\Framework\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h">
-      <Filter>Runtime\Graphics\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Buffer\FrameResource.h">
-      <Filter>Runtime\Graphics\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClInclude>
@@ -580,12 +574,6 @@
     </ClCompile>
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp">
       <Filter>Runtime\Framework\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Buffer\DimensionBuffer.cpp">
-      <Filter>Runtime\Graphics\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Buffer\FrameResource.cpp">
-      <Filter>Runtime\Graphics\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
