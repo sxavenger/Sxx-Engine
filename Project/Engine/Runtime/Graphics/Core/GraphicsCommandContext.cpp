@@ -141,6 +141,34 @@ void GraphicsCommandContext::SubmitWait() {
 	Reset(currentAllocatorIndex_); //!< すべてのアロケータがGPUに処理されるのを待つ.
 }
 
+void GraphicsCommandContext::BeginRenderPass(
+	const D3D12_RENDER_PASS_RENDER_TARGET_DESC& renderTarget, const std::optional<D3D12_RENDER_PASS_DEPTH_STENCIL_DESC>& depthStencil,
+	D3D12_RENDER_PASS_FLAGS flags) const {
+
+	commandList_->BeginRenderPass(
+		1,
+		&renderTarget,
+		depthStencil.has_value() ? &depthStencil.value() : nullptr,
+		flags
+	);
+}
+
+void GraphicsCommandContext::BeginRenderPass(
+	const std::span<const D3D12_RENDER_PASS_RENDER_TARGET_DESC>& renderTargets, const std::optional<D3D12_RENDER_PASS_DEPTH_STENCIL_DESC>& depthStencil,
+	D3D12_RENDER_PASS_FLAGS flags) const {
+
+	commandList_->BeginRenderPass(
+		static_cast<UINT>(renderTargets.size()),
+		renderTargets.data(),
+		depthStencil.has_value() ? &depthStencil.value() : nullptr,
+		flags
+	);
+}
+
+void GraphicsCommandContext::EndRenderPass() const {
+	commandList_->EndRenderPass();
+}
+
 bool GraphicsCommandContext::CheckSupportType(GraphicsCommandType request) const {
 	return type_ <= request; //!< 現在のコマンドタイプが要求されたコマンドタイプ以上であればサポートされている. (ex. DirectはCompute, Copyをサポートするが, ComputeはDirectをサポートしない)
 }

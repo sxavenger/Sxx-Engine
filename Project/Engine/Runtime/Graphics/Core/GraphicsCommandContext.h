@@ -14,6 +14,7 @@
 
 //* c++
 #include <vector>
+#include <span>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -86,6 +87,20 @@ public:
 	RefPtr<ID3D12GraphicsCommandList6> GetCommandList() const { return commandList_.Get(); }
 
 	RefPtr<ID3D12CommandQueue> GetCommandQueue() const { return commandQueue_.Get(); }
+
+	//* graphics command list methods *//
+
+	void BeginRenderPass(
+		const D3D12_RENDER_PASS_RENDER_TARGET_DESC& renderTarget, const std::optional<D3D12_RENDER_PASS_DEPTH_STENCIL_DESC>& depthStencil,
+		D3D12_RENDER_PASS_FLAGS flags = D3D12_RENDER_PASS_FLAG_NONE
+	) const;
+
+	void BeginRenderPass(
+		const std::span<const D3D12_RENDER_PASS_RENDER_TARGET_DESC>& renderTargets, const std::optional<D3D12_RENDER_PASS_DEPTH_STENCIL_DESC>& depthStencils,
+		D3D12_RENDER_PASS_FLAGS flags = D3D12_RENDER_PASS_FLAG_NONE
+	) const;
+
+	void EndRenderPass() const;
 
 	//* type option *//
 

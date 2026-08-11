@@ -58,6 +58,14 @@ Graphics::SwapChain::Buffer& Viewport::GetCurrentBackBuffer() {
 	return swapChain_.GetCurrentBackBuffer();
 }
 
+void Viewport::BeginRenderPass(const Graphics::GraphicsCommandContext& context, const Color4f& color) {
+	swapChain_.BeginRenderPass(context, color);
+}
+
+void Viewport::EndRenderPass(const Graphics::GraphicsCommandContext& context) {
+	swapChain_.EndRenderPass(context);
+}
+
 void Viewport::Present(bool vsync) {
 	swapChain_.Present(Graphics::Core::GetDevice(), vsync);
 }

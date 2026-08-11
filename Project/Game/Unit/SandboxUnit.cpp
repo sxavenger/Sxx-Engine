@@ -65,12 +65,30 @@ void SandboxUnit::InitSandbox() {
 		desc
 	);
 
+	handle_ = Sxx::Graphics::Core::AllocateResource(
+		Sxx::Graphics::ResourceDesc::CreateBufferDesc(
+			D3D12_HEAP_TYPE_UPLOAD,
+			sizeof(Color4f),
+			D3D12_RESOURCE_FLAG_NONE,
+			D3D12_RESOURCE_STATE_GENERIC_READ
+		),
+		Sxx::Graphics::kFrameCount
+	);
+	handle_.SetName(L"SandboxUnit | ColorBuffer");
 }
 
 void SandboxUnit::TermSandbox() {
 }
 
 void SandboxUnit::UpdateSandbox() {
+	{
+		Sxx::Graphics::Resource& resource = handle_.GetResource();
+		Color4f* data = nullptr;
+		resource.Map(reinterpret_cast<void**>(&data));
+
+		*data = Color4f::Green();
+	}
+	
 }
 
 void SandboxUnit::RenderSandbox() {
@@ -84,25 +102,20 @@ void SandboxUnit::RenderSandbox() {
 
 		auto& viewport = unit->GetViewport();
 
-		auto& buffer = viewport.GetCurrentBackBuffer();
-		buffer.TransitionRenderTarget(context);
-		buffer.ClearRenderTarget(context, Color4f::Convert(0x9BA8A8FF));
+		viewport.BeginRenderPass(context, Color4f::Convert(0x9BA8A8FF));
 
 		{ //!< Shaderでの書き込み
-
-			buffer.OMSetRenderTarget(context);
-
 			auto commandList = context.GetCommandList();
 
 			pipeline_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
+			parameter.SetAddress("gColor", handle_.GetResource().GetGpuVirtualAddress());
 
 			layout_.BindGraphicsRootParameter(context, parameter);
 			commandList->DrawInstanced(3, 1, 0, 0);
-
 		}
 
-		buffer.TransitionPresent(context);
+		viewport.EndRenderPass(context);
 	}
 }

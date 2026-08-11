@@ -10,6 +10,9 @@
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Core/Configuration/Configuration.h>
 
+//* c++
+#include <optional>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,14 +71,17 @@ public:
 
 		static D3D12_RAYTRACING_TIER CheckRaytracing(RefPtr<ID3D12Device8> device);
 
+		static std::optional<D3D12_RENDER_PASS_TIER> CheckRenderPass(RefPtr<ID3D12Device8> device);
+
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		bool tearing                         = false; //!< ティアリングがサポートされているか.
-		D3D_SHADER_MODEL shaderModel         = D3D_SHADER_MODEL_NONE; //!< サポートされているShader Modelの機能レベル.
-		bool meshShader                      = false; //!< Mesh Shaderがサポートされているか.
-		D3D12_RAYTRACING_TIER raytracingTier = D3D12_RAYTRACING_TIER_NOT_SUPPORTED; //!< サポートされているRaytracingの機能レベル.
+		bool tearing                                           = false; //!< ティアリングがサポートされているか.
+		D3D_SHADER_MODEL shaderModel                           = D3D_SHADER_MODEL_NONE; //!< サポートされているShader Modelの機能レベル.
+		bool meshShader                                        = false; //!< Mesh Shaderがサポートされているか.
+		D3D12_RAYTRACING_TIER raytracingTier                   = D3D12_RAYTRACING_TIER_NOT_SUPPORTED; //!< サポートされているRaytracingの機能レベル.
+		std::optional<D3D12_RENDER_PASS_TIER> renderPassesTier = std::nullopt; //!< サポートされているRender Passの機能レベル. (std::nulloptの場合はRender Passはサポートされていない)
 
 	};
 

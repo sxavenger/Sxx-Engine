@@ -8,6 +8,7 @@
 #include "../Core/GraphicsCommandContext.h"
 #include "../Shader/ShaderReflection.h"
 #include "ShaderParameter.h"
+#include "StaticSamplerSet.h"
 #include "RootSignature.h"
 
 //* engine
@@ -104,9 +105,9 @@ public:
 
 	//* root signature option *//
 
-	void AppendGraphicsRootParameter(RootSignature::GraphicsDesc& desc, UINT& index);
+	void AppendGraphicsRootParameter(RootSignature::GraphicsDesc& desc, UINT& index, const StaticSamplerSet& samplers = {});
 
-	void AppendComputeRootParameter(RootSignature::ComputeDesc& desc, UINT& index);
+	void AppendComputeRootParameter(RootSignature::ComputeDesc& desc, UINT& index, const StaticSamplerSet& samplers = {});
 
 	//* bind parameter option *//
 

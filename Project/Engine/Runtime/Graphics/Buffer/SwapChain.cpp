@@ -17,7 +17,7 @@ void SwapChain::Buffer::ClearRenderTarget(const GraphicsCommandContext& context,
 	TransitionRenderTarget(context); //!< ClearRenderTargetViewを呼ぶ前にRenderTarget状態に遷移させる.
 	context.GetCommandList()->ClearRenderTargetView(
 		descriptorRTV.GetCPUHandle(),
-		color.Ptr(),
+		color.Data(),
 		0, nullptr
 	);
 }
@@ -145,6 +145,31 @@ void SwapChain::Present(const Device& device, bool vsync) {
 
 DXGI_FORMAT SwapChain::GetRenderTargetFormat() const {
 	return Graphics::ConvertToSRGBFormat(format_); //!< RenderTargetはSRGBに変換しておく.
+}
+
+void SwapChain::BeginRenderPass(const GraphicsCommandContext& context, const Color4f& color) {
+	Buffer& buffer = GetCurrentBackBuffer();
+	buffer.TransitionRenderTarget(context); //!< BeginRenderPassを呼ぶ前にRenderTarget状態に遷移させる.
+
+	//!< render target の設定.
+	D3D12_RENDER_PASS_RENDER_TARGET_DESC desc = {};
+	desc.cpuDescriptor                           = buffer.descriptorRTV.GetCPUHandle();
+	desc.BeginningAccess.Type                    = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+	desc.BeginningAccess.Clear.ClearValue.Format = GetRenderTargetFormat();
+	desc.BeginningAccess.Clear.ClearValue.Color[0] = color.r;
+	desc.BeginningAccess.Clear.ClearValue.Color[1] = color.g;
+	desc.BeginningAccess.Clear.ClearValue.Color[2] = color.b;
+	desc.BeginningAccess.Clear.ClearValue.Color[3] = color.a;
+	desc.EndingAccess.Type                       = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+
+	context.BeginRenderPass(desc, std::nullopt);
+}
+
+void SwapChain::EndRenderPass(const GraphicsCommandContext& context) {
+	context.EndRenderPass();
+
+	Buffer& buffer = GetCurrentBackBuffer();
+	buffer.TransitionPresent(context);
 }
 
 SwapChain::Buffer& SwapChain::GetCurrentBackBuffer() {

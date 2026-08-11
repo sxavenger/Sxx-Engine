@@ -59,6 +59,20 @@ RootSignature ShaderBindingLayout::CreateGraphicsRootSignature(const Device& dev
 	return RootSignature::Create(device, desc, flags);
 }
 
+RootSignature ShaderBindingLayout::CreateGraphicsRootSignature(const Device& device, const StaticSamplerSet& samplers, D3D12_ROOT_SIGNATURE_FLAGS flags) {
+	//!< root signature descの作成
+	RootSignature::GraphicsDesc desc = {};
+	UINT index = 0;
+
+	for (auto& slot : slots_ | std::views::values) {
+		slot.AppendGraphicsRootParameter(desc, index, samplers);
+	}
+
+	//!< root signatureの作成
+	return RootSignature::Create(device, desc, flags);
+	
+}
+
 RootSignature ShaderBindingLayout::CreateComputeRootSignature(const Device& device, D3D12_ROOT_SIGNATURE_FLAGS flags) {
 
 	//!< root signature descの作成
@@ -67,6 +81,19 @@ RootSignature ShaderBindingLayout::CreateComputeRootSignature(const Device& devi
 
 	for (auto& slot : slots_ | std::views::values) {
 		slot.AppendComputeRootParameter(desc, index);
+	}
+
+	//!< root signatureの作成
+	return RootSignature::Create(device, desc, flags);
+}
+
+RootSignature ShaderBindingLayout::CreateComputeRootSignature(const Device& device, const StaticSamplerSet& samplers, D3D12_ROOT_SIGNATURE_FLAGS flags) {
+	//!< root signature descの作成
+	RootSignature::ComputeDesc desc = {};
+	UINT index = 0;
+
+	for (auto& slot : slots_ | std::views::values) {
+		slot.AppendComputeRootParameter(desc, index, samplers);
 	}
 
 	//!< root signatureの作成

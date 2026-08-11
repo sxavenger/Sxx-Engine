@@ -41,24 +41,26 @@ public:
 
 		//* parameter option *//
 
-		void AppendVirtualAddress(ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddress(uint32_t index, ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddress(ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddress(uint32_t index, ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendDescriptorHandle(ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandle(uint32_t index, ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandle(ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandle(uint32_t index, ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT registerNumber, UINT registerSpace = 0);
 
-		void Append32bitConstants(ShaderVisibility stage, UINT num32bit, UINT shaderRegister, UINT registerSpace = 0);
-		void Set32bitConstants(uint32_t index, ShaderVisibility stage, UINT num32bit, UINT shaderRegister, UINT registerSpace = 0);
+		void Append32bitConstants(ShaderVisibility stage, UINT num32bit, UINT registerNumber, UINT registerSpace = 0);
+		void Set32bitConstants(uint32_t index, ShaderVisibility stage, UINT num32bit, UINT registerNumber, UINT registerSpace = 0);
 
 		//* sampler option *//
 
-		void AppendSamplerFilter(SampleFilter filter, SampleMode mode, ShaderVisibility stage, uint32_t anisotropic, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerDesc(const D3D12_STATIC_SAMPLER_DESC& desc);
 
-		void AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerFilter(SampleFilter filter, SampleMode mode, ShaderVisibility stage, UINT anisotropic, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace = 0);
+		void AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+
+		void AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT anisotropic, UINT registerSpace = 0);
 
 		//* root signature option *//
 
@@ -88,33 +90,33 @@ public:
 
 		//* virtual address option *//
 
-		void AppendVirtualAddressCBV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressCBV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressCBV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressCBV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendVirtualAddressSRV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressSRV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressSRV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressSRV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendVirtualAddressUAV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressUAV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressUAV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressUAV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
 		//* descriptor handle option *//
 
-		void AppendDescriptorHandleCBV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleCBV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleCBV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleCBV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendDescriptorHandleSRV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleSRV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleSRV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleSRV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendDescriptorHandleUAV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleUAV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleUAV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleUAV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
 		//* sampler option *//
 
-		void AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace = 0);
+		void AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT anisotropic, UINT registerSpace = 0);
 
 	};
 
@@ -131,33 +133,33 @@ public:
 
 		//* virtual address option *//
 
-		void AppendVirtualAddressCBV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressCBV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressCBV(UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressCBV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendVirtualAddressSRV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressSRV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressSRV(UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressSRV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendVirtualAddressUAV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetVirtualAddressUAV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendVirtualAddressUAV(UINT registerNumber, UINT registerSpace = 0);
+		void SetVirtualAddressUAV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
 		//* descriptor handle option *//
 
-		void AppendDescriptorHandleCBV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleCBV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleCBV(UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleCBV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendDescriptorHandleSRV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleSRV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleSRV(UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleSRV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendDescriptorHandleUAV(UINT shaderRegister, UINT registerSpace = 0);
-		void SetDescriptorHandleUAV(uint32_t index, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendDescriptorHandleUAV(UINT registerNumber, UINT registerSpace = 0);
+		void SetDescriptorHandleUAV(uint32_t index, UINT registerNumber, UINT registerSpace = 0);
 
 		//* sampler option *//
 
-		void AppendSamplerLinear(SampleMode mode, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerLinear(SampleMode mode, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerPoint(SampleMode mode, UINT shaderRegister, UINT registerSpace = 0);
+		void AppendSamplerPoint(SampleMode mode, UINT registerNumber, UINT registerSpace = 0);
 
-		void AppendSamplerAnisotropic(SampleMode mode, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace = 0);
+		void AppendSamplerAnisotropic(SampleMode mode, UINT registerNumber, UINT anisotropic, UINT registerSpace = 0);
 
 	};
 

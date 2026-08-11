@@ -71,7 +71,7 @@ void ShaderBindingSlot::Reconcile(const Declaration& _declaration) {
 	visibility = ShaderVisibility::All; //!< 複数shaderで使用されるのでallに変更.
 }
 
-void ShaderBindingSlot::AppendGraphicsRootParameter(RootSignature::GraphicsDesc& desc, UINT& index) {
+void ShaderBindingSlot::AppendGraphicsRootParameter(RootSignature::GraphicsDesc& desc, UINT& index, const StaticSamplerSet& samplers) {
 	//!< bindingに応じて, descにルートパラメータを追加する.
 	switch (declaration.GetBindingType()) {
 		case BindingType::RootConstants:
@@ -98,9 +98,13 @@ void ShaderBindingSlot::AppendGraphicsRootParameter(RootSignature::GraphicsDesc&
 			desc.SetDescriptorHandleUAV(index, visibility, declaration.registerNumber, declaration.registerSpace);
 			break;
 
-		case BindingType::Sampler:
-			desc.AppendSamplerLinear(SampleMode::Wrap, visibility, declaration.registerNumber, declaration.registerSpace); //!< デフォルトのSamplerの設定.
-			// note: 現在はStaticSamplerのみサポート.
+		case BindingType::Sampler: // note: 現在はStaticSamplerのみサポート.
+			if (samplers.Contains(declaration.name)) {
+				desc.AppendSamplerDesc(samplers.GetSampler(declaration.name, visibility, declaration.registerNumber, declaration.registerSpace)); //!< StaticSamplerの設定.
+
+			} else {
+				desc.AppendSamplerLinear(SampleMode::Wrap, visibility, declaration.registerNumber, declaration.registerSpace); //!< デフォルトのSamplerの設定.
+			}
 			return;
 	}
 
@@ -109,7 +113,7 @@ void ShaderBindingSlot::AppendGraphicsRootParameter(RootSignature::GraphicsDesc&
 	index++;
 }
 
-void ShaderBindingSlot::AppendComputeRootParameter(RootSignature::ComputeDesc& desc, UINT& index) {
+void ShaderBindingSlot::AppendComputeRootParameter(RootSignature::ComputeDesc& desc, UINT& index, const StaticSamplerSet& samplers) {
 	StreamLogger::Assert(visibility == ShaderVisibility::All, "compute shader only supports All visibility.");
 
 	//!< bindingに応じて, descにルートパラメータを追加する.
@@ -138,9 +142,13 @@ void ShaderBindingSlot::AppendComputeRootParameter(RootSignature::ComputeDesc& d
 			desc.SetDescriptorHandleUAV(index, declaration.registerNumber, declaration.registerSpace);
 			break;
 
-		case BindingType::Sampler:
-			desc.AppendSamplerLinear(SampleMode::Wrap, declaration.registerNumber, declaration.registerSpace); //!< デフォルトのSamplerの設定.
-			// note: 現在はStaticSamplerのみサポート.
+		case BindingType::Sampler: // note: 現在はStaticSamplerのみサポート.
+			if (samplers.Contains(declaration.name)) {
+				desc.AppendSamplerDesc(samplers.GetSampler(declaration.name, visibility, declaration.registerNumber, declaration.registerSpace)); //!< StaticSamplerの設定.
+
+			} else {
+				desc.AppendSamplerLinear(SampleMode::Wrap, declaration.registerNumber, declaration.registerSpace); //!< デフォルトのSamplerの設定.
+			}
 			return;
 	}
 

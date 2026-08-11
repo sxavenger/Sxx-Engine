@@ -18,21 +18,21 @@ void RootSignature::Desc::Reset() {
 	ranges.clear();
 }
 
-void RootSignature::Desc::AppendVirtualAddress(ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::AppendVirtualAddress(ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT registerNumber, UINT registerSpace) {
 	D3D12_ROOT_PARAMETER1 parameter = {};
 	parameter.ParameterType             = type;
 	parameter.ShaderVisibility          = static_cast<D3D12_SHADER_VISIBILITY>(stage);
-	parameter.Descriptor.ShaderRegister = shaderRegister;
+	parameter.Descriptor.ShaderRegister = registerNumber;
 	parameter.Descriptor.RegisterSpace  = registerSpace;
 
 	parameters.emplace_back(parameter);
 }
 
-void RootSignature::Desc::SetVirtualAddress(uint32_t index, ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::SetVirtualAddress(uint32_t index, ShaderVisibility stage, D3D12_ROOT_PARAMETER_TYPE type, UINT registerNumber, UINT registerSpace) {
 	D3D12_ROOT_PARAMETER1 parameter = {};
 	parameter.ParameterType             = type;
 	parameter.ShaderVisibility          = static_cast<D3D12_SHADER_VISIBILITY>(stage);
-	parameter.Descriptor.ShaderRegister = shaderRegister;
+	parameter.Descriptor.ShaderRegister = registerNumber;
 	parameter.Descriptor.RegisterSpace  = registerSpace;
 
 	if (index >= parameters.size()) {
@@ -42,9 +42,9 @@ void RootSignature::Desc::SetVirtualAddress(uint32_t index, ShaderVisibility sta
 	parameters[index] = parameter; //!< indexの位置にparameterを設定する.
 }
 
-void RootSignature::Desc::AppendDescriptorHandle(ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::AppendDescriptorHandle(ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT registerNumber, UINT registerSpace) {
 	D3D12_DESCRIPTOR_RANGE1 range = {};
-	range.BaseShaderRegister                = shaderRegister;
+	range.BaseShaderRegister                = registerNumber;
 	range.RegisterSpace                     = registerSpace;
 	range.NumDescriptors                    = 1;
 	range.RangeType                         = type;
@@ -61,9 +61,9 @@ void RootSignature::Desc::AppendDescriptorHandle(ShaderVisibility stage, D3D12_D
 	parameters.emplace_back(parameter);
 }
 
-void RootSignature::Desc::SetDescriptorHandle(uint32_t index, ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::SetDescriptorHandle(uint32_t index, ShaderVisibility stage, D3D12_DESCRIPTOR_RANGE_TYPE type, UINT registerNumber, UINT registerSpace) {
 	D3D12_DESCRIPTOR_RANGE1 range = {};
-	range.BaseShaderRegister                = shaderRegister;
+	range.BaseShaderRegister                = registerNumber;
 	range.RegisterSpace                     = registerSpace;
 	range.NumDescriptors                    = 1;
 	range.RangeType                         = type;
@@ -84,23 +84,23 @@ void RootSignature::Desc::SetDescriptorHandle(uint32_t index, ShaderVisibility s
 	parameters[index] = parameter;
 }
 
-void RootSignature::Desc::Append32bitConstants(ShaderVisibility stage, UINT num32bit, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::Append32bitConstants(ShaderVisibility stage, UINT num32bit, UINT registerNumber, UINT registerSpace) {
 	D3D12_ROOT_PARAMETER1 parameter = {};
 	parameter.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	parameter.ShaderVisibility         = static_cast<D3D12_SHADER_VISIBILITY>(stage);
 	parameter.Constants.Num32BitValues = num32bit;
-	parameter.Constants.ShaderRegister = shaderRegister;
+	parameter.Constants.ShaderRegister = registerNumber;
 	parameter.Constants.RegisterSpace  = registerSpace;
 
 	parameters.emplace_back(parameter);
 }
 
-void RootSignature::Desc::Set32bitConstants(uint32_t index, ShaderVisibility stage, UINT num32bit, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::Set32bitConstants(uint32_t index, ShaderVisibility stage, UINT num32bit, UINT registerNumber, UINT registerSpace) {
 	D3D12_ROOT_PARAMETER1 parameter = {};
 	parameter.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	parameter.ShaderVisibility         = static_cast<D3D12_SHADER_VISIBILITY>(stage);
 	parameter.Constants.Num32BitValues = num32bit;
-	parameter.Constants.ShaderRegister = shaderRegister;
+	parameter.Constants.ShaderRegister = registerNumber;
 	parameter.Constants.RegisterSpace  = registerSpace;
 
 	if (index >= parameters.size()) {
@@ -110,7 +110,11 @@ void RootSignature::Desc::Set32bitConstants(uint32_t index, ShaderVisibility sta
 	parameters[index] = parameter;
 }
 
-void RootSignature::Desc::AppendSamplerFilter(SampleFilter filter, SampleMode mode, ShaderVisibility stage, uint32_t anisotropic, UINT shaderRegister, UINT registerSpace) {
+void RootSignature::Desc::AppendSamplerDesc(const D3D12_STATIC_SAMPLER_DESC& desc) {
+	samplers.emplace_back(desc);
+}
+
+void RootSignature::Desc::AppendSamplerFilter(SampleFilter filter, SampleMode mode, ShaderVisibility stage, UINT anisotropic, UINT registerNumber, UINT registerSpace) {
 	D3D12_STATIC_SAMPLER_DESC desc = {};
 	desc.Filter           = static_cast<D3D12_FILTER>(filter);
 	desc.MaxAnisotropy    = anisotropic; //!< 異方性フィルタリングパラメーター(typeがAnisotropicのときのみ有効)
@@ -119,23 +123,23 @@ void RootSignature::Desc::AppendSamplerFilter(SampleFilter filter, SampleMode mo
 	desc.AddressW         = static_cast<D3D12_TEXTURE_ADDRESS_MODE>(mode);
 	desc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
 	desc.MaxLOD           = D3D12_FLOAT32_MAX;
-	desc.ShaderRegister   = shaderRegister;
+	desc.ShaderRegister   = registerNumber;
 	desc.RegisterSpace    = registerSpace;
 	desc.ShaderVisibility = static_cast<D3D12_SHADER_VISIBILITY>(stage);
 
-	samplers.emplace_back(desc);
+	AppendSamplerDesc(desc);
 }
 
-void RootSignature::Desc::AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	AppendSamplerFilter(SampleFilter::Linear, mode, stage, 0, shaderRegister, registerSpace);
+void RootSignature::Desc::AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	AppendSamplerFilter(SampleFilter::Linear, mode, stage, 0, registerNumber, registerSpace);
 }
 
-void RootSignature::Desc::AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	AppendSamplerFilter(SampleFilter::Point, mode, stage, 0, shaderRegister, registerSpace);
+void RootSignature::Desc::AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	AppendSamplerFilter(SampleFilter::Point, mode, stage, 0, registerNumber, registerSpace);
 }
 
-void RootSignature::Desc::AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace) {
-	AppendSamplerFilter(SampleFilter::Anisotropic, mode, stage, anisotropic, shaderRegister, registerSpace);
+void RootSignature::Desc::AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT anisotropic, UINT registerSpace) {
+	AppendSamplerFilter(SampleFilter::Anisotropic, mode, stage, anisotropic, registerNumber, registerSpace);
 }
 
 D3D12_VERSIONED_ROOT_SIGNATURE_DESC RootSignature::Desc::CreateDesc(D3D12_ROOT_SIGNATURE_FLAGS flags) const {
@@ -164,128 +168,128 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC RootSignature::Desc::CreateDesc(D3D12_ROOT_S
 // [RootSignature] GraphicsDesc structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void RootSignature::GraphicsDesc::AppendVirtualAddressCBV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendVirtualAddressCBV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetVirtualAddressCBV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetVirtualAddressCBV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendVirtualAddressSRV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendVirtualAddressSRV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetVirtualAddressSRV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetVirtualAddressSRV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendVirtualAddressUAV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendVirtualAddressUAV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(stage, D3D12_ROOT_PARAMETER_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetVirtualAddressUAV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetVirtualAddressUAV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, stage, D3D12_ROOT_PARAMETER_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendDescriptorHandleCBV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendDescriptorHandleCBV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetDescriptorHandleCBV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetDescriptorHandleCBV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendDescriptorHandleSRV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendDescriptorHandleSRV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetDescriptorHandleSRV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetDescriptorHandleSRV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendDescriptorHandleUAV(ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendDescriptorHandleUAV(ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(stage, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::SetDescriptorHandleUAV(uint32_t index, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::SetDescriptorHandleUAV(uint32_t index, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, stage, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendSamplerLinear(mode, stage, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendSamplerLinear(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendSamplerLinear(mode, stage, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendSamplerPoint(mode, stage, shaderRegister, registerSpace);
+void RootSignature::GraphicsDesc::AppendSamplerPoint(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendSamplerPoint(mode, stage, registerNumber, registerSpace);
 }
 
-void RootSignature::GraphicsDesc::AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace) {
-	Desc::AppendSamplerAnisotropic(mode, stage, shaderRegister, anisotropic, registerSpace);
+void RootSignature::GraphicsDesc::AppendSamplerAnisotropic(SampleMode mode, ShaderVisibility stage, UINT registerNumber, UINT anisotropic, UINT registerSpace) {
+	Desc::AppendSamplerAnisotropic(mode, stage, registerNumber, anisotropic, registerSpace);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // [RootSignature] ComputeDesc structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void RootSignature::ComputeDesc::AppendVirtualAddressCBV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendVirtualAddressCBV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetVirtualAddressCBV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetVirtualAddressCBV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendVirtualAddressSRV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendVirtualAddressSRV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetVirtualAddressSRV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetVirtualAddressSRV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendVirtualAddressUAV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendVirtualAddressUAV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendVirtualAddress(ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetVirtualAddressUAV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetVirtualAddressUAV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetVirtualAddress(index, ShaderVisibility::All, D3D12_ROOT_PARAMETER_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendDescriptorHandleCBV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendDescriptorHandleCBV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetDescriptorHandleCBV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetDescriptorHandleCBV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendDescriptorHandleSRV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendDescriptorHandleSRV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetDescriptorHandleSRV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetDescriptorHandleSRV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendDescriptorHandleUAV(UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendDescriptorHandleUAV(UINT registerNumber, UINT registerSpace) {
+	Desc::AppendDescriptorHandle(ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::SetDescriptorHandleUAV(uint32_t index, UINT shaderRegister, UINT registerSpace) {
-	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::SetDescriptorHandleUAV(uint32_t index, UINT registerNumber, UINT registerSpace) {
+	Desc::SetDescriptorHandle(index, ShaderVisibility::All, D3D12_DESCRIPTOR_RANGE_TYPE_UAV, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendSamplerLinear(SampleMode mode, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendSamplerLinear(mode, ShaderVisibility::All, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendSamplerLinear(SampleMode mode, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendSamplerLinear(mode, ShaderVisibility::All, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendSamplerPoint(SampleMode mode, UINT shaderRegister, UINT registerSpace) {
-	Desc::AppendSamplerPoint(mode, ShaderVisibility::All, shaderRegister, registerSpace);
+void RootSignature::ComputeDesc::AppendSamplerPoint(SampleMode mode, UINT registerNumber, UINT registerSpace) {
+	Desc::AppendSamplerPoint(mode, ShaderVisibility::All, registerNumber, registerSpace);
 }
 
-void RootSignature::ComputeDesc::AppendSamplerAnisotropic(SampleMode mode, UINT shaderRegister, uint32_t anisotropic, UINT registerSpace) {
-	Desc::AppendSamplerAnisotropic(mode, ShaderVisibility::All, shaderRegister, anisotropic, registerSpace);
+void RootSignature::ComputeDesc::AppendSamplerAnisotropic(SampleMode mode, UINT registerNumber, UINT anisotropic, UINT registerSpace) {
+	Desc::AppendSamplerAnisotropic(mode, ShaderVisibility::All, registerNumber, anisotropic, registerSpace);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -9,6 +9,7 @@
 //* engine [graphics]
 #include <Engine/Runtime/Graphics/Pipeline/GraphicsPipelineState.h>
 #include <Engine/Runtime/Graphics/Pipeline/ShaderBindingLayout.h>
+#include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class
@@ -38,6 +39,8 @@ private:
 
 	Sxx::Graphics::GraphicsPipelineState pipeline_;
 	Sxx::Graphics::ShaderBindingLayout layout_;
+
+	Sxx::Graphics::ResourceHandle handle_;
 
 	//=========================================================================================
 	// private methods

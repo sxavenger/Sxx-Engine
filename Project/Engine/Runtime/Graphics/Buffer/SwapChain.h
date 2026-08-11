@@ -48,9 +48,13 @@ public:
 		// public methods
 		//=========================================================================================
 
+		//* transition option *//
+
 		void TransitionRenderTarget(const GraphicsCommandContext& context);
 
 		void TransitionPresent(const GraphicsCommandContext& context);
+
+		//* render target option *//
 
 		void ClearRenderTarget(const GraphicsCommandContext& context, const Color4f& color);
 
@@ -92,6 +96,12 @@ public:
 	void Present(const Device& device, bool vsync);
 
 	DXGI_FORMAT GetRenderTargetFormat() const;
+
+	//* render pass option *//
+
+	void BeginRenderPass(const GraphicsCommandContext& context, const Color4f& color);
+
+	void EndRenderPass(const GraphicsCommandContext& context);
 
 	//* buffer option *//
 

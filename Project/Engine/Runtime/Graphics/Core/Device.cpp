@@ -104,6 +104,28 @@ D3D12_RAYTRACING_TIER Device::Support::CheckRaytracing(RefPtr<ID3D12Device8> dev
 	return option.RaytracingTier;
 }
 
+std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID3D12Device8> device) {
+	{ //!< Render Passのサポート確認.
+		D3D12_FEATURE_DATA_D3D12_OPTIONS18 option = {};
+		auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS18, &option, sizeof(option));
+		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
+
+		if (!option.RenderPassesValid) {
+			StreamLogger::Info("Graphics::Device::Support | render pass not supported.");
+			return std::nullopt;
+		}
+	}
+
+	{ //!< Render PassのサポートTierの確認.
+		D3D12_FEATURE_DATA_D3D12_OPTIONS5 option = {};
+		auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &option, sizeof(option));
+		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
+
+		StreamLogger::Info("Graphics::Device::Support | supported render passes tier: {}", option.RenderPassesTier);
+		return option.RenderPassesTier;
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Device class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,4 +272,10 @@ void Device::CheckSupport() {
 		std::format("raytracing tier is not supported. supported raytracing tier: {}", support_.raytracingTier)
 	);
 
+	//!< Render Passのサポートの確認.
+	support_.renderPassesTier = Support::CheckRenderPass(device_.Get());
+	StreamLogger::Assert(
+		support_.renderPassesTier.has_value(),
+		"render pass is not supported."
+	);
 }

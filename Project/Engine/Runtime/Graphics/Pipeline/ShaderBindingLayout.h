@@ -10,6 +10,7 @@
 #include "../Shader/ShaderReflection.h"
 #include "ShaderParameter.h"
 #include "ShaderBindingSlot.h"
+#include "StaticSamplerSet.h"
 #include "RootSignature.h"
 
 //* engine
@@ -52,8 +53,20 @@ public:
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
 	);
 
+	RootSignature CreateGraphicsRootSignature(
+		const Device& device,
+		const StaticSamplerSet& samplers,
+		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
+	);
+
 	RootSignature CreateComputeRootSignature(
 		const Device& device,
+		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
+	);
+
+	RootSignature CreateComputeRootSignature(
+		const Device& device,
+		const StaticSamplerSet& samplers,
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
 	);
 

@@ -49,6 +49,10 @@ public:
 
 	Graphics::SwapChain::Buffer& GetCurrentBackBuffer();
 
+	void BeginRenderPass(const Graphics::GraphicsCommandContext& context, const Color4f& color);
+
+	void EndRenderPass(const Graphics::GraphicsCommandContext& context);
+
 	void Present(bool vsync);
 
 	Graphics::SwapChain& GetSwapChain() { return swapChain_; }
