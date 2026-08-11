@@ -14,10 +14,11 @@
 #include "Core/InfoQueue.h"
 #include "Core/DescriptorHeaps.h"
 #include "Core/GraphicsCommandContext.h"
-#include "Core/ShaderCompiler.h"
+
+//* graphics [shader]
+#include "Shader/ShaderCompiler.h"
 
 //* graphics [buffer]
-#include "Buffer/ResourceHandle.h"
 #include "Buffer/ResourceAllocator.h"
 
 //* engine
@@ -97,6 +98,8 @@ public:
 		const std::wstring& entryPoint = L""
 	);
 
+	static ShaderReflection ReflectShader(const ShaderBlob& blob);
+
 	static ShaderCompiler& GetShaderCompiler();
 
 private:
@@ -116,7 +119,11 @@ private:
 	static inline GraphicsCommandContext contexts_[EnumUtil<GraphicsCommandType>::GetCount()]; //!< GraphicsCommandContextの配列.
 	//!< copy, computeは非同期側の使用を想定.
 
+	//* Graphics [buffer] *//
+
 	static inline ResourceAllocator resourceAllocator_;
+
+	//* Graphics [shader] *//
 
 	static inline ShaderCompiler shaderCompiler_;
 

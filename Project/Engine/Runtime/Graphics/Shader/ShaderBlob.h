@@ -20,6 +20,16 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 class ShaderBlob final {
 public:
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// CodePage enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class CodePage : UINT {
+		ACP   = DXC_CP_ACP,
+		UTF8  = DXC_CP_UTF8
+	};
+
+public:
+
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -35,7 +45,7 @@ public:
 
 	D3D12_SHADER_BYTECODE GetBytecode() const;
 
-	DxcBuffer GetBuffer() const;
+	DxcBuffer GetBuffer(CodePage codePage = CodePage::UTF8) const;
 
 	//* compile profile option *//
 

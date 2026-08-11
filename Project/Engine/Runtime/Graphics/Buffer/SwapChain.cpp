@@ -96,6 +96,8 @@ void SwapChain::Resize(
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
 	);
 
+	// XXX: リサイズでのResource解放時は, GPUの処理が完了していることを保証する必要がある. (Present後にResizeBuffersを呼ぶと, GPUがまだ使用中のResourceを解放しようとしてエラーになる.)
+
 	for (uint32_t i = 0; i < kFrameCount; ++i) {
 
 		Buffer& buffer = buffers_[i];
@@ -139,6 +141,10 @@ void SwapChain::Present(const Device& device, bool vsync) {
 	}
 
 	swapChain_->Present(syncInterval, flags);
+}
+
+DXGI_FORMAT SwapChain::GetRenderTargetFormat() const {
+	return Graphics::ConvertToSRGBFormat(format_); //!< RenderTargetはSRGBに変換しておく.
 }
 
 SwapChain::Buffer& SwapChain::GetCurrentBackBuffer() {

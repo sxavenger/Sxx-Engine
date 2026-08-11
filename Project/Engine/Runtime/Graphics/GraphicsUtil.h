@@ -95,10 +95,10 @@ enum class SampleMode : uint32_t {
 ////////////////////////////////////////////////////////////////////////////////////////////
 enum class PrimitiveTopology : uint32_t {
 	Undefined     = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,
-	Point         = D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
-	Line          = D3D_PRIMITIVE_TOPOLOGY_LINELIST,
+	PointList     = D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
+	LineList      = D3D_PRIMITIVE_TOPOLOGY_LINELIST,
 	LineStrip     = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,
-	Triangle      = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+	TriangleList  = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
 	TriangleStrip = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 };
 
@@ -191,14 +191,14 @@ constexpr std::wstring_view GetCompileShaderStage(CompileProfile profile) {
 
 constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE GetPrimitiveTopologyType(PrimitiveTopology topology) {
 	switch (topology) {
-		case PrimitiveTopology::Point:
+		case PrimitiveTopology::PointList:
 			return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 
-		case PrimitiveTopology::Line:
+		case PrimitiveTopology::LineList:
 		case PrimitiveTopology::LineStrip:
 			return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
 
-		case PrimitiveTopology::Triangle:
+		case PrimitiveTopology::TriangleList:
 		case PrimitiveTopology::TriangleStrip:
 			return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
@@ -221,6 +221,10 @@ constexpr ColorEncoding GetColorEncoding(DXGI_FORMAT format) {
 		default:
 			return ColorEncoding::Intensity;
 	}
+}
+
+constexpr UINT RoundUp(UINT round, UINT thread) {
+	return (round + thread - 1) / thread; //!< threadの倍数に切り上げる
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

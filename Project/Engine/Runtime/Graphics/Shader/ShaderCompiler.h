@@ -5,8 +5,9 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "Device.h"
+#include "../Core/Device.h"
 #include "ShaderBlob.h"
+#include "ShaderReflection.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -107,7 +108,7 @@ public:
 	ShaderCompiler() noexcept  = default;
 	~ShaderCompiler() noexcept = default;
 
-	//* compile option *//
+	//* compiler option *//
 
 	void Init(const Configuration& config, const Device& device);
 
@@ -117,9 +118,7 @@ public:
 		const std::wstring& entryPoint = L""
 	);
 
-	//* reflection option *//
-
-	ComPtr<ID3D12ShaderReflection> Reflection(const ShaderBlob& blob);
+	ShaderReflection Reflect(const ShaderBlob& blob);
 
 private:
 

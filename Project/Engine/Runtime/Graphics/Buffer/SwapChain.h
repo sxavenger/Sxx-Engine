@@ -91,6 +91,10 @@ public:
 
 	void Present(const Device& device, bool vsync);
 
+	DXGI_FORMAT GetRenderTargetFormat() const;
+
+	//* buffer option *//
+
 	Buffer& GetCurrentBackBuffer();
 
 private:

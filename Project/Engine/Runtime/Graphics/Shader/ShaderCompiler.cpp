@@ -117,9 +117,9 @@ ShaderBlob ShaderCompiler::Compile(
 	return Compile(filepath, source.Get(), profile, entryPoint);
 }
 
-ComPtr<ID3D12ShaderReflection> ShaderCompiler::Reflection(const ShaderBlob& blob) {
+ShaderReflection ShaderCompiler::Reflect(const ShaderBlob& blob) {
 
-	DxcBuffer buffer = blob.GetBuffer(); //!< シェーダバイナリの内容を設定する
+	DxcBuffer buffer = blob.GetBuffer(ShaderBlob::CodePage::ACP); //!< バイナリの内容を設定.
 
 	ComPtr<ID3D12ShaderReflection> reflection;
 	auto hr = utils_->CreateReflection(

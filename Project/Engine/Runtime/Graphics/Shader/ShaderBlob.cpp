@@ -21,13 +21,13 @@ D3D12_SHADER_BYTECODE ShaderBlob::GetBytecode() const {
 	return bytecode;
 }
 
-DxcBuffer ShaderBlob::GetBuffer() const {
+DxcBuffer ShaderBlob::GetBuffer(CodePage codePage) const {
 	StreamLogger::Assert(blob_ != nullptr, "blob is null.");
 
 	DxcBuffer buffer = {};
 	buffer.Size     = blob_->GetBufferSize();
 	buffer.Ptr      = blob_->GetBufferPointer();
-	buffer.Encoding = DXC_CP_UTF8;
+	buffer.Encoding = static_cast<UINT>(codePage);
 
 	return buffer;
 }

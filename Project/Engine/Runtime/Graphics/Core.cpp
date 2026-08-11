@@ -1,4 +1,5 @@
 #include "Core.h"
+#include "Core.h"
 SXAVENGER_ENGINE_USING_(Graphics)
 
 //-----------------------------------------------------------------------------------------
@@ -120,6 +121,10 @@ ResourceAllocator& Core::GetResourceAllocator() {
 
 ShaderBlob Core::CompileShader(const std::filesystem::path& filepath, CompileProfile profile, const std::wstring& entryPoint) {
 	return shaderCompiler_.Compile(filepath, profile, entryPoint);
+}
+
+ShaderReflection Core::ReflectShader(const ShaderBlob& blob) {
+	return shaderCompiler_.Reflect(blob);
 }
 
 ShaderCompiler& Core::GetShaderCompiler() {
