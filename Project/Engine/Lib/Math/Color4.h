@@ -267,8 +267,8 @@ public:
 
 	//* color container methods *//
 
-	constexpr T* Ptr() noexcept { return data.data(); }
-	constexpr const T* Ptr() const noexcept { return data.data(); }
+	constexpr T* Data() noexcept { return data.data(); }
+	constexpr const T* Data() const noexcept { return data.data(); }
 
 	//* constant value methods *//
 

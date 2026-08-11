@@ -158,15 +158,15 @@ namespace {
 				ImGui::PushID(id);
 
 				//!< Color4f は { r, g, b, a } と std::array<float, 4> の union なので,
-				//!< 先頭から 4 つの float がそのまま RGBA として並ぶ. ColorEdit4 には Ptr() で
+				//!< 先頭から 4 つの float がそのまま RGBA として並ぶ. ColorEdit4 には Data() で
 				//!< 実体を直接渡し, 編集結果をその場へ書き込ませる.
 				//!< (Color4floating は単項 operator& を float* を返すよう多重定義しているため
-				//!<  &(*entry.value) でも同じ float* になるが, 意図が読めないので Ptr() を使う.
+				//!<  &(*entry.value) でも同じ float* になるが, 意図が読めないので Data() を使う.
 				//!<  Color4f* が必要な場面では std::addressof を使うこと.)
 				//!< Style::Colors は sRGB のバイト値をそのまま持っている. linear への変換は
 				//!< 描画側(ImGuiStyleIO::SetCurrentStyle / ImGuiRenderer)の役割なので,
 				//!< エディタは生の値を触る(変換すると編集値と ToHex() の保存値がずれる).
-				if (ImGui::ColorEdit4("##color", entry.value->Ptr(), ImGuiColorEditFlags_AlphaBar | alphaFlags)) {
+				if (ImGui::ColorEdit4("##color", entry.value->Data(), ImGuiColorEditFlags_AlphaBar | alphaFlags)) {
 					isChanged = true;
 				}
 

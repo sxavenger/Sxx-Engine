@@ -99,6 +99,11 @@ public:
 		};
 	}
 
+	//* color container methods *//
+
+	constexpr T* Data() noexcept { return data.data(); }
+	constexpr const T* Data() const noexcept { return data.data(); }
+
 	//* constant value methods *//
 
 	constexpr static Color3Integral Black() noexcept { return { T(0), T(0), T(0) }; }
