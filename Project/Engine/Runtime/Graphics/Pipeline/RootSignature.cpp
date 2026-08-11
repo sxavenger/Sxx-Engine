@@ -292,15 +292,13 @@ void RootSignature::ComputeDesc::AppendSamplerAnisotropic(SampleMode mode, UINT 
 // RootSignature class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void RootSignature::Create(
+RootSignature RootSignature::Create(
 	const Device& device,
 	const Desc& desc,
 	D3D12_ROOT_SIGNATURE_FLAGS flags) {
 
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC version = desc.CreateDesc(flags);
-
-	rootSignature_ = RootSignature::CreateRootSignature(device.GetDevice(), version);
-
+	return RootSignature::CreateRootSignature(device.GetDevice(), version);
 }
 
 ComPtr<ID3D12RootSignature> RootSignature::CreateRootSignature(RefPtr<ID3D12Device8> device, const D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc) {

@@ -7,7 +7,7 @@
 #include "../GraphicsUtil.h"
 #include "../Core/Device.h"
 #include "../Core/GraphicsCommandContext.h"
-#include "../Core/ShaderBlob.h"
+#include "../Shader/ShaderBlob.h"
 #include "RootSignature.h"
 #include "BlendState.h"
 
@@ -56,6 +56,8 @@ public:
 		void ResetShaderBlob();
 
 		void SetShaderBlob(const ShaderBlob& blob);
+
+		const ShaderBlob& GetShaderBlob(CompileProfile profile) const;
 
 		D3D12_SHADER_BYTECODE GetShaderBytecode(CompileProfile profile) const;
 
@@ -150,13 +152,20 @@ public:
 
 	//* pipeline state option *//
 
-	void Create(const Device& device, const RootSignature& rootSignature, const Desc& desc);
-
 	void SetName(const std::wstring_view& name) const;
 	void SetName(const std::string_view& name) const;
 
 	void BindPipeline(const GraphicsCommandContext& context, const D3D12_VIEWPORT& viewport, const D3D12_RECT& rect) const;
 	void BindPipeline(const GraphicsCommandContext& context, const Vector2ui& resolution) const;
+
+	//* operator [comparison] <std::nullptr_t> *//
+
+	bool operator==(std::nullptr_t) const { return pipeline_ == nullptr; }
+	bool operator!=(std::nullptr_t) const { return pipeline_ != nullptr; }
+
+	//* static methods *//
+
+	static GraphicsPipelineState Create(const Device& device, const RootSignature& rootSignature, const Desc& desc);
 
 private:
 

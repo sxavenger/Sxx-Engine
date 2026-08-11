@@ -28,7 +28,7 @@ void GraphicsPipelineState::Desc::SetShaderBlob(const ShaderBlob& blob) {
 	CompileProfile profile = blob.GetProfile();
 	StreamLogger::Assert(
 		profile != CompileProfile::Library && profile != CompileProfile::Compute,
-		std::format("Invalid Shader Blob Profile. Profile: {}", profile)
+		std::format("invalid shader blob profile. profile: {}", profile)
 	); //!< profileの範囲チェック (GraphicsPipelineStateのDescではLibraryとComputeは無効)
 
 	blobs[EnumUtil<CompileProfile>::Cast(profile)] = blob;
@@ -44,6 +44,15 @@ void GraphicsPipelineState::Desc::SetShaderBlob(const ShaderBlob& blob) {
 	}
 }
 
+const ShaderBlob& GraphicsPipelineState::Desc::GetShaderBlob(CompileProfile profile) const {
+	StreamLogger::Assert(
+		profile != CompileProfile::Library && profile != CompileProfile::Compute,
+		std::format("invalid shader blob profile. profile: {}", profile)
+	); //!< profileの範囲チェック (GraphicsPipelineStateのDescではLibraryとComputeは無効)
+
+	return blobs[EnumUtil<CompileProfile>::Cast(profile)];
+}
+
 D3D12_SHADER_BYTECODE GraphicsPipelineState::Desc::GetShaderBytecode(CompileProfile profile) const {
 
 	const ShaderBlob& blob = blobs[EnumUtil<CompileProfile>::Cast(profile)];
@@ -53,12 +62,12 @@ D3D12_SHADER_BYTECODE GraphicsPipelineState::Desc::GetShaderBytecode(CompileProf
 			case CompileProfile::Vertex:
 			case CompileProfile::Mesh:
 			case CompileProfile::Pixel:
-				StreamLogger::Exception(std::format("Required Shader Blob is not set. Profile: {}", profile));
+				StreamLogger::Exception(std::format("required shader blob is not set. profile: {}", profile));
 				//!< これらのprofileはGraphicsPipelineStateのDescで必須のため、blobがnullptrの場合は例外を投げる
 
 			default:
 				return D3D12_SHADER_BYTECODE{};
-				//!< それ以外のprofileはnullptrを返す
+				//!< それ以外のprofileはnullを返す
 		}
 	}
 
@@ -176,26 +185,6 @@ void GraphicsPipelineState::Desc::SetDepthStencilFormat(DXGI_FORMAT format) {
 // GraphicsPipelineState class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void GraphicsPipelineState::Create(const Device& device, const RootSignature& rootSignature, const Desc& desc) {
-
-	//!< PipelineStateの作成
-	switch (desc.type) {
-		case GraphicsType::Vertex:
-			pipeline_ = GraphicsPipelineState::CreateVertexPipelineState(device.GetDevice(), rootSignature.Get(), desc);
-			break;
-
-		case GraphicsType::Mesh:
-			pipeline_ = GraphicsPipelineState::CreateMeshPipelineState(device.GetDevice(), rootSignature.Get(), desc);
-			break;
-	}
-
-	//!< 設定の保存
-	rootSignature_ = rootSignature;
-	type_          = desc.type;
-	topology_      = desc.primitiveTopology;
-
-}
-
 void GraphicsPipelineState::SetName(const std::wstring_view& name) const {
 	pipeline_->SetName(name.data());
 }
@@ -240,6 +229,29 @@ void GraphicsPipelineState::BindPipeline(const GraphicsCommandContext& context, 
 	rect.bottom = static_cast<LONG>(resolution.y);
 
 	BindPipeline(context, viewport, rect);
+}
+
+GraphicsPipelineState GraphicsPipelineState::Create(const Device& device, const RootSignature& rootSignature, const Desc& desc) {
+
+	GraphicsPipelineState pipeline;
+
+	//!< pipelineStateの作成
+	switch (desc.type) {
+		case GraphicsType::Vertex:
+			pipeline.pipeline_ = GraphicsPipelineState::CreateVertexPipelineState(device.GetDevice(), rootSignature.Get(), desc);
+			break;
+
+		case GraphicsType::Mesh:
+			pipeline.pipeline_ = GraphicsPipelineState::CreateMeshPipelineState(device.GetDevice(), rootSignature.Get(), desc);
+			break;
+	}
+
+	//!< 設定の保存
+	pipeline.rootSignature_ = rootSignature;
+	pipeline.type_          = desc.type;
+	pipeline.topology_      = desc.primitiveTopology;
+
+	return pipeline;
 }
 
 ComPtr<ID3D12PipelineState> GraphicsPipelineState::CreateVertexPipelineState(RefPtr<ID3D12Device8> device, RefPtr<ID3D12RootSignature> rootSignature, const Desc& desc) {
@@ -320,7 +332,7 @@ ComPtr<ID3D12PipelineState> GraphicsPipelineState::CreateMeshPipelineState(RefPt
 		&streamDesc,
 		IID_PPV_ARGS(&pipeline)
 	);
-	ComPtrUtil::Assert(hr, L"mesh pipeline state creation failed");
+	ComPtrUtil::Assert(hr, L"mesh pipeline state creation failed.");
 
 	return pipeline;
 }

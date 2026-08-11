@@ -167,9 +167,14 @@ public:
 	// public methods
 	//=========================================================================================
 
+	//* constructor *//
+
+	RootSignature() = default;
+	RootSignature(const ComPtr<ID3D12RootSignature>& rootSignature) : rootSignature_(rootSignature) {}
+
 	//* root signature option *//
 
-	void Create(
+	static RootSignature Create(
 		const Device& device,
 		const Desc& desc,
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED

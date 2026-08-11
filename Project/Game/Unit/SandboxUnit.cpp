@@ -21,16 +21,14 @@
 #include <Engine/Unit/WindowUnit.h>
 #include <Engine/Unit/SlateEditorUnit.h>
 
-//* lib
-#include <Lib/Format/Json/JsonFile.h>
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 SandboxUnit::SandboxUnit() {
 #ifdef DEVELOPMENT
-	Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+	//Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
 #else
 	//!< windowの追加
 	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
@@ -48,14 +46,25 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 }
 
 void SandboxUnit::InitSandbox() {
-	Sxx::Assets::AssetHandle<Sxx::Assets::Texture> handle
-		= Sxx::Assets::TextureImporter::Import("Engine/Packages/textures/common/uvchecker.asset");
 
-	Sxx::Rendering::TextureCache cache;
+	Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
+	desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
+	desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+	desc.SetRasterizer(D3D12_CULL_MODE_NONE, D3D12_FILL_MODE_SOLID, false);
+	desc.SetDepthStencil(false);
+	desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
+	desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
+	desc.AppendRenderTargetFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 
-	if (cache.GetAddress() != handle.Get()->GetAddress()) {
-		cache.Cache(handle.WaitGet());
-	}
+	layout_.Reflect(Sxx::Graphics::ShaderVisibility::Vertex, Sxx::Graphics::Core::ReflectShader(desc.GetShaderBlob(Sxx::Graphics::CompileProfile::Vertex)));
+	layout_.Reflect(Sxx::Graphics::ShaderVisibility::Pixel, Sxx::Graphics::Core::ReflectShader(desc.GetShaderBlob(Sxx::Graphics::CompileProfile::Pixel)));
+
+	pipeline_ = Sxx::Graphics::GraphicsPipelineState::Create(
+		Sxx::Graphics::Core::GetDevice(),
+		layout_.CreateGraphicsRootSignature(Sxx::Graphics::Core::GetDevice()),
+		desc
+	);
+
 }
 
 void SandboxUnit::TermSandbox() {
@@ -78,6 +87,22 @@ void SandboxUnit::RenderSandbox() {
 		auto& buffer = viewport.GetCurrentBackBuffer();
 		buffer.TransitionRenderTarget(context);
 		buffer.ClearRenderTarget(context, Color4f::Convert(0x9BA8A8FF));
+
+		{ //!< Shaderでの書き込み
+
+			buffer.OMSetRenderTarget(context);
+
+			auto commandList = context.GetCommandList();
+
+			pipeline_.BindPipeline(context, viewport.GetClient());
+
+			Sxx::Graphics::ShaderParameter parameter;
+
+			layout_.BindGraphicsRootParameter(context, parameter);
+			commandList->DrawInstanced(3, 1, 0, 0);
+
+		}
+
 		buffer.TransitionPresent(context);
 	}
 }
