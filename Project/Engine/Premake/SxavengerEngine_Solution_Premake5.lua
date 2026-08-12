@@ -153,6 +153,7 @@ project "SxavengerEngine"
 		-- 依存ファイル --
 		links {
 			"assimp-vc145-mtd",
+			"zlibstaticd",
 		}
 
 	filter "configurations:Develop, Release"
@@ -164,6 +165,7 @@ project "SxavengerEngine"
 		-- 依存ファイル --
 		links {
 			"assimp-vc145-mt",
+			"zlibstatic",
 		}
 
 	--- application構成ごとのビルドオプション設定 ---
