@@ -8,7 +8,6 @@
 
 //* engine [graphics]
 #include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
-#include <Engine/Runtime/Graphics/Pipeline/ShaderBindingLayout.h>
 #include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////

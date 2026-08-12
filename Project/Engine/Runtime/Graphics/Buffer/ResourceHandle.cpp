@@ -62,7 +62,17 @@ void ResourceHandle::SetName(const std::string_view& name) {
 	SetName(UnicodeConverter::ConvertW(name));
 }
 
+D3D12_GPU_VIRTUAL_ADDRESS ResourceHandle::GetGpuVirtualAddress() const {
+	return GetResource().GetGpuVirtualAddress(); //!< allocatorからResourceを取得してGPU仮想アドレスを返す.
+}
+
 Resource& ResourceHandle::GetResource() {
+	StreamLogger::Assert(allocator_ != nullptr, "resource allocator is null.");
+	StreamLogger::Assert(handle_.HasHandle(), "resource handle is not valid.");
+	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.
+}
+
+const Resource& ResourceHandle::GetResource() const {
 	StreamLogger::Assert(allocator_ != nullptr, "resource allocator is null.");
 	StreamLogger::Assert(handle_.HasHandle(), "resource handle is not valid.");
 	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.

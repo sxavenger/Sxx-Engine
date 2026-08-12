@@ -106,7 +106,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetAddress("gColor", handle_.GetResource().GetGpuVirtualAddress());
+			parameter.SetAddress("gColor", handle_.GetGpuVirtualAddress());
 
 			pipeline_.BindShaderParameter(context, parameter);
 			commandList->DrawInstanced(3, 1, 0, 0);

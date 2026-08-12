@@ -74,8 +74,20 @@ ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHandle::Ha
 	return pool_.at(handle.GetIndex());
 }
 
+const ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHandle::Handle& handle) const {
+	StreamLogger::Assert(handle.HasHandle(), "resource handle is not valid.");
+	return pool_.at(handle.GetIndex());
+}
+
 Resource& ResourceAllocator::GetResource(const ResourceHandle::Handle& handle) {
 	Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
+
+	uint64_t frameIndex = currentFrame_ % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
+	return buffer[frameIndex];
+}
+
+const Resource& ResourceAllocator::GetResource(const ResourceHandle::Handle& handle) const {
+	const Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
 
 	uint64_t frameIndex = currentFrame_ % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
 	return buffer[frameIndex];

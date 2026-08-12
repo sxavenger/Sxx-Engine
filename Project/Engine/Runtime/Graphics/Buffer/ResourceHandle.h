@@ -99,7 +99,10 @@ public:
 	void SetName(const std::wstring_view& name);
 	void SetName(const std::string_view& name);
 
+	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const;
+
 	Resource& GetResource();
+	const Resource& GetResource() const;
 
 	//* operator [copy] <ResourceHandle> (delete) *//
 

@@ -61,8 +61,10 @@ public:
 	void IncrementFrame() { currentFrame_++; }
 
 	Buffer& GetBuffer(const ResourceHandle::Handle& handle);
+	const Buffer& GetBuffer(const ResourceHandle::Handle& handle) const;
 
 	Resource& GetResource(const ResourceHandle::Handle& handle);
+	const Resource& GetResource(const ResourceHandle::Handle& handle) const;
 
 private:
 
