@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
+#include "ShaderReflection.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -13,6 +14,11 @@
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
+
+//-----------------------------------------------------------------------------------------
+// forward
+//-----------------------------------------------------------------------------------------
+class ShaderCompiler;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ShaderBlob class
@@ -37,7 +43,7 @@ public:
 	//* constructor / destructor *//
 
 	ShaderBlob() noexcept = default;
-	ShaderBlob(ComPtr<IDxcBlob> blob, CompileProfile profile) noexcept : blob_(blob), profile_(profile) {}
+	ShaderBlob(ComPtr<IDxcBlob> blob, CompileProfile profile, const ShaderCompiler* compiler) noexcept : blob_(blob), profile_(profile), compiler_(compiler) {}
 
 	//* shader blob option *//
 
@@ -51,6 +57,10 @@ public:
 
 	CompileProfile GetProfile() const { return profile_; }
 
+	//* reflect option *//
+
+	ShaderReflection Reflect() const;
+
 	//* operator [copy / move] <ShaderBlob> *//
 
 	ShaderBlob(const ShaderBlob&)            = default;
@@ -61,7 +71,7 @@ public:
 
 	//* operator [copy] <std::nullptr_t> *//
 
-	ShaderBlob(std::nullptr_t) : blob_(nullptr) {}
+	ShaderBlob(std::nullptr_t) : blob_(nullptr), profile_(CompileProfile::Library), compiler_(nullptr) {}
 	ShaderBlob& operator=(std::nullptr_t) { blob_ = nullptr; return *this; }
 
 	//* operator [comparison] <std::nullptr_t> *//
@@ -82,6 +92,10 @@ private:
 	//* profile *//
 
 	CompileProfile profile_;
+
+	//* compiler *//
+
+	RefPtr<const ShaderCompiler> compiler_ = nullptr;
 
 };
 

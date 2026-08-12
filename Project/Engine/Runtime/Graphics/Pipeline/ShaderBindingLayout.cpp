@@ -100,13 +100,13 @@ RootSignature ShaderBindingLayout::CreateComputeRootSignature(const Device& devi
 	return RootSignature::Create(device, desc, flags);
 }
 
-void ShaderBindingLayout::BindGraphicsRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) {
+void ShaderBindingLayout::BindGraphicsRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const {
 	for (const auto& slot : slots_ | std::views::values) {
 		slot.BindGraphicsRootParameter(context, parameter);
 	}
 }
 
-void ShaderBindingLayout::BindComputeRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) {
+void ShaderBindingLayout::BindComputeRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const {
 	for (const auto& slot : slots_ | std::views::values) {
 		slot.BindComputeRootParameter(context, parameter);
 	}

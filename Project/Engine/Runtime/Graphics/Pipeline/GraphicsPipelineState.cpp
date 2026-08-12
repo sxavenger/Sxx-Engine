@@ -234,7 +234,12 @@ void GraphicsPipelineState::BindPipeline(const GraphicsCommandContext& context, 
 GraphicsPipelineState GraphicsPipelineState::Create(const Device& device, const RootSignature& rootSignature, const Desc& desc) {
 
 	GraphicsPipelineState pipeline;
+	GraphicsPipelineState::CreatePipelineState(pipeline, device, rootSignature, desc);
+	
+	return pipeline;
+}
 
+void GraphicsPipelineState::CreatePipelineState(GraphicsPipelineState& pipeline, const Device& device, const RootSignature& rootSignature, const Desc& desc) {
 	//!< pipelineStateの作成
 	switch (desc.type) {
 		case GraphicsType::Vertex:
@@ -250,8 +255,6 @@ GraphicsPipelineState GraphicsPipelineState::Create(const Device& device, const 
 	pipeline.rootSignature_ = rootSignature;
 	pipeline.type_          = desc.type;
 	pipeline.topology_      = desc.primitiveTopology;
-
-	return pipeline;
 }
 
 ComPtr<ID3D12PipelineState> GraphicsPipelineState::CreateVertexPipelineState(RefPtr<ID3D12Device8> device, RefPtr<ID3D12RootSignature> rootSignature, const Desc& desc) {

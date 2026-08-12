@@ -5,20 +5,11 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
 #include "../Core/GraphicsCommandContext.h"
-#include "../Shader/ShaderReflection.h"
-#include "ShaderParameter.h"
-#include "ShaderBindingSlot.h"
+#include "GraphicsPipelineState.h"
+#include "ShaderBindingLayout.h"
 #include "StaticSamplerSet.h"
-#include "RootSignature.h"
-
-//* engine
-#include <Runtime/Foundation.hpp>
-
-//* c++
-#include <vector>
-#include <unordered_map>
+#include "ShaderParameter.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -26,57 +17,34 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// ShaderBindingLayout class
+// ReflectedGraphicsPipelineState class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class ShaderBindingLayout final {
+class ReflectedGraphicsPipelineState final
+	: public GraphicsPipelineState {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	void Reflect(ShaderVisibility visibility, const ShaderReflection& reflection);
+	//* layout option *//
 
-	//* slot options *//
+	void BindShaderParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const;
 
-	void Reset();
+	//* static methods *//
 
-	bool Contains(const std::string& name) const;
-
-	ShaderBindingSlot& GetSlot(const std::string& name);
-	const ShaderBindingSlot& GetSlot(const std::string& name) const;
-
-	//* root signature option *//
-
-	RootSignature CreateGraphicsRootSignature(
+	static ReflectedGraphicsPipelineState Create(
 		const Device& device,
+		const Desc& desc,
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
 	);
 
-	RootSignature CreateGraphicsRootSignature(
+	static ReflectedGraphicsPipelineState Create(
 		const Device& device,
+		const Desc& desc,
 		const StaticSamplerSet& samplers,
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
 	);
-
-	RootSignature CreateComputeRootSignature(
-		const Device& device,
-		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
-	);
-
-	RootSignature CreateComputeRootSignature(
-		const Device& device,
-		const StaticSamplerSet& samplers,
-		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
-	);
-
-	// TODO: StaticSamplerStateの指定Descで作成する.
-
-	//* bind option *//
-
-	void BindGraphicsRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const;
-
-	void BindComputeRootParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const;
 
 private:
 
@@ -84,13 +52,17 @@ private:
 	// private variables
 	//=========================================================================================
 
-	std::unordered_map<std::string, ShaderBindingSlot> slots_;
+	ShaderBindingLayout layout_;
 
 	//=========================================================================================
 	// private methods
 	//=========================================================================================
 
-	void Insert(ShaderVisibility visibility, const D3D12_SHADER_INPUT_BIND_DESC& desc, const ShaderReflection& reflection);
+	//* create helper methods *//
+
+	static ShaderBindingLayout CreateLayout(const Desc& desc);
+
+	static void Reflect(ShaderBindingLayout& layout, ShaderVisibility visibility, const ShaderBlob& blob);
 
 };
 

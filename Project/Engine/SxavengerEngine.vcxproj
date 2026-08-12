@@ -276,6 +276,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Graphics\Core\Device.h" />
     <ClInclude Include="Runtime\Graphics\Core\GraphicsCommandContext.h" />
     <ClInclude Include="Runtime\Graphics\Core\InfoQueue.h" />
+    <ClInclude Include="Runtime\Graphics\Pipeline\ReflectedComputePipelineState.h" />
+    <ClInclude Include="Runtime\Graphics\Pipeline\ReflectedGraphicsPipelineState.h" />
     <ClInclude Include="Runtime\Graphics\Pipeline\StaticSamplerSet.h" />
     <ClInclude Include="Runtime\Graphics\Shader\ShaderBlob.h" />
     <ClInclude Include="Runtime\Graphics\Shader\ShaderCompiler.h" />
@@ -396,6 +398,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Graphics\Core\Device.cpp" />
     <ClCompile Include="Runtime\Graphics\Core\GraphicsCommandContext.cpp" />
     <ClCompile Include="Runtime\Graphics\Core\InfoQueue.cpp" />
+    <ClCompile Include="Runtime\Graphics\Pipeline\ReflectedComputePipelineState.cpp" />
+    <ClCompile Include="Runtime\Graphics\Pipeline\ReflectedGraphicsPipelineState.cpp" />
     <ClCompile Include="Runtime\Graphics\Pipeline\StaticSamplerSet.cpp" />
     <ClCompile Include="Runtime\Graphics\Shader\ShaderBlob.cpp" />
     <ClCompile Include="Runtime\Graphics\Shader\ShaderCompiler.cpp" />

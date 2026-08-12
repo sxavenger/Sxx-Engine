@@ -4,6 +4,9 @@ SXAVENGER_ENGINE_USING_(Graphics)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* graphics
+#include "ShaderCompiler.h"
+
 //* lib
 #include <Lib/Logger/StreamLogger.h>
 
@@ -30,5 +33,10 @@ DxcBuffer ShaderBlob::GetBuffer(CodePage codePage) const {
 	buffer.Encoding = static_cast<UINT>(codePage);
 
 	return buffer;
+}
+
+ShaderReflection ShaderBlob::Reflect() const {
+	StreamLogger::Assert(blob_ != nullptr, "blob is null.");
+	return compiler_->Reflect(*this);
 }
 

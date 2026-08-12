@@ -116,9 +116,9 @@ public:
 		const std::filesystem::path& filepath,
 		CompileProfile profile,
 		const std::wstring& entryPoint = L""
-	);
+	) const;
 
-	ShaderReflection Reflect(const ShaderBlob& blob);
+	ShaderReflection Reflect(const ShaderBlob& blob) const;
 
 private:
 
@@ -159,7 +159,7 @@ private:
 		RefPtr<IDxcBlobEncoding> source,
 		CompileProfile profile,
 		std::wstring entryPoint
-	);
+	) const;
 
 };
 

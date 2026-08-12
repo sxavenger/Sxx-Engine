@@ -27,6 +27,10 @@ void ComputePipelineState::Desc::SetShaderBlob(const ShaderBlob& _blob) {
 	blob = _blob;
 }
 
+const ShaderBlob& ComputePipelineState::Desc::GetShaderBlob() const {
+	return blob;
+}
+
 D3D12_SHADER_BYTECODE ComputePipelineState::Desc::GetShaderBytecode() const {
 	StreamLogger::Assert(blob != nullptr, "shader blob is not set.");  //!< blobが設定されていない
 	return blob.GetBytecode();
@@ -56,14 +60,17 @@ void ComputePipelineState::BindPipeline(const GraphicsCommandContext& context) c
 ComputePipelineState ComputePipelineState::Create(const Device& device, const RootSignature& rootSignature, const Desc& desc) {
 
 	ComputePipelineState pipeline;
+	ComputePipelineState::CreatePipelineState(pipeline, device, rootSignature, desc);
 
+	return pipeline;
+}
+
+void ComputePipelineState::CreatePipelineState(ComputePipelineState& pipeline, const Device& device, const RootSignature& rootSignature, const Desc& desc) {
 	//!< pipelineの作成
 	pipeline.pipeline_ = ComputePipelineState::CreateComputePipelineState(device.GetDevice(), rootSignature.Get(), desc);
 
 	//!< 設定の保存
 	pipeline.rootSignature_ = rootSignature;
-
-	return pipeline;
 }
 
 ComPtr<ID3D12PipelineState> ComputePipelineState::CreateComputePipelineState(RefPtr<ID3D12Device8> device, RefPtr<ID3D12RootSignature> rootSignature, const Desc& desc) {

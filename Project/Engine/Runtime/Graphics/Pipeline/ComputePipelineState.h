@@ -18,7 +18,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ComputePipelineState class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class ComputePipelineState final {
+class ComputePipelineState {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +36,8 @@ public:
 		void ResetShaderBlob();
 
 		void SetShaderBlob(const ShaderBlob& blob);
+
+		const ShaderBlob& GetShaderBlob() const;
 
 		D3D12_SHADER_BYTECODE GetShaderBytecode() const;
 
@@ -71,10 +73,10 @@ public:
 
 	static ComputePipelineState Create(const Device& device, const RootSignature& rootSignature, const Desc& desc);
 
-private:
+protected:
 
 	//=========================================================================================
-	// private variables
+	// protected variables
 	//=========================================================================================
 
 	//* DirectX12 *//
@@ -84,6 +86,16 @@ private:
 	//* parameter *//
 
 	RootSignature rootSignature_;
+
+	//=========================================================================================
+	// protected methods
+	//=========================================================================================
+
+	//* intermediate methods *//
+
+	static void CreatePipelineState(ComputePipelineState& pipeline, const Device& device, const RootSignature& rootSignature, const Desc& desc);
+
+private:
 
 	//=========================================================================================
 	// private methods

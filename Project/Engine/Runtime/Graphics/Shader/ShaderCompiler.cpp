@@ -103,7 +103,7 @@ void ShaderCompiler::Init(const Configuration& config, const Device& device) {
 ShaderBlob ShaderCompiler::Compile(
 	const std::filesystem::path& filepath,
 	CompileProfile profile,
-	const std::wstring& entryPoint) {
+	const std::wstring& entryPoint) const {
 
 	//!< hlslを読み込む
 	ComPtr<IDxcBlobEncoding> source;
@@ -117,7 +117,7 @@ ShaderBlob ShaderCompiler::Compile(
 	return Compile(filepath, source.Get(), profile, entryPoint);
 }
 
-ShaderReflection ShaderCompiler::Reflect(const ShaderBlob& blob) {
+ShaderReflection ShaderCompiler::Reflect(const ShaderBlob& blob) const {
 
 	DxcBuffer buffer = blob.GetBuffer(ShaderBlob::CodePage::ACP); //!< バイナリの内容を設定.
 
@@ -172,7 +172,7 @@ ShaderBlob ShaderCompiler::Compile(
 	const std::filesystem::path& filepath,
 	RefPtr<IDxcBlobEncoding> source,
 	CompileProfile profile,
-	std::wstring entryPoint) {
+	std::wstring entryPoint) const {
 
 	//!< sourceの内容を設定する
 	DxcBuffer buffer = {};
@@ -237,5 +237,5 @@ ShaderBlob ShaderCompiler::Compile(
 	StreamLogger::Info(
 		std::format("shader compile success. filepath: {}", filepath.generic_string())
 	);
-	return ShaderBlob(blob, profile);
+	return ShaderBlob(blob, profile, this);
 }

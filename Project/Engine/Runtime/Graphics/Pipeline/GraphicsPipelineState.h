@@ -30,7 +30,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // GraphicsPipelineState class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class GraphicsPipelineState final {
+class GraphicsPipelineState {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,10 +167,10 @@ public:
 
 	static GraphicsPipelineState Create(const Device& device, const RootSignature& rootSignature, const Desc& desc);
 
-private:
+protected:
 
 	//=========================================================================================
-	// private variables
+	// protected variables
 	//=========================================================================================
 
 	//* DirectX12 *//
@@ -183,6 +183,16 @@ private:
 
 	GraphicsType type_          = GraphicsType::Vertex;
 	PrimitiveTopology topology_ = PrimitiveTopology::Undefined;
+
+	//=========================================================================================
+	// protected methods
+	//=========================================================================================
+
+	//* intermediate methods *//
+
+	static void CreatePipelineState(GraphicsPipelineState& pipeline, const Device& device, const RootSignature& rootSignature, const Desc& desc);
+
+private:
 
 	//=========================================================================================
 	// private methods

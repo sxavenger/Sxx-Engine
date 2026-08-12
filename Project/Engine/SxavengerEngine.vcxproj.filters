@@ -541,6 +541,8 @@
     <ClInclude Include="Runtime\Graphics\Pipeline\ComputePipelineState.h" />
     <ClInclude Include="Runtime\Graphics\Shader\ShaderReflection.h" />
     <ClInclude Include="Runtime\Graphics\Pipeline\StaticSamplerSet.h" />
+    <ClInclude Include="Runtime\Graphics\Pipeline\ReflectedComputePipelineState.h" />
+    <ClInclude Include="Runtime\Graphics\Pipeline\ReflectedGraphicsPipelineState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -817,5 +819,7 @@
     <ClCompile Include="Runtime\Graphics\Pipeline\ComputePipelineState.cpp" />
     <ClCompile Include="Runtime\Graphics\Shader\ShaderReflection.cpp" />
     <ClCompile Include="Runtime\Graphics\Pipeline\StaticSamplerSet.cpp" />
+    <ClCompile Include="Runtime\Graphics\Pipeline\ReflectedComputePipelineState.cpp" />
+    <ClCompile Include="Runtime\Graphics\Pipeline\ReflectedGraphicsPipelineState.cpp" />
   </ItemGroup>
 </Project>
