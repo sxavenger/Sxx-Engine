@@ -453,3 +453,8 @@ FodyWeavers.xsd
 # Script関係
 /Project/Script/obj
 /Project/Script/bin
+
+# Externals: assimp prebuilt libraries (Git LFS)
+!/Project/Engine/Externals/assimp/lib/[Dd]ebug/
+!/Project/Engine/Externals/assimp/lib/[Rr]elease/
+/Project/Engine/Externals/assimp/lib/**/*.pdb

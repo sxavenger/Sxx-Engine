@@ -62,6 +62,7 @@ project "SxavengerEngine"
 		"%{prj.location}/Externals/dotnet/include", -- [dotnet](https://dotnet.microsoft.com)
 		"%{prj.location}/Externals/PixEvents/include", -- [PixEvents](https://github.com/microsoft/PixEvents.git)
 		"%{prj.location}/Externals/imgui", -- [imgui](https://github.com/ocornut/imgui.git)
+		"%{prj.location}/Externals/assimp/include", -- [assimp](https://github.com/assimp/assimp.git)
 	}
 
 	-- 依存プロジェクト --
@@ -140,6 +141,29 @@ project "SxavengerEngine"
 		-- ビルド後イベント --
 		postbuildcommands {
 			'copy /Y "%{prj.location}\\Externals\\PixEvents\\bin\\Release\\WinPixEventRuntime.dll" "%{cfg.targetdir}"'
+		}
+
+	-- assimp
+	filter "configurations:Debug"
+		-- リンカー設定 --
+		libdirs {
+			"%{prj.location}/Externals/assimp/lib/Debug"
+		}
+
+		-- 依存ファイル --
+		links {
+			"assimp-vc145-mtd",
+		}
+
+	filter "configurations:Develop, Release"
+		-- リンカー設定 --
+		libdirs {
+			"%{prj.location}/Externals/assimp/lib/Release"
+		}
+
+		-- 依存ファイル --
+		links {
+			"assimp-vc145-mt",
 		}
 
 	--- application構成ごとのビルドオプション設定 ---
