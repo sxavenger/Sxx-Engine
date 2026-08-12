@@ -54,7 +54,7 @@ void SwapChain::Init(
 		buffer.resource
 			= Resource::Wrap(SwapChain::GetBufferResource(i, swapChain_.Get()), D3D12_RESOURCE_STATE_PRESENT);
 
-		buffer.resource.SetName(std::format(L"SwapChain Buffer (hwnd: {:p}) [{}] ", reinterpret_cast<const void*>(hwnd), i)); //!< resourceの名前を設定.
+		buffer.resource.SetName(std::format(L"SwapChain Buffer | (hwnd: {:p}) [{}] ", reinterpret_cast<const void*>(hwnd), i)); //!< resourceの名前を設定.
 
 		//!< Descriptorの取得
 		buffer.descriptorRTV = descriptorHeaps.Allocate(DescriptorCategory::RTV);
@@ -96,7 +96,7 @@ void SwapChain::Resize(
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
 	);
 
-	// XXX: リサイズでのResource解放時は, GPUの処理が完了していることを保証する必要がある. (Present後にResizeBuffersを呼ぶと, GPUがまだ使用中のResourceを解放しようとしてエラーになる.)
+	// XXX: リサイズでのResource解放時は, GPUの処理が完了していることを保証する必要がある. (Present後にResizeBuffersを呼ぶと, GPUがまだ使用中のResourceを解放しようとしてエラーになる.
 
 	for (uint32_t i = 0; i < kFrameCount; ++i) {
 
