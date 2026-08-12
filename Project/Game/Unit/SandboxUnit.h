@@ -7,7 +7,7 @@
 #include <Engine/Runtime/Framework/Core/IUnit.h>
 
 //* engine [graphics]
-#include <Engine/Runtime/Graphics/Pipeline/GraphicsPipelineState.h>
+#include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
 #include <Engine/Runtime/Graphics/Pipeline/ShaderBindingLayout.h>
 #include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
 
@@ -37,8 +37,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	Sxx::Graphics::GraphicsPipelineState pipeline_;
-	Sxx::Graphics::ShaderBindingLayout layout_;
+	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline_;
 
 	Sxx::Graphics::ResourceHandle handle_;
 

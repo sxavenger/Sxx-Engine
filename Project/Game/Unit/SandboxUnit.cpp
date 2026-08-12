@@ -56,12 +56,8 @@ void SandboxUnit::InitSandbox() {
 	desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
 	desc.AppendRenderTargetFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 
-	layout_.Reflect(Sxx::Graphics::ShaderVisibility::Vertex, Sxx::Graphics::Core::ReflectShader(desc.GetShaderBlob(Sxx::Graphics::CompileProfile::Vertex)));
-	layout_.Reflect(Sxx::Graphics::ShaderVisibility::Pixel, Sxx::Graphics::Core::ReflectShader(desc.GetShaderBlob(Sxx::Graphics::CompileProfile::Pixel)));
-
-	pipeline_ = Sxx::Graphics::GraphicsPipelineState::Create(
+	pipeline_ = Sxx::Graphics::ReflectedGraphicsPipelineState::Create(
 		Sxx::Graphics::Core::GetDevice(),
-		layout_.CreateGraphicsRootSignature(Sxx::Graphics::Core::GetDevice()),
 		desc
 	);
 
@@ -112,7 +108,7 @@ void SandboxUnit::RenderSandbox() {
 			Sxx::Graphics::ShaderParameter parameter;
 			parameter.SetAddress("gColor", handle_.GetResource().GetGpuVirtualAddress());
 
-			layout_.BindGraphicsRootParameter(context, parameter);
+			pipeline_.BindShaderParameter(context, parameter);
 			commandList->DrawInstanced(3, 1, 0, 0);
 		}
 
