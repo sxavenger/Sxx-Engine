@@ -11,7 +11,6 @@ SXAVENGER_ENGINE_USING_(Assets)
 //* lib
 #include <Lib/Logger/StreamLogger.h>
 #include <Lib/Format/Json/JsonFile.h>
-#include <Lib/Format/Json/JsonReader.h>
 
 //* DirectXTex
 #include <DirectXTex/Common/d3dx12.h>
@@ -21,32 +20,36 @@ SXAVENGER_ENGINE_USING_(Assets)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
-	if (!std::filesystem::exists(texture->GetFilepath())) {
-		StreamLogger::Error("Asset::TextureBuilder | file does not exist. filepath: {}", texture->GetFilepath().generic_string());
+
+	//!< ファイルパスの取得
+	const std::filesystem::path& filepath = texture->GetFilepath();
+
+	if (!std::filesystem::exists(filepath)) {
+		StreamLogger::Error("Asset::TextureBuilder | file does not exist. filepath: {}", filepath.generic_string());
 		return; //!< ファイルが存在しない場合は処理を終了
 	}
 
 	//!< Assetファイルの読み込み
-	json::node node = JsonFile::Load(texture->GetFilepath());
+	json::node node = JsonFile::Load(filepath);
 
 	//!< metadataの設定
-	texture->metadata_ = TextureMetadata::Deserialize(node["metadata"]);
+	const TextureMetadata& metadata = texture->metadata_ = TextureMetadata::Deserialize(node["metadata"]);
 
-	if (texture->metadata_.GetType() == MetadataType::Unknown) {
-		StreamLogger::Error("Asset::TextureBuilder | texture metadata type is unknown. filepath: {}", texture->GetFilepath().generic_string());
+	if (metadata.GetType() == MetadataType::Unknown) {
+		StreamLogger::Error("Asset::TextureBuilder | texture metadata type is unknown. filepath: {}", filepath.generic_string());
 		return; //!< metadataがUnknownの場合は処理を終了
 	}
 
-	const TextureMetadata::ReferenceData& reference = texture->metadata_.GetReferenceData(); //!< 参照データの取得
+	const TextureMetadata::ReferenceData& reference = metadata.GetReferenceData(); //!< 参照データの取得
 
 	//!< 画像ファイルの読み込み
-	texture->image_ = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
+	const DirectX::ScratchImage& image = texture->image_ = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
 
-	if (reference.encoding != Graphics::GetColorEncoding(texture->image_.GetMetadata().format)) {
-		StreamLogger::Warning("Asset::TextureBuilder | encoding is mismatched. filepath: {}", texture->GetFilepath().generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
+	if (reference.encoding != Graphics::GetColorEncoding(image.GetMetadata().format)) {
+		StreamLogger::Warning("Asset::TextureBuilder | encoding is mismatched. filepath: {}", filepath.generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
 	}
 
-	texture->description_ = Texture::Description::Parse(texture->image_.GetMetadata()); //!< descriptionの設定
+	texture->description_ = Texture::Description::Parse(image.GetMetadata()); //!< descriptionの設定
 
 	StreamLogger::Info("Asset::TextureBuilder | texture build completed. name: {}", texture->GetName());
 }

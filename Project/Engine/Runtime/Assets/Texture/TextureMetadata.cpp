@@ -68,7 +68,7 @@ MetadataType TextureMetadata::GetType() const {
 }
 
 const TextureMetadata::ReferenceData& TextureMetadata::GetReferenceData() const {
-	StreamLogger::Assert(GetType() == MetadataType::Reference, "texture metadata type is not reference.");
+	StreamLogger::Assert(GetType() == MetadataType::Reference, "texture metadata is not reference type.");
 	return std::get<ReferenceData>(data);
 }
 
@@ -82,12 +82,12 @@ json::node TextureMetadata::Serialize(const TextureMetadata& metadata) {
 			break;
 			
 		case MetadataType::Inline:
-			StreamLogger::Error("texture metadata type is inline. serialization is not supported.");
+			StreamLogger::Error("Assets::TextureMetadata | texture metadata type is inline. serialization is not supported.");
 			node["inline"] = nullptr;
 			break;
 			
 		default:
-			StreamLogger::Error("texture metadata type is unknown. serialization is not supported.");
+			StreamLogger::Error("Assets::TextureMetadata | texture metadata type is unknown.");
 			node = nullptr;
 			break;
 	}
@@ -101,8 +101,10 @@ TextureMetadata TextureMetadata::Deserialize(const json::node& node) {
 
 	if (JsonNode::Contains(node, "reference")) { //!< reference型のmetadataを取得する.
 		metadata.data = ReferenceData::Deserialize(JsonNode::GetNode(node, "reference"));
+		return metadata;
 	}
 
+	StreamLogger::Error("Assets::TextureMetadata | texture metadata type is unknown.");
 	return metadata;
 }
 
