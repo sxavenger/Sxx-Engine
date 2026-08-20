@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../cube.obj",
+			"meshIndex": 0
+		}
+	},
+	"type": "StaticMesh",
+	"uuid": "c5b697c8-7b7d-47a0-be7e-640d9b67c301"
+}

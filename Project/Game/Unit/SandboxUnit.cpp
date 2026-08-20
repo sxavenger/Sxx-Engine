@@ -11,8 +11,8 @@
 
 //* engine [assets]
 #include <Engine/Runtime/Assets/Texture/Texture.h>
+#include <Engine/Runtime/Assets/Mesh/StaticMesh.h>
 #include <Engine/Runtime/Assets/Handle/AssetHandle.h>
-#include <Engine/Runtime/Assets/Importer/TextureImporter.h>
 
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Cache/TextureCache.h>
@@ -71,6 +71,10 @@ void SandboxUnit::InitSandbox() {
 		Sxx::Graphics::kFrameCount
 	);
 	handle_.SetName(L"SandboxUnit | ColorBuffer");
+
+	Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle =
+		Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/common/StaticMeshes/cube.asset");
+	auto mesh = handle.WaitGet();
 }
 
 void SandboxUnit::TermSandbox() {
