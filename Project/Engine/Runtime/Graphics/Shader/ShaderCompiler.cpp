@@ -105,16 +105,18 @@ ShaderBlob ShaderCompiler::Compile(
 	CompileProfile profile,
 	const std::wstring& entryPoint) const {
 
+	std::filesystem::path path = filepath.lexically_normal();
+
 	//!< hlslを読み込む
 	ComPtr<IDxcBlobEncoding> source;
 	auto hr = utils_->LoadFile(
-		filepath.generic_wstring().c_str(),
+		path.generic_wstring().c_str(),
 		nullptr,
 		&source
 	);
-	ComPtrUtil::Assert(hr, std::format(L"dxcompiler load file failed. filepath: {}", filepath.generic_wstring()));
+	ComPtrUtil::Assert(hr, std::format(L"dxcompiler load file failed. filepath: {}", path.generic_wstring()));
 
-	return Compile(filepath, source.Get(), profile, entryPoint);
+	return Compile(path, source.Get(), profile, entryPoint);
 }
 
 ShaderReflection ShaderCompiler::Reflect(const ShaderBlob& blob) const {

@@ -50,17 +50,17 @@ Assetの名前は, filepathのファイル名を使用する. (ex. `AssetData.as
 (例, gltfを読み込んだ場合)
 - reference.gltf
 - reference.bin
-> Mesh
-	- MeshXXX1.asset
-	- MeshXXX2.asset
+> StaticMeshes
+	- XXX.asset
+	- YYY.asset
 	...
-> Material
-	- MaterialXXX1.asset
-	- MaterialXXX2.asset
+> Materials
+	- XXX.asset
+	- YYY.asset
 	...
-> Animation
-	- AnimationXXX1.asset
-	- AnimationXXX2.asset
+> Animations
+	- XXX.asset
+	- YYY.asset
 	...
 ```
 

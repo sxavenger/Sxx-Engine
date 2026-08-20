@@ -23,7 +23,8 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 enum class AssetType : uint8_t {
 	Unknown,
 	Texture,
-	Mesh,
+	StaticMesh,
+	SkeletalMesh,
 	Material,
 };
 

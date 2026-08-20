@@ -77,7 +77,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromDDS(const std::filesystem::
 	DirectX::ScratchImage image = {};
 
 	//!< ddsファイルのパスを作成
-	std::filesystem::path filepath = directory / reference.filepath;
+	std::filesystem::path filepath = (directory / reference.filepath).lexically_normal();
 
 	//!< ddsファイルの読み込み
 	auto hr = DirectX::LoadFromDDSFile(
@@ -104,7 +104,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromHDR(const std::filesystem::
 	DirectX::ScratchImage image = {};
 
 	//!< hdrファイルのパスを作成
-	std::filesystem::path filepath = directory / reference.filepath;
+	std::filesystem::path filepath = (directory / reference.filepath).lexically_normal();
 
 	//!< hdrファイルの読み込み
 	auto hr = DirectX::LoadFromHDRFile(
@@ -130,7 +130,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromTGA(const std::filesystem::
 	DirectX::ScratchImage image = {};
 
 	//!< tgaファイルのパスを作成
-	std::filesystem::path filepath = directory / reference.filepath;
+	std::filesystem::path filepath = (directory / reference.filepath).lexically_normal();
 
 	//!< tgaファイルの読み込み
 	auto hr = DirectX::LoadFromTGAFile(
@@ -156,7 +156,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromWIC(const std::filesystem::
 	DirectX::ScratchImage image = {};
 
 	//!< wicファイルのパスを作成
-	std::filesystem::path filepath = directory / reference.filepath;
+	std::filesystem::path filepath = (directory / reference.filepath).lexically_normal();
 
 	//!< wicファイルの読み込み時のflagsの設定
 	DirectX::WIC_FLAGS wicFlags = reference.GetWICFlags();

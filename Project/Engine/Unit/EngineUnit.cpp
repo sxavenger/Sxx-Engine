@@ -14,6 +14,9 @@ SXAVENGER_ENGINE_USING
 //* engine [scheduler]
 #include <Runtime/Scheduler/System.h>
 
+//* engine [assets]
+#include <Runtime/Assets/Assimp/AssimpCommon.h>
+
 //* engine [world]
 #include <Runtime/World/Entity/EntityStorage.h>
 #include <Runtime/World/Component/ComponentStorage.h>
@@ -40,18 +43,18 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 		//!< フレームクロックの更新処理
 		frameClock_.BeginFrame();
 
-		Sxx::Platform::Input::Update(); //!< 入力の更新処理
+		Platform::Input::Update(); //!< 入力の更新処理
 		
-		Sxx::Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
-		Sxx::Graphics::Core::IncrementFrame(); //!< frameを更新する.
+		Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
+		Graphics::Core::IncrementFrame(); //!< frameを更新する.
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
 		//!< graphicsの終了frame処理
-		Sxx::Graphics::Core::SubmitDirectQueueAdvance();
+		Graphics::Core::SubmitDirectQueueAdvance();
 
-		Sxx::Graphics::Core::FreeDescriptor(); //!< descriptorの解放処理
-		Sxx::Graphics::Core::FreeResource();   //!< resourceの解放処理
+		Graphics::Core::FreeDescriptor(); //!< descriptorの解放処理
+		Graphics::Core::FreeResource();   //!< resourceの解放処理
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Lowest, [this]() {
@@ -61,14 +64,14 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 
 	pipeline.SetProcess(Framework::Phase::Terminate, Framework::Priority::Highest, [this]() {
 		//!< Worldの終了処理.
-		Sxx::World::EntityStorage::GetInstance()->Destroy();
-		Sxx::World::ComponentStorage::GetInstance()->Destroy();
+		World::EntityStorage::GetInstance()->Destroy();
+		World::ComponentStorage::GetInstance()->Destroy();
 
 		//!< Schedulerの終了処理.
 		Scheduler::System::Shutdown();
 
 		//!< graphicsのQueueの処理の終了.
-		Sxx::Graphics::Core::SubmitDirectQueueWait(); //!< direct queueの処理を全て実行する.
+		Graphics::Core::SubmitDirectQueueWait(); //!< direct queueの処理を全て実行する.
 	});
 }
 
@@ -78,6 +81,7 @@ void EngineUnit::InitEngine() {
 	CrashHandler::Install();
 
 	StreamLogger::Info("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
+	StreamLogger::Info("Assimp >> version: {}", Assets::AssimpCommon::GetAssimpVersion());
 
 	configuration_.Load("Engine/Packages/config/Platform.toml");
 	configuration_.Load("Engine/Packages/config/Graphics.toml");

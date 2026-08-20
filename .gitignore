@@ -100,7 +100,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
+# *.obj Assets側の.objと扱うので除外
 *.idb
 *.iobj
 *.pch
@@ -443,6 +443,11 @@ FodyWeavers.xsd
 *.log
 *.wpix
 
+# Externals: assimp prebuilt libraries (Git LFS)
+!/Project/Engine/Externals/assimp/lib/[Dd]ebug/
+!/Project/Engine/Externals/assimp/lib/[Rr]elease/
+/Project/Engine/Externals/assimp/lib/**/*.pdb
+
 #-----------------------------------------------------------------------------------------
 # User ignore files
 #-----------------------------------------------------------------------------------------
@@ -453,8 +458,3 @@ FodyWeavers.xsd
 # Script関係
 /Project/Script/obj
 /Project/Script/bin
-
-# Externals: assimp prebuilt libraries (Git LFS)
-!/Project/Engine/Externals/assimp/lib/[Dd]ebug/
-!/Project/Engine/Externals/assimp/lib/[Rr]elease/
-/Project/Engine/Externals/assimp/lib/**/*.pdb
