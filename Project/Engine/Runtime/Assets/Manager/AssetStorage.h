@@ -6,6 +6,7 @@
 //* assets
 #include "../Base/BaseAsset.h"
 #include "../Texture/TextureTraits.h"
+#include "../Mesh/StaticMeshTraits.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -89,7 +90,7 @@ private:
 
 template <Asset T>
 Uuid AssetStorage::Import(const std::filesystem::path& filepath) {
-
+	
 	BaseAssetMetadata metadata = AssetStorage::LoadMetadata(filepath); //!< metadataの取得
 
 	if (storage_.contains(metadata.uuid)) {
@@ -97,10 +98,12 @@ Uuid AssetStorage::Import(const std::filesystem::path& filepath) {
 		return metadata.uuid; //!< すでに登録されている場合は警告を出す
 	}
 
-	std::shared_ptr<T> asset = std::make_shared<T>(metadata); //!< Assetの生成
-	storage_[metadata.uuid]  = asset; //!< Assetの登録
+	//!< Assetの登録
+	std::shared_ptr<T> asset = std::make_shared<T>(metadata);
+	storage_[metadata.uuid]  = asset; 
 
-	AssetStorage::PushBuildTask(asset, [asset]() mutable { AssetTraits<T>::Build(asset); }); //!< Assetのビルドを非同期実行.
+	//!< Assetのビルドを非同期実行.
+	AssetStorage::PushBuildTask(asset, [asset]() mutable { AssetTraits<T>::Build(asset); });
 
 	return metadata.uuid;
 }

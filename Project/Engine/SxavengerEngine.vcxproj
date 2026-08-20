@@ -90,7 +90,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>WinPixEventRuntime.lib;assimp-vc145-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>WinPixEventRuntime.lib;assimp-vc145-mtd.lib;zlibstaticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>Externals\PixEvents\lib\Debug;Externals\assimp\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/WX /IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
@@ -220,6 +220,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Application\FrameClock.h" />
     <ClInclude Include="Runtime\Application\Viewport.h" />
     <ClInclude Include="Runtime\Assets\AssetUtil.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpCommon.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpImporter.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpOption.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpMesh.h" />
     <ClInclude Include="Runtime\Assets\Base\AssetTraits.h" />
     <ClInclude Include="Runtime\Assets\Base\BaseAsset.h" />
     <ClInclude Include="Runtime\Assets\Base\BaseAssetMetadata.h" />
@@ -227,6 +231,11 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Assets\Importer\TextureImporter.h" />
     <ClInclude Include="Runtime\Assets\Manager\AssetFactory.h" />
     <ClInclude Include="Runtime\Assets\Manager\AssetStorage.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshBuilder.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshMetadata.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshTraits.h" />
     <ClInclude Include="Runtime\Assets\Texture\Texture.h" />
     <ClInclude Include="Runtime\Assets\Texture\TextureBuilder.h" />
     <ClInclude Include="Runtime\Assets\Texture\TextureMetadata.h" />
@@ -349,12 +358,19 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Lib\Uuid\Uuid.cpp" />
     <ClCompile Include="Runtime\Application\FrameClock.cpp" />
     <ClCompile Include="Runtime\Application\Viewport.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpCommon.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpImporter.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpMesh.cpp" />
     <ClCompile Include="Runtime\Assets\Base\BaseAsset.cpp" />
     <ClCompile Include="Runtime\Assets\Base\BaseAssetMetadata.cpp" />
     <ClCompile Include="Runtime\Assets\Handle\AssetHandle.cpp" />
     <ClCompile Include="Runtime\Assets\Importer\TextureImporter.cpp" />
     <ClCompile Include="Runtime\Assets\Manager\AssetFactory.cpp" />
     <ClCompile Include="Runtime\Assets\Manager\AssetStorage.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshBuilder.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshMetadata.cpp" />
     <ClCompile Include="Runtime\Assets\Texture\Texture.cpp" />
     <ClCompile Include="Runtime\Assets\Texture\TextureBuilder.cpp" />
     <ClCompile Include="Runtime\Assets\Texture\TextureMetadata.cpp" />

@@ -61,6 +61,9 @@
     <Filter Include="Runtime\Assets">
       <UniqueIdentifier>{0BF038FD-F7BD-2C03-E051-9D29CCBE0868}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Assets\Assimp">
+      <UniqueIdentifier>{A76C918E-13D9-4C89-DCCC-E4E648F86EF1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Assets\Base">
       <UniqueIdentifier>{750B70F3-E16C-4D01-6ADA-93B3D63A84C0}</UniqueIdentifier>
     </Filter>
@@ -636,6 +639,15 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshMetadata.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshBuilder.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpImporter.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpCommon.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpOption.h" />
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpMesh.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshTraits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -980,5 +992,12 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshMetadata.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp" />
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshBuilder.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpImporter.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpCommon.cpp" />
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpMesh.cpp" />
   </ItemGroup>
 </Project>
