@@ -55,6 +55,9 @@ project "SxavengerEngine"
 	includedirs {
 		"%{prj.location}",
 
+		-- 外部ライブラリ
+		"%{prj.location}/Externals",
+
 		"%{prj.location}/Externals/magic_enum", -- [magic_enum](https://github.com/Neargye/magic_enum.git)
 		"%{prj.location}/Externals/nlohmann", -- [nlohmann](https://github.com/nlohmann/json.git)
 		"%{prj.location}/Externals/tomlplusplus", -- [toml++](https://github.com/marzer/tomlplusplus.git)
