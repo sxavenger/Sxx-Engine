@@ -33,7 +33,6 @@ const AssimpImporter& AssimpCommon::GetImporter(const std::filesystem::path& fil
 			| AssimpOption::Triangulate
 			| AssimpOption::CalcTangentSpace
 			| AssimpOption::JoinIdenticalVertices
-			| AssimpOption::ImproveCacheLocality
 			| AssimpOption::LimitBoneWeights
 			| AssimpOption::SortByPrimitiveType
 			| AssimpOption::FindDegenerates

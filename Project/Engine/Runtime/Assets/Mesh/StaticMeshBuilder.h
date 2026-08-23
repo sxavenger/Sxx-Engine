@@ -40,6 +40,8 @@ private:
 
 	static void BuildReference(StaticMesh::Description& description, const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data);
 
+	static void Optimize(StaticMesh::Description& description);
+
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

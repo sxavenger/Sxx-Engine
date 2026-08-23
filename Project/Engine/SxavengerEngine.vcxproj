@@ -75,7 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_PROFILE="$(Configuration)";NOMINMAX;DEVELOPMENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Externals;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -109,7 +109,7 @@ copy /Y "$(ProjectDir)\Externals\PixEvents\bin\Debug\WinPixEventRuntime.dll" "..
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_PROFILE="$(Configuration)";NOMINMAX;DEVELOPMENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Externals;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -146,7 +146,7 @@ copy /Y "$(ProjectDir)\Externals\PixEvents\bin\Release\WinPixEventRuntime.dll" "
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_PROFILE="$(Configuration)";NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Externals;Externals\magic_enum;Externals\nlohmann;Externals\tomlplusplus;Externals\DirectXTex\include;Externals\dotnet\include;Externals\PixEvents\include;Externals\imgui;Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
