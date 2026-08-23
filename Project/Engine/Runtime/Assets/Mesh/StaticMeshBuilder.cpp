@@ -38,7 +38,7 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 
 	switch (metadata.GetType()) {
 		case MetadataType::Reference:
-			StaticMeshBuilder::BuildReference(mesh->description_, mesh->GetDirectory(), metadata.GetReferenceData());
+			mesh->description_ = StaticMeshBuilder::BuildReference(mesh->GetDirectory(), metadata.GetReferenceData());
 			break;
 
 		case MetadataType::Inline:
@@ -56,7 +56,9 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 	StreamLogger::Info("Asset::StaticMeshBuilder | static mesh build completed. name: {}", mesh->GetName());
 }
 
-void StaticMeshBuilder::BuildReference(StaticMesh::Description& description, const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data) {
+StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data) {
+
+	StaticMesh::Description description;
 
 	//!< 参照されているmeshのファイルパスの取得
 	std::filesystem::path path = (directory / data.filepath).lexically_normal();
@@ -100,6 +102,7 @@ void StaticMeshBuilder::BuildReference(StaticMesh::Description& description, con
 		description.polygons.emplace_back(polygon);
 	}
 
+	return description;
 }
 
 void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {

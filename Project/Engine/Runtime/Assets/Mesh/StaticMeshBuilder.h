@@ -38,7 +38,7 @@ private:
 
 	//* build helper methods *//
 
-	static void BuildReference(StaticMesh::Description& description, const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data);
+	static StaticMesh::Description BuildReference(const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data);
 
 	static void Optimize(StaticMesh::Description& description);
 
