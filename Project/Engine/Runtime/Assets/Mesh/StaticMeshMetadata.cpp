@@ -15,16 +15,16 @@ SXAVENGER_ENGINE_USING_(Assets)
 
 json::node StaticMeshMetadata::ReferenceData::Serialize(const ReferenceData& data) {
 	json::node node = json::node::object();
-	node["filepath"]  = JsonWriter<std::filesystem::path>::Create(data.filepath);
-	node["meshIndex"] = JsonWriter<uint32_t>::Create(data.meshIndex);
+	node["filepath"] = JsonWriter<std::filesystem::path>::Create(data.filepath);
+	node["index"]    = JsonWriter<uint32_t>::Create(data.index);
 
 	return node;
 }
 
 StaticMeshMetadata::ReferenceData StaticMeshMetadata::ReferenceData::Deserialize(const json::node& node) {
 	ReferenceData data = {};
-	data.filepath  = JsonReader<std::filesystem::path>::Get(node, "filepath");
-	data.meshIndex = JsonReader<uint32_t>::Get(node, "meshIndex");
+	data.filepath = JsonReader<std::filesystem::path>::Get(node, "filepath");
+	data.index    = JsonReader<uint32_t>::Get(node, "index");
 	
 	return data;
 }

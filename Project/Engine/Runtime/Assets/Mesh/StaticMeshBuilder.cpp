@@ -58,7 +58,7 @@ void StaticMeshBuilder::BuildReference(StaticMesh::Description& description, con
 
 	//!< meshの取得
 	const AssimpImporter importer = AssimpCommon::GetImporter(path);
-	const AssimpMesh mesh         = importer.GetMesh(data.meshIndex);
+	const AssimpMesh mesh         = importer.GetMesh(data.index);
 
 	//!< 頂点データの取得
 	for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
@@ -88,11 +88,11 @@ void StaticMeshBuilder::BuildReference(StaticMesh::Description& description, con
 	//!< 三角形データの取得
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
 
-		MeshletTriangle triangle = {};
+		MeshletPolygon polygon = {};
 
-		triangle.indices = mesh.GetTriangle(i);
+		polygon.indices = mesh.GetTriangle(i);
 
-		description.triangles.emplace_back(triangle);
+		description.polygons.emplace_back(polygon);
 	}
 
 }

@@ -5,7 +5,7 @@ enable = false
 	[Graphics.PixEvent.Debug]
 	enable = true
 
-	[Graphics.PixEvent.DebugEvent]
+	[Graphics.PixEvent.Develop]
 	enable = true
 
 [Graphics.DebugLayer] # デバッグレイヤーの設定

@@ -2,7 +2,7 @@
 	"metadata": {
 		"reference": {
 			"filepath": "../cube.obj",
-			"meshIndex": 0
+			"index": 0
 		}
 	},
 	"type": "StaticMesh",
