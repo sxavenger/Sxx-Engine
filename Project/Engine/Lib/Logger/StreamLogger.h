@@ -239,4 +239,3 @@ template <typename ...Args> requires (LoggerUtil::FormatW<Args>&& ...)
 inline void StreamLogger::Critical(std::wformat_string<Args...> format, Args&& ...args) {
 	StreamLogger::Critical(std::format(format, std::forward<Args>(args)...));
 }
-
