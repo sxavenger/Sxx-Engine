@@ -149,3 +149,81 @@ bool WinApp::OpenApplication(const std::filesystem::path& filepath) {
 
 	return reinterpret_cast<intptr_t>(result) > 32;
 }
+
+bool WinApp::SetClipboardText(const std::wstring_view& text) {
+
+	if (!OpenClipboard(nullptr)) {
+		return false; //!< 他のアプリケーションがクリップボードを使用中の場合、OpenClipboardは失敗する.
+	}
+
+	EmptyClipboard(); //!< 現在のクリップボードの内容を削除する.
+
+	//!< クリップボードにコピーする文字列のサイズを計算する. (終端文字を含む)
+	const size_t size = (text.size() + 1) * sizeof(wchar_t);
+
+	//!< クリップボードにコピーする文字列のためのメモリを確保する.
+	HGLOBAL memory = GlobalAlloc(GMEM_MOVEABLE, size);
+	if (memory == nullptr) {
+		CloseClipboard();
+		return false;
+	}
+
+	{
+		//!< 確保したメモリをロックして書き込み可能なアドレスを取得する
+		void* data = GlobalLock(memory);
+		if (data == nullptr) {
+			GlobalFree(memory);
+			CloseClipboard();
+			return false;
+		}
+
+		std::memcpy(data, text.data(), text.size() * sizeof(wchar_t));
+		static_cast<wchar_t*>(data)[text.size()] = L'\0'; //!< 終端文字を追加する.
+
+		GlobalUnlock(memory);
+	}
+
+	//!< Unicode文字列をクリップボードに設定する.
+	if (SetClipboardData(CF_UNICODETEXT, memory) == nullptr) {
+		//!< 登録に失敗した場合は、呼び出し側でメモリを解放する
+		GlobalFree(memory);
+		CloseClipboard();
+		return false;
+	}
+
+	CloseClipboard();
+
+	// note: SetClipboardData() 成功後は memory の所有権がシステムへ移るため、ここでは GlobalFree() しない.
+	return true;
+}
+
+std::optional<std::wstring> WinApp::GetClipboardText() {
+
+	if (!OpenClipboard(nullptr)) {
+		return std::nullopt; //!< 他のアプリケーションがクリップボードを使用中の場合、OpenClipboardは失敗する.
+	}
+
+	//!< Unicodeテキスト形式のデータを取得する
+	HANDLE handle = GetClipboardData(CF_UNICODETEXT);
+	if (handle == nullptr) {
+		CloseClipboard();
+		return std::nullopt;
+	}
+
+	std::wstring text = L"";
+
+	{
+		const wchar_t* data = static_cast<const wchar_t*>(GlobalLock(handle));
+		if (data == nullptr) {
+			CloseClipboard();
+			return std::nullopt;
+		}
+
+		text = data;
+
+		GlobalUnlock(handle);
+	}
+
+	CloseClipboard();
+	return text;
+}

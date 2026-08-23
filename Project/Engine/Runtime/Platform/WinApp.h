@@ -84,6 +84,17 @@ public:
 	//! @retval false 失敗
 	static bool OpenApplication(const std::filesystem::path& filepath);
 
+	//! @brief クリップボードに文字列を設定する.
+	//! @param text 設定する文字列
+	//! @rerval true  成功
+	//! @rerval false 失敗
+	static bool SetClipboardText(const std::wstring_view& text);
+
+	//! @brief クリップボードから文字列を取得する.
+	//! @retval std::wstring 取得した文字列
+	//! @retval std::nullopt 取得に失敗した場合
+	static std::optional<std::wstring> GetClipboardText();
+
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END
