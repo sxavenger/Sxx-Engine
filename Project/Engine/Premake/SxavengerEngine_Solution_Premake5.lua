@@ -8,8 +8,9 @@ os.chdir(_SCRIPT_DIR .. "/../")
 -- include
 -------------------------------------------------------------------------------------------
 include "Premake/DirectXTex_Solution_Premake5.lua"
-include "Premake/EngineScript_Solution_Premake5.lua"
 include "Premake/ImGui_Solution_Premake5.lua"
+include "Premake/meshoptimizer_Solution_Premake5.lua"
+include "Premake/EngineScript_Solution_Premake5.lua"
 
 -------------------------------------------------------------------------------------------
 -- main c++ project
@@ -75,6 +76,7 @@ project "SxavengerEngine"
 	links {
 		"DirectXTex",
 		"imgui",
+		"meshoptimizer",
 	}
 
 	-- ビルドオプション(共通) --

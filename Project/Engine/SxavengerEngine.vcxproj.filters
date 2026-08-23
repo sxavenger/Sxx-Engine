@@ -76,6 +76,9 @@
     <Filter Include="Runtime\Assets\Manager">
       <UniqueIdentifier>{35071ED2-2101-4724-0A6E-DD34F606AD90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Assets\Mesh">
+      <UniqueIdentifier>{A72476F3-1386-5301-9CF3-99B308548AC0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Assets\Texture">
       <UniqueIdentifier>{6BF009F7-57EA-3249-4057-C9592CF098B5}</UniqueIdentifier>
     </Filter>
@@ -306,6 +309,18 @@
     <ClInclude Include="Runtime\Assets\AssetUtil.h">
       <Filter>Runtime\Assets</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpCommon.h">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpImporter.h">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpMesh.h">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Assimp\AssimpOption.h">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Assets\Base\AssetTraits.h">
       <Filter>Runtime\Assets\Base</Filter>
     </ClInclude>
@@ -326,6 +341,21 @@
     </ClInclude>
     <ClInclude Include="Runtime\Assets\Manager\AssetStorage.h">
       <Filter>Runtime\Assets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshBuilder.h">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshMetadata.h">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshTraits.h">
+      <Filter>Runtime\Assets\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Assets\Texture\Texture.h">
       <Filter>Runtime\Assets\Texture</Filter>
@@ -639,15 +669,6 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshMetadata.h" />
-    <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h" />
-    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h" />
-    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshBuilder.h" />
-    <ClInclude Include="Runtime\Assets\Assimp\AssimpImporter.h" />
-    <ClInclude Include="Runtime\Assets\Assimp\AssimpCommon.h" />
-    <ClInclude Include="Runtime\Assets\Assimp\AssimpOption.h" />
-    <ClInclude Include="Runtime\Assets\Assimp\AssimpMesh.h" />
-    <ClInclude Include="Runtime\Assets\Mesh\StaticMeshTraits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -698,6 +719,15 @@
     <ClCompile Include="Runtime\Application\Viewport.cpp">
       <Filter>Runtime\Application</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpCommon.cpp">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpImporter.cpp">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Assimp\AssimpMesh.cpp">
+      <Filter>Runtime\Assets\Assimp</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Assets\Base\BaseAsset.cpp">
       <Filter>Runtime\Assets\Base</Filter>
     </ClCompile>
@@ -715,6 +745,18 @@
     </ClCompile>
     <ClCompile Include="Runtime\Assets\Manager\AssetStorage.cpp">
       <Filter>Runtime\Assets\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshBuilder.cpp">
+      <Filter>Runtime\Assets\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshMetadata.cpp">
+      <Filter>Runtime\Assets\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Assets\Texture\Texture.cpp">
       <Filter>Runtime\Assets\Texture</Filter>
@@ -992,12 +1034,5 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshMetadata.cpp" />
-    <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp" />
-    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp" />
-    <ClCompile Include="Runtime\Assets\Mesh\StaticMeshBuilder.cpp" />
-    <ClCompile Include="Runtime\Assets\Assimp\AssimpImporter.cpp" />
-    <ClCompile Include="Runtime\Assets\Assimp\AssimpCommon.cpp" />
-    <ClCompile Include="Runtime\Assets\Assimp\AssimpMesh.cpp" />
   </ItemGroup>
 </Project>
