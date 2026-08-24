@@ -22,7 +22,7 @@ void Resource::Reset() {
 
 void Resource::SetName(const std::wstring_view& name) const {
 	if (resource_ == nullptr) {
-		StreamLogger::Warning(L"Graphics::Resource | resource is null. cannot set name. name: {}", name);
+		STREAM_LOG_WARNING(L"Graphics::Resource | resource is null. cannot set name. name: {}", name);
 		return; //!< resourceがnullptrの場合は設定できない.
 	}
 
@@ -31,7 +31,7 @@ void Resource::SetName(const std::wstring_view& name) const {
 
 void Resource::SetName(const std::string_view& name) const {
 	if (resource_ == nullptr) {
-		StreamLogger::Warning("Graphics::Resource | resource is null. cannot set name. name: {}", name);
+		STREAM_LOG_WARNING("Graphics::Resource | resource is null. cannot set name. name: {}", name);
 		return; //!< resourceがnullptrの場合は設定できない.
 	}
 
@@ -39,22 +39,22 @@ void Resource::SetName(const std::string_view& name) const {
 }
 
 void Resource::Map(void** data, const std::optional<D3D12_RANGE>& range) {
-	StreamLogger::Assert(resource_ != nullptr, "resource is null.");
+	STREAM_ASSERT(resource_ != nullptr, "resource is null.");
 	resource_->Map(0, range.has_value() ? &range.value() : nullptr, data);
 }
 
 void Resource::Unmap(const std::optional<D3D12_RANGE>& range) {
-	StreamLogger::Assert(resource_ != nullptr, "resource is null.");
+	STREAM_ASSERT(resource_ != nullptr, "resource is null.");
 	resource_->Unmap(0, range.has_value() ? &range.value() : nullptr);
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS Resource::GetGpuVirtualAddress() const {
-	StreamLogger::Assert(resource_ != nullptr, "resource is null.");
+	STREAM_ASSERT(resource_ != nullptr, "resource is null.");
 	return resource_->GetGPUVirtualAddress();
 }
 
 D3D12_RESOURCE_DESC Resource::GetDesc() const {
-	StreamLogger::Assert(resource_ != nullptr, "resource is null.");
+	STREAM_ASSERT(resource_ != nullptr, "resource is null.");
 	return resource_->GetDesc();
 }
 

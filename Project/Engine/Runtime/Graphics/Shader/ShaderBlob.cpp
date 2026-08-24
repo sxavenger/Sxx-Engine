@@ -15,7 +15,7 @@ SXAVENGER_ENGINE_USING_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 D3D12_SHADER_BYTECODE ShaderBlob::GetBytecode() const {
-	StreamLogger::Assert(blob_ != nullptr, "blob is null.");
+	STREAM_ASSERT(blob_ != nullptr, "blob is null.");
 
 	D3D12_SHADER_BYTECODE bytecode = {};
 	bytecode.BytecodeLength  = blob_->GetBufferSize();
@@ -25,7 +25,7 @@ D3D12_SHADER_BYTECODE ShaderBlob::GetBytecode() const {
 }
 
 DxcBuffer ShaderBlob::GetBuffer(CodePage codePage) const {
-	StreamLogger::Assert(blob_ != nullptr, "blob is null.");
+	STREAM_ASSERT(blob_ != nullptr, "blob is null.");
 
 	DxcBuffer buffer = {};
 	buffer.Size     = blob_->GetBufferSize();
@@ -36,7 +36,7 @@ DxcBuffer ShaderBlob::GetBuffer(CodePage codePage) const {
 }
 
 ShaderReflection ShaderBlob::Reflect() const {
-	StreamLogger::Assert(blob_ != nullptr, "blob is null.");
+	STREAM_ASSERT(blob_ != nullptr, "blob is null.");
 	return compiler_->Reflect(*this);
 }
 

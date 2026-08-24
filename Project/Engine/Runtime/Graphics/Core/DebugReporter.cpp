@@ -19,15 +19,15 @@ void DebugReporter::ReportLiveObjects() {
 
 	auto hr = DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf()));
 	if (FAILED(hr)) {
-		StreamLogger::Error(
-			std::format(
+		STREAM_LOG_ERROR(
+			
 				L"Graphics::DebugReporter | failed to get debug interface. _com_error: {}",
 				ComPtrUtil::GetComErrorMessage(hr)
-			)
+			
 		);
 		return;
 	}
 
-	StreamLogger::Debug("Graphics::DebugReporter | reporting live objects...");
+	STREAM_LOG_DEBUG("Graphics::DebugReporter | reporting live objects...");
 	debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL); //!< 全てのAPIの全てのオブジェクトをレポート
 }

@@ -14,12 +14,12 @@ SXAVENGER_ENGINE_USING_(Scheduler)
 
 void GpuTask::Execute(Graphics::GraphicsCommandContext& context) {
 	if (function == nullptr) {
-		StreamLogger::Error("Scheduler::GpuTask | execute function is null. name: {}", name);
+		STREAM_LOG_ERROR("Scheduler::GpuTask | execute function is null. name: {}", name);
 		return; //!< functionがnullptrの場合は実行しない.
 	}
 
 	if (state.Get() != TaskState::State::Idle) {
-		StreamLogger::Warning("Scheduler::GpuTask | execute function is not idle. name: {}, state: {}", name, state.Get());
+		STREAM_LOG_WARNING("Scheduler::GpuTask | execute function is not idle. name: {}, state: {}", name, state.Get());
 		return; //!< stateがIdleでない場合は実行しない.
 	}
 

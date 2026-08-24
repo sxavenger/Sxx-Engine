@@ -51,7 +51,7 @@ D3D12_SRV_DIMENSION Texture::Description::GetSRVDimension() const {
 			return D3D12_SRV_DIMENSION_TEXTURE3D;
 
 		default:
-			StreamLogger::Error("Texture::Description | unknown texture resource dimension. dimension: {}", dimension);
+			STREAM_LOG_ERROR("Texture::Description | unknown texture resource dimension. dimension: {}", dimension);
 			return D3D12_SRV_DIMENSION_UNKNOWN;
 	}
 }
@@ -77,7 +77,7 @@ const DirectX::ScratchImage& Texture::GetImage() const {
 	Scheduler::TaskHandle handle = BaseAsset::GetTaskHandle();
 
 	if (handle != Scheduler::TaskState::State::Completed) {
-		StreamLogger::Warning("Asset::Texture | texture image is not ready. name: {}, state: {}", GetName(), handle.GetState());
+		STREAM_LOG_WARNING("Asset::Texture | texture image is not ready. name: {}, state: {}", GetName(), handle.GetState());
 		handle.Wait(); //!< imageが準備できるまで待機
 	}
 
@@ -88,7 +88,7 @@ const Texture::Description& Texture::GetDescription() const {
 	Scheduler::TaskHandle handle = BaseAsset::GetTaskHandle();
 
 	if (handle != Scheduler::TaskState::State::Completed) {
-		StreamLogger::Warning("Asset::Texture | texture description is not ready. name: {}, state: {}", GetName(), handle.GetState());
+		STREAM_LOG_WARNING("Asset::Texture | texture description is not ready. name: {}, state: {}", GetName(), handle.GetState());
 		handle.Wait(); //!< descriptionが準備できるまで待機
 	}
 

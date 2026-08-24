@@ -94,7 +94,7 @@ Uuid AssetStorage::Import(const std::filesystem::path& filepath) {
 	BaseAssetMetadata metadata = AssetStorage::LoadMetadata(filepath); //!< metadataの取得
 
 	if (storage_.contains(metadata.uuid)) {
-		StreamLogger::Warning("Assets::AssetStorage | asset already imported. filepath: {}, uuid: {}", filepath.generic_string(), metadata.uuid.Serialize());
+		STREAM_LOG_WARNING("Assets::AssetStorage | asset already imported. filepath: {}, uuid: {}", filepath.generic_string(), metadata.uuid.Serialize());
 		return metadata.uuid; //!< すでに登録されている場合は警告を出す
 	}
 
@@ -110,21 +110,21 @@ Uuid AssetStorage::Import(const std::filesystem::path& filepath) {
 
 template <Asset T>
 std::shared_ptr<T> AssetStorage::Get(const Uuid& id) const {
-	StreamLogger::Assert(storage_.contains(id), std::format("asset not found. uuid: {}", id.Serialize())); //!< 存在しない場合は例外を投げる
+	STREAM_ASSERT(storage_.contains(id), "asset not found. uuid: {}", id.Serialize()); //!< 存在しない場合は例外を投げる
 	return AssetStorage::Cast<T>(storage_.at(id));
 }
 
 template <Asset T>
 std::shared_ptr<T> AssetStorage::Cast(const std::shared_ptr<BaseAsset>& asset) {
 	std::shared_ptr<T> pointer = std::static_pointer_cast<T>(asset);
-	StreamLogger::Assert(pointer != nullptr, "failed to cast asset.");
+	STREAM_ASSERT(pointer != nullptr, "failed to cast asset.");
 	return pointer;
 }
 
 template <Asset T>
 void AssetStorage::Reload(const Uuid& id) {
 	if (!storage_.contains(id)) {
-		StreamLogger::Warning("Assets::AssetStorage | asset not found. uuid: {}", id.Serialize());
+		STREAM_LOG_WARNING("Assets::AssetStorage | asset not found. uuid: {}", id.Serialize());
 		return; //!< 存在しない場合は何もしない
 	}
 
@@ -132,7 +132,7 @@ void AssetStorage::Reload(const Uuid& id) {
 	BaseAssetMetadata metadata       = AssetStorage::LoadMetadata(asset->GetFilepath()); //!< metadataの取得
 
 	if (metadata.uuid != id) {
-		StreamLogger::Warning("Assets::AssetStorage | asset uuid is mismatched. filepath: {}, old uuid: {}, new uuid: {}", asset->GetFilepath().generic_string(), id.Serialize(), metadata.uuid.Serialize());
+		STREAM_LOG_WARNING("Assets::AssetStorage | asset uuid is mismatched. filepath: {}, old uuid: {}, new uuid: {}", asset->GetFilepath().generic_string(), id.Serialize(), metadata.uuid.Serialize());
 		return;
 	}
 

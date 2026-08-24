@@ -52,9 +52,9 @@ private:
 template <Asset T>
 std::shared_ptr<T> AssetFactory::Create(const std::filesystem::path& filepath) {
 	BaseAssetMetadata metadata = AssetFactory::LoadMetadata(filepath); //!< metadataの取得
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		metadata.type == T::GetStaticType(),
-		std::format("asset type mismatch. expected: {}, actual: {}", T::GetStaticType(), metadata.type)
+		"asset type mismatch. expected: {}, actual: {}", T::GetStaticType(), metadata.type
 	); //!< Assetの型が一致しない場合は例外を投げる
 
 	return std::make_shared<T>(metadata); //!< Assetの生成

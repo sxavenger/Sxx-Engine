@@ -100,7 +100,7 @@ private:
 template <Component T>
 inline ComponentHandle ComponentStorage::Register(RefPtr<EntityBehaviour> entity) {
 	ComponentHandle handle = storage_[typeid(T)].Allocate(); //!< handleを生成
-	StreamLogger::Debug("World::ComponentStorage<{}> | component allocate. handle: {}", typeid(T).name(), handle.GetHandle());
+	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component allocate. handle: {}", typeid(T).name(), handle.GetHandle());
 
 	storage_[typeid(T)].Register(std::make_unique<T>(handle.GetHandle(), entity));
 	return handle;
@@ -109,11 +109,11 @@ inline ComponentHandle ComponentStorage::Register(RefPtr<EntityBehaviour> entity
 template <Component T>
 inline void ComponentStorage::Unregister(ComponentHandle handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Warning("World::ComponentStorage<{}> | component handle has no handle.", typeid(T).name());
+		STREAM_LOG_WARNING("World::ComponentStorage<{}> | component handle has no handle.", typeid(T).name());
 		return;
 	}
 
-	StreamLogger::Debug("World::ComponentStorage<{}> | component unregistered. handle: {}", typeid(T).name(), handle.GetHandle());
+	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", typeid(T).name(), handle.GetHandle());
 	storage_[typeid(T)].Unregister(handle);
 }
 
@@ -126,7 +126,7 @@ template <Component T>
 inline RefPtr<T> ComponentStorage::Cast(RefPtr<BaseComponent> component) {
 	RefPtr<T> ptr = static_cast<T*>(component.Get());
 
-	StreamLogger::Assert(ptr != nullptr, std::format("component cast failed. component type: {}", typeid(T).name()));
+	STREAM_ASSERT(ptr != nullptr, "component cast failed. component type: {}", typeid(T).name());
 	return ptr;
 }
 

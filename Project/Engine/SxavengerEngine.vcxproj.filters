@@ -213,10 +213,19 @@
     <ClInclude Include="Lib\Format\Toml\TomlUtil.h">
       <Filter>Lib\Format\Toml</Filter>
     </ClInclude>
+    <ClInclude Include="Lib\Logger\ConsoleLogger.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\Logger\CrashHandler.h">
       <Filter>Lib\Logger</Filter>
     </ClInclude>
+    <ClInclude Include="Lib\Logger\FileLogger.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\Logger\LoggerUtil.h">
+      <Filter>Lib\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Logger\MessageDialog.h">
       <Filter>Lib\Logger</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Logger\StreamLogger.h">
@@ -683,10 +692,19 @@
     <ClCompile Include="Lib\Format\Toml\TomlNode.cpp">
       <Filter>Lib\Format\Toml</Filter>
     </ClCompile>
+    <ClCompile Include="Lib\Logger\ConsoleLogger.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Logger\CrashHandler.cpp">
       <Filter>Lib\Logger</Filter>
     </ClCompile>
+    <ClCompile Include="Lib\Logger\FileLogger.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Logger\LoggerUtil.cpp">
+      <Filter>Lib\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Logger\MessageDialog.cpp">
       <Filter>Lib\Logger</Filter>
     </ClCompile>
     <ClCompile Include="Lib\Logger\StreamLogger.cpp">

@@ -17,14 +17,14 @@ SXAVENGER_ENGINE_USING_(Scheduler)
 
 WorkerThread::~WorkerThread() {
 	if (running_.load(std::memory_order::acquire)) {
-		StreamLogger::Warning("WorkerThread - {} | thread is still running. shutdown is called.", name_);
+		STREAM_LOG_WARNING("WorkerThread - {} | thread is still running. shutdown is called.", name_);
 		Shutdown();
 	}
 }
 
 void WorkerThread::Start(const std::string_view& name, const Function& function) {
 	if (running_.load(std::memory_order::acquire)) {
-		StreamLogger::Warning("WorkerThread - {} | thread is already running. start is ignored.", name_);
+		STREAM_LOG_WARNING("WorkerThread - {} | thread is already running. start is ignored.", name_);
 		return; //!< すでにスレッドが実行中の場合は何もしない.
 	}
 
@@ -44,11 +44,11 @@ void WorkerThread::Shutdown() {
 }
 
 void WorkerThread::ThreadProcLoop(const Function& function) {
-	StreamLogger::Info("WorkerThread - {} | thread started.", name_);
+	STREAM_LOG_INFO("WorkerThread - {} | thread started.", name_);
 
 	while (running_.load(std::memory_order::acquire)) {
 		function();
 	}
 
-	StreamLogger::Info("WorkerThread - {} | thread shutdown.", name_);
+	STREAM_LOG_INFO("WorkerThread - {} | thread shutdown.", name_);
 }

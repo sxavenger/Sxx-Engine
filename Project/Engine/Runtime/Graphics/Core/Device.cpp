@@ -23,7 +23,7 @@ Device::Settings Device::Settings::ParseFromConfig(const Configuration& config) 
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::Device::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -33,17 +33,17 @@ Device::Settings Device::Settings::ParseFromConfig(const Configuration& config) 
 	settings.Parse(config.GetConfig(Settings::kConfigPath.GetProfilePath())); //!< プロファイル設定の取得.
 
 	//!< 制約の確認.
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		settings.shaderModelTier >= kRequireShaderModel,
-		std::format("shader model tier is lower than required. shaderModelTier: {}", settings.shaderModelTier)
+		"shader model tier is lower than required. shaderModelTier: {}", settings.shaderModelTier
 	);
 
 	return settings;
 }
 
 void Device::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Graphics::Device::Settings | allowTearing: {}", settings.allowTearing);
-	StreamLogger::Debug("Graphics::Device::Settings | shaderModelTier: {}", settings.shaderModelTier);
+	STREAM_LOG_DEBUG("Graphics::Device::Settings | allowTearing: {}", settings.allowTearing);
+	STREAM_LOG_DEBUG("Graphics::Device::Settings | shaderModelTier: {}", settings.shaderModelTier);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,10 +56,10 @@ bool Device::Support::CheckAllowTearing(RefPtr<IDXGIFactory7> factory) {
 	ComPtrUtil::Assert(hr, L"check feature tearing support error.");
 
 	if (isSupport) {
-		StreamLogger::Info("Graphics::Device::Support | tearing is allowed.");
+		STREAM_LOG_INFO("Graphics::Device::Support | tearing is allowed.");
 
 	} else {
-		StreamLogger::Warning("Graphics::Device::Support | tearing is not supported, so tearing is not allowed.");
+		STREAM_LOG_WARNING("Graphics::Device::Support | tearing is not supported, so tearing is not allowed.");
 	}
 
 	return isSupport;
@@ -71,7 +71,7 @@ D3D_SHADER_MODEL Device::Support::CheckShaderModel(RefPtr<ID3D12Device8> device)
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shaderModel, sizeof(D3D12_FEATURE_DATA_SHADER_MODEL));
 	ComPtrUtil::Assert(hr, L"check feature shader model support error.");
 
-	StreamLogger::Info("Graphics::Device::Support | supported highest shader model tier: {}", shaderModel.HighestShaderModel);
+	STREAM_LOG_INFO("Graphics::Device::Support | supported highest shader model tier: {}", shaderModel.HighestShaderModel);
 	return shaderModel.HighestShaderModel;
 }
 
@@ -86,10 +86,10 @@ bool Device::Support::CheckMeshShader(RefPtr<ID3D12Device8> device) {
 	isSupport = (features.MeshShaderTier != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED);
 
 	if (isSupport) {
-		StreamLogger::Info("Graphics::Device::Support | mesh shader is supported.");
+		STREAM_LOG_INFO("Graphics::Device::Support | mesh shader is supported.");
 
 	} else {
-		StreamLogger::Warning("Graphics::Device::Support | mesh shader is not supported.");
+		STREAM_LOG_WARNING("Graphics::Device::Support | mesh shader is not supported.");
 	}
 
 	return isSupport;
@@ -100,7 +100,7 @@ D3D12_RAYTRACING_TIER Device::Support::CheckRaytracing(RefPtr<ID3D12Device8> dev
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &option, sizeof(option));
 	ComPtrUtil::Assert(hr, L"check feature raytracing support error.");
 
-	StreamLogger::Info("Graphics::Device::Support | supported raytracing tier: {}", option.RaytracingTier);
+	STREAM_LOG_INFO("Graphics::Device::Support | supported raytracing tier: {}", option.RaytracingTier);
 	return option.RaytracingTier;
 }
 
@@ -111,7 +111,7 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
 
 		if (!option.RenderPassesValid) {
-			StreamLogger::Info("Graphics::Device::Support | render pass not supported.");
+			STREAM_LOG_INFO("Graphics::Device::Support | render pass not supported.");
 			return std::nullopt;
 		}
 	}
@@ -121,7 +121,7 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 		auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &option, sizeof(option));
 		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
 
-		StreamLogger::Info("Graphics::Device::Support | supported render passes tier: {}", option.RenderPassesTier);
+		STREAM_LOG_INFO("Graphics::Device::Support | supported render passes tier: {}", option.RenderPassesTier);
 		return option.RenderPassesTier;
 	}
 }
@@ -131,7 +131,7 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 Device::~Device() {
-	StreamLogger::Info("Graphics::Device | device terminated.");
+	STREAM_LOG_INFO("Graphics::Device | device terminated.");
 }
 
 void Device::Init(const Configuration& config) {
@@ -148,7 +148,7 @@ void Device::Init(const Configuration& config) {
 	//!< 設定の適用.
 	CheckSupport();
 
-	StreamLogger::Info("Graphics::Device | initialization complete.");
+	STREAM_LOG_INFO("Graphics::Device | initialization complete.");
 }
 
 DXGI_QUERY_VIDEO_MEMORY_INFO Device::GetVideoMemoryInfo() const {
@@ -165,7 +165,7 @@ Device::Status Device::CheckDeviceStatus() const {
 		return Device::Status::Default; //!< デバイスは正常.
 	}
 
-	StreamLogger::Critical(
+	STREAM_LOG_CRITICAL(
 		L"Graphics::Device | device removed. _com_error_: {}", ComPtrUtil::GetComErrorMessage(hr)
 	);
 
@@ -215,12 +215,12 @@ ComPtr<IDXGIAdapter4> Device::CreateAdapter(RefPtr<IDXGIFactory7> factory) {
 
 		//!< 使用するアダプタを保存.
 		useAdapter = adapter;
-		StreamLogger::Info(L"Graphics::Device | Use Adapter: {}", desc.Description);
+		STREAM_LOG_INFO(L"Graphics::Device | Use Adapter: {}", desc.Description);
 		
 		break;
 	}
 
-	StreamLogger::Assert(useAdapter != nullptr, "dxgi adapter not found.");
+	STREAM_ASSERT(useAdapter != nullptr, "dxgi adapter not found.");
 	return useAdapter;
 }
 
@@ -235,12 +235,12 @@ ComPtr<ID3D12Device8> Device::CreateDevice(RefPtr<IDXGIAdapter4> adapter) {
 	for (size_t i = 0; i < _countof(levels); ++i) {
 		auto hr = D3D12CreateDevice(adapter.Get(), levels[i], IID_PPV_ARGS(device.GetAddressOf()));
 		if (SUCCEEDED(hr)) {
-			StreamLogger::Info("Graphics::Device | feature level: {}", Device::GetFutureLevel(levels[i]));
+			STREAM_LOG_INFO("Graphics::Device | feature level: {}", Device::GetFutureLevel(levels[i]));
 			break; //!< デバイスの生成に成功したらループを抜ける.
 		}
 	}
 
-	StreamLogger::Assert(device != nullptr, "d3d12 device create failed.");
+	STREAM_ASSERT(device != nullptr, "d3d12 device create failed.");
 	return device;
 }
 
@@ -253,28 +253,28 @@ void Device::CheckSupport() {
 
 	//!< Shader Modelの機能レベルの確認.
 	support_.shaderModel = Support::CheckShaderModel(device_.Get());
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		support_.shaderModel >= settings_.shaderModelTier,
-		std::format("shader model tier is not supported. supported shader model: {}", support_.shaderModel)
+		"shader model tier is not supported. supported shader model: {}", support_.shaderModel
 	);
 
 	//!< Mesh Shaderのサポートの確認.
 	support_.meshShader = Support::CheckMeshShader(device_.Get());
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		support_.meshShader,
 		"mesh shader is not supported."
 	);
 
 	//!< Raytracingの機能レベルの確認.
 	support_.raytracingTier = Support::CheckRaytracing(device_.Get());
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		support_.raytracingTier >= D3D12_RAYTRACING_TIER_1_0,
-		std::format("raytracing tier is not supported. supported raytracing tier: {}", support_.raytracingTier)
+		"raytracing tier is not supported. supported raytracing tier: {}", support_.raytracingTier
 	);
 
 	//!< Render Passのサポートの確認.
 	support_.renderPassesTier = Support::CheckRenderPass(device_.Get());
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		support_.renderPassesTier.has_value(),
 		"render pass is not supported."
 	);

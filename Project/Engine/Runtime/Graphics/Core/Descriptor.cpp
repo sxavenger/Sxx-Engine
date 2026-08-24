@@ -19,23 +19,23 @@ void Descriptor::Handle::Reset() {
 }
 
 DescriptorCategory Descriptor::Handle::GetCategory() const {
-	StreamLogger::Assert(category.has_value(), "descriptor handle is not valid.");
+	STREAM_ASSERT(category.has_value(), "descriptor handle is not valid.");
 	return category.value();
 }
 
 UINT Descriptor::Handle::GetIndex() const {
-	StreamLogger::Assert(category.has_value(), "descriptor handle is not valid.");
+	STREAM_ASSERT(category.has_value(), "descriptor handle is not valid.");
 	return index;
 }
 
 const D3D12_CPU_DESCRIPTOR_HANDLE& Descriptor::Handle::GetCPUHandle() const {
-	StreamLogger::Assert(category.has_value(), "descriptor handle is not valid.");
+	STREAM_ASSERT(category.has_value(), "descriptor handle is not valid.");
 	return cpu;
 }
 
 const D3D12_GPU_DESCRIPTOR_HANDLE& Descriptor::Handle::GetGPUHandle() const {
-	StreamLogger::Assert(category.has_value(), "descriptor handle is not valid.");
-	StreamLogger::Assert(gpu.has_value(), "descriptor handle is not valid.");
+	STREAM_ASSERT(category.has_value(), "descriptor handle is not valid.");
+	STREAM_ASSERT(gpu.has_value(), "descriptor handle is not valid.");
 	return gpu.value();
 }
 

@@ -71,7 +71,7 @@ void SwapChain::Init(
 		);
 	}
 
-	StreamLogger::Info("Graphics::SwapChain | successfully initialized swap chain.");
+	STREAM_LOG_INFO("Graphics::SwapChain | successfully initialized swap chain.");
 }
 
 void SwapChain::Resize(
@@ -79,7 +79,7 @@ void SwapChain::Resize(
 	const Vector2ui& resolution, HWND hwnd) {
 
 	if (swapChain_ == nullptr) {
-		StreamLogger::Warning("Graphics::SwapChain | resize called but swap chain is nullptr.");
+		STREAM_LOG_WARNING("Graphics::SwapChain | resize called but swap chain is nullptr.");
 		return; //!< swapChainがnullptrの場合は何もしない.
 	}
 
@@ -109,7 +109,7 @@ void SwapChain::Resize(
 		buffer.resource.SetName(std::format(L"SwapChain Buffer (hwnd: {:p}) [{}] ", reinterpret_cast<const void*>(hwnd), i)); //!< resourceの名前を設定.
 
 		// descriptorは既に確保されている.
-		StreamLogger::Assert(buffer.descriptorRTV.HasHandle(), "Render Target Descriptor is not allocated.");
+		STREAM_ASSERT(buffer.descriptorRTV.HasHandle(), "Render Target Descriptor is not allocated.");
 
 		//!< RenderTargetの作成
 		D3D12_RENDER_TARGET_VIEW_DESC desc = {};

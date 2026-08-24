@@ -22,7 +22,7 @@ ShaderCompiler::Settings ShaderCompiler::Settings::ParseFromConfig(const Configu
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::ShaderCompiler::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -35,8 +35,8 @@ ShaderCompiler::Settings ShaderCompiler::Settings::ParseFromConfig(const Configu
 }
 
 void ShaderCompiler::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Graphics::ShaderCompiler::Settings | model: {}", settings.model);
-	StreamLogger::Debug("Graphics::ShaderCompiler::Settings | optimize: {}", settings.optimize);
+	STREAM_LOG_DEBUG("Graphics::ShaderCompiler::Settings | model: {}", settings.model);
+	STREAM_LOG_DEBUG("Graphics::ShaderCompiler::Settings | optimize: {}", settings.optimize);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ void ShaderCompiler::Init(const Configuration& config, const Device& device) {
 		arguments_.AppendDefine(L"SUPPORT_INLINE_RAYTRACING"); //!< inline raytracingをサポートしていることをdefineで伝える
 	}
 
-	StreamLogger::Info("Graphics::ShaderCompiler | complete initialize.");
+	STREAM_LOG_INFO("Graphics::ShaderCompiler | complete initialize.");
 }
 
 ShaderBlob ShaderCompiler::Compile(
@@ -225,7 +225,7 @@ ShaderBlob ShaderCompiler::Compile(
 
 	if (error != nullptr && error->GetStringLength() != 0) {
 		std::string_view message(error->GetStringPointer(), error->GetStringLength());
-		StreamLogger::Exception(
+		STREAM_EXCEPTION_SUMMARY(
 			std::format("shader compile failed. filepath: {}", filepath.generic_string()),
 			message
 		);
@@ -236,8 +236,6 @@ ShaderBlob ShaderCompiler::Compile(
 	hr = result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(blob.GetAddressOf()), nullptr);
 	ComPtrUtil::Assert(hr, std::format(L"shader compile object output failed. filepath: {}", filepath.generic_wstring()));
 
-	StreamLogger::Info(
-		std::format("shader compile success. filepath: {}", filepath.generic_string())
-	);
+	STREAM_LOG_INFO("shader compile success. filepath: {}", filepath.generic_string());
 	return ShaderBlob(blob, profile, this);
 }

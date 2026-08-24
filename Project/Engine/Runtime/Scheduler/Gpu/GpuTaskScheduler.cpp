@@ -60,6 +60,6 @@ uint8_t GpuTaskScheduler::ConvertQueueIndex(Graphics::GraphicsCommandType type) 
 			return EnumUtil<Graphics::GraphicsCommandType>::Cast(type) - 1; //!< Compute, Copyの2種類を管理するため, Directは除外する.
 
 		default:
-			StreamLogger::Exception("invalid Async GraphicsCommandType");
+			STREAM_EXCEPTION("invalid Async GraphicsCommandType");
 	}
 }

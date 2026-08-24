@@ -33,17 +33,17 @@ RefPtr<const toml::node> TomlNode::GetNode(const toml::table& table, const std::
 }
 
 const toml::table& TomlNode::GetTable(const toml::node& node) {
-	StreamLogger::Assert(node.is_table(), "toml node is not table.");
+	STREAM_ASSERT(node.is_table(), "toml node is not table.");
 	return *node.as_table();
 }
 
 const toml::array& TomlNode::GetArray(const toml::node& node) {
-	StreamLogger::Assert(node.is_array(), "toml node is not array.");
+	STREAM_ASSERT(node.is_array(), "toml node is not array.");
 	return *node.as_array();
 }
 
 int64_t TomlNode::GetIntegral(const toml::node& node) {
-	StreamLogger::Assert(node.is<int64_t>(), "toml node is not integer.");
+	STREAM_ASSERT(node.is<int64_t>(), "toml node is not integer.");
 	return *node.value_exact<int64_t>();
 }
 
@@ -56,7 +56,7 @@ std::optional<int64_t> TomlNode::FindIntegral(const toml::node& node) {
 }
 
 double TomlNode::GetFloatingPoint(const toml::node& node) {
-	StreamLogger::Assert(node.is<double>(), "toml node is not floating-point.");
+	STREAM_ASSERT(node.is<double>(), "toml node is not floating-point.");
 	return *node.value_exact<double>();
 }
 
@@ -69,7 +69,7 @@ std::optional<double> TomlNode::FindFloatingPoint(const toml::node& node) {
 }
 
 bool TomlNode::GetBoolean(const toml::node& node) {
-	StreamLogger::Assert(node.is<bool>(), "toml node is not boolean.");
+	STREAM_ASSERT(node.is<bool>(), "toml node is not boolean.");
 	return *node.value_exact<bool>();
 }
 
@@ -83,7 +83,7 @@ std::optional<bool> TomlNode::FindBoolean(const toml::node& node) {
 
 
 std::string_view TomlNode::GetString(const toml::node& node) {
-	StreamLogger::Assert(node.is<std::string>(), "toml node is not string.");
+	STREAM_ASSERT(node.is<std::string>(), "toml node is not string.");
 	return *node.value_exact<std::string_view>();
 }
 

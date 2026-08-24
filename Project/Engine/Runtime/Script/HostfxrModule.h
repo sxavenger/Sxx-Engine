@@ -123,17 +123,17 @@ template <Concept::FunctionPointer T>
 inline T HostfxrModule::GetFunction(HMODULE module, const std::string_view& name) {
 	T function = reinterpret_cast<T>(GetProcAddress(module, name.data()));
 
-	StreamLogger::Assert(function != nullptr, std::format("failed to get hostfxr function pointer: {}", name));
+	STREAM_ASSERT(function != nullptr, "failed to get hostfxr function pointer: {}", name);
 	return function;
 }
 
 template <typename T>
 inline T HostfxrModule::GetDelegateFunction(hostfxr_delegate_type type, hostfxr_handle handle) const {
-	StreamLogger::Assert(module_ != nullptr, "hostfxr module is not loaded.");
+	STREAM_ASSERT(module_ != nullptr, "hostfxr module is not loaded.");
 
 	T function = nullptr;
 	int32_t rc = getDelegateFptr_(handle, type, reinterpret_cast<void**>(&function));
-	StreamLogger::Assert(rc == 0 && function != nullptr, std::format("failed to get hostfxr delegate function pointer: {}", type));
+	STREAM_ASSERT(rc == 0 && function != nullptr, "failed to get hostfxr delegate function pointer: {}", type);
 
 	return function;
 }

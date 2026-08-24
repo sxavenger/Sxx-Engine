@@ -41,7 +41,7 @@ bool StaticSamplerSet::Contains(const std::string& name) const {
 }
 
 D3D12_STATIC_SAMPLER_DESC StaticSamplerSet::GetSampler(const std::string& name, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) const {
-	StreamLogger::Assert(samplers.contains(name), std::format("sampler is not found. sampler name: {}", name));
+	STREAM_ASSERT(samplers.contains(name), "sampler is not found. sampler name: {}", name);
 
 	D3D12_STATIC_SAMPLER_DESC desc = samplers.at(name);
 	desc.ShaderRegister   = registerNumber;

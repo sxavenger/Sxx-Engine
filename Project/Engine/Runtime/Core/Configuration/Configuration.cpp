@@ -34,8 +34,8 @@ void Configuration::Load(const std::filesystem::path& filepath) {
 	bool isSuccess = TomlFile::TryLoad(filepath, data); //!< tomlの取得.
 
 	if (!isSuccess) {
-		StreamLogger::Warning(
-			std::format("Configuration | failed to load config. filepath: {}", filepath.generic_string())
+		STREAM_LOG_WARNING(
+			"Configuration | failed to load config. filepath: {}", filepath.generic_string()
 		);
 		return; //!< 設定の読み込みに失敗.
 	}
@@ -43,8 +43,8 @@ void Configuration::Load(const std::filesystem::path& filepath) {
 	//!< 現在の設定に上書きする.
 	TomlNode::Merge(config_, std::move(data));
 
-	StreamLogger::Info(
-		std::format("Configuration | successfully loaded config. filepath: {}", filepath.generic_string())
+	STREAM_LOG_INFO(
+		"Configuration | successfully loaded config. filepath: {}", filepath.generic_string()
 	);
 }
 
@@ -59,7 +59,7 @@ const toml::table& Configuration::GetConfig(const std::string_view& path) const 
 	}
 
 	const auto node = TomlNode::GetNode(config_, path); //!< 設定のnodeの取得.
-	StreamLogger::Assert(node->is_table(), std::format("Configuration | config is not a table: {}", path));
+	STREAM_ASSERT(node->is_table(), "Configuration | config is not a table: {}", path);
 	//!< 設定がテーブルでない.
 
 	return *node->as_table(); //!< 設定のテーブルの取得.

@@ -25,7 +25,7 @@ void WinApp::Init() {
 
 	//MFStartup(MF_VERSION, MFSTARTUP_NOSOCKET);
 
-	StreamLogger::Info("Platform::WinApp | win app initialized.");
+	STREAM_LOG_INFO("Platform::WinApp | win app initialized.");
 }
 
 void WinApp::Term() {
@@ -33,7 +33,7 @@ void WinApp::Term() {
 	
 	CoUninitialize();
 
-	StreamLogger::Info("Platform::WinApp | win app terminated.");
+	STREAM_LOG_INFO("Platform::WinApp | win app terminated.");
 }
 
 std::optional<std::filesystem::path> WinApp::GetSaveFilepath(const std::wstring& title, const std::filesystem::path& current, const std::pair<std::wstring, std::wstring>& filter, const std::filesystem::path& extension) {

@@ -26,5 +26,5 @@ std::wstring_view ComPtrUtil::GetComErrorMessage(HRESULT hr) {
 }
 
 void ComPtrUtil::Assert(HRESULT hr, const std::wstring_view& message) {
-	StreamLogger::Assert(SUCCEEDED(hr), message, std::format(L"_com_error: {}", GetComErrorMessage(hr)));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), message, L"_com_error: {}", GetComErrorMessage(hr));
 }

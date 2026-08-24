@@ -37,7 +37,7 @@ public:
 
 	//! @brief Integral型の取得.
 	static T Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		return JsonNode::GetIntegral<T>(n);
@@ -78,7 +78,7 @@ public:
 
 	//! @brief FloatingPoint型の取得.
 	static T Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		return JsonNode::GetFloatingPoint<T>(n);
@@ -119,7 +119,7 @@ public:
 
 	//! @brief FloatingPoint型の取得.
 	static T Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		return JsonNode::GetBoolean(n);
@@ -161,7 +161,7 @@ public:
 
 	//! @brief StringA型の取得.
 	static T Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		return T(JsonNode::GetString(n));
@@ -197,7 +197,7 @@ public:
 
 	//! @brief Enum型の取得.
 	static T Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		std::string_view str = JsonNode::GetString(n);
@@ -236,7 +236,7 @@ public:
 
 	//! @brief std::filesystem::pathの取得.
 	static std::filesystem::path Get(const json::node& node, const std::string_view& path) {
-		StreamLogger::Assert(JsonNode::Contains(node, path), std::format("json path does not exist. path: {}", path));
+		STREAM_ASSERT(JsonNode::Contains(node, path), "json path does not exist. path: {}", path);
 
 		const auto& n = JsonNode::GetNode(node, path);
 		return JsonNode::GetString(n);

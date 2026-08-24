@@ -24,7 +24,7 @@ EntityStorage::~EntityStorage() noexcept {
 	size_t used = allocator_.GetUsedCount();
 
 	if (used != 0) {
-		StreamLogger::Warning("World::EntityStorage | entity handle reaked. count: {}", allocator_.GetUsedCount());
+		STREAM_LOG_WARNING("World::EntityStorage | entity handle reaked. count: {}", allocator_.GetUsedCount());
 		//!< entityのhandleの解放がされていない場合は警告を出す.
 	}
 }
@@ -33,18 +33,18 @@ EntityHandle EntityStorage::Register() {
 	EntityHandle handle = EntityHandle(allocator_.Allocate());
 	storage_.emplace(handle, std::make_unique<EntityBehaviour>(handle.GetHandle()));
 
-	StreamLogger::Debug("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
+	STREAM_LOG_DEBUG("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
 	return handle;
 }
 
 void EntityStorage::Unregister(EntityHandle handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Warning("World::EntityStorage | entity handle has no handle.");
+		STREAM_LOG_WARNING("World::EntityStorage | entity handle has no handle.");
 		return;
 	}
 
 	unregister_.emplace(handle);
-	StreamLogger::Debug("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
+	STREAM_LOG_DEBUG("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
 }
 
 void EntityStorage::Destroy() {
@@ -52,7 +52,7 @@ void EntityStorage::Destroy() {
 
 		//!< 解放されるhandleを取得し、allocatorに返却する. コンテナからも削除する.
 		const EntityHandle& handle = unregister_.front();
-		StreamLogger::Assert(storage_.contains(handle), "entity handle not found.");
+		STREAM_ASSERT(storage_.contains(handle), "entity handle not found.");
 		storage_.erase(handle);
 		allocator_.Free(handle.GetHandle());
 
@@ -61,10 +61,10 @@ void EntityStorage::Destroy() {
 }
 
 RefPtr<EntityBehaviour> EntityStorage::GetEntity(EntityHandle handle) const {
-	StreamLogger::Assert(handle.HasHandle(), "entity handle has no handle.");
+	STREAM_ASSERT(handle.HasHandle(), "entity handle has no handle.");
 
 	if (!storage_.contains(handle)) {
-		StreamLogger::Warning("World::EntityStorage | entity handle not found. handle: {}", handle.GetHandle());
+		STREAM_LOG_WARNING("World::EntityStorage | entity handle not found. handle: {}", handle.GetHandle());
 		return nullptr;
 	}
 	

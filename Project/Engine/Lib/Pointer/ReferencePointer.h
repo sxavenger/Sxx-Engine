@@ -120,37 +120,37 @@ private:
 
 template <typename T>
 T& ReferencePointer<T>::operator*() {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }
 
 template <typename T>
 const T& ReferencePointer<T>::operator*() const {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }
 
 template <typename T>
 T* ReferencePointer<T>::operator->() {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return pointer_;
 }
 
 template <typename T>
 const T* ReferencePointer<T>::operator->() const {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return pointer_;
 }
 
 template <typename T>
 inline T& ReferencePointer<T>::GetRef() {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }
 
 template <typename T>
 inline const T& ReferencePointer<T>::GetRef() const {
-	StreamLogger::Assert(pointer_ != nullptr, "ReferencePointer is null.");
+	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }
 

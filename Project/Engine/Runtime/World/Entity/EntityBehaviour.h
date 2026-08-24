@@ -120,7 +120,7 @@ inline void EntityBehaviour::AddComponent() {
 	constexpr const std::type_info* type = &typeid(T);
 
 	if (components_.contains(type)) {
-		StreamLogger::Warning("World::EntityBehaviour | component already exists. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component already exists. type: ", type->name());
 		//!< すでにcomponentが存在する場合は追加しない.
 		return;
 	}
@@ -134,7 +134,7 @@ inline void EntityBehaviour::RemoveComponent() {
 	constexpr const std::type_info* type = &typeid(T);
 
 	if (!components_.contains(type)) {
-		StreamLogger::Warning("World::EntityBehaviour | component not found. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: ", type->name());
 		//!< componentが存在しない場合は削除しない.
 		return;
 	}
@@ -155,7 +155,7 @@ inline RefPtr<T> EntityBehaviour::GetComponent() {
 	constexpr const std::type_info* type = &typeid(T);
 
 	if (!components_.contains(type)) {
-		StreamLogger::Warning("World::EntityBehaviour | component not found. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: ", type->name());
 		//!< componentが存在しない場合は取得しない.
 		return nullptr;
 	}

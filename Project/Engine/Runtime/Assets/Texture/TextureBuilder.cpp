@@ -25,7 +25,7 @@ void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
 	const std::filesystem::path& filepath = texture->GetFilepath();
 
 	if (!std::filesystem::exists(filepath)) {
-		StreamLogger::Error("Asset::TextureBuilder | file does not exist. filepath: {}", filepath.generic_string());
+		STREAM_LOG_ERROR("Asset::TextureBuilder | file does not exist. filepath: {}", filepath.generic_string());
 		return; //!< ファイルが存在しない場合は処理を終了
 	}
 
@@ -36,7 +36,7 @@ void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
 	const TextureMetadata& metadata = texture->metadata_ = TextureMetadata::Deserialize(node["metadata"]);
 
 	if (metadata.GetType() == MetadataType::Unknown) {
-		StreamLogger::Error("Asset::TextureBuilder | texture metadata type is unknown. filepath: {}", filepath.generic_string());
+		STREAM_LOG_ERROR("Asset::TextureBuilder | texture metadata type is unknown. filepath: {}", filepath.generic_string());
 		return; //!< metadataがUnknownの場合は処理を終了
 	}
 
@@ -46,12 +46,12 @@ void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
 	const DirectX::ScratchImage& image = texture->image_ = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
 
 	if (reference.encoding != Graphics::GetColorEncoding(image.GetMetadata().format)) {
-		StreamLogger::Warning("Asset::TextureBuilder | encoding is mismatched. filepath: {}", filepath.generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
+		STREAM_LOG_WARNING("Asset::TextureBuilder | encoding is mismatched. filepath: {}", filepath.generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
 	}
 
 	texture->description_ = Texture::Description::Parse(image.GetMetadata()); //!< descriptionの設定
 
-	StreamLogger::Info("Asset::TextureBuilder | texture build completed. name: {}", texture->GetName());
+	STREAM_LOG_INFO("Asset::TextureBuilder | texture build completed. name: {}", texture->GetName());
 }
 
 DirectX::ScratchImage TextureBuilder::GenerateMipmaps(const DirectX::ScratchImage& source, DirectX::TEX_FILTER_FLAGS flags) {

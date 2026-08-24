@@ -67,9 +67,9 @@ ShaderBindingLayout ReflectedGraphicsPipelineState::CreateLayout(const Desc& des
 
 void ReflectedGraphicsPipelineState::Reflect(ShaderBindingLayout& layout, ShaderVisibility visibility, const ShaderBlob& blob) {
 	if (blob == nullptr) {
-		StreamLogger::Assert(
+		STREAM_ASSERT(
 			visibility != ShaderVisibility::Pixel && visibility != ShaderVisibility::Mesh && visibility != ShaderVisibility::Vertex,
-			std::format("required graphics shader blob is not set. visibility: {}", visibility)
+			"required graphics shader blob is not set. visibility: {}", visibility
 		); //!< Pixel, Mesh, Vertexのいずれかのvisibilityの場合は必須なのでエラー
 		return;
 	}

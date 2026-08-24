@@ -45,6 +45,6 @@ ShaderBindingLayout ReflectedComputePipelineState::CreateLayout(const Desc& desc
 }
 
 void ReflectedComputePipelineState::Reflect(ShaderBindingLayout& layout, ShaderVisibility visibility, const ShaderBlob& blob) {
-	StreamLogger::Assert(blob != nullptr, "required compute shader blob is not set."); 
+	STREAM_ASSERT(blob != nullptr, "required compute shader blob is not set."); 
 	layout.Reflect(visibility, blob.Reflect());
 }

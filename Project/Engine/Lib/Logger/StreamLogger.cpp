@@ -3,57 +3,37 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-//* windows
-#include <comdef.h>
-
-//* c++
-#include <format>
-#include <stdexcept>
-
-#ifdef CONSOLE
-#include <iostream>
-#endif
+//* logger
+#include "ConsoleLogger.h"
+#include "FileLogger.h"
+#include "MessageDialog.h"
+#include "CrashHandler.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StreamLogger class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void StreamLogger::Init() {
-	if (std::filesystem::exists(kDirectory / kFilename)) LIKELY {
-		return; //!< すでに初期化されている場合は何もしない
-	}
-
-	{ //!< directoryとfileの作成
-		std::filesystem::create_directories(kDirectory);
-
-		std::ofstream file(kDirectory / kFilename, std::ofstream::out | std::ofstream::trunc);
-		file << "Sxavenger Library Stream Logger" << "\n";
-		file << "profile: " << _PROFILE << "\n";
-		file << "main thread id: " << LoggerUtil::kMainThreadId << "\n";
-		file << "timestamp: " << LoggerUtil::GetTimestampA(LocalTimePoint::Now()) << "\n";
-		file << std::string(100, '#') << "\n";
-	}
-
-#ifdef CONSOLE
-	{ //!< locateの変更
-		std::locale::global(std::locale("ja_JP.UTF-8")); //!< 日本語出力に対応.
-	}
-#endif
-
-	StreamLogger::Log(LoggerUtil::Level::Info, "StreamLogger | initialize. filename: {}", kFilename.string());
-}
-
-void StreamLogger::Log(LoggerUtil::Level level, const std::string_view& message) {
+void StreamLogger::OutputStampA(LoggerUtil::Level level, const TracePoint& point, const std::string_view& message) {
 	std::unique_lock<std::mutex> lock(mutex_);
-	StreamLogger::OutputStampA(level, message);
+	ConsoleLogger::OutputStampA("Stream", level, point, message);
+	FileLogger::OutputStampA("Stream", level, point, message);
 }
 
-void StreamLogger::Log(LoggerUtil::Level level, const std::wstring_view& message) {
+void StreamLogger::OutputStampW(LoggerUtil::Level level, const TracePoint& point, const std::wstring_view& message) {
 	std::unique_lock<std::mutex> lock(mutex_);
-	StreamLogger::OutputStampW(level, message);
+	ConsoleLogger::OutputStampW(L"Stream", level, point, message);
+	FileLogger::OutputStampW(L"Stream", level, point, message);
 }
 
-NORETURN void StreamLogger::Exception(const std::string_view& message, const TracePoint& point) {
+void StreamLogger::Log(LoggerUtil::Level level, const TracePoint& point, const std::string_view& message) {
+	StreamLogger::OutputStampA(level, point, message);
+}
+
+void StreamLogger::Log(LoggerUtil::Level level, const TracePoint& point, const std::wstring_view& message) {
+	StreamLogger::OutputStampW(level, point, message);
+}
+
+NORETURN void StreamLogger::ExceptionA(const TracePoint& point, const std::string_view& message) {
 
 	std::string location  = StreamLogger::GetLocationMessageA(point.location);
 	std::string thread    = StreamLogger::GetThreadMessageA(point.id);
@@ -61,28 +41,39 @@ NORETURN void StreamLogger::Exception(const std::string_view& message, const Tra
 
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
-		//!< 例外発生のログを出力
-		StreamLogger::OutputSeparator();
 
-		StreamLogger::OutputA("\n [Critical Error] Sxavenger Stream Logger ExceptionA. \n");
+		{ //!< 例外発生のログを出力
+			StreamLogger::SeparatorA('=');
 
-		StreamLogger::OutputA(location);
-		StreamLogger::OutputA(thread);
-		StreamLogger::OutputA(timestamp);
+			StreamLogger::OutputA("\n [Exception] Sxavenger Stream Logger Exception. \n");
 
-		StreamLogger::OutputA(message);
-		StreamLogger::OutputEndline();
+			StreamLogger::OutputA(location);
+			StreamLogger::OutputA(thread);
+			StreamLogger::OutputA(timestamp);
 
-		StreamLogger::OutputSeparator();
+			StreamLogger::OutputA(message);
+			StreamLogger::Endline();
 
+			StreamLogger::SeparatorA('=');
+		}
+		
 		//!< 例外ウィンドウを表示
-		StreamLogger::OpenExceptionWindowA(message, location, thread, timestamp);
+		{
+			std::ostringstream text;
+			text << location  << '\n';
+			text << thread    << '\n';
+			text << timestamp << '\n';
+			text << message   << '\n';
 
-		StreamLogger::DebugBreak(); //!< 例外ウィンドウを表示した後にデバッガを起動する
+			MessageDialog::ShowA("Sxavenger Stream Logger Exception", text.str(), MessageDialog::Icon::Error);
+		}
+
+		//!< 例外ウィンドウを表示した後にデバッガを起動する
+		CrashHandler::Breakpoint();
 	}
 }
 
-NORETURN void StreamLogger::Exception(const std::wstring_view& message, const TracePoint& point) {
+NORETURN void StreamLogger::ExceptionW(const TracePoint& point, const std::wstring_view& message) {
 
 	std::wstring location  = StreamLogger::GetLocationMessageW(point.location);
 	std::wstring thread    = StreamLogger::GetThreadMessageW(point.id);
@@ -90,69 +81,125 @@ NORETURN void StreamLogger::Exception(const std::wstring_view& message, const Tr
 
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
-		//!< 例外発生のログを出力
-		StreamLogger::OutputSeparator();
 
-		StreamLogger::OutputW(L"\n [Critical Error] Sxavenger Stream Logger ExceptionW. \n");
-
-		StreamLogger::OutputW(location);
-		StreamLogger::OutputW(thread);
-		StreamLogger::OutputW(timestamp);
-
-		StreamLogger::OutputW(message);
-		StreamLogger::OutputEndline();
-
-		StreamLogger::OutputSeparator();
-
+		{ //!< 例外発生のログを出力
+			StreamLogger::SeparatorW(L'=');
+			StreamLogger::OutputW(L"\n [Exception] Sxavenger Stream Logger Exception. \n");
+			StreamLogger::OutputW(location);
+			StreamLogger::OutputW(thread);
+			StreamLogger::OutputW(timestamp);
+			StreamLogger::OutputW(message);
+			StreamLogger::Endline();
+			StreamLogger::SeparatorW(L'=');
+		}
+		
 		//!< 例外ウィンドウを表示
-		StreamLogger::OpenExceptionWindowW(location, thread, timestamp, message);
+		{
+			std::wostringstream text;
+			text << location  << L'\n';
+			text << thread    << L'\n';
+			text << timestamp << L'\n';
+			text << message   << L'\n';
 
-		StreamLogger::DebugBreak(); //!< 例外ウィンドウを表示した後にデバッガを起動する
+			MessageDialog::ShowW(L"Sxavenger Stream Logger Exception", text.str(), MessageDialog::Icon::Error);
+		}
+
+		//!< 例外ウィンドウを表示した後にデバッガを起動する
+		CrashHandler::Breakpoint();
 	}
 }
 
-NORETURN void StreamLogger::Exception(const std::string_view& message, const std::string_view& detail, const TracePoint& point) {
-	std::stringstream ss;
-	ss << message << "\n\n" << detail;
-	StreamLogger::Exception(ss.str(), point);
+NORETURN void StreamLogger::ExceptionSummaryA(const TracePoint& point, const std::string_view& summary, const std::string_view& message) {
+	std::stringstream stream;
+	stream << summary << "\n\n" << message;
+	StreamLogger::ExceptionA(point, stream.str());
 }
 
-NORETURN void StreamLogger::Exception(const std::wstring_view& message, const std::wstring_view& detail, const TracePoint& point) {
-	std::wstringstream ss;
-	ss << message << L"\n\n" << detail;
-	StreamLogger::Exception(ss.str(), point);
+NORETURN void StreamLogger::ExceptionSummaryW(const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message) {
+	std::wstringstream stream;
+	stream << summary << L"\n\n" << message;
+	StreamLogger::ExceptionW(point, stream.str());
 }
 
-void StreamLogger::Assert(bool expression, const std::string_view& message, const TracePoint& point) {
+NORETURN void StreamLogger::Exception(const TracePoint& point, const std::string_view& message) {
+	StreamLogger::ExceptionA(point, message);
+}
+
+NORETURN void StreamLogger::Exception(const TracePoint& point, const std::wstring_view& message) {
+	StreamLogger::ExceptionW(point, message);
+}
+
+void StreamLogger::AssertA(bool expression, const TracePoint& point, const std::string_view& message) {
 	if (expression) LIKELY {
 		 return; //!< assertionがtrueの場合は何もしない
 	}
 
-	StreamLogger::Exception(message, point);
+	StreamLogger::ExceptionA(point, message);
 }
 
-void StreamLogger::Assert(bool expression, const std::wstring_view& message, const TracePoint& point) {
+void StreamLogger::AssertW(bool expression, const TracePoint& point, const std::wstring_view& message) {
 	if (expression) LIKELY {
 		 return; //!< assertionがtrueの場合は何もしない
 	}
 
-	StreamLogger::Exception(message, point);
+	StreamLogger::ExceptionW(point, message);
 }
 
-void StreamLogger::Assert(bool expression, const std::string_view& message, const std::string_view& detail, const TracePoint& point) {
+void StreamLogger::AssertSummaryA(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message) {
 	if (expression) LIKELY {
 		 return; //!< assertionがtrueの場合は何もしない
 	}
 
-	StreamLogger::Exception(message, detail, point);
+	StreamLogger::ExceptionSummaryA(point, summary, message);
 }
 
-void StreamLogger::Assert(bool expression, const std::wstring_view& message, const std::wstring_view& detail, const TracePoint& point) {
+void StreamLogger::AssertSummaryW(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message) {
 	if (expression) LIKELY {
 		 return; //!< assertionがtrueの場合は何もしない
 	}
 
-	StreamLogger::Exception(message, detail, point);
+	StreamLogger::ExceptionSummaryW(point, summary, message);
+}
+
+void StreamLogger::Assert(bool expression, const TracePoint& point, const std::string_view& message) {
+	StreamLogger::AssertA(expression, point, message);
+}
+
+void StreamLogger::Assert(bool expression, const TracePoint& point, const std::wstring_view& message) {
+	StreamLogger::AssertW(expression, point, message);
+}
+
+void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message) {
+	StreamLogger::AssertSummaryA(expression, point, summary, message);
+}
+
+void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message) {
+	StreamLogger::AssertSummaryW(expression, point, summary, message);
+}
+
+void StreamLogger::OutputA(const std::string_view& message) {
+	ConsoleLogger::OutputA(message);
+	FileLogger::OutputA(message);
+}
+
+void StreamLogger::OutputW(const std::wstring_view& message) {
+	ConsoleLogger::OutputW(message);
+	FileLogger::OutputW(message);
+}
+
+void StreamLogger::SeparatorA(const char separator, size_t len) {
+	ConsoleLogger::SeparatorA(separator, len);
+	FileLogger::SeparatorA(separator, len);
+}
+
+void StreamLogger::SeparatorW(const wchar_t separator, size_t len) {
+	ConsoleLogger::SeparatorW(separator, len);
+	FileLogger::SeparatorW(separator, len);
+}
+
+void StreamLogger::Endline() {
+	ConsoleLogger::Endline();
+	FileLogger::Endline();
 }
 
 std::string StreamLogger::GetLocationMessageA(const std::source_location& location) {
@@ -178,7 +225,7 @@ std::wstring StreamLogger::GetLocationMessageW(const std::source_location& locat
 std::string StreamLogger::GetThreadMessageA(const std::thread::id id) {
 	std::ostringstream message;
 	message << "[thread]" << "\n";
-	message << " " << LoggerUtil::GetThreadstampA(id) << "\n";
+	message << " " << LoggerUtil::SerializeThreadstampA(id) << "\n";
 	
 	return message.str();
 }
@@ -186,7 +233,7 @@ std::string StreamLogger::GetThreadMessageA(const std::thread::id id) {
 std::wstring StreamLogger::GetThreadMessageW(const std::thread::id id) {
 	std::wostringstream message;
 	message << L"[thread]" << L"\n";
-	message << L" " << LoggerUtil::GetThreadstampW(id) << L"\n";
+	message << L" " << LoggerUtil::SerializeThreadstampW(id) << L"\n";
 	
 	return message.str();
 }
@@ -194,7 +241,7 @@ std::wstring StreamLogger::GetThreadMessageW(const std::thread::id id) {
 std::string StreamLogger::GetTimestampMessageA(const LocalTimePoint& time) {
 	std::ostringstream message;
 	message << "[timestamp]" << "\n";
-	message << " " << LoggerUtil::GetTimestampA(time) << "\n";
+	message << " " << LoggerUtil::SerializeTimestampA(time) << "\n";
 
 	return message.str();
 }
@@ -202,121 +249,7 @@ std::string StreamLogger::GetTimestampMessageA(const LocalTimePoint& time) {
 std::wstring StreamLogger::GetTimestampMessageW(const LocalTimePoint& time) {
 	std::wostringstream message;
 	message << L"[timestamp]" << L"\n";
-	message << L" " << LoggerUtil::GetTimestampW(time) << L"\n";
+	message << L" " << LoggerUtil::SerializeTimestampW(time) << L"\n";
 
 	return message.str();
-}
-
-void StreamLogger::OutputStampA(LoggerUtil::Level level, const std::string_view& message) {
-	//!< timestampとthreadstampの取得
-	LocalTimePoint current = LocalTimePoint::Now();
-	std::thread::id id     = std::this_thread::get_id();
-
-	OutputA(std::format(
-		"[{}] [{}] [{}] {}",
-		LoggerUtil::GetTimestampA(current), LoggerUtil::GetThreadstampA(id), LoggerUtil::GetLevelA(level), message
-	));
-}
-
-void StreamLogger::OutputStampW(LoggerUtil::Level level, const std::wstring_view& message) {
-	//!< timestampとthreadstampの取得
-	LocalTimePoint current = LocalTimePoint::Now();
-	std::thread::id id     = std::this_thread::get_id();
-
-	OutputW(std::format(
-		L"[{}] [{}] [{}] {}",
-		LoggerUtil::GetTimestampW(current), LoggerUtil::GetThreadstampW(id), LoggerUtil::GetLevelW(level), message
-	));
-}
-
-void StreamLogger::OutputA(const std::string_view& message) {
-	OutputConsoleA(message);
-	OutputFileA(message);
-}
-
-void StreamLogger::OutputW(const std::wstring_view& message) {
-	OutputConsoleW(message);
-	OutputFileW(message);
-}
-
-void StreamLogger::OutputConsoleA(const std::string_view& message) {
-	OutputDebugStringA(message.data());
-	OutputDebugStringA("\n");
-
-#ifdef CONSOLE
-	std::cout << message << std::endl;
-#endif
-}
-
-void StreamLogger::OutputConsoleW(const std::wstring_view& message) {
-	OutputDebugStringW(message.data());
-	OutputDebugStringW(L"\n");
-
-#ifdef CONSOLE
-	std::wcout << message << std::endl;
-#endif
-}
-
-void StreamLogger::OutputFileA(const std::string_view& message) {
-	std::ofstream file(kDirectory / kFilename, kModeAppend);
-	file << message << "\n";
-}
-
-void StreamLogger::OutputFileW(const std::wstring_view& message) {
-	std::wofstream file(kDirectory / kFilename, kModeAppend);
-	file << message << "\n";
-}
-
-void StreamLogger::OutputSeparator(const char separator) {
-	const std::string line(100, separator);
-	StreamLogger::OutputA(line);
-}
-
-void StreamLogger::OutputEndline() {
-	StreamLogger::OutputA(""); //!< 空行を出力し, Output側で改行する.
-}
-
-NORETURN void StreamLogger::DebugBreak() {
-	__debugbreak(); //!< windowsのデバッガを起動する.
-	// TODO: ExceptionFilterで呼び出されるようにする.
-}
-
-void StreamLogger::OpenExceptionWindowA(
-	const std::string_view& message,
-	const std::string_view& location,
-	const std::string_view& thread,
-	const std::string_view& timestamp) {
-
-	std::ostringstream text;
-	text << location  << "\n";
-	text << thread    << "\n";
-	text << timestamp << "\n";
-	text << message   << "\n";
-
-	MessageBoxA(
-		NULL,
-		text.str().c_str(),
-		"Sxavenger Stream Logger ExceptionA",
-		MB_TASKMODAL | MB_ICONHAND | MB_TOPMOST
-	);
-}
-
-void StreamLogger::OpenExceptionWindowW(
-	const std::wstring_view& location,
-	const std::wstring_view& thread,
-	const std::wstring_view& timestamp,
-	const std::wstring_view& message) {
-
-	std::wostringstream text;
-	text << location  << L"\n";
-	text << thread    << L"\n";
-	text << timestamp << L"\n";
-	text << message   << L"\n";
-
-	MessageBoxW(
-		NULL,
-		text.str().c_str(),
-		L"Sxavenger Stream Logger ExceptionW",
-		MB_TASKMODAL | MB_ICONHAND | MB_TOPMOST
-	);
 }

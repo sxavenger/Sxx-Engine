@@ -97,13 +97,13 @@ T IndexAllocator<T>::Allocate() {
 		return index;
 	}
 
-	StreamLogger::Assert(current_ < capacity_, std::format("index allocator capacity over. current: {}, capacity: {}.", current_, capacity_));
+	STREAM_ASSERT(current_ < capacity_, "index allocator capacity over. current: {}, capacity: {}", current_, capacity_);
 	return current_++; //!< 解放されたindexがない場合は、currentを返し、currentをインクリメントする.
 }
 
 template <std::integral T>
 void IndexAllocator<T>::Free(T index) {
-	StreamLogger::Assert(index < current_, std::format("index is out of range. index: {}, current: {}.", index, current_)); //!< 解放するindexがcurrentの範囲内にあることを確認する.
+	STREAM_ASSERT(index < current_, "index is out of range. index: {}, current: {}.", index, current_); //!< 解放するindexがcurrentの範囲内にあることを確認する.
 
 	std::unique_lock<std::mutex> lock(mutex_); //!< スレッドセーフにするためにロックする.
 	free_.emplace(index); //!< 解放されたindexをキューに追加する.

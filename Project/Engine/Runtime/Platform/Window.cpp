@@ -35,7 +35,7 @@ void Window::Create(
 	wc.lpszClassName = className.c_str();
 	wc.hInstance     = hinst_;
 	wc.lpfnWndProc   = Window::GetWindowProcFunction(category_);
-	StreamLogger::Assert(RegisterClass(&wc), "window register class failed.");
+	STREAM_ASSERT(RegisterClass(&wc), "window register class failed.");
 
 	//!< rectの設定(windowサイズの調整用)
 	RECT rect = Window::ConvertClientRect(client);
@@ -73,7 +73,7 @@ void Window::Create(
 		hinst_,
 		this
 	);
-	StreamLogger::Assert(hwnd_ != nullptr, "window create failed.");
+	STREAM_ASSERT(hwnd_ != nullptr, "window create failed.");
 
 	if (isBorderless_) {
 		//!< frameを再計算させ, WM_NCCALCSIZEの結果を反映させる.
@@ -84,7 +84,7 @@ void Window::Create(
 		);
 	}
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		L"Platform::Window | window create succeeded. name: {}, hwnd: {:p}", name, static_cast<const void*>(hwnd_)
 	);
 }
@@ -103,7 +103,7 @@ void Window::Reset() {
 		UnregisterClass(Window::GetWindowClassName(name_).c_str(), hinst_);
 	}
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		L"Platform::Window | window reset succeeded. name: {}", name_
 	);
 
@@ -128,7 +128,7 @@ void Window::Close() {
 
 	CloseWindow(hwnd_);
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		L"Platform::Window | window close. name: {}, hwnd: {:p}", name_, static_cast<const void*>(hwnd_)
 	);
 }
@@ -324,7 +324,7 @@ WNDPROC Window::GetWindowProcFunction(Category category) {
 			return Window::WindowProcSub;
 
 		default:
-			StreamLogger::Exception("category is not valid.");
+			STREAM_EXCEPTION("category is not valid.");
 	}
 }
 
@@ -481,7 +481,7 @@ void Window::UpdateRect(const RECT& rect) {
 
 	event_ = Event::Resize; //!< リサイズイベントを発生させる
 
-	StreamLogger::Debug(
+	STREAM_LOG_DEBUG(
 		L"Platform::Window | window resized. name: {}, hwnd: {:p}, client: {}",
 		name_, static_cast<const void*>(hwnd_), Window::ConvertClientSize(rect_)
 	);

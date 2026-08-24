@@ -18,7 +18,7 @@ void GpuScheduler::Init() {
 		threads_[GpuTaskScheduler::ConvertQueueIndex(type)].Create(type, std::bind(&GpuScheduler::GetTaskProc, this, std::placeholders::_1)); //!< threadの作成
 	}
 
-	StreamLogger::Info("Scheduler::GpuScheduler | initialized.");
+	STREAM_LOG_INFO("Scheduler::GpuScheduler | initialized.");
 }
 
 void GpuScheduler::Shutdown() {
@@ -32,7 +32,7 @@ void GpuScheduler::Shutdown() {
 		thread.Shutdown(); //!< threadのシャットダウン
 	}
 	
-	StreamLogger::Info("Scheduler::GpuScheduler | shutdown.");
+	STREAM_LOG_INFO("Scheduler::GpuScheduler | shutdown.");
 }
 
 TaskHandle GpuScheduler::PushTask(const std::shared_ptr<GpuTask>& task) {

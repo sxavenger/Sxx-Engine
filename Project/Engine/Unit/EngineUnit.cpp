@@ -22,8 +22,10 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/World/Component/ComponentStorage.h>
 
 //* lib
-#include <Lib/Logger/StreamLogger.h>
 #include <Lib/Logger/CrashHandler.h>
+#include <Lib/Logger/ConsoleLogger.h>
+#include <Lib/Logger/FileLogger.h>
+#include <Lib/Logger/StreamLogger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // EngineUnit class methods
@@ -77,11 +79,12 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 
 void EngineUnit::InitEngine() {
 
-	StreamLogger::Init();
+	ConsoleLogger::Init();
+	FileLogger::Init();
 	CrashHandler::Install();
 
-	StreamLogger::Info("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
-	StreamLogger::Info("Assimp >> version: {}", Assets::AssimpCommon::GetAssimpVersion());
+	STREAM_LOG_INFO("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
+	STREAM_LOG_INFO("Assimp >> version: {}", Assets::AssimpCommon::GetAssimpVersion());
 
 	configuration_.Load("Engine/Packages/config/Platform.toml");
 	configuration_.Load("Engine/Packages/config/Graphics.toml");

@@ -106,6 +106,6 @@ inline constexpr bool EnumUtil<Enum>::Contains(const std::string_view& name) {
 
 template <Concept::Enum Enum>
 inline constexpr Enum EnumUtil<Enum>::GetEnum(const std::string_view& name) {
-	StreamLogger::Assert(EnumUtil<Enum>::Contains(name), std::format("EnumUtil | invalid enum name. name: {}", name));
+	STREAM_ASSERT(EnumUtil<Enum>::Contains(name), "EnumUtil | invalid enum name. name: {}", name);
 	return magic_enum::enum_cast<Enum>(name).value();
 }

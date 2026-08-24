@@ -21,7 +21,7 @@ InputContext::Settings InputContext::Settings::ParseFromConfig(const Configurati
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Platform::InputContext::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -34,7 +34,7 @@ InputContext::Settings InputContext::Settings::ParseFromConfig(const Configurati
 }
 
 void InputContext::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Platform::InputContext::Settings | mode: {}", settings.mode);
+	STREAM_LOG_DEBUG("Platform::InputContext::Settings | mode: {}", settings.mode);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,19 +75,19 @@ void InputContext::Init(const Configuration& config) {
 		//!< 非同期スレッドで更新する場合はスレッドを生成
 		running_.store(true, std::memory_order::release); //!< running_をtrueに設定してスレッドを開始する.
 		thread_ = std::thread([this]() {
-			StreamLogger::Info("Platform::InputContext | begin async input thread.");
+			STREAM_LOG_INFO("Platform::InputContext | begin async input thread.");
 
 			while (running_.load(std::memory_order::acquire)) {
 				UpdateInput(); //!< 入力の更新
 				std::this_thread::sleep_for(std::chrono::milliseconds(1)); //!< CPU使用率を抑えるために少し待機
 			}
 
-			StreamLogger::Info("Platform::InputContext | end async input thread.");
+			STREAM_LOG_INFO("Platform::InputContext | end async input thread.");
 		});
 		SetThreadDescription(thread_.native_handle(), L"Platform::InputContext | Async Input Thread");
 	}
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		"Platform::InputContext | input context initialized. mode: {}", settings_.mode
 	);
 }
@@ -96,11 +96,11 @@ void InputContext::Shutdown() {
 	running_.store(false, std::memory_order::release); //!< スレッドの終了の通知.
 
 	if (thread_.joinable()) {
-		StreamLogger::Debug("Platform::InputContext | waiting for input thread to terminate...");
+		STREAM_LOG_DEBUG("Platform::InputContext | waiting for input thread to terminate...");
 		thread_.join(); //!< スレッドの終了を待つ
 	}
 
-	StreamLogger::Info("Platform::InputContext | input context shutdown.");
+	STREAM_LOG_INFO("Platform::InputContext | input context shutdown.");
 }
 
 void InputContext::Update() {

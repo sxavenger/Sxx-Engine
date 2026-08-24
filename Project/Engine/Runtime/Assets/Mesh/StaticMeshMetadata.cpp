@@ -38,7 +38,7 @@ MetadataType StaticMeshMetadata::GetType() const {
 }
 
 const StaticMeshMetadata::ReferenceData& StaticMeshMetadata::GetReferenceData() const {
-	StreamLogger::Assert(GetType() == MetadataType::Reference, "static mesh metadata is not reference type.");
+	STREAM_ASSERT(GetType() == MetadataType::Reference, "static mesh metadata is not reference type.");
 	return std::get<ReferenceData>(data);
 }
 
@@ -52,12 +52,12 @@ json::node StaticMeshMetadata::Serialize(const StaticMeshMetadata& metadata) {
 			break;
 
 		case MetadataType::Inline:
-			StreamLogger::Error("Assets::StaticMeshMetadata | static mesh metadata type is inline. serialization is not supported.");
+			STREAM_LOG_ERROR("Assets::StaticMeshMetadata | static mesh metadata type is inline. serialization is not supported.");
 			node["inline"] = nullptr; //!< TODO: Inline情報の定義.
 			break;
 
 		default:
-			StreamLogger::Error("Assets::StaticMeshMetadata | static mesh metadata type is unknown.");
+			STREAM_LOG_ERROR("Assets::StaticMeshMetadata | static mesh metadata type is unknown.");
 			node = nullptr;
 			break;
 	}
@@ -76,10 +76,10 @@ StaticMeshMetadata StaticMeshMetadata::Deserialize(const json::node& node) {
 
 	if (JsonNode::Contains(node, "inline")) {
 		metadata.data = InlineData(); //!< TODO: Inline情報の定義.
-		StreamLogger::Error("Assets::StaticMeshMetadata | static mesh metadata type is inline. deserialization is not supported.");
+		STREAM_LOG_ERROR("Assets::StaticMeshMetadata | static mesh metadata type is inline. deserialization is not supported.");
 		return metadata;
 	}
 
-	StreamLogger::Error("Assets::StaticMeshMetadata | static mesh metadata type is unknown.");
+	STREAM_LOG_ERROR("Assets::StaticMeshMetadata | static mesh metadata type is unknown.");
 	return metadata;
 }

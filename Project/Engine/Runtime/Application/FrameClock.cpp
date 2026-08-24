@@ -28,7 +28,7 @@ FrameClock::Settings FrameClock::Settings::ParseFromConfig(const Configuration& 
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Application::FrameClock::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -41,10 +41,10 @@ FrameClock::Settings FrameClock::Settings::ParseFromConfig(const Configuration& 
 }
 
 void FrameClock::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Application::FrameClock::Settings | enableFrameLimit: {}", settings.enableFrameLimit);
-	StreamLogger::Debug("Application::FrameClock::Settings | frameRateLimit: {}", settings.frameRateLimit);
-	StreamLogger::Debug("Application::FrameClock::Settings | enableFixedDeltaTime: {}", settings.enableFixedDeltaTime);
-	StreamLogger::Debug("Application::FrameClock::Settings | fixedDeltaTime: {}", settings.fixedDeltaTime.time);
+	STREAM_LOG_DEBUG("Application::FrameClock::Settings | enableFrameLimit: {}", settings.enableFrameLimit);
+	STREAM_LOG_DEBUG("Application::FrameClock::Settings | frameRateLimit: {}", settings.frameRateLimit);
+	STREAM_LOG_DEBUG("Application::FrameClock::Settings | enableFixedDeltaTime: {}", settings.enableFixedDeltaTime);
+	STREAM_LOG_DEBUG("Application::FrameClock::Settings | fixedDeltaTime: {}", settings.fixedDeltaTime.time);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

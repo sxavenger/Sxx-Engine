@@ -56,7 +56,7 @@ Uuid TextureImporter::Import(const std::filesystem::path& filepath) {
 		}
 		
 		JsonFile::Write(parent / filename, node);
-		StreamLogger::Debug("Assets::TextureImporter | texture metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
+		STREAM_LOG_DEBUG("Assets::TextureImporter | texture metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
 	}
 
 	return AssetStorage::GetInstance()->Import<Texture>(parent / filename); //!< AssetStorageに登録

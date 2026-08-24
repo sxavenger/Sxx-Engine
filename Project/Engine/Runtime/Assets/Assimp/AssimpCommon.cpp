@@ -41,7 +41,7 @@ const AssimpImporter& AssimpCommon::GetImporter(const std::filesystem::path& fil
 		AssimpImporter importer = AssimpImporter::Load(path, option);
 		cache_.emplace(path, importer);
 
-		StreamLogger::Debug("Assets::AssimpCommon | assimp importer cached. filepath: {}", path.generic_string());
+		STREAM_LOG_DEBUG("Assets::AssimpCommon | assimp importer cached. filepath: {}", path.generic_string());
 	}
 
 	return cache_.at(path);

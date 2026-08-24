@@ -16,13 +16,13 @@ DescriptorAllocator::~DescriptorAllocator() {
 	Free(); //!< 解放されていないDescriptorがある場合は解放する.
 
 	if (allocator_.GetUsedCount() != 0) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::DescriptorAllocator<{}> | descriptor leak detected. used count: {}.", category_, allocator_.GetUsedCount()
 		);
 		//!< デスクリプタリークの警告. DescriptorAllocatorが解放されるときに、使用中のDescriptorがある場合は警告を出す.
 	}
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		"Graphics::DescriptorAllocator<{}> | terminate.", category_
 	);
 }
@@ -45,7 +45,7 @@ void DescriptorAllocator::Init(
 		std::format(L"DescriptorAllocator<{}>", UnicodeConverter::ConvertW(EnumUtil<DescriptorCategory>::GetName(category))).c_str()
 	); //!< デバック用にheapに名前をつける. (ex."DescriptorAllocator<RTV>")
 
-	StreamLogger::Info(
+	STREAM_LOG_INFO(
 		"Graphics::DescriptorAllocator<{}> | initialization complete. capacity: {}", category, capacity
 	);
 }
@@ -62,7 +62,7 @@ Descriptor DescriptorAllocator::Allocate() {
 		handle.gpu = GetGPUDescriptorHandle(handle.index);
 	}
 
-	StreamLogger::Debug(
+	STREAM_LOG_DEBUG(
 		"Graphics::DescriptorAllocator<{}> | allocate descriptor handle. index: {},", category_, handle.index
 	);
 
@@ -71,13 +71,13 @@ Descriptor DescriptorAllocator::Allocate() {
 
 void DescriptorAllocator::Release(Descriptor::Handle&& handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::DescriptorAllocator<{}> | release descriptor handle. handle is not valid.", category_
 		);
 		return;
 	}
 
-	StreamLogger::Debug(
+	STREAM_LOG_DEBUG(
 		"Graphics::DescriptorAllocator<{}> | release descriptor handle. index: {},", category_, handle.GetIndex()
 	);
 
@@ -90,7 +90,7 @@ void DescriptorAllocator::Free() {
 		UINT index = freeQueue_.front();
 		freeQueue_.pop();
 
-		StreamLogger::Debug(
+		STREAM_LOG_DEBUG(
 			"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, index
 		);
 
@@ -108,7 +108,7 @@ bool DescriptorAllocator::CheckShaderVisible(DescriptorCategory type) {
 			return true;
 
 		default:
-			StreamLogger::Exception("category is not a valid value.");
+			STREAM_EXCEPTION("category is not a valid value.");
 	}
 }
 
@@ -124,7 +124,7 @@ D3D12_DESCRIPTOR_HEAP_TYPE DescriptorAllocator::GetDescriptorHeapType(Descriptor
 			return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
 		default:
-			StreamLogger::Exception("category is not a valid value.");
+			STREAM_EXCEPTION("category is not a valid value.");
 	}
 }
 
@@ -153,7 +153,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE DescriptorAllocator::GetCPUDescriptorHandle(UINT ind
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE DescriptorAllocator::GetGPUDescriptorHandle(UINT index) const {
-	StreamLogger::Assert(DescriptorAllocator::CheckShaderVisible(category_), "descriptor heap is not shader visible, so gpu handle is not available."); //!< ShaderVisibleでないカテゴリはGPUハンドルがない.
+	STREAM_ASSERT(DescriptorAllocator::CheckShaderVisible(category_), "descriptor heap is not shader visible, so gpu handle is not available."); //!< ShaderVisibleでないカテゴリはGPUハンドルがない.
 	D3D12_GPU_DESCRIPTOR_HANDLE handle = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 	handle.ptr += handleOffset_ * index;
 	return handle;

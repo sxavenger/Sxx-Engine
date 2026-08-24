@@ -49,7 +49,7 @@ void Keyboard::Init(IDirectInput8* dinput) {
 	);
 	ComPtrUtil::Assert(hr, L"keyboard set data format failed.");
 
-	StreamLogger::Info("Platform::Keyboard | keyboard device created.");
+	STREAM_LOG_INFO("Platform::Keyboard | keyboard device created.");
 }
 
 void Keyboard::Update() {
@@ -119,7 +119,7 @@ bool Keyboard::SetCooperativeLevel(HWND hwnd) {
 		);
 
 		if (FAILED(hr)) {
-			StreamLogger::Error(
+			STREAM_LOG_ERROR(
 				L"Platform::InputMouse | failed to set cooperative level. hwnd: {:p} _com_error: {}",
 				static_cast<const void*>(hwnd), ComPtrUtil::GetComErrorMessage(hr)
 			);
@@ -127,7 +127,7 @@ bool Keyboard::SetCooperativeLevel(HWND hwnd) {
 		}
 
 		current_ = hwnd; //!< hwndの更新
-		StreamLogger::Info(
+		STREAM_LOG_INFO(
 			"Platform::Keyboard | keyboard cooperative level set. hwnd: {:p}",
 			static_cast<const void*>(hwnd)
 		);

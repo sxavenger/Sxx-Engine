@@ -47,7 +47,7 @@ bool Gamepad::InputData::GetButton(GamepadTriggerId id) const {
 			return xinput.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
 
 		default:
-			StreamLogger::Warning(
+			STREAM_LOG_WARNING(
 				"Platform::Gamepad | GamepadTriggerId invalid. id: {}", static_cast<uint8_t>(id)
 			);
 			return false; //!< 無効なidの場合はfalseを返す
@@ -63,7 +63,7 @@ Vector2i Gamepad::InputData::GetStick(GamepadStickId id) const {
 			return { xinput.Gamepad.sThumbRX, xinput.Gamepad.sThumbRY };
 
 		default:
-			StreamLogger::Warning(
+			STREAM_LOG_WARNING(
 				"Platform::Gamepad | GamepadStickId invalid. id: {}", static_cast<uint8_t>(id)
 			);
 			return Vector2i::Origin(); //!< 無効なidの場合は原点を返す
@@ -75,12 +75,12 @@ Vector2i Gamepad::InputData::GetStick(GamepadStickId id) const {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void Gamepad::Init(uint8_t number) {
-	StreamLogger::Assert(number < XUSER_MAX_COUNT, "gamepad number is out of range.");
+	STREAM_ASSERT(number < XUSER_MAX_COUNT, "gamepad number is out of range.");
 
 	//!< numberの設定
 	number_ = number;
 
-	StreamLogger::Info("Platform::Gamepad | initialized. gamepad number: {}", number_);
+	STREAM_LOG_INFO("Platform::Gamepad | initialized. gamepad number: {}", number_);
 }
 
 void Gamepad::Update() {

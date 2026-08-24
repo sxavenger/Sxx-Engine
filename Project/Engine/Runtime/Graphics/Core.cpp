@@ -33,7 +33,7 @@ void Core::Init(const Configuration& config) {
 
 	shaderCompiler_.Init(config, device_);
 
-	StreamLogger::Info("Graphics::Core | graphics initialized.");
+	STREAM_LOG_INFO("Graphics::Core | graphics initialized.");
 }
 
 void Core::Term() {
@@ -42,14 +42,14 @@ void Core::Term() {
 		contexts_[i].SubmitWait(); //!< CommandListを全て実行する.
 	}
 
-	StreamLogger::Info("Graphics::Core | graphics terminated.");
+	STREAM_LOG_INFO("Graphics::Core | graphics terminated.");
 }
 
 void Core::CheckDeviceStatus() {
 	Device::Status status = device_.CheckDeviceStatus(); //!< デバイスの状態をチェックする.
 
 	if (status == Device::Status::Removed) {
-		StreamLogger::Exception(
+		STREAM_EXCEPTION(
 			"graphics device removed."
 		); //!< デバイスが削除された場合は例外を投げる.
 	}

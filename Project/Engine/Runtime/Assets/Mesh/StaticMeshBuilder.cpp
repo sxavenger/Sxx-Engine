@@ -26,7 +26,7 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 	const std::filesystem::path& filepath = mesh->GetFilepath();
 
 	if (!std::filesystem::exists(filepath)) {
-		StreamLogger::Error("Asset::StaticMeshBuilder | file does not exist. filepath: {}", filepath.generic_string());
+		STREAM_LOG_ERROR("Asset::StaticMeshBuilder | file does not exist. filepath: {}", filepath.generic_string());
 		return; //!< ファイルが存在しない場合は処理を終了
 	}
 
@@ -43,18 +43,18 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 
 		case MetadataType::Inline:
 			mesh->description_ = {}; //!< TODO: Inline情報の定義.
-			StreamLogger::Error("Asset::StaticMeshBuilder | inline static mesh metadata type is not defined. filepath: {}", filepath.generic_string());
+			STREAM_LOG_ERROR("Asset::StaticMeshBuilder | inline static mesh metadata type is not defined. filepath: {}", filepath.generic_string());
 			return;
 
 		default:
-			StreamLogger::Error("Asset::StaticMeshBuilder | static mesh metadata type is unknown. filepath: {}", filepath.generic_string());
+			STREAM_LOG_ERROR("Asset::StaticMeshBuilder | static mesh metadata type is unknown. filepath: {}", filepath.generic_string());
 			return; //!< metadataがUnknownの場合は処理を終了
 	}
 
 	//!< meshの最適化
 	StaticMeshBuilder::Optimize(mesh->description_);
 
-	StreamLogger::Info("Asset::StaticMeshBuilder | static mesh build completed. name: {}", mesh->GetName());
+	STREAM_LOG_INFO("Asset::StaticMeshBuilder | static mesh build completed. name: {}", mesh->GetName());
 }
 
 StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data) {

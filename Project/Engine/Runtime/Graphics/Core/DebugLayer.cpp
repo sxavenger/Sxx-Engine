@@ -22,7 +22,7 @@ DebugLayer::Settings DebugLayer::Settings::ParseFromConfig(const Configuration& 
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::DebugLayer::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -35,8 +35,8 @@ DebugLayer::Settings DebugLayer::Settings::ParseFromConfig(const Configuration& 
 }
 
 void DebugLayer::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Graphics::DebugLayer::Settings | enable: {}", settings.enable);
-	StreamLogger::Debug("Graphics::DebugLayer::Settings | enableGpuBasedValidation: {}", settings.enableGpuBasedValidation);
+	STREAM_LOG_DEBUG("Graphics::DebugLayer::Settings | enable: {}", settings.enable);
+	STREAM_LOG_DEBUG("Graphics::DebugLayer::Settings | enableGpuBasedValidation: {}", settings.enableGpuBasedValidation);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ void DebugLayer::Settings::Log(const Settings& settings) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 DebugLayer::~DebugLayer() {
-	StreamLogger::Info("Graphics::DebugLayer | debug layer terminated.");
+	STREAM_LOG_INFO("Graphics::DebugLayer | debug layer terminated.");
 }
 
 void DebugLayer::Init(const Configuration& config) {
@@ -55,7 +55,7 @@ void DebugLayer::Init(const Configuration& config) {
 	layer_ = DebugLayer::CreateDebugLayer(); //!< DebugLayerの生成
 
 	if (layer_ == nullptr) {
-		StreamLogger::Error("Graphics::DebugLayer | failed to create debug layer.");
+		STREAM_LOG_ERROR("Graphics::DebugLayer | failed to create debug layer.");
 		return;
 	}
 
@@ -69,7 +69,7 @@ void DebugLayer::Init(const Configuration& config) {
 	}
 #endif // DEVELOPMENT
 
-	StreamLogger::Info("Graphics::DebugLayer | successfully initialized debug layer.");
+	STREAM_LOG_INFO("Graphics::DebugLayer | successfully initialized debug layer.");
 }
 
 ComPtr<ID3D12Debug1> DebugLayer::CreateDebugLayer() {
@@ -79,11 +79,11 @@ ComPtr<ID3D12Debug1> DebugLayer::CreateDebugLayer() {
 	//!< デバッグレイヤーの取得
 	auto hr = D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf()));
 	if (FAILED(hr)) {
-		StreamLogger::Error(
-			std::format(
+		STREAM_LOG_ERROR(
+			
 				L"Graphics::DebugLayer | failed to get debug interface. _com_error: {}",
 				ComPtrUtil::GetComErrorMessage(hr)
-			)
+			
 		);
 
 		return nullptr;

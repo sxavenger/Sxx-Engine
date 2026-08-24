@@ -23,7 +23,7 @@ bool ResourceHandle::Handle::HasHandle() const {
 }
 
 ResourceHandle::Type ResourceHandle::Handle::GetIndex() const {
-	StreamLogger::Assert(index.has_value(), "resource handle is not valid.");
+	STREAM_ASSERT(index.has_value(), "resource handle is not valid.");
 	return index.value();
 }
 
@@ -45,10 +45,10 @@ void ResourceHandle::Reset() {
 }
 
 void ResourceHandle::SetName(const std::wstring_view& name) {
-	StreamLogger::Assert(allocator_ != nullptr, "resource allocator is null.");
+	STREAM_ASSERT(allocator_ != nullptr, "resource allocator is null.");
 
 	if (!handle_.HasHandle()) {
-		StreamLogger::Warning(L"Graphics::ResourceHandle | resource handle is not valid. cannot set name. name: {}", name);
+		STREAM_LOG_WARNING(L"Graphics::ResourceHandle | resource handle is not valid. cannot set name. name: {}", name);
 		return; //!< handleが無効な場合は設定できない.
 	}
 
@@ -67,14 +67,14 @@ D3D12_GPU_VIRTUAL_ADDRESS ResourceHandle::GetGpuVirtualAddress() const {
 }
 
 Resource& ResourceHandle::GetResource() {
-	StreamLogger::Assert(allocator_ != nullptr, "resource allocator is null.");
-	StreamLogger::Assert(handle_.HasHandle(), "resource handle is not valid.");
+	STREAM_ASSERT(allocator_ != nullptr, "resource allocator is null.");
+	STREAM_ASSERT(handle_.HasHandle(), "resource handle is not valid.");
 	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.
 }
 
 const Resource& ResourceHandle::GetResource() const {
-	StreamLogger::Assert(allocator_ != nullptr, "resource allocator is null.");
-	StreamLogger::Assert(handle_.HasHandle(), "resource handle is not valid.");
+	STREAM_ASSERT(allocator_ != nullptr, "resource allocator is null.");
+	STREAM_ASSERT(handle_.HasHandle(), "resource handle is not valid.");
 	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.
 }
 

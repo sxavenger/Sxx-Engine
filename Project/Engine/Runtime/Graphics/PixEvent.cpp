@@ -33,7 +33,7 @@ PixEvent::Settings PixEvent::Settings::ParseFromConfig(const Configuration& conf
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::PixEvent::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -46,7 +46,7 @@ PixEvent::Settings PixEvent::Settings::ParseFromConfig(const Configuration& conf
 }
 
 void PixEvent::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Graphics::PixEvent::Settings | enable: {}", settings.enable);
+	STREAM_LOG_DEBUG("Graphics::PixEvent::Settings | enable: {}", settings.enable);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ void PixEvent::EndEvent(ID3D12GraphicsCommandList* commandList) {
 
 void PixEvent::CaptureNextFrames(const std::filesystem::path& filepath, uint32_t frames) {
 	if (filepath.extension() != L".wpix") {
-		StreamLogger::Error("Graphics::PixEvent | capture failed. invalid file extension. filepath: {}", filepath.generic_string());
+		STREAM_LOG_ERROR("Graphics::PixEvent | capture failed. invalid file extension. filepath: {}", filepath.generic_string());
 		return; //!< 拡張子が.wpixでない場合は何もしない
 	}
 
@@ -96,11 +96,11 @@ void PixEvent::CaptureNextFrames(const std::filesystem::path& filepath, uint32_t
 
 	auto hr = PixEvent::PIXGpuCaptureNextFramesImpl(filepath, frames);
 	if (FAILED(hr)) {
-		StreamLogger::Error(L"Graphics::PixEvent | capture frame failed. filepath: {}, _com_error: {}", filepath.generic_wstring(), ComPtrUtil::GetComErrorMessage(hr));
+		STREAM_LOG_ERROR(L"Graphics::PixEvent | capture frame failed. filepath: {}, _com_error: {}", filepath.generic_wstring(), ComPtrUtil::GetComErrorMessage(hr));
 		return;
 	}
 
-	StreamLogger::Info("Graphics::PixEvent | pix captured. filepath: {}", filepath.generic_string());
+	STREAM_LOG_INFO("Graphics::PixEvent | pix captured. filepath: {}", filepath.generic_string());
 #else
 	//!< [pix.h] pix.hにはGPUキャプチャのAPIがないため、何もしない
 #endif
@@ -114,7 +114,7 @@ std::filesystem::path PixEvent::FindPixDirectory() {
 	//!< kPixDirectory / <version> / kPixApplication の有効versionを探す.
 
 	if (!std::filesystem::exists(kPixDirectory)) {
-		StreamLogger::Warning(std::format("Graphics::PixEvent | pix version directory not found. directory: {}", kPixDirectory.generic_string()));
+		STREAM_LOG_WARNING("Graphics::PixEvent | pix version directory not found. directory: {}", kPixDirectory.generic_string());
 		return {};
 	}
 
@@ -129,12 +129,12 @@ std::filesystem::path PixEvent::FindPixDirectory() {
 		version.pop();
 
 		if (std::filesystem::exists(current / kPixApplication)) {
-			StreamLogger::Info(std::format("Graphics::PixEvent | pix enable version directory found. directory: {}", current.generic_string()));
+			STREAM_LOG_INFO("Graphics::PixEvent | pix enable version directory found. directory: {}", current.generic_string());
 			return current; //!< WinPix.exeが存在するversionが見つかった時点で探索を終了する.
 		}
 	}
 
-	StreamLogger::Warning(std::format("Graphics::PixEvent | pix enable version directory not found."));
+	STREAM_LOG_WARNING("Graphics::PixEvent | pix enable version directory not found.");
 	return {};
 #endif
 }

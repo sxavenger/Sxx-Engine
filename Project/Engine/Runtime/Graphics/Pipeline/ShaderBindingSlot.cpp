@@ -34,7 +34,7 @@ ShaderBindingSlot::BindingType ShaderBindingSlot::Declaration::GetBindingType() 
 			return BindingType::Sampler;
 
 		default:
-			StreamLogger::Exception("ShaderInputType is undefined.");
+			STREAM_EXCEPTION("ShaderInputType is undefined.");
 	}
 }
 
@@ -67,7 +67,7 @@ bool ShaderBindingSlot::Declaration::IsRootConstants(ShaderInputType type, const
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void ShaderBindingSlot::Reconcile(const Declaration& _declaration) {
-	StreamLogger::Assert(declaration == _declaration, std::format("declaration mismatch. name: {}", declaration.name));
+	STREAM_ASSERT(declaration == _declaration, "declaration mismatch. name: {}", declaration.name);
 	visibility = ShaderVisibility::All; //!< 複数shaderで使用されるのでallに変更.
 }
 
@@ -114,7 +114,7 @@ void ShaderBindingSlot::AppendGraphicsRootParameter(RootSignature::GraphicsDesc&
 }
 
 void ShaderBindingSlot::AppendComputeRootParameter(RootSignature::ComputeDesc& desc, UINT& index, const StaticSamplerSet& samplers) {
-	StreamLogger::Assert(visibility == ShaderVisibility::All, "compute shader only supports All visibility.");
+	STREAM_ASSERT(visibility == ShaderVisibility::All, "compute shader only supports All visibility.");
 
 	//!< bindingに応じて, descにルートパラメータを追加する.
 	switch (declaration.GetBindingType()) {
@@ -164,10 +164,10 @@ void ShaderBindingSlot::BindGraphicsRootParameter(const GraphicsCommandContext& 
 	}
 
 	//!< root parameter indexの取得
-	StreamLogger::Assert(rootParameterIndex.has_value(), std::format("root parameter index is not set. name: {}", declaration.name));
+	STREAM_ASSERT(rootParameterIndex.has_value(), "root parameter index is not set. name: {}", declaration.name);
 	UINT index = rootParameterIndex.value();
 
-	StreamLogger::Assert(parameter.Contains(declaration.name), std::format("parameter not found. name: {}", declaration.name));
+	STREAM_ASSERT(parameter.Contains(declaration.name), "parameter not found. name: {}", declaration.name);
 
 	auto commandList = context.GetCommandList();
 
@@ -206,10 +206,10 @@ void ShaderBindingSlot::BindComputeRootParameter(const GraphicsCommandContext& c
 	}
 
 	//!< root parameter indexの取得
-	StreamLogger::Assert(rootParameterIndex.has_value(), std::format("root parameter index is not set. name: {}", declaration.name));
+	STREAM_ASSERT(rootParameterIndex.has_value(), "root parameter index is not set. name: {}", declaration.name);
 	UINT index = rootParameterIndex.value();
 
-	StreamLogger::Assert(parameter.Contains(declaration.name), std::format("parameter not found. name: {}", declaration.name));
+	STREAM_ASSERT(parameter.Contains(declaration.name), "parameter not found. name: {}", declaration.name);
 
 	auto commandList = context.GetCommandList();
 

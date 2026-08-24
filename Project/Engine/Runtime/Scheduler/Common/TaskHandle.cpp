@@ -12,13 +12,13 @@ SXAVENGER_ENGINE_USING_(Scheduler)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 TaskState::State TaskHandle::GetState() const {
-	StreamLogger::Assert(pointer_ != nullptr, "task handle has no state.");
+	STREAM_ASSERT(pointer_ != nullptr, "task handle has no state.");
 	return pointer_->Get();
 }
 
 void TaskHandle::Wait() const {
 	if (pointer_ == nullptr) {
-		StreamLogger::Warning("Scheduler::TaskHandle | task handle has no state. wait is ignored.");
+		STREAM_LOG_WARNING("Scheduler::TaskHandle | task handle has no state. wait is ignored.");
 		return; //!< stateがnullptrの場合は何もしない.
 	}
 

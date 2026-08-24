@@ -26,9 +26,9 @@ void GraphicsPipelineState::Desc::ResetShaderBlob() {
 void GraphicsPipelineState::Desc::SetShaderBlob(const ShaderBlob& blob) {
 
 	CompileProfile profile = blob.GetProfile();
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		profile != CompileProfile::Library && profile != CompileProfile::Compute,
-		std::format("invalid shader blob profile. profile: {}", profile)
+		"invalid shader blob profile. profile: {}", profile
 	); //!< profileの範囲チェック (GraphicsPipelineStateのDescではLibraryとComputeは無効)
 
 	blobs[EnumUtil<CompileProfile>::Cast(profile)] = blob;
@@ -45,9 +45,9 @@ void GraphicsPipelineState::Desc::SetShaderBlob(const ShaderBlob& blob) {
 }
 
 const ShaderBlob& GraphicsPipelineState::Desc::GetShaderBlob(CompileProfile profile) const {
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		profile != CompileProfile::Library && profile != CompileProfile::Compute,
-		std::format("invalid shader blob profile. profile: {}", profile)
+		"invalid shader blob profile. profile: {}", profile
 	); //!< profileの範囲チェック (GraphicsPipelineStateのDescではLibraryとComputeは無効)
 
 	return blobs[EnumUtil<CompileProfile>::Cast(profile)];
@@ -62,7 +62,7 @@ D3D12_SHADER_BYTECODE GraphicsPipelineState::Desc::GetShaderBytecode(CompileProf
 			case CompileProfile::Vertex:
 			case CompileProfile::Mesh:
 			case CompileProfile::Pixel:
-				StreamLogger::Exception(std::format("required shader blob is not set. profile: {}", profile));
+				STREAM_EXCEPTION("required shader blob is not set. profile: {}", profile);
 				//!< これらのprofileはGraphicsPipelineStateのDescで必須のため、blobがnullptrの場合は例外を投げる
 
 			default:
@@ -130,12 +130,12 @@ void GraphicsPipelineState::Desc::ResetBlendState() {
 }
 
 void GraphicsPipelineState::Desc::SetBlendState(uint8_t index, const D3D12_RENDER_TARGET_BLEND_DESC& desc) {
-	StreamLogger::Assert(index < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "BlendState index must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< indexの範囲チェック
+	STREAM_ASSERT(index < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "BlendState index must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< indexの範囲チェック
 	blends[index] = desc;
 }
 
 void GraphicsPipelineState::Desc::SetBlendMode(uint8_t index, BlendModeColor color, BlendModeTransparent transparent) {
-	StreamLogger::Assert(index < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "BlendState index must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< indexの範囲チェック
+	STREAM_ASSERT(index < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "BlendState index must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< indexの範囲チェック
 	blends[index] = BlendState::CreateBlendDesc(color, transparent);
 }
 
@@ -161,7 +161,7 @@ void GraphicsPipelineState::Desc::ResetRenderTargetFormat() {
 
 void GraphicsPipelineState::Desc::AppendRenderTargetFormat(DXGI_FORMAT format) {
 	rtvFormats.emplace_back(format);
-	StreamLogger::Assert(rtvFormats.size() < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "Render Target Format must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< RTVの設定限界
+	STREAM_ASSERT(rtvFormats.size() < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "Render Target Format must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< RTVの設定限界
 }
 
 void GraphicsPipelineState::Desc::SetRenderTargetFormat(uint8_t index, DXGI_FORMAT format) {
@@ -170,7 +170,7 @@ void GraphicsPipelineState::Desc::SetRenderTargetFormat(uint8_t index, DXGI_FORM
 	}
 
 	rtvFormats[index] = format;
-	StreamLogger::Assert(rtvFormats.size() < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "Render Target Format must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< RTVの設定限界
+	STREAM_ASSERT(rtvFormats.size() < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "Render Target Format must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< RTVの設定限界
 }
 
 void GraphicsPipelineState::Desc::ResetDepthStencilFormat() {

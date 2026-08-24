@@ -89,14 +89,14 @@ private:
 
 template <Asset T>
 std::shared_ptr<T> AssetHandle<T>::Get() const {
-	StreamLogger::Assert(uuid_.has_value(), "failed to get asset. asset id is empty.");
+	STREAM_ASSERT(uuid_.has_value(), "failed to get asset. asset id is empty.");
 	return AssetStorage::GetInstance()->Get<T>(uuid_.value());
 }
 
 template <Asset T>
 void AssetHandle<T>::Wait() const {
 	if (!uuid_.has_value()) {
-		StreamLogger::Warning("Assets::AssetHandle | failed to wait for asset. asset id is empty.");
+		STREAM_LOG_WARNING("Assets::AssetHandle | failed to wait for asset. asset id is empty.");
 		return; //!< idが空の場合は何もしない
 	}
 
@@ -117,7 +117,7 @@ std::shared_ptr<T> AssetHandle<T>::WaitGet() const {
 template <Asset T>
 void AssetHandle<T>::Reload() const {
 	if (!uuid_.has_value()) {
-		StreamLogger::Warning("Assets::AssetHandle | failed to reload asset. asset id is empty.");
+		STREAM_LOG_WARNING("Assets::AssetHandle | failed to reload asset. asset id is empty.");
 		return; //!< idが空の場合は何もしない
 	}
 	

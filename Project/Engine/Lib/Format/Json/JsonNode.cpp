@@ -35,6 +35,6 @@ bool JsonNode::Contains(const json::node& node, const std::string_view& path) {
 
 const json::node& JsonNode::GetNode(const json::node& node, const std::string_view& path) {
 	json::pointer pointer = JsonNode::CreatePointer(path);
-	StreamLogger::Assert(node.contains(pointer), std::format("json path does not exist. path: {}", path));
+	STREAM_ASSERT(node.contains(pointer), "json path does not exist. path: {}", path);
 	return node[pointer];
 }

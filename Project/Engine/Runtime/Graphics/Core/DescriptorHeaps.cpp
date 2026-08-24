@@ -24,7 +24,7 @@ DescriptorHeaps::Settings DescriptorHeaps::Settings::ParseFromConfig(const Confi
 	Settings settings;
 
 	if (!config.Contains(DescriptorHeaps::Settings::kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::DescriptorHeaps::Settings | config does not exist. path: {}", DescriptorHeaps::Settings::kConfigPath.GetPath()
 		);
 
@@ -38,9 +38,9 @@ DescriptorHeaps::Settings DescriptorHeaps::Settings::ParseFromConfig(const Confi
 }
 
 void DescriptorHeaps::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Graphics::DescriptorHeaps::Settings | descriptorCapacityRTV: {}", settings.descriptorCapacityRTV);
-	StreamLogger::Debug("Graphics::DescriptorHeaps::Settings | descriptorCapacityDSV: {}", settings.descriptorCapacityDSV);
-	StreamLogger::Debug("Graphics::DescriptorHeaps::Settings | descriptorCapacityCBV_SRV_UAV: {}", settings.descriptorCapacityCBV_SRV_UAV);
+	STREAM_LOG_DEBUG("Graphics::DescriptorHeaps::Settings | descriptorCapacityRTV: {}", settings.descriptorCapacityRTV);
+	STREAM_LOG_DEBUG("Graphics::DescriptorHeaps::Settings | descriptorCapacityDSV: {}", settings.descriptorCapacityDSV);
+	STREAM_LOG_DEBUG("Graphics::DescriptorHeaps::Settings | descriptorCapacityCBV_SRV_UAV: {}", settings.descriptorCapacityCBV_SRV_UAV);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ void DescriptorHeaps::Init(const Configuration& config, const Device& device) {
 	pools_[EnumUtil<DescriptorCategory>::Cast(DescriptorCategory::DSV)].Init(device, DescriptorCategory::DSV, settings_.descriptorCapacityDSV);                         //!< DSVのdescriptor poolの初期化.
 	pools_[EnumUtil<DescriptorCategory>::Cast(DescriptorCategory::SRV_CBV_UAV)].Init(device, DescriptorCategory::SRV_CBV_UAV, settings_.descriptorCapacityCBV_SRV_UAV); //!< CBV/SRV/UAVのdescriptor poolの初期化.
 
-	StreamLogger::Info("Graphics::DescriptorHeaps | initialization complete.");
+	STREAM_LOG_INFO("Graphics::DescriptorHeaps | initialization complete.");
 
 }
 

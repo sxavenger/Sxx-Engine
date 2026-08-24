@@ -65,7 +65,7 @@ void Mouse::Init(IDirectInput8* dinput) {
 	);
 	ComPtrUtil::Assert(hr, L"mouse set data format failed.");
 
-	StreamLogger::Info("Platform::Mouse | mouse device created.");
+	STREAM_LOG_INFO("Platform::Mouse | mouse device created.");
 }
 
 void Mouse::Update() {
@@ -201,7 +201,7 @@ bool Mouse::SetCooperativeLevel(HWND hwnd) {
 		);
 		
 		if (FAILED(hr)) {
-			StreamLogger::Error(
+			STREAM_LOG_ERROR(
 				L"Platform::Mouse | failed to set cooperative level. hwnd: {:p} _com_error: {}",
 				static_cast<const void*>(hwnd), ComPtrUtil::GetComErrorMessage(hr)
 			);
@@ -210,7 +210,7 @@ bool Mouse::SetCooperativeLevel(HWND hwnd) {
 		}
 
 		current_ = hwnd; //!< hwndの更新
-		StreamLogger::Info("Platform::Mouse | mouse cooperative level set. hwnd: {:p}", static_cast<const void*>(hwnd));
+		STREAM_LOG_INFO("Platform::Mouse | mouse cooperative level set. hwnd: {:p}", static_cast<const void*>(hwnd));
 	}
 
 	return true;

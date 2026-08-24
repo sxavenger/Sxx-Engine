@@ -34,7 +34,7 @@ public:
 
 	//! @brief Integral型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return static_cast<T>(TomlNode::GetIntegral(node.GetRef()));
@@ -62,11 +62,11 @@ public:
 
 	//! @brief Integral型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -117,7 +117,7 @@ public:
 
 	//! @brief FloatingPoint型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return static_cast<T>(TomlNode::GetFloatingPoint(node.GetRef()));
@@ -145,11 +145,11 @@ public:
 
 	//! @brief FloatingPoint型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -200,7 +200,7 @@ public:
 
 	//! @brief Boolean型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return static_cast<T>(TomlNode::GetBoolean(node.GetRef()));
@@ -228,11 +228,11 @@ public:
 
 	//! @brief Boolean型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -283,7 +283,7 @@ public:
 
 	//! @brief StringA型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return T(TomlNode::GetString(node.GetRef()));
@@ -311,11 +311,11 @@ public:
 
 	//! @brief StringA型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -366,7 +366,7 @@ public:
 
 	//! @brief StringW型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return UnicodeConverter::ConvertW(TomlNode::GetString(node.GetRef()));
@@ -394,11 +394,11 @@ public:
 
 	//! @brief StringW型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -449,12 +449,12 @@ public:
 
 	//! @brief Enum型の取得.
 	static T Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node  = TomlNode::GetNode(table, path);
 		std::string name = TomlNode::GetString(node.GetRef());
 
-		StreamLogger::Assert(EnumUtil<T>::Contains(name), std::format("toml enum name is invalid. name: {}", name));
+		STREAM_ASSERT(EnumUtil<T>::Contains(name), "toml enum name is invalid. name: {}", name);
 		return EnumUtil<T>::GetEnum(name);
 	}
 
@@ -474,7 +474,7 @@ public:
 			return false;
 		}
 
-		StreamLogger::Assert(EnumUtil<T>::Contains(name.value()), std::format("toml enum name is invalid. name: {}", name.value()));
+		STREAM_ASSERT(EnumUtil<T>::Contains(name.value()), "toml enum name is invalid. name: {}", name.value());
 		value = EnumUtil<T>::GetEnum(name.value());
 
 		return true;
@@ -482,11 +482,11 @@ public:
 
 	//! @brief Enum型の配列を取得.
 	static std::vector<T> GetVector(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 
-		StreamLogger::Assert(node->is_array(), std::format("toml node is not an array. path: {}", path));
+		STREAM_ASSERT(node->is_array(), "toml node is not an array. path: {}", path);
 		const auto& array = TomlNode::GetArray(node.GetRef());
 
 		std::vector<T> v(array.size());
@@ -518,7 +518,7 @@ public:
 		for (size_t i = 0; i < array.size(); i++) {
 			std::string_view name = TomlNode::GetString(array.at(i));
 
-			StreamLogger::Assert(EnumUtil<T>::Contains(name), std::format("toml enum name is invalid. name: {}", name));
+			STREAM_ASSERT(EnumUtil<T>::Contains(name), "toml enum name is invalid. name: {}", name);
 			value[i] = EnumUtil<T>::GetEnum(name);
 		}
 
@@ -536,7 +536,7 @@ public:
 
 	//! @brief std::filesystem::pathの取得.
 	static std::filesystem::path Get(const toml::table& table, const std::string_view& path) {
-		StreamLogger::Assert(TomlNode::Contains(table, path), std::format("toml path does not exist. path: {}", path));
+		STREAM_ASSERT(TomlNode::Contains(table, path), "toml path does not exist. path: {}", path);
 
 		const auto node = TomlNode::GetNode(table, path);
 		return TomlNode::GetString(node.GetRef());

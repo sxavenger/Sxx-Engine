@@ -24,7 +24,7 @@ HostfxrHandle::Settings HostfxrHandle::Settings::ParseFromConfig(const Configura
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Script::HostfxrHandle::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -37,7 +37,7 @@ HostfxrHandle::Settings HostfxrHandle::Settings::ParseFromConfig(const Configura
 }
 
 void HostfxrHandle::Settings::Log(const Settings& settings) {
-	StreamLogger::Debug("Script::HostfxrHandle::Settings | runtimeConfigPath: {}", settings.runtimeConfigPath.generic_string());
+	STREAM_LOG_DEBUG("Script::HostfxrHandle::Settings | runtimeConfigPath: {}", settings.runtimeConfigPath.generic_string());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ void HostfxrHandle::Init(const Configuration& config, const HostfxrModule& modul
 	Settings::Log(settings_); //!< 設定のログ.
 
 	if (settings_.runtimeConfigPath.empty()) {
-		StreamLogger::Info("Script::HostfxrHandle | runtimeconfig.json filepath is not set.");
+		STREAM_LOG_INFO("Script::HostfxrHandle | runtimeconfig.json filepath is not set.");
 		return; //!< runtimeconfig.jsonのパスが設定されていない場合は初期化しない.
 	}
 
@@ -60,7 +60,7 @@ void HostfxrHandle::Init(const Configuration& config, const HostfxrModule& modul
 	//!< 関数ポインタの取得
 	loadAssemblyAndGetFunctionPointerFptr_ = module.GetDelegateFunction<load_assembly_and_get_function_pointer_fn>(hdt_load_assembly_and_get_function_pointer, handle_);
 
-	StreamLogger::Info("Script::HostfxrHandle | initialized successfully.");
+	STREAM_LOG_INFO("Script::HostfxrHandle | initialized successfully.");
 }
 
 void HostfxrHandle::Shutdown(const HostfxrModule& module) {
@@ -71,7 +71,7 @@ void HostfxrHandle::Shutdown(const HostfxrModule& module) {
 
 	loadAssemblyAndGetFunctionPointerFptr_ = nullptr;
 
-	StreamLogger::Info("Script::HostfxrHandle | shutdown successfully.");
+	STREAM_LOG_INFO("Script::HostfxrHandle | shutdown successfully.");
 }
 
 std::wstring HostfxrHandle::GetTypeName(const std::wstring_view& _namespace, const std::wstring_view& _class, const std::wstring_view& _assembly) {

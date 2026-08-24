@@ -21,7 +21,7 @@ ComponentStorage::~ComponentStorage() noexcept {
 		size_t used = allocator.GetUsedCount();
 
 		if (used != 0) {
-			StreamLogger::Warning("World::ComponentStorage<{}> | component handle reaked. count: {}", type.GetName(), allocator.GetUsedCount());
+			STREAM_LOG_WARNING("World::ComponentStorage<{}> | component handle reaked. count: {}", type.GetName(), allocator.GetUsedCount());
 			//!< componentのhandleの解放がされていない場合は警告を出す.
 		}
 	}
@@ -29,11 +29,11 @@ ComponentStorage::~ComponentStorage() noexcept {
 
 void ComponentStorage::Unregister(const TypeInfo& type, ComponentHandle handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Warning("World::ComponentStorage<{}> | component handle has no handle.", type.GetName());
+		STREAM_LOG_WARNING("World::ComponentStorage<{}> | component handle has no handle.", type.GetName());
 		return;
 	}
 
-	StreamLogger::Debug("World::ComponentStorage<{}> | component unregistered. handle: {}", type.GetName(), handle.GetHandle());
+	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", type.GetName(), handle.GetHandle());
 	storage_[type].Unregister(handle);
 }
 

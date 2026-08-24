@@ -30,7 +30,7 @@ GraphicsCommandContext::Settings GraphicsCommandContext::Settings::ParseFromConf
 	Configuration::Path path = Configuration::Path(str);
 
 	if (!config.Contains(path.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::GraphicsCommandContext::Settings | config does not exist. path: {}", path.GetPath()
 		);
 
@@ -44,7 +44,7 @@ GraphicsCommandContext::Settings GraphicsCommandContext::Settings::ParseFromConf
 }
 
 void GraphicsCommandContext::Settings::Log(GraphicsCommandType type, const Settings& settings) {
-	StreamLogger::Debug("Graphics::GraphicsCommandContext::Settings<{}> | allocatorCount: {}", type, settings.allocatorCount);
+	STREAM_LOG_DEBUG("Graphics::GraphicsCommandContext::Settings<{}> | allocatorCount: {}", type, settings.allocatorCount);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ void GraphicsCommandContext::Settings::Log(GraphicsCommandType type, const Setti
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 GraphicsCommandContext::~GraphicsCommandContext() {
-	StreamLogger::Info("Graphics::GraphicsCommandContext<{}> | terminated.", type_);
+	STREAM_LOG_INFO("Graphics::GraphicsCommandContext<{}> | terminated.", type_);
 }
 
 void GraphicsCommandContext::Init(const Configuration& config, const Device& device, GraphicsCommandType type) {
@@ -78,7 +78,7 @@ void GraphicsCommandContext::Init(const Configuration& config, const Device& dev
 
 	fenceEvent_ = GraphicsCommandContext::CreateFenceEvent(); //!< フェンスイベントの作成.
 
-	StreamLogger::Info("Graphics::GraphicsCommandContext<{}> | initialized.", type_);
+	STREAM_LOG_INFO("Graphics::GraphicsCommandContext<{}> | initialized.", type_);
 }
 
 void GraphicsCommandContext::SetName(const std::wstring_view& name) const {
@@ -107,14 +107,14 @@ void GraphicsCommandContext::BeginEvent(const std::string_view& name) {
 }
 
 void GraphicsCommandContext::EndEvent() {
-	StreamLogger::Assert(eventIndent_ > 0, "Graphics::GraphicsCommandContext | event indent is zero.");
+	STREAM_ASSERT(eventIndent_ > 0, "Graphics::GraphicsCommandContext | event indent is zero.");
 	PixEvent::EndEvent(commandList_.Get());
 	eventIndent_--;
 }
 
 void GraphicsCommandContext::SetDescriptorHeaps(const DescriptorHeaps& heaps) const {
 	if (type_ == GraphicsCommandType::Copy) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::GraphicsCommandContext | SetDescriptorHeaps is not supported. Copy command does not use SRV/CBV/UAV descriptor heaps."
 		);
 		return; //!< CopyコマンドはSRV/CBV/UAVのデスクリプタヒープを使用しないので, 設定しない.
@@ -243,7 +243,7 @@ HANDLE GraphicsCommandContext::CreateFenceEvent() {
 		nullptr
 	);
 
-	StreamLogger::Assert(event != nullptr, "create fence event failed.");
+	STREAM_ASSERT(event != nullptr, "create fence event failed.");
 	return event;
 	
 }

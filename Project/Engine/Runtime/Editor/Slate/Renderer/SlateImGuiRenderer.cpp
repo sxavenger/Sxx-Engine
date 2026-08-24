@@ -78,7 +78,7 @@ void Slate::ImGuiRenderer::Shutdown() {
 }
 
 void Slate::ImGuiRenderer::SetCurrentContext() {
-	StreamLogger::Assert(context_ != nullptr, "ImGui context is not initialized.");
+	STREAM_ASSERT(context_ != nullptr, "ImGui context is not initialized.");
 	ImGui::SetCurrentContext(context_); //!< ImGuiの現在のコンテキストを設定.
 }
 
@@ -89,7 +89,7 @@ void Slate::ImGuiRenderer::BeginFrame(const Vector2f& displaySize, TimePointf<Ti
 
 	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
 
-	StreamLogger::Assert(!isActiveFrame_, "ImGui frame is already active. (BeginFrame/EndFrame is not paired correctly)");
+	STREAM_ASSERT(!isActiveFrame_, "ImGui frame is already active. (BeginFrame/EndFrame is not paired correctly)");
 
 	if (isActiveFrame_) {
 		return; //!< 多重にNewFrameが呼ばれるのを防ぐ.
@@ -113,7 +113,7 @@ void Slate::ImGuiRenderer::EndFrame(const Graphics::GraphicsCommandContext& cont
 
 	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
 
-	StreamLogger::Assert(!isOpenRegion_, "ImGui region is still open. (BeginRegion/EndRegion is not paired correctly)");
+	STREAM_ASSERT(!isOpenRegion_, "ImGui region is still open. (BeginRegion/EndRegion is not paired correctly)");
 
 	ImGui::Render();
 
@@ -224,7 +224,7 @@ void Slate::ImGuiRenderer::EndClipRect() {
 }
 
 bool Slate::ImGuiRenderer::BeginRegion(const char* id, const Geometry& geometry) {
-	StreamLogger::Assert(!isOpenRegion_, "ImGui region is already open."); //!< 既に描画領域が開かれている場合はエラー.
+	STREAM_ASSERT(!isOpenRegion_, "ImGui region is already open."); //!< 既に描画領域が開かれている場合はエラー.
 
 	SetCurrentContext(); //!< Renderer専用のImGuiコンテキストを設定.
 
@@ -352,7 +352,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 			baseFontSize * 1.0f,
 			&conf
 		);
-		StreamLogger::Assert(pointer != nullptr, std::format("failed to load font. filepath: {}", filepath.generic_string()));
+		STREAM_ASSERT(pointer != nullptr, "failed to load font. filepath: {}", filepath.generic_string());
 	}
 
 	{ //!< 日本語fontの読み込み. (MPLUS1p-Regular.ttf)
@@ -370,7 +370,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 			baseFontSize * 1.0f,
 			&conf
 		);
-		StreamLogger::Assert(pointer != nullptr, std::format("failed to load font. filepath: {}", filepath.generic_string()));
+		STREAM_ASSERT(pointer != nullptr, "failed to load font. filepath: {}", filepath.generic_string());
 	}
 
 	{ //!< アイコンfontの読み込み. (MaterialSymbols*.ttf)
@@ -389,7 +389,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 			&conf,
 			kIconRanges
 		);
-		StreamLogger::Assert(pointer != nullptr, std::format("failed to load font. filepath: {}", filepath.generic_string()));
+		STREAM_ASSERT(pointer != nullptr, "failed to load font. filepath: {}", filepath.generic_string());
 	}
 }
 
@@ -432,7 +432,7 @@ void Slate::ImGuiRenderer::InitContext() {
 	};
 
 	bool result = ImGui_ImplDX12_Init(&info);
-	StreamLogger::Assert(result, "failed to initialize ImGui DX12 renderer.");
+	STREAM_ASSERT(result, "failed to initialize ImGui DX12 renderer.");
 }
 
 uint32_t Slate::ImGuiRenderer::ToDrawColor(const Color4f& color) {

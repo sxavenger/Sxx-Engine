@@ -15,13 +15,13 @@ ResourceAllocator::~ResourceAllocator() {
 	Free(); //!< 解放キューに残っているindexを解放する.
 
 	if (allocator_.GetUsedCount() != 0) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::ResourceAllocator | descriptor leak detected. used count: {}.", allocator_.GetUsedCount()
 		);
 		//!< デスクリプタリークの警告. DescriptorAllocatorが解放されるときに、使用中のDescriptorがある場合は警告を出す.
 	}
 
-	StreamLogger::Info("Graphics::ResourceAllocator | terminate.");
+	STREAM_LOG_INFO("Graphics::ResourceAllocator | terminate.");
 }
 
 ResourceHandle ResourceAllocator::Allocate(const Device& device, const ResourceDesc& desc, uint8_t count) {
@@ -35,7 +35,7 @@ ResourceHandle ResourceAllocator::Allocate(const Device& device, const ResourceD
 		buffer[i] = Resource::CreateCommitted(device, desc);
 	}
 
-	StreamLogger::Debug(
+	STREAM_LOG_DEBUG(
 		"Graphics::ResourceAllocator | allocate resource handle. index: {}, buffer count: {}", handle.GetIndex(), count
 	);
 
@@ -44,11 +44,11 @@ ResourceHandle ResourceAllocator::Allocate(const Device& device, const ResourceD
 
 void ResourceAllocator::Release(ResourceHandle::Handle&& handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Warning("Graphics::ResourceAllocator | release resource handle. handle is not valid.");
+		STREAM_LOG_WARNING("Graphics::ResourceAllocator | release resource handle. handle is not valid.");
 		return; //!< handleが無効な場合は警告を出して終了.
 	}
 
-	StreamLogger::Debug(
+	STREAM_LOG_DEBUG(
 		"Graphics::ResourceAllocator | release resource handle. index: {}", handle.GetIndex()
 	);
 
@@ -61,7 +61,7 @@ void ResourceAllocator::Free() {
 		ResourceHandle::Type index = freeQueue_.front();
 		freeQueue_.pop();
 
-		StreamLogger::Debug(
+		STREAM_LOG_DEBUG(
 			"Graphics::ResourceAllocator | free resource handle. index: {}", index
 		);
 
@@ -70,12 +70,12 @@ void ResourceAllocator::Free() {
 }
 
 ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHandle::Handle& handle) {
-	StreamLogger::Assert(handle.HasHandle(), "resource handle is not valid.");
+	STREAM_ASSERT(handle.HasHandle(), "resource handle is not valid.");
 	return pool_.at(handle.GetIndex());
 }
 
 const ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHandle::Handle& handle) const {
-	StreamLogger::Assert(handle.HasHandle(), "resource handle is not valid.");
+	STREAM_ASSERT(handle.HasHandle(), "resource handle is not valid.");
 	return pool_.at(handle.GetIndex());
 }
 

@@ -188,8 +188,11 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Lib\Format\Toml\TomlNode.h" />
     <ClInclude Include="Lib\Format\Toml\TomlReader.h" />
     <ClInclude Include="Lib\Format\Toml\TomlUtil.h" />
+    <ClInclude Include="Lib\Logger\ConsoleLogger.h" />
     <ClInclude Include="Lib\Logger\CrashHandler.h" />
+    <ClInclude Include="Lib\Logger\FileLogger.h" />
     <ClInclude Include="Lib\Logger\LoggerUtil.h" />
+    <ClInclude Include="Lib\Logger\MessageDialog.h" />
     <ClInclude Include="Lib\Logger\StreamLogger.h" />
     <ClInclude Include="Lib\Math\Color3.h" />
     <ClInclude Include="Lib\Math\Color4.h" />
@@ -346,8 +349,11 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Lib\Format\Json\JsonNode.cpp" />
     <ClCompile Include="Lib\Format\Toml\TomlFile.cpp" />
     <ClCompile Include="Lib\Format\Toml\TomlNode.cpp" />
+    <ClCompile Include="Lib\Logger\ConsoleLogger.cpp" />
     <ClCompile Include="Lib\Logger\CrashHandler.cpp" />
+    <ClCompile Include="Lib\Logger\FileLogger.cpp" />
     <ClCompile Include="Lib\Logger\LoggerUtil.cpp" />
+    <ClCompile Include="Lib\Logger\MessageDialog.cpp" />
     <ClCompile Include="Lib\Logger\StreamLogger.cpp" />
     <ClCompile Include="Lib\Reflection\TypeInfo.cpp" />
     <ClCompile Include="Lib\String\NumericConverter.cpp" />

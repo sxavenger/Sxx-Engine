@@ -19,7 +19,7 @@ std::vector<uint32_t> StaticMesh::Description::GetIndices() const {
 }
 
 void StaticMesh::Description::SetIndices(const std::vector<uint32_t>& indices) {
-	StreamLogger::Assert(indices.size() % 3 == 0, "indices size must be triangle. (multiple of 3)");
+	STREAM_ASSERT(indices.size() % 3 == 0, "indices size must be triangle. (multiple of 3)");
 	polygons = std::vector<MeshletPolygon>(indices.size() / 3); //!< 三角形の数に応じてpolygonsをリサイズ
 	std::memcpy(polygons.data(), indices.data(), indices.size() * sizeof(uint32_t)); //!< 連続配列なので, memcpyでコピー可能
 }

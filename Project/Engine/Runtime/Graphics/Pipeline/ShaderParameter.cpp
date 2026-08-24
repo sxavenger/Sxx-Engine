@@ -38,27 +38,27 @@ bool ShaderParameter::Contains(const std::string& name) const {
 }
 
 const ShaderParameter::Parameter& ShaderParameter::GetParameter(const std::string& name) const {
-	StreamLogger::Assert(parameters.contains(name), std::format("parameter not found. name: {}", name));
+	STREAM_ASSERT(parameters.contains(name), "parameter not found. name: {}", name);
 	return parameters.at(name);
 }
 
 const ShaderParameter::RootConstants& ShaderParameter::Get32bitConstants(const std::string& name) const {
 	const Parameter& parameter = GetParameter(name);
 
-	StreamLogger::Assert(std::holds_alternative<RootConstants>(parameter), std::format("parameter type is not RootConstants. name: {}", name));
+	STREAM_ASSERT(std::holds_alternative<RootConstants>(parameter), "parameter type is not RootConstants. name: {}", name);
 	return std::get<RootConstants>(parameter);
 }
 
 const D3D12_GPU_VIRTUAL_ADDRESS& ShaderParameter::GetAddress(const std::string& name) const {
 	const Parameter& parameter = GetParameter(name);
 
-	StreamLogger::Assert(std::holds_alternative<D3D12_GPU_VIRTUAL_ADDRESS>(parameter), std::format("parameter type is not D3D12_GPU_VIRTUAL_ADDRESS. name: {}", name));
+	STREAM_ASSERT(std::holds_alternative<D3D12_GPU_VIRTUAL_ADDRESS>(parameter), "parameter type is not D3D12_GPU_VIRTUAL_ADDRESS. name: {}", name);
 	return std::get<D3D12_GPU_VIRTUAL_ADDRESS>(parameter);
 }
 
 const D3D12_GPU_DESCRIPTOR_HANDLE& ShaderParameter::GetHandle(const std::string& name) const {
 	const Parameter& parameter = GetParameter(name);
 
-	StreamLogger::Assert(std::holds_alternative<D3D12_GPU_DESCRIPTOR_HANDLE>(parameter), std::format("parameter type is not D3D12_GPU_DESCRIPTOR_HANDLE. name: {}", name));
+	STREAM_ASSERT(std::holds_alternative<D3D12_GPU_DESCRIPTOR_HANDLE>(parameter), "parameter type is not D3D12_GPU_DESCRIPTOR_HANDLE. name: {}", name);
 	return std::get<D3D12_GPU_DESCRIPTOR_HANDLE>(parameter);
 }

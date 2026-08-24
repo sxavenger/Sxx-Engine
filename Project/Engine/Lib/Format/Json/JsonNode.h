@@ -98,7 +98,7 @@ private:
 
 template <Concept::Integral T>
 inline T JsonNode::GetIntegral(const json::node& node) {
-	StreamLogger::Assert(node.is_number_integer(), "json node is not an integer");
+	STREAM_ASSERT(node.is_number_integer(), "json node is not an integer");
 	return node.get<T>();
 }
 
@@ -118,7 +118,7 @@ inline json::node JsonNode::CreateIntegral(T value) {
 
 template <Concept::FloatingPoint T>
 inline T JsonNode::GetFloatingPoint(const json::node& node) {
-	StreamLogger::Assert(node.is_number_float(), "json node is not a floating-point");
+	STREAM_ASSERT(node.is_number_float(), "json node is not a floating-point");
 	return node.get<T>();
 }
 
@@ -137,7 +137,7 @@ inline json::node JsonNode::CreateFloatingPoint(T value) {
 }
 
 inline bool JsonNode::GetBoolean(const json::node& node) {
-	StreamLogger::Assert(node.is_boolean(), "json node is not a boolean");
+	STREAM_ASSERT(node.is_boolean(), "json node is not a boolean");
 	return node.get<bool>();
 }
 
@@ -154,7 +154,7 @@ inline json::node JsonNode::CreateBoolean(bool value) {
 }
 
 inline std::string_view JsonNode::GetString(const json::node& node) {
-	StreamLogger::Assert(node.is_string(), "json node is not a string");
+	STREAM_ASSERT(node.is_string(), "json node is not a string");
 	return node.get_ref<const std::string&>();
 }
 

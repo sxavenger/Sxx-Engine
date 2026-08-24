@@ -15,23 +15,23 @@ SXAVENGER_ENGINE_USING_(Assets)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string_view AssimpImporter::GetErrorString() const {
-	StreamLogger::Assert(importer_ != nullptr, "importer is null");
+	STREAM_ASSERT(importer_ != nullptr, "importer is null");
 	return importer_->GetErrorString();
 }
 
 bool AssimpImporter::HasScene() const {
-	StreamLogger::Assert(importer_ != nullptr, "importer is null");
+	STREAM_ASSERT(importer_ != nullptr, "importer is null");
 	return importer_->GetScene() != nullptr;
 }
 
 uint32_t AssimpImporter::GetMeshCount() const {
-	StreamLogger::Assert(HasScene(), "importer has no scene");
+	STREAM_ASSERT(HasScene(), "importer has no scene");
 	return importer_->GetScene()->mNumMeshes;
 }
 
 AssimpMesh AssimpImporter::GetMesh(uint32_t index) const {
-	StreamLogger::Assert(HasScene(), "importer has no scene");
-	StreamLogger::Assert(index < GetMeshCount(), "index is out of bounds");
+	STREAM_ASSERT(HasScene(), "importer has no scene");
+	STREAM_ASSERT(index < GetMeshCount(), "index is out of bounds");
 	return importer_->GetScene()->mMeshes[index];
 }
 
@@ -42,6 +42,6 @@ AssimpImporter AssimpImporter::Load(const std::filesystem::path& filepath, FlagE
 
 	AssimpImporter importer = instance;
 
-	StreamLogger::Assert(importer.HasScene(), std::format("failed to assimp import. filepath: {}", filepath.generic_string()), importer.GetErrorString());
+	STREAM_ASSERT_SUMMARY(importer.HasScene(), std::format("failed to assimp import. filepath: {}", filepath.generic_string()), importer.GetErrorString());
 	return importer;
 }

@@ -15,11 +15,11 @@ void ComponentAllocator::Register(std::unique_ptr<BaseComponent>&& component) {
 
 void ComponentAllocator::Unregister(ComponentHandle handle) {
 	if (!handle.HasHandle()) {
-		StreamLogger::Error("World::ComponentAllocator | unregister component handle has no handle.");
+		STREAM_LOG_ERROR("World::ComponentAllocator | unregister component handle has no handle.");
 		return;
 	}
 
-	StreamLogger::Assert(container_.contains(handle), "component handle not found.");
+	STREAM_ASSERT(container_.contains(handle), "component handle not found.");
 	unregister_.emplace(handle.GetHandle());
 }
 
@@ -28,7 +28,7 @@ void ComponentAllocator::Destroy() {
 
 		//!< 解放されるhandleを取得し、allocatorに返却する. コンテナからも削除する.
 		const ComponentHandle& handle = ComponentHandle(unregister_.front());
-		StreamLogger::Assert(container_.contains(handle), "component handle not found.");
+		STREAM_ASSERT(container_.contains(handle), "component handle not found.");
 		allocator_.Free(handle.GetHandle());
 		container_.erase(handle);
 
@@ -37,7 +37,7 @@ void ComponentAllocator::Destroy() {
 }
 
 RefPtr<BaseComponent> ComponentAllocator::Get(ComponentHandle handle) const {
-	StreamLogger::Assert(handle.HasHandle(), "component handle has no handle.");
-	StreamLogger::Assert(container_.contains(handle), "component handle not found.");
+	STREAM_ASSERT(handle.HasHandle(), "component handle has no handle.");
+	STREAM_ASSERT(container_.contains(handle), "component handle not found.");
 	return container_.at(handle).get();
 }

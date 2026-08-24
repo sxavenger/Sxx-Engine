@@ -18,7 +18,7 @@ void CpuScheduler::Init() {
 		thread.Create(std::bind(&CpuScheduler::GetTaskProc, this, std::placeholders::_1)); //!< threadの作成
 	}
 
-	StreamLogger::Info("Scheduler::CpuScheduler | initialized.");
+	STREAM_LOG_INFO("Scheduler::CpuScheduler | initialized.");
 }
 
 void CpuScheduler::Shutdown() {
@@ -32,7 +32,7 @@ void CpuScheduler::Shutdown() {
 		thread.Shutdown(); //!< threadのシャットダウン
 	}
 
-	StreamLogger::Info("Scheduler::CpuScheduler | shutdown.");
+	STREAM_LOG_INFO("Scheduler::CpuScheduler | shutdown.");
 }
 
 TaskHandle CpuScheduler::PushTask(const std::shared_ptr<CpuTask>& task) {

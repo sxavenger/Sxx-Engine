@@ -125,9 +125,9 @@ inline T HostfxrHandle::GetFunctionPointer(const std::filesystem::path& _assembl
 		nullptr,
 		reinterpret_cast<void**>(&function)
 	);
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		rc == 0 && function != nullptr,
-		std::format(L"failed to get hostfxr delegate function pointer. assembly: {}, function: {}::{}.{}", _assembly.generic_wstring(), _namespace, _class, _function)
+		L"failed to get hostfxr delegate function pointer. assembly: {}, function: {}::{}.{}", _assembly.generic_wstring(), _namespace, _class, _function
 	);
 
 	return function;

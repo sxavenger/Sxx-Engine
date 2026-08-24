@@ -313,7 +313,7 @@ ComPtr<ID3D12RootSignature> RootSignature::CreateRootSignature(RefPtr<ID3D12Devi
 	auto hr = D3D12SerializeVersionedRootSignature(&desc, &blob, &error);
 	if (FAILED(hr)) {
 		std::string_view message(reinterpret_cast<const char*>(error->GetBufferPointer()), error->GetBufferSize());
-		StreamLogger::Exception("root signature create error.", message);
+		STREAM_EXCEPTION_SUMMARY("root signature create error.", message);
 	}
 
 	ComPtr<ID3D12RootSignature> rootSignature;

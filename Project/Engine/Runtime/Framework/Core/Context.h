@@ -106,14 +106,14 @@ void Context::UnitPool::Push() {
 	TypeInfo type = TypeInfo::GetType<T>();
 
 	if (pointers_.contains(type)) {
-		StreamLogger::Warning("Framework::Context | unit pool already contains unit. type: {}", type.GetName());
+		STREAM_LOG_WARNING("Framework::Context | unit pool already contains unit. type: {}", type.GetName());
 		return; //!< すでに登録されている場合は何もしない
 	}
 
 	std::unique_ptr<T> unit = std::make_unique<T>();
 	pointers_.emplace(type, unit.get());
 	units_.push_back(std::move(unit));
-	StreamLogger::Info("Framework::Context | unit pool push unit. type: {}", type.GetName());
+	STREAM_LOG_INFO("Framework::Context | unit pool push unit. type: {}", type.GetName());
 }
 
 template <Unit T>
@@ -122,7 +122,7 @@ RefPtr<T> Context::UnitPool::Get() const {
 	TypeInfo type = TypeInfo::GetType<T>();
 
 	if (!pointers_.contains(type)) {
-		StreamLogger::Warning("Framework::Context | unit pool does not contain unit. type: {}", type.GetName());
+		STREAM_LOG_WARNING("Framework::Context | unit pool does not contain unit. type: {}", type.GetName());
 		return nullptr; //!< 登録されていない場合はnullptrを返す
 	}
 

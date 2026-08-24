@@ -188,7 +188,7 @@ void SlateEditorUnit::InitEditor() {
 	RefPtr<EditorWindow> window = CreateEditorWindow(L"[Sxavenger Engine] Slate Editor", kDefaultClientSize, true);
 
 	if (window == nullptr) {
-		StreamLogger::Assert(false, "SlateEditorUnit | failed to create main editor window.");
+		STREAM_ASSERT(false, "SlateEditorUnit | failed to create main editor window.");
 		return;
 	}
 
@@ -199,7 +199,7 @@ void SlateEditorUnit::InitEditor() {
 
 	frameTracker_.Start(); //!< frame間の時間の計測を開始する.
 
-	StreamLogger::Info("SlateEditorUnit | slate editor initialized.");
+	STREAM_LOG_INFO("SlateEditorUnit | slate editor initialized.");
 }
 
 void SlateEditorUnit::UpdateEditor() {
@@ -455,7 +455,7 @@ bool SlateEditorUnit::IsRequestExit() {
 RefPtr<SlateEditorUnit::EditorWindow> SlateEditorUnit::CreateEditorWindow(const std::wstring& name, const Vector2ui& client, bool isMain) {
 
 	if (isMain && GetMainEditorWindow() != nullptr) {
-		StreamLogger::Warning("SlateEditorUnit | main editor window already exists.");
+		STREAM_LOG_WARNING("SlateEditorUnit | main editor window already exists.");
 		return nullptr;
 	}
 
@@ -490,7 +490,7 @@ RefPtr<SlateEditorUnit::EditorWindow> SlateEditorUnit::CreateEditorWindow(const 
 
 	windows_.push_back(std::move(window));
 
-	StreamLogger::Info(L"SlateEditorUnit | create editor window. name: {}", name);
+	STREAM_LOG_INFO(L"SlateEditorUnit | create editor window. name: {}", name);
 
 	return windows_.back().get();
 }
@@ -825,7 +825,7 @@ void SlateEditorUnit::AddPanel(const Editor::Slate::EditorPanelPointer& panel, R
 	EditorWindow* target = (window != nullptr) ? window.Get() : GetMainEditorWindow().Get();
 
 	if (target == nullptr) {
-		StreamLogger::Warning("SlateEditorUnit | AddPanel called before the main window is created.");
+		STREAM_LOG_WARNING("SlateEditorUnit | AddPanel called before the main window is created.");
 		return;
 	}
 

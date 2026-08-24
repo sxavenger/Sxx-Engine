@@ -26,7 +26,7 @@ Uuid Uuid::Generate() {
 
 	GUID guid = {};
 	auto hr = CoCreateGuid(&guid);
-	StreamLogger::Assert(SUCCEEDED(hr), "failed to generate guid.");
+	STREAM_ASSERT(SUCCEEDED(hr), "failed to generate guid.");
 
 	Uuid uuid = {};
 	uuid.data1 = guid.Data1;
@@ -54,7 +54,7 @@ Uuid Uuid::Deserialize(const std::string_view& data) {
 	std::optional<uint16_t> data3 = NumericConverter::ConvertIntegral<uint16_t>(data.substr(14, 4), 16);
 	std::optional<uint16_t> data4 = NumericConverter::ConvertIntegral<uint16_t>(data.substr(19, 4), 16);
 	std::optional<uint64_t> data5 = NumericConverter::ConvertIntegral<uint64_t>(data.substr(24, 12), 16);
-	StreamLogger::Assert(data1.has_value() && data2.has_value() && data3.has_value() && data4.has_value() && data5.has_value(), "failed to deserialize uuid.");
+	STREAM_ASSERT(data1.has_value() && data2.has_value() && data3.has_value() && data4.has_value() && data5.has_value(), "failed to deserialize uuid.");
 
 	uuid.data1 = data1.value();
 	uuid.data2 = data2.value();

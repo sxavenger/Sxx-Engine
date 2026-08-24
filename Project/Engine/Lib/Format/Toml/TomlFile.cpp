@@ -15,7 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 toml::table TomlFile::Load(const std::filesystem::path& filepath) {
-	StreamLogger::Assert(std::filesystem::exists(filepath), std::format("toml file not found. filepath: {}", filepath.generic_string()));
+	STREAM_ASSERT(std::filesystem::exists(filepath), "toml file not found. filepath: {}", filepath.generic_string());
 	return toml::parse_file(filepath.generic_wstring());
 }
 

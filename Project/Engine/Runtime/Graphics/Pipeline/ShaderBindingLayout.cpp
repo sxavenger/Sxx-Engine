@@ -36,12 +36,12 @@ bool ShaderBindingLayout::Contains(const std::string& name) const {
 }
 
 ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string& name) {
-	StreamLogger::Assert(slots_.contains(name), std::format("shader bind slot not found. name: {}", name));
+	STREAM_ASSERT(slots_.contains(name), "shader bind slot not found. name: {}", name);
 	return slots_.at(name);
 }
 
 const ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string& name) const {
-	StreamLogger::Assert(slots_.contains(name), std::format("shader bind slot not found. name: {}", name));
+	STREAM_ASSERT(slots_.contains(name), "shader bind slot not found. name: {}", name);
 	return slots_.at(name);
 }
 

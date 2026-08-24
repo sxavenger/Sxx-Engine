@@ -19,9 +19,9 @@ void ComputePipelineState::Desc::ResetShaderBlob() {
 void ComputePipelineState::Desc::SetShaderBlob(const ShaderBlob& _blob) {
 
 	CompileProfile profile = _blob.GetProfile();
-	StreamLogger::Assert(
+	STREAM_ASSERT(
 		profile == CompileProfile::Compute,
-		std::format("invalid shader blob profile. profile: {}", profile)
+		"invalid shader blob profile. profile: {}", profile
 	); //!< profileの範囲チェック (ComputePipelineStateのDescではComputeのみ有効)
 
 	blob = _blob;
@@ -32,7 +32,7 @@ const ShaderBlob& ComputePipelineState::Desc::GetShaderBlob() const {
 }
 
 D3D12_SHADER_BYTECODE ComputePipelineState::Desc::GetShaderBytecode() const {
-	StreamLogger::Assert(blob != nullptr, "shader blob is not set.");  //!< blobが設定されていない
+	STREAM_ASSERT(blob != nullptr, "shader blob is not set.");  //!< blobが設定されていない
 	return blob.GetBytecode();
 }
 

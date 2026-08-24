@@ -13,10 +13,10 @@ SXAVENGER_ENGINE_USING_(World)
 
 void SceneContext::Register(const std::string& name, const std::function<std::unique_ptr<BaseScene>()>& factory) {
 	if (factory_.contains(name)) {
-		StreamLogger::Warning("World::SceneContext | scene already registered. name: {}", name);
+		STREAM_LOG_WARNING("World::SceneContext | scene already registered. name: {}", name);
 		return;
 	}
 
 	factory_[name] = factory;
-	StreamLogger::Debug("World::SceneContext | scene registered. name: {}", name);
+	STREAM_LOG_DEBUG("World::SceneContext | scene registered. name: {}", name);
 }

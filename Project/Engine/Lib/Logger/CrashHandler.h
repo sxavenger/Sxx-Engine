@@ -5,14 +5,17 @@
 //-----------------------------------------------------------------------------------------
 //* logger
 #include "LoggerUtil.h"
+#include "FileLogger.h"
+
+//* lib
+#include <Lib/CXXAttribute.hpp>
 
 //* windows
 #include <windows.h>
 
 //* c++
-#include <filesystem>
 #include <mutex>
-#include <array>
+#include <filesystem>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // CrashHandler class
@@ -28,6 +31,10 @@ public:
 
 	static void Uninstall();
 
+	//* break point methods *//
+
+	NORETURN static void Breakpoint();
+
 private:
 
 	//=========================================================================================
@@ -36,16 +43,13 @@ private:
 
 	//* file *//
 
-	static inline const std::filesystem::path kDirectory = "Dumps";
-	static inline const std::filesystem::path kFilename  = LoggerUtil::CreateFilename(".dmp");
+	static inline const std::filesystem::path kDirectory = "Dumps"; //!< ダンプファイルを格納するディレクトリのパス.
+	static inline const std::filesystem::path kExtension = ".dmp"; //!< ダンプファイルの拡張子.
+	static inline const std::filesystem::path kFilename  = FileLogger::CreateFilename(kExtension); //!< ダンプファイルのパス.
 
 	//* thread *//
 
 	static inline std::once_flag once_ = {};
-
-	//* handle *//
-
-	static inline PVOID handle_ = {};
 
 	//=========================================================================================
 	// private methods
@@ -55,12 +59,8 @@ private:
 
 	static void CreateMinidump(EXCEPTION_POINTERS* exception);
 
-	static std::string_view GetExceptionName(DWORD code);
-
 	//* crash handler *//
 
 	static LONG WINAPI UnhandledExceptionFilterFunc(EXCEPTION_POINTERS* exception);
-
-	static LONG WINAPI ExceptionFilterFunc(EXCEPTION_POINTERS* exception);
 
 };

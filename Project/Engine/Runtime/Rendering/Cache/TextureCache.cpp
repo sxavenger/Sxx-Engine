@@ -55,7 +55,7 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 	);
 
 	task.Wait(); //!< taskが完了するまで待機.
-	StreamLogger::Info("Rendering::TextureCache | upload texture resource completed. name: {}", texture->GetName());
+	STREAM_LOG_INFO("Rendering::TextureCache | upload texture resource completed. name: {}", texture->GetName());
 }
 
 Graphics::ResourceHandle TextureCache::CreateTextureResource(const std::string_view& name, const Assets::Texture::Description& description) {

@@ -23,7 +23,7 @@ InfoQueue::Settings InfoQueue::Settings::ParseFromConfig(const Configuration& co
 	Settings settings;
 
 	if (!config.Contains(kConfigPath.GetPath())) {
-		StreamLogger::Warning(
+		STREAM_LOG_WARNING(
 			"Graphics::InfoQueue::Settings | config does not exist. path: {}", kConfigPath.GetPath()
 		);
 		return settings; //!< 設定が存在しない.
@@ -46,7 +46,7 @@ void InfoQueue::Settings::Log(const Settings& settings) {
 			}
 		}
 		ss << "]";
-		StreamLogger::Debug(ss.str());
+		STREAM_LOG_DEBUG(ss.str());
 	}
 
 	{
@@ -59,7 +59,7 @@ void InfoQueue::Settings::Log(const Settings& settings) {
 			}
 		}
 		ss << "]";
-		StreamLogger::Debug(ss.str());
+		STREAM_LOG_DEBUG(ss.str());
 	}
 
 	{
@@ -72,7 +72,7 @@ void InfoQueue::Settings::Log(const Settings& settings) {
 			}
 		}
 		ss << "]";
-		StreamLogger::Debug(ss.str());
+		STREAM_LOG_DEBUG(ss.str());
 	}
 }
 
@@ -81,7 +81,7 @@ void InfoQueue::Settings::Log(const Settings& settings) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 InfoQueue::~InfoQueue() {
-	StreamLogger::Info("Graphics::InfoQueue | info queue terminated.");
+	STREAM_LOG_INFO("Graphics::InfoQueue | info queue terminated.");
 }
 
 void InfoQueue::Init(const Configuration& config, const Device& device) {
@@ -92,13 +92,13 @@ void InfoQueue::Init(const Configuration& config, const Device& device) {
 	infoQueue_ = InfoQueue::CreateInfoQueue(device.GetDevice()); //!< InfoQueueのインターフェースの取得.
 
 	if (infoQueue_ == nullptr) {
-		StreamLogger::Warning("Graphics::InfoQueue | failed to create info queue.");
+		STREAM_LOG_WARNING("Graphics::InfoQueue | failed to create info queue.");
 		return; //!< InfoQueueのインターフェースの取得に失敗.
 	}
 
 	ApplySettings(); //!< 設定の適用.
 
-	StreamLogger::Info("Graphics::InfoQueue | successfully initialized info queue.");
+	STREAM_LOG_INFO("Graphics::InfoQueue | successfully initialized info queue.");
 }
 
 ComPtr<ID3D12InfoQueue> InfoQueue::CreateInfoQueue(RefPtr<ID3D12Device8> device) {
@@ -107,7 +107,7 @@ ComPtr<ID3D12InfoQueue> InfoQueue::CreateInfoQueue(RefPtr<ID3D12Device8> device)
 
 	auto hr = device->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())); //!< InfoQueueのインターフェースの取得.
 	if (FAILED(hr)) {
-		StreamLogger::Error(
+		STREAM_LOG_ERROR(
 			L"Graphics::InfoQueue | failed to get info queue interface. _com_error: {}",
 			ComPtrUtil::GetComErrorMessage(hr)
 		);

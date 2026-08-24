@@ -12,6 +12,6 @@ SXAVENGER_ENGINE_USING_(World)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 ComponentHandle::Type ComponentHandle::GetHandle() const {
-	StreamLogger::Assert(HasHandle(), "component handle has no handle.");
+	STREAM_ASSERT(HasHandle(), "component handle has no handle.");
 	return handle_.value();
 }

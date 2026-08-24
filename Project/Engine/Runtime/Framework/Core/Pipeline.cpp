@@ -23,7 +23,7 @@ void Pipeline::Execute() {
 	}
 	// note: これ以降, processの追加は追加順番を保障できない.
 
-	StreamLogger::Info("Framework::Pipeline | begin execution pipeline.");
+	STREAM_LOG_INFO("Framework::Pipeline | begin execution pipeline.");
 
 	RunPhase(Phase::Initialize); //!< 初期化処理
 
@@ -47,12 +47,12 @@ void Pipeline::Execute() {
 		
 	} else {
 		//!< loopを抜ける条件式がないので不適格.
-		StreamLogger::Warning("Framework::Pipeline | loop condition is empty. not execute loop phase.");
+		STREAM_LOG_WARNING("Framework::Pipeline | loop condition is empty. not execute loop phase.");
 	}
 
 	RunPhase(Phase::Terminate, true); //!< 終了処理(priorityの逆順で実行する.)
 
-	StreamLogger::Info("Framework::Pipeline | end execution pipeline.");
+	STREAM_LOG_INFO("Framework::Pipeline | end execution pipeline.");
 }
 
 void Pipeline::SetProcess(Phase phase, uint8_t priority, const Process& function) {

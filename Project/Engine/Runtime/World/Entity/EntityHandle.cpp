@@ -12,6 +12,6 @@ SXAVENGER_ENGINE_USING_(World)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 EntityHandle::Type EntityHandle::GetHandle() const {
-	StreamLogger::Assert(HasHandle(), "entity handle has no handle.");
+	STREAM_ASSERT(HasHandle(), "entity handle has no handle.");
 	return handle_.value();
 }
