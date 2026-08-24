@@ -42,8 +42,9 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 			break;
 
 		case MetadataType::Inline:
+			mesh->description_ = {}; //!< TODO: Inline情報の定義.
 			StreamLogger::Error("Asset::StaticMeshBuilder | inline static mesh metadata type is not defined. filepath: {}", filepath.generic_string());
-			break;
+			return;
 
 		default:
 			StreamLogger::Error("Asset::StaticMeshBuilder | static mesh metadata type is unknown. filepath: {}", filepath.generic_string());
