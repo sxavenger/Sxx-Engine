@@ -79,6 +79,11 @@ const ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHand
 	return pool_.at(handle.GetIndex());
 }
 
+uint64_t ResourceAllocator::GetCurrentIndex(const ResourceHandle::Handle& handle) const {
+	const Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
+	return currentFrame_ % buffer.size();
+}
+
 Resource& ResourceAllocator::GetResource(const ResourceHandle::Handle& handle) {
 	Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
 

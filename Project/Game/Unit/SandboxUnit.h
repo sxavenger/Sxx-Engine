@@ -8,7 +8,10 @@
 
 //* engine [graphics]
 #include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
-#include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
+#include <Engine/Runtime/Graphics/Buffer/ConstantBuffer.h>
+
+//* lib
+#include <Lib/Math/Color4.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class
@@ -38,7 +41,7 @@ private:
 
 	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline_;
 
-	Sxx::Graphics::ResourceHandle handle_;
+	Sxx::Graphics::ConstantBuffer<Color4f> buffer_;
 
 	//=========================================================================================
 	// private methods

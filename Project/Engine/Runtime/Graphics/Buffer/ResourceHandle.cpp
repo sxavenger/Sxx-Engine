@@ -32,7 +32,7 @@ ResourceHandle::Type ResourceHandle::Handle::GetIndex() const {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceHandle::~ResourceHandle() {
-	Reset();	
+	Reset();
 }
 
 void ResourceHandle::Reset() {
@@ -44,7 +44,7 @@ void ResourceHandle::Reset() {
 	handle_.Reset();
 }
 
-void ResourceHandle::SetName(const std::wstring_view& name) {
+void ResourceHandle::SetName(const std::wstring_view& name) const {
 	STREAM_ASSERT(allocator_ != nullptr, "resource allocator is null.");
 
 	if (!handle_.HasHandle()) {
@@ -52,18 +52,22 @@ void ResourceHandle::SetName(const std::wstring_view& name) {
 		return; //!< handleが無効な場合は設定できない.
 	}
 
-	ResourceAllocator::Buffer& buffer = allocator_->GetBuffer(handle_); //!< allocatorからBufferを取得.
+	const ResourceAllocator::Buffer& buffer = allocator_->GetBuffer(handle_); //!< allocatorからBufferを取得.
 	for (uint8_t i = 0; i < buffer.size(); ++i) {
 		buffer[i].SetName(std::format(L"{} | [{}]", name, i)); //!< Buffer内のResourceに名前を設定.
 	}
 }
 
-void ResourceHandle::SetName(const std::string_view& name) {
+void ResourceHandle::SetName(const std::string_view& name) const {
 	SetName(UnicodeConverter::ConvertW(name));
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS ResourceHandle::GetGpuVirtualAddress() const {
 	return GetResource().GetGpuVirtualAddress(); //!< allocatorからResourceを取得してGPU仮想アドレスを返す.
+}
+
+uint64_t ResourceHandle::GetCurrentIndex() const {
+	return allocator_->GetCurrentIndex(handle_); //!< allocatorから現在のindexを取得.
 }
 
 Resource& ResourceHandle::GetResource() {
@@ -78,24 +82,14 @@ const Resource& ResourceHandle::GetResource() const {
 	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.
 }
 
-ResourceHandle::ResourceHandle(ResourceHandle&& other) noexcept {
-	//!< thisへmove.
-	allocator_ = other.allocator_;
-	handle_    = std::move(other.handle_);
-
-	//!< otherを初期化.
-	other.allocator_ = nullptr;
-	other.handle_.Reset();
+ResourceHandle::ResourceHandle(ResourceHandle&& other) noexcept
+	: allocator_(std::exchange(other.allocator_, nullptr)), handle_(std::exchange(other.handle_, {})) {
 }
 
 ResourceHandle& ResourceHandle::operator=(ResourceHandle&& other) noexcept {
 	//!< thisへmove.
-	allocator_ = other.allocator_;
-	handle_    = std::move(other.handle_);
-
-	//!< otherを初期化.
-	other.allocator_ = nullptr;
-	other.handle_.Reset();
+	allocator_ = std::exchange(other.allocator_, nullptr);
+	handle_    = std::exchange(other.handle_, {});
 
 	return *this;
 }

@@ -20,6 +20,8 @@
 
 //* graphics [buffer]
 #include "Buffer/ResourceAllocator.h"
+#include "Buffer/ConstantBuffer.h"
+#include "Buffer/DimensionBuffer.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -101,6 +103,18 @@ public:
 	static ShaderReflection ReflectShader(const ShaderBlob& blob);
 
 	static ShaderCompiler& GetShaderCompiler();
+
+	//* [dimension buffer / constant buffer] option *//
+
+	template <typename T>
+	static ConstantBuffer<T> CreateConstantBuffer(uint8_t frameCount) {
+		return ConstantBuffer<T>::Create(GetDevice(), GetResourceAllocator(), frameCount);
+	}
+
+	template <typename T>
+	static DimensionBuffer<T> CreateDimensionBuffer(uint32_t capacity, uint8_t frameCount) {
+		return DimensionBuffer<T>::Create(GetDevice(), GetResourceAllocator(), capacity, frameCount);
+	}
 
 private:
 

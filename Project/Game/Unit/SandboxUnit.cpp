@@ -61,16 +61,7 @@ void SandboxUnit::InitSandbox() {
 		desc
 	);
 
-	handle_ = Sxx::Graphics::Core::AllocateResource(
-		Sxx::Graphics::ResourceDesc::CreateBufferDesc(
-			D3D12_HEAP_TYPE_UPLOAD,
-			sizeof(Color4f),
-			D3D12_RESOURCE_FLAG_NONE,
-			D3D12_RESOURCE_STATE_GENERIC_READ
-		),
-		Sxx::Graphics::kFrameCount
-	);
-	handle_.SetName(L"SandboxUnit | ColorBuffer");
+	buffer_ = Sxx::Graphics::Core::CreateConstantBuffer<Color4f>(Sxx::Graphics::kFrameCount);
 
 	Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle =
 		Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/common/StaticMeshes/cube.asset");
@@ -81,14 +72,7 @@ void SandboxUnit::TermSandbox() {
 }
 
 void SandboxUnit::UpdateSandbox() {
-	{
-		Sxx::Graphics::Resource& resource = handle_.GetResource();
-		Color4f* data = nullptr;
-		resource.Map(reinterpret_cast<void**>(&data));
-
-		*data = Color4f::Green();
-	}
-	
+	buffer_.At() = Color4f::Blue();
 }
 
 void SandboxUnit::RenderSandbox() {
@@ -110,7 +94,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetAddress("gColor", handle_.GetGpuVirtualAddress());
+			parameter.SetAddress("gColor", buffer_.GetGpuVirtualAddress());
 
 			pipeline_.BindShaderParameter(context, parameter);
 			commandList->DrawInstanced(3, 1, 0, 0);

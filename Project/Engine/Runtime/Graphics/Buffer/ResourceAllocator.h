@@ -63,6 +63,8 @@ public:
 	Buffer& GetBuffer(const ResourceHandle::Handle& handle);
 	const Buffer& GetBuffer(const ResourceHandle::Handle& handle) const;
 
+	uint64_t GetCurrentIndex(const ResourceHandle::Handle& handle) const;
+
 	Resource& GetResource(const ResourceHandle::Handle& handle);
 	const Resource& GetResource(const ResourceHandle::Handle& handle) const;
 

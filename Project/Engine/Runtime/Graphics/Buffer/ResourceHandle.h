@@ -96,10 +96,12 @@ public:
 
 	//* resource option *//
 
-	void SetName(const std::wstring_view& name);
-	void SetName(const std::string_view& name);
+	void SetName(const std::wstring_view& name) const;
+	void SetName(const std::string_view& name) const;
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const;
+
+	uint64_t GetCurrentIndex() const;
 
 	Resource& GetResource();
 	const Resource& GetResource() const;

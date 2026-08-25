@@ -18,7 +18,8 @@ ConstantBuffer<Color> gColor : register(b0);
 PSOutputData main(PSInputData input) {
 	
 	PSOutputData output;
-	output.color = float4(input.texcoord * gColor.color.rg, 0.0f, 1.0f);
+	output.color.rgb = lerp(float3(0, 0, 0), gColor.color.rgb, saturate((input.texcoord.x + input.texcoord.y) * 0.5f));
+	output.color.a   = 1;
 	
 	return output;
 	

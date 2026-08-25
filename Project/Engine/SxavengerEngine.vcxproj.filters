@@ -678,6 +678,10 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\ConstantBuffer.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1052,5 +1056,8 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.cpp" />
+    <ClCompile Include="Lib\TracePoint\TracePoint.cpp" />
   </ItemGroup>
 </Project>
