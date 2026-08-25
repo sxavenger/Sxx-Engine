@@ -218,18 +218,18 @@ inline void StreamLogger::AssertSummary(bool expression, const TracePoint& point
 
 // Logging macros
 
-#define STREAM_LOG_DEBUG(format, ...)    StreamLogger::Log(LoggerUtil::Level::Debug, TracePoint(), format, __VA_ARGS__)
-#define STREAM_LOG_INFO(format, ...)     StreamLogger::Log(LoggerUtil::Level::Info, TracePoint(), format, __VA_ARGS__)
-#define STREAM_LOG_WARNING(format, ...)  StreamLogger::Log(LoggerUtil::Level::Warning, TracePoint(), format, __VA_ARGS__)
-#define STREAM_LOG_ERROR(format, ...)    StreamLogger::Log(LoggerUtil::Level::Error, TracePoint(), format, __VA_ARGS__)
-#define STREAM_LOG_CRITICAL(format, ...) StreamLogger::Log(LoggerUtil::Level::Critical, TracePoint(), format, __VA_ARGS__)
+#define STREAM_LOG_DEBUG(format, ...)    StreamLogger::Log(LoggerUtil::Level::Debug, TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_LOG_INFO(format, ...)     StreamLogger::Log(LoggerUtil::Level::Info, TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_LOG_WARNING(format, ...)  StreamLogger::Log(LoggerUtil::Level::Warning, TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_LOG_ERROR(format, ...)    StreamLogger::Log(LoggerUtil::Level::Error, TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_LOG_CRITICAL(format, ...) StreamLogger::Log(LoggerUtil::Level::Critical, TracePoint::Current(), format, __VA_ARGS__)
 
 // Exception macros
 
-#define STREAM_EXCEPTION(format, ...)                  StreamLogger::Exception(TracePoint(), format, __VA_ARGS__)
-#define STREAM_EXCEPTION_SUMMARY(summary, format, ...) StreamLogger::ExceptionSummary(TracePoint(), summary, format, __VA_ARGS__)
+#define STREAM_EXCEPTION(format, ...)                  StreamLogger::Exception(TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_EXCEPTION_SUMMARY(summary, format, ...) StreamLogger::ExceptionSummary(TracePoint::Current(), summary, format, __VA_ARGS__)
 
 // Assert macros
 
-#define STREAM_ASSERT(expression, format, ...)                  StreamLogger::Assert(expression, TracePoint(), format, __VA_ARGS__)
-#define STREAM_ASSERT_SUMMARY(expression, summary, format, ...) StreamLogger::AssertSummary(expression, TracePoint(), summary, format, __VA_ARGS__)
+#define STREAM_ASSERT(expression, format, ...)                  StreamLogger::Assert(expression, TracePoint::Current(), format, __VA_ARGS__)
+#define STREAM_ASSERT_SUMMARY(expression, summary, format, ...) StreamLogger::AssertSummary(expression, TracePoint::Current(), summary, format, __VA_ARGS__)

@@ -6,6 +6,9 @@
 //* lib
 #include "../Time/LocalTimePoint.h"
 
+//* lib
+#include <Lib/CXXAttribute.hpp>
+
 //* c++
 #include <thread>
 #include <source_location>
@@ -20,10 +23,9 @@ public:
 	// public methods
 	//=========================================================================================
 
-	TracePoint(std::source_location location = std::source_location::current())
-		: location(location), id(std::this_thread::get_id()), timestamp(LocalTimePoint::Now()) {
-	}
-	//!< instance作成時の呼び出し元の情報を取得するためのコンストラクタ.
+	//* constructor / destructor *//
+
+	TracePoint() = default;
 
 	//* operator [copy] (default) *//
 
@@ -34,6 +36,10 @@ public:
 
 	TracePoint(TracePoint&&)            = default;
 	TracePoint& operator=(TracePoint&&) = default;
+
+	//* static methods *//
+
+	static TracePoint Current(std::source_location location = std::source_location::current());
 
 	//=========================================================================================
 	// public variables
