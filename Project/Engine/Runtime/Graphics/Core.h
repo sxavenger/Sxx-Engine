@@ -108,12 +108,12 @@ public:
 
 	template <typename T>
 	static ConstantBuffer<T> CreateConstantBuffer(uint8_t frameCount) {
-		return ConstantBuffer<T>::Create(GetDevice(), GetResourceAllocator(), frameCount);
+		return ConstantBuffer<T>::Create(Core::GetDevice(), Core::GetResourceAllocator(), frameCount);
 	}
 
 	template <typename T>
 	static DimensionBuffer<T> CreateDimensionBuffer(uint32_t capacity, uint8_t frameCount) {
-		return DimensionBuffer<T>::Create(GetDevice(), GetResourceAllocator(), capacity, frameCount);
+		return DimensionBuffer<T>::Create(Core::GetDevice(), Core::GetResourceAllocator(), capacity, frameCount);
 	}
 
 private:
