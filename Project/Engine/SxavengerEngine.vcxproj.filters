@@ -682,6 +682,8 @@
     <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\ConstantBuffer.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\AccelerationStructure.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1059,5 +1061,7 @@
     <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.cpp" />
     <ClCompile Include="Lib\TracePoint\TracePoint.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\AccelerationStructure.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.cpp" />
   </ItemGroup>
 </Project>

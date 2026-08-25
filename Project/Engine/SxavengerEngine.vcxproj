@@ -276,7 +276,9 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Framework\Core\Context.h" />
     <ClInclude Include="Runtime\Framework\Core\IUnit.h" />
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\AccelerationStructure.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\ConstantBuffer.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h" />
@@ -413,7 +415,9 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Editor\Slate\Widgets\SlateWindow.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Context.cpp" />
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\AccelerationStructure.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.cpp" />
+    <ClCompile Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\ResourceAllocator.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\ResourceDesc.cpp" />

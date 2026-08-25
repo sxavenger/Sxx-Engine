@@ -94,7 +94,7 @@ protected:
 	// protected variables
 	//=========================================================================================
 
-	//* DirectX12 *//
+	//* Graphics *//
 
 	ResourceHandle handle_;
 
