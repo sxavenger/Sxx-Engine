@@ -24,7 +24,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //! @brief [ConstantBuffer/StructuredBuffer] 1次元Bufferクラス.
 template <typename T>
-class DimensionBuffer final
+class DimensionBuffer
 	: public BaseDimensionBuffer {
 public:
 

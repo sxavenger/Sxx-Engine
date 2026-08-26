@@ -24,6 +24,14 @@ class BottomLevelAccelerationStructure final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// Mode enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class Mode : bool {
+		Static  = false,
+		Dynamic = true
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// Geometry structure
 	////////////////////////////////////////////////////////////////////////////////////////////
 	struct Geometry final {
@@ -36,17 +44,18 @@ public:
 		//* constructor *//
 
 		Geometry() noexcept = default;
-		Geometry(const D3D12_RAYTRACING_GEOMETRY_DESC& desc) noexcept : desc(desc) {}
+		Geometry(const D3D12_RAYTRACING_GEOMETRY_DESC& desc, Mode mode) noexcept : desc(desc), mode(mode) {}
 
 		//* desc option *//
 
-		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS GetInputs(bool isUpdate) const;
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS GetInputs(bool performUpdate) const;
 
 		//* static methods *//
 
 		static Geometry CreateTriangleGeometry(
 			D3D12_GPU_VIRTUAL_ADDRESS vertexBufferAddress, UINT64 vertexStride, UINT vertexCount,
-			D3D12_GPU_VIRTUAL_ADDRESS indexBufferAddress, UINT indexCount
+			D3D12_GPU_VIRTUAL_ADDRESS indexBufferAddress, UINT indexCount,
+			Mode mode = Mode::Static
 		);
 
 		//=========================================================================================
@@ -54,6 +63,7 @@ public:
 		//=========================================================================================
 
 		D3D12_RAYTRACING_GEOMETRY_DESC desc = {};
+		Mode mode = Mode::Static;
 
 	};
 

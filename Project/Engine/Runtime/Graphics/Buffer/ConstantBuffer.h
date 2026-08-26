@@ -23,7 +23,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //! @brief [ConstantBuffer] 定数Bufferクラス.
 template <typename T>
-class ConstantBuffer final
+class ConstantBuffer
 	: public BaseDimensionBuffer {
 public:
 

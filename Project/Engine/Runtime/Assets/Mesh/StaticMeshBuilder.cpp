@@ -71,7 +71,7 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	//!< 頂点データの取得
 	for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
 
-		MeshletVertex vertex = {};
+		MeshVertex vertex = {};
 
 		if (mesh.HasPosition()) {
 			vertex.position = mesh.GetPosition(i);
@@ -96,7 +96,7 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	//!< 三角形データの取得
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
 
-		MeshletPolygon polygon = {};
+		MeshPolygon polygon = {};
 
 		polygon.indices = mesh.GetTriangle(i);
 
@@ -109,8 +109,8 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 
 	//!< 頂点データの取得
-	std::vector<MeshletVertex> vertices = description.vertices;
-	std::vector<uint32_t> indices       = description.GetIndices();
+	std::vector<MeshVertex> vertices = description.vertices;
+	std::vector<uint32_t> indices    = description.GetIndices();
 
 	{ //!< 頂点データの重複頂点の削除
 
@@ -120,10 +120,10 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 			remap.data(),
 			indices.data(), indices.size(),
 			vertices.data(), vertices.size(),
-			sizeof(MeshletVertex)
+			sizeof(MeshVertex)
 		);
 
-		std::vector<MeshletVertex> remappedVertices(kUniqueVertexCount);
+		std::vector<MeshVertex> remappedVertices(kUniqueVertexCount);
 		std::vector<uint32_t> remappedIndices(indices.size());
 
 		//!< remapの適用
@@ -131,7 +131,7 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 		meshopt_remapVertexBuffer(
 			remappedVertices.data(),
 			vertices.data(), vertices.size(),
-			sizeof(MeshletVertex),
+			sizeof(MeshVertex),
 			remap.data()
 		);
 
@@ -155,12 +155,12 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 
 	{ //!< 頂点順の最適化
 
-		std::vector<MeshletVertex> fetchedVertices(vertices.size());
+		std::vector<MeshVertex> fetchedVertices(vertices.size());
 		const size_t kFetchedVertexCount = meshopt_optimizeVertexFetch(
 			fetchedVertices.data(),
 			indices.data(), indices.size(),
 			vertices.data(), vertices.size(),
-			sizeof(MeshletVertex)
+			sizeof(MeshVertex)
 		);
 		fetchedVertices.resize(kFetchedVertexCount); //!< fetchされた頂点数にリサイズ
 

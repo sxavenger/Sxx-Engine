@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../Base/BaseAsset.h"
-#include "Meshlet.h"
+#include "Mesh.h"
 #include "StaticMeshMetadata.h"
 
 //* engine
@@ -41,8 +41,8 @@ public:
 		// private variables
 		//=========================================================================================
 
-		std::vector<MeshletVertex> vertices;
-		std::vector<MeshletPolygon> polygons;
+		std::vector<MeshVertex> vertices;
+		std::vector<MeshPolygon> polygons;
 
 	};
 
