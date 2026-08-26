@@ -3,13 +3,15 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* rendering
+#include "../Meshlet/PositionVertexBuffer.h"
+#include "../Meshlet/StaticMeshVertexBuffer.h"
+#include "../Meshlet/TriangleIndexDimensionBuffer.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Graphics/Core/GraphicsCommandContext.h>
-#include <Runtime/Graphics/Core/Descriptor.h>
-#include <Runtime/Graphics/Buffer/ResourceHandle.h>
-#include <Runtime/Graphics/Buffer/Resource.h>
-#include <Runtime/Assets/Texture/Texture.h>
+#include <Runtime/Graphics/Buffer/BottomLevelAccelerationStructure.h>
+#include <Runtime/Assets/Mesh/StaticMesh.h>
 
 //* c++
 #include <optional>
@@ -20,16 +22,16 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// TextureCache class
+// StaticMeshCache class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class TextureCache final {
+class StaticMeshCache final {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	void Cache(const std::shared_ptr<Assets::Texture>& texture);
+	void Cache(const std::shared_ptr<Assets::StaticMesh>& mesh);
 
 	//* address option *//
 
@@ -45,10 +47,16 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* Graphics *//
+	//* Buffer *//
 
-	Graphics::ResourceHandle handle_;
-	Graphics::Descriptor descriptor_;
+	PositionVertexBuffer positionVertexBuffer_;
+	StaticMeshVertexBuffer staticMeshVertexBuffer_;
+
+	TriangleIndexDimensionBuffer indexBuffer_;
+
+	//* Acceleration Structure *//
+
+	Graphics::BottomLevelAccelerationStructure bottomLevelAS_;
 
 	//* address *//
 
@@ -58,15 +66,15 @@ private:
 	// private methods
 	//=========================================================================================
 
-	//* resource methods *//
+	static PositionVertexBuffer CreatePositionVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
-	static Graphics::ResourceHandle CreateTextureResource(const std::string_view& name, const Assets::Texture::Description& description);
+	static StaticMeshVertexBuffer CreateStaticMeshVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
-	NODISCARD static Graphics::Resource UploadResourceData(const Graphics::GraphicsCommandContext& context, const Graphics::Resource& resource, const DirectX::ScratchImage& image);
+	static TriangleIndexDimensionBuffer CreateIndexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
-	//* descriptor methods *//
+	//* acceleration structure methods *//
 
-	static void CreateDescriptor(Graphics::Descriptor& descriptor, const Graphics::Resource& resource, const Assets::Texture::Description& description);
+	void BuildBottomLevelAccelerationStructure(const std::string_view& name);
 
 };
 

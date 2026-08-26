@@ -234,7 +234,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Assets\Importer\TextureImporter.h" />
     <ClInclude Include="Runtime\Assets\Manager\AssetFactory.h" />
     <ClInclude Include="Runtime\Assets\Manager\AssetStorage.h" />
-    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h" />
+    <ClInclude Include="Runtime\Assets\Mesh\Mesh.h" />
     <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h" />
     <ClInclude Include="Runtime\Assets\Mesh\StaticMeshBuilder.h" />
     <ClInclude Include="Runtime\Assets\Mesh\StaticMeshMetadata.h" />
@@ -321,6 +321,12 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Platform\Window.h" />
     <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskPriority.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskState.h" />
@@ -380,7 +386,6 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Assets\Importer\TextureImporter.cpp" />
     <ClCompile Include="Runtime\Assets\Manager\AssetFactory.cpp" />
     <ClCompile Include="Runtime\Assets\Manager\AssetStorage.cpp" />
-    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp" />
     <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp" />
     <ClCompile Include="Runtime\Assets\Mesh\StaticMeshBuilder.cpp" />
     <ClCompile Include="Runtime\Assets\Mesh\StaticMeshMetadata.cpp" />
@@ -456,6 +461,11 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Platform\Window.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\WorkerThread.cpp" />
     <ClCompile Include="Runtime\Scheduler\Cpu\CpuScheduler.cpp" />

@@ -27,9 +27,6 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
-	//!< addressの取得
-	address_ = texture->GetAddress();
-
 	//!< resourceを作成
 	handle_ = TextureCache::CreateTextureResource(texture->GetName(), texture->GetDescription());
 	const Graphics::Resource& resource = handle_.GetResource();
@@ -55,7 +52,11 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 	);
 
 	task.Wait(); //!< taskが完了するまで待機.
-	STREAM_LOG_INFO("Rendering::TextureCache | upload texture resource completed. name: {}", texture->GetName());
+
+	//!< addressの取得
+	address_ = texture->GetAddress();
+
+	STREAM_LOG_INFO("Rendering::TextureCache | cache texture completed. name: {}", texture->GetName());
 }
 
 Graphics::ResourceHandle TextureCache::CreateTextureResource(const std::string_view& name, const Assets::Texture::Description& description) {

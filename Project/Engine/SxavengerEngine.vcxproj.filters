@@ -351,7 +351,7 @@
     <ClInclude Include="Runtime\Assets\Manager\AssetStorage.h">
       <Filter>Runtime\Assets\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Assets\Mesh\Meshlet.h">
+    <ClInclude Include="Runtime\Assets\Mesh\Mesh.h">
       <Filter>Runtime\Assets\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Assets\Mesh\StaticMesh.h">
@@ -684,6 +684,12 @@
     <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\AccelerationStructure.h" />
     <ClInclude Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -769,9 +775,6 @@
     </ClCompile>
     <ClCompile Include="Runtime\Assets\Manager\AssetStorage.cpp">
       <Filter>Runtime\Assets\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Assets\Mesh\Meshlet.cpp">
-      <Filter>Runtime\Assets\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Assets\Mesh\StaticMesh.cpp">
       <Filter>Runtime\Assets\Mesh</Filter>
@@ -1063,5 +1066,10 @@
     <ClCompile Include="Lib\TracePoint\TracePoint.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\AccelerationStructure.cpp" />
     <ClCompile Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp" />
   </ItemGroup>
 </Project>

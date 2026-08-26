@@ -15,7 +15,7 @@
 #include <Engine/Runtime/Assets/Handle/AssetHandle.h>
 
 //* engine [rendering]
-#include <Engine/Runtime/Rendering/Cache/TextureCache.h>
+#include <Engine/Runtime/Rendering/Cache/StaticMeshCache.h>
 
 //* engine [unit]
 #include <Engine/Unit/WindowUnit.h>
@@ -47,25 +47,35 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 
 void SandboxUnit::InitSandbox() {
 
-	Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
-	desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
-	desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
-	desc.SetRasterizer(D3D12_CULL_MODE_NONE, D3D12_FILL_MODE_SOLID, false);
-	desc.SetDepthStencil(false);
-	desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
-	desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
-	desc.AppendRenderTargetFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
+	{ //!< Graphics Pipeline Stateの作成
+		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Test.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+		desc.SetRasterizer(D3D12_CULL_MODE_NONE, D3D12_FILL_MODE_SOLID, false);
+		desc.SetDepthStencil(false);
+		desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
+		desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
+		desc.AppendRenderTargetFormat(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 
-	pipeline_ = Sxx::Graphics::ReflectedGraphicsPipelineState::Create(
-		Sxx::Graphics::Core::GetDevice(),
-		desc
-	);
+		pipeline_ = Sxx::Graphics::ReflectedGraphicsPipelineState::Create(
+			Sxx::Graphics::Core::GetDevice(),
+			desc
+		);
+	}
 
-	buffer_ = Sxx::Graphics::Core::CreateConstantBuffer<Color4f>(Sxx::Graphics::kFrameCount);
+	{ //!< Constant Buffer の作成
+		buffer_ = Sxx::Graphics::Core::CreateConstantBuffer<Color4f>(Sxx::Graphics::kFrameCount);
+		buffer_.SetName(L"Color Buffer");
+	}
 
-	Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle =
-		Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/common/StaticMeshes/cube.asset");
-	auto mesh = handle.WaitGet();
+	{ //!< Mesh Asset の読み込みテスト
+		Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle =
+			Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/common/StaticMeshes/cube.asset");
+		auto mesh = handle.WaitGet();
+
+		Sxx::Rendering::StaticMeshCache cache;
+		cache.Cache(mesh);
+	}
 }
 
 void SandboxUnit::TermSandbox() {

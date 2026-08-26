@@ -57,6 +57,10 @@ public:
 	StaticMesh(const BaseAssetMetadata& metadata) noexcept : BaseAsset(metadata) {}
 	~StaticMesh() noexcept override = default;
 
+	//* description option *//
+
+	const Description& GetDescription() const;
+
 private:
 
 	//=========================================================================================
