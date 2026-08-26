@@ -57,23 +57,25 @@ void Descriptor::Reset() {
 }
 
 Descriptor::Descriptor(Descriptor&& other) noexcept {
-	//!< thisへmove.
-	allocator_ = other.allocator_;
-	handle_    = std::move(other.handle_);
+	if (this == &other) {
+		return; //!< 自己代入チェック.
+	}
 
-	//!< otherを初期化.
-	other.allocator_ = nullptr;
-	other.handle_.Reset();
+	Reset(); //!< thisを初期化.
+
+	allocator_ = std::exchange(other.allocator_, nullptr);
+	handle_    = std::exchange(other.handle_, Descriptor::Handle{});
 }
 
 Descriptor& Descriptor::operator=(Descriptor&& other) noexcept {
-	//!< thisへmove.
-	allocator_ = other.allocator_;
-	handle_    = std::move(other.handle_);
+	if (this == &other) {
+		return *this; //!< 自己代入チェック.
+	}
 
-	//!< otherを初期化.
-	other.allocator_ = nullptr;
-	other.handle_.Reset();
+	Reset(); //!< thisを初期化.
+
+	allocator_ = std::exchange(other.allocator_, nullptr);
+	handle_    = std::exchange(other.handle_, Descriptor::Handle{});
 
 	return *this;
 }

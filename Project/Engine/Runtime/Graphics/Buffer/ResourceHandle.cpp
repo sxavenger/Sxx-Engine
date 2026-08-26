@@ -82,14 +82,26 @@ const Resource& ResourceHandle::GetResource() const {
 	return allocator_->GetResource(handle_); //!< allocatorからResourceを取得.
 }
 
-ResourceHandle::ResourceHandle(ResourceHandle&& other) noexcept
-	: allocator_(std::exchange(other.allocator_, nullptr)), handle_(std::exchange(other.handle_, {})) {
+ResourceHandle::ResourceHandle(ResourceHandle&& other) noexcept {
+	if (this == &other) {
+		return; //!< 自己代入チェック.
+	}
+
+	Reset(); //!< thisを初期化.
+
+	allocator_ = std::exchange(other.allocator_, nullptr);
+	handle_    = std::exchange(other.handle_, ResourceHandle::Handle{});
 }
 
 ResourceHandle& ResourceHandle::operator=(ResourceHandle&& other) noexcept {
-	//!< thisへmove.
+	if (this == &other) {
+		return *this; //!< 自己代入チェック.
+	}
+
+	Reset(); //!< thisを初期化.
+
 	allocator_ = std::exchange(other.allocator_, nullptr);
-	handle_    = std::exchange(other.handle_, {});
+	handle_    = std::exchange(other.handle_, ResourceHandle::Handle{});
 
 	return *this;
 }
