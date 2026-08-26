@@ -121,6 +121,7 @@ protected:
 		Category category,
 		uint32_t capacity, uint8_t frameCount
 	);
+
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

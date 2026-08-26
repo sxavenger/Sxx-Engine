@@ -12,6 +12,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* c++
+#include <string_view>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +46,12 @@ public:
 
 	//! @brief AccelerationStructureのGPU仮想アドレスを取得する.
 	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const;
+
+	//! @brief Resourceデバッグ用の名前を設定する.
+	void SetName(const std::wstring_view& name) const;
+
+	//! @brief Resourceデバッグ用の名前を設定する.
+	void SetName(const std::string_view& name) const;
 
 	//* static methods *//
 

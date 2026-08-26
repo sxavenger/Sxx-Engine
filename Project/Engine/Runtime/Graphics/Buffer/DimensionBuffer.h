@@ -13,6 +13,7 @@
 //* c++
 #include <vector>
 #include <span>
+#include <format>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -37,6 +38,14 @@ public:
 	DimensionBuffer() : BaseDimensionBuffer(sizeof(T)) {}
 	~DimensionBuffer() = default;
 
+	//* resource option *//
+
+	//! @brief Resourceのデバッグ用の名前を設定する.
+	void SetName(const std::wstring_view& name) const;
+
+	//! @brief Resourceのデバッグ用の名前を設定する.
+	void SetName(const std::string_view& name) const;
+
 	//* data option *//
 
 	//! @brief 指定したindexの要素を取得する.
@@ -44,6 +53,9 @@ public:
 
 	//! @brief 指定したindexの要素を取得する.
 	const T& At(size_t index) const;
+
+	//! @brief 現在のフレームのデータを取得する.
+	T* GetData();
 
 	//* operator [copy] <DimensionBuffer> (delete) *//
 
@@ -81,6 +93,16 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
+inline void DimensionBuffer<T>::SetName(const std::wstring_view& name) const {
+	BaseDimensionBuffer::SetName(std::format(L"<Dimension Buffer> {}", name));
+}
+
+template <typename T>
+inline void DimensionBuffer<T>::SetName(const std::string_view& name) const {
+	BaseDimensionBuffer::SetName(std::format("<Dimension Buffer> {}", name));
+}
+
+template <typename T>
 inline T& DimensionBuffer<T>::At(size_t index) {
 	STREAM_ASSERT(index < capacity_, "index is out of range.");
 	return datas_[handle_.GetCurrentIndex()][index];
@@ -90,6 +112,11 @@ template <typename T>
 inline const T& DimensionBuffer<T>::At(size_t index) const {
 	STREAM_ASSERT(index < capacity_, "index is out of range.");
 	return datas_[handle_.GetCurrentIndex()][index];
+}
+
+template <typename T>
+inline T* DimensionBuffer<T>::GetData() {
+	return datas_[handle_.GetCurrentIndex()].data();
 }
 
 template <typename T>
@@ -111,7 +138,7 @@ inline DimensionBuffer<T> DimensionBuffer<T>::Create(
 		dimension.datas_.emplace_back(std::span<T>(ptr, capacity));
 	}
 
-	dimension.SetName(L"Dimension Buffer");
+	dimension.BaseDimensionBuffer::SetName(L"<Dimension Buffer>");
 	return dimension;
 }
 

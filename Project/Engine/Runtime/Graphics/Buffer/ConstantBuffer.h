@@ -12,6 +12,7 @@
 
 //* c++
 #include <vector>
+#include <format>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -35,6 +36,14 @@ public:
 
 	ConstantBuffer() : BaseDimensionBuffer(sizeof(T)) {}
 	~ConstantBuffer() = default;
+
+	//* resource option *//
+
+	//! @brief Resourceのデバッグ用の名前を設定する.
+	void SetName(const std::wstring_view& name) const;
+
+	//! @brief Resourceのデバッグ用の名前を設定する.
+	void SetName(const std::string_view& name) const;
 
 	//* data option *//
 
@@ -80,6 +89,16 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
+inline void ConstantBuffer<T>::SetName(const std::wstring_view& name) const {
+	BaseDimensionBuffer::SetName(std::format(L"<Constant Buffer> {}", name));
+}
+
+template <typename T>
+inline void ConstantBuffer<T>::SetName(const std::string_view& name) const {
+	BaseDimensionBuffer::SetName(std::format("<Constant Buffer> {}", name));
+}
+
+template <typename T>
 inline T& ConstantBuffer<T>::At() {
 	return *datas_[handle_.GetCurrentIndex()];
 }
@@ -94,20 +113,20 @@ inline ConstantBuffer<T> ConstantBuffer<T>::Create(
 	const Device& device, ResourceAllocator& allocator,
 	uint8_t frameCount) {
 
-	ConstantBuffer<T> dimension;
+	ConstantBuffer<T> constant;
 
 	//!< DimensionBufferの生成.
-	BaseDimensionBuffer::CreateBuffer(dimension, device, allocator, Category::Upload, 1, frameCount); //!< ConstantBufferは定数(1つの要素しか持たない).
+	BaseDimensionBuffer::CreateBuffer(constant, device, allocator, Category::Upload, 1, frameCount); //!< ConstantBufferは定数(1つの要素しか持たない).
 
-	ResourceAllocator::Buffer& buffers = allocator.GetBuffer(dimension.GetHandle());
+	ResourceAllocator::Buffer& buffers = allocator.GetBuffer(constant.GetHandle());
 	for (uint8_t i = 0; i < buffers.size(); ++i) {
 		T* ptr = nullptr;
 		buffers[i].Map(reinterpret_cast<void**>(&ptr));
-		dimension.datas_.emplace_back(ptr);
+		constant.datas_.emplace_back(ptr);
 	}
 
-	dimension.SetName(L"Constant Buffer");
-	return dimension;
+	constant.BaseDimensionBuffer::SetName(L"<Constant Buffer>");
+	return constant;
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

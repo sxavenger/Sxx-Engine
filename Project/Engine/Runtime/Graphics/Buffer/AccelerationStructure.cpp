@@ -10,6 +10,9 @@ SXAVENGER_ENGINE_USING_(Graphics)
 //* lib
 #include <Lib/Logger/StreamLogger.h>
 
+//* c++
+#include <format>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // AccelerationStructure structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +80,26 @@ D3D12_GPU_VIRTUAL_ADDRESS AccelerationStructure::GetGpuVirtualAddress() const {
 	return buffer.GetGpuVirtualAddress();
 }
 
+void AccelerationStructure::SetName(const std::wstring_view& name) const {
+	if (buffer == nullptr) {
+		STREAM_LOG_WARNING(L"Graphics::AccelerationStructure | resource is not valid. cannot set name. name: {}", name);
+		return; //!< handleが無効な場合は設定できない.
+	}
+
+	buffer.SetName(std::format(L"<Acceleration Structure | Acceleration Structure Buffer> {}", name));
+	scratch.SetName(std::format(L"<Acceleration Structure | Scratch Buffer> {}", name));
+}
+
+void AccelerationStructure::SetName(const std::string_view& name) const {
+	if (buffer == nullptr) {
+		STREAM_LOG_WARNING("Graphics::AccelerationStructure | resource is not valid. cannot set name. name: {}", name);
+		return; //!< handleが無効な場合は設定できない.
+	}
+
+	buffer.SetName(std::format("<Acceleration Structure | Acceleration Structure Buffer> {}", name));
+	scratch.SetName(std::format("<Acceleration Structure | Scratch Buffer> {}", name));
+}
+
 AccelerationStructure AccelerationStructure::Create(
 	const Device& device,
 	const D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& inputs) {
@@ -107,7 +130,7 @@ Resource AccelerationStructure::CreateAccelerationStructureBuffer(
 	);
 
 	Resource buffer = Resource::CreateCommitted(device, desc);
-	buffer.SetName(L"Acceleration Structure | Acceleration Structure Buffer");
+	buffer.SetName(L"<Acceleration Structure | Acceleration Structure Buffer>");
 
 	return buffer;
 }
@@ -124,7 +147,7 @@ Resource AccelerationStructure::CreateScratchBuffer(
 	);
 
 	Resource buffer = Resource::CreateCommitted(device, desc);
-	buffer.SetName(L"Acceleration Structure | Scratch Buffer");
+	buffer.SetName(L"<Acceleration Structure | Scratch Buffer>");
 
 	return buffer;
 }

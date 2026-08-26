@@ -88,6 +88,12 @@ public:
 	//! @brief BottomLevelAccelerationStructureのGPU仮想アドレスを取得する.
 	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return accelerationStructure_.GetGpuVirtualAddress(); }
 
+	//! @brief Resourceデバッグ用の名前を設定する.
+	void SetName(const std::wstring_view& name) const;
+
+	//! @brief Resourceデバッグ用の名前を設定する.
+	void SetName(const std::string_view& name) const;
+
 private:
 
 	//=========================================================================================

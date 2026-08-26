@@ -70,3 +70,11 @@ void BottomLevelAccelerationStructure::Update(
 
 	accelerationStructure_.Update(context, inputs); //!< buildの実行
 }
+
+void BottomLevelAccelerationStructure::SetName(const std::wstring_view& name) const {
+	accelerationStructure_.SetName(name);
+}
+
+void BottomLevelAccelerationStructure::SetName(const std::string_view& name) const {
+	accelerationStructure_.SetName(name);
+}
