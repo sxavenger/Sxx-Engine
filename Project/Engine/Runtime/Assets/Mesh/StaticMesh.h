@@ -11,6 +11,10 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* c++
+#include <vector>
+#include <span>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +37,11 @@ public:
 		// public methods
 		//=========================================================================================
 
-		std::vector<uint32_t> GetIndices() const;
+		std::span<const uint32_t> GetIndices() const;
 
 		void SetIndices(const std::vector<uint32_t>& indices);
+
+		size_t GetIndexCount() const;
 
 		//=========================================================================================
 		// private variables

@@ -50,7 +50,7 @@ void AccelerationStructure::Update(
 	const D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& inputs) {
 
 	//!< 更新フラグが設定されていない場合はエラー.
-	STREAM_ASSERT(flags & D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE, "acceleration structure does not allow updates.");
+	STREAM_ASSERT(flags.Test(Flags::Update), "acceleration structure update flag is not set.");
 	STREAM_ASSERT(inputs.Flags & D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE, "acceleration structure update flag is not set.");
 
 	//!< descの設定
@@ -113,7 +113,7 @@ AccelerationStructure AccelerationStructure::Create(
 	acceleration.buffer  = AccelerationStructure::CreateAccelerationStructureBuffer(device, info);
 	acceleration.scratch = AccelerationStructure::CreateScratchBuffer(device, info);
 
-	acceleration.flags = inputs.Flags; //!< flagsの保存
+	acceleration.flags = AccelerationStructure::ConvertFlags(inputs.Flags); //!< flagsの保存
 
 	return acceleration;
 }
@@ -150,4 +150,20 @@ Resource AccelerationStructure::CreateScratchBuffer(
 	buffer.SetName(L"<Acceleration Structure | Scratch Buffer>");
 
 	return buffer;
+}
+
+FlagEnum<AccelerationStructure::Flags> AccelerationStructure::ConvertFlags(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS flags) {
+
+	FlagEnum<Flags> result = Flags::None;
+
+	if (flags & D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE) {
+		result |= Flags::Update;
+	}
+
+	if (flags & D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_COMPACTION) {
+		result |= Flags::Compaction;
+	}
+
+	return result;
+	
 }

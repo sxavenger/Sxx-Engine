@@ -110,7 +110,9 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 
 	//!< 頂点データの取得
 	std::vector<MeshVertex> vertices = description.vertices;
-	std::vector<uint32_t> indices    = description.GetIndices();
+
+	std::span<const uint32_t> indicesView = description.GetIndices();
+	std::vector<uint32_t> indices(indicesView.begin(), indicesView.end());
 
 	{ //!< 頂点データの重複頂点の削除
 

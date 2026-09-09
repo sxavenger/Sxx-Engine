@@ -12,6 +12,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <lib/Flag/Flag.h>
+
 //* c++
 #include <string_view>
 
@@ -24,6 +27,17 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 // AccelerationStructure structure
 ////////////////////////////////////////////////////////////////////////////////////////////
 struct AccelerationStructure final {
+public:
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Flags enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class Flags : uint8_t {
+		None       = 0,
+		Update     = 1 << 0,
+		Compaction = 1 << 1,
+	};
+
 public:
 
 	//=========================================================================================
@@ -74,7 +88,7 @@ public:
 
 	//* flags *//
 
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
+	FlagEnum<Flags> flags = Flags::None;
 
 private:
 
@@ -91,6 +105,8 @@ private:
 		const Device& device,
 		const D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO& info
 	);
+
+	static FlagEnum<Flags> ConvertFlags(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS flags);
 
 };
 

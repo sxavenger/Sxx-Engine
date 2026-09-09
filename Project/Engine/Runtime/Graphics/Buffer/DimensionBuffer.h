@@ -57,6 +57,9 @@ public:
 	//! @brief 現在のフレームのデータを取得する.
 	T* GetData();
 
+	//! @brief 現在のフレームのデータを取得する.
+	const T* GetData() const;
+
 	//* operator [copy] <DimensionBuffer> (delete) *//
 
 	DimensionBuffer(const DimensionBuffer&)            = delete;
@@ -116,6 +119,11 @@ inline const T& DimensionBuffer<T>::At(size_t index) const {
 
 template <typename T>
 inline T* DimensionBuffer<T>::GetData() {
+	return datas_[handle_.GetCurrentIndex()].data();
+}
+
+template <typename T>
+inline const T* DimensionBuffer<T>::GetData() const {
 	return datas_[handle_.GetCurrentIndex()].data();
 }
 
