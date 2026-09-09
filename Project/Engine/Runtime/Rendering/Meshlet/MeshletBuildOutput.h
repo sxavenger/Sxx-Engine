@@ -47,10 +47,10 @@ public:
 	// public variables
 	//=========================================================================================
 
-	std::vector<MeshletBuffer::Meshlet>  meshlets;
-	std::vector<uint32_t>                vertexIndices;
+	std::vector<MeshletBuffer::Meshlet> meshlets;
+	std::vector<uint32_t> vertexIndices;
 	std::vector<MeshletBuffer::Triangle> triangles;
-	//std::vector<MeshletBuffer::Bounds>   bounds;
+	std::vector<MeshletBuffer::Bounds> bounds;
 
 private:
 };

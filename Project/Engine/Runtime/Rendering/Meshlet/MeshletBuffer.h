@@ -65,8 +65,13 @@ public:
 		// public variables
 		//=========================================================================================
 
-		// TODO: メッシュレットのBoundingを格納する構造体を定義する
-		// packed structureを使用するかどうかを検討する必要がある
+		Vector3f center; //!< bounding sphereの中心
+		float radius;    //!< bounding sphereの半径
+
+		Vector3<int8_t> coneAxis; //!< normal coneの軸 (SNORM8, x / 127.0fでデコード)
+		int8_t coneCutoff;        //!< normal coneのcutoff (SNORM8, x / 127.0fでデコード)
+		//!< cone apexは保持しない. bounding sphereを使う判定式で代用する.
+		
 	};
 
 public:
@@ -89,7 +94,7 @@ public:
 	Graphics::DimensionBuffer<Meshlet> meshlets;
 	Graphics::DimensionBuffer<Triangle> triangles;
 	Graphics::DimensionBuffer<uint32_t> vertexIndices;
-	//Graphics::DimensionBuffer<Bounds> bounds;
+	Graphics::DimensionBuffer<Bounds> bounds;
 
 	//* constants *//
 

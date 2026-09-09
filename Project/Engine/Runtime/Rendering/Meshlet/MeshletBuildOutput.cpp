@@ -61,6 +61,7 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 		output.meshlets.reserve(kMeshletCount);
 		output.vertexIndices.reserve(totalVertexCount);
 		output.triangles.reserve(totalTriangleCount);
+		output.bounds.reserve(kMeshletCount);
 		
 	}
 
@@ -107,16 +108,21 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 			output.meshlets.emplace_back(meshlet);
 		}
 
-		{ //!< frustum / backface culling用のboundingを計算
+		{ //!< boundsを計算
 
-			meshopt_Bounds bounds = meshopt_computeMeshletBounds(
+			meshopt_Bounds b = meshopt_computeMeshletBounds(
 				&vertexIndices[m.vertex_offset], &primitives[m.triangle_offset],
 				m.triangle_count,
 				&positions->x, vertexCount, stride
 			);
 
-			// TODO: boundsの情報をFooに格納する構造体を定義して、ここで詰め替える
+			MeshletBuffer::Bounds bounds = {};
+			bounds.center   = { b.center[0], b.center[1], b.center[2] };
+			bounds.radius   = b.radius;
+			bounds.coneAxis = { b.cone_axis_s8[0], b.cone_axis_s8[1], b.cone_axis_s8[2] };
+			bounds.coneCutoff = b.cone_cutoff_s8;
 
+			output.bounds.emplace_back(bounds);
 		}
 	}
 

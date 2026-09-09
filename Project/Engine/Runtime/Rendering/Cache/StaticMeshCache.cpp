@@ -170,6 +170,12 @@ MeshletBuffer StaticMeshCache::CreateMeshletBuffer(const std::string_view& name,
 	);
 	std::memcpy(buffer.triangles.GetData(), output.triangles.data(), buffer.triangles.GetByteSize());
 
+	buffer.bounds = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Bounds>(
+		static_cast<uint32_t>(output.bounds.size()),
+		1
+	);
+	std::memcpy(buffer.bounds.GetData(), output.bounds.data(), buffer.bounds.GetByteSize());
+
 	buffer.SetName(name);
 
 	return buffer;
