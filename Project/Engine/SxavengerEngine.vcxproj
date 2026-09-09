@@ -321,12 +321,15 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Platform\Window.h" />
     <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Upscaler\UpscalerInput.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskPriority.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskState.h" />
@@ -461,6 +464,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Platform\Window.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp" />

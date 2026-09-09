@@ -27,6 +27,10 @@ UINT* TriangleIndexDimensionBuffer::GetIndexData() {
 	return reinterpret_cast<UINT*>(DimensionBuffer::GetData());
 }
 
+const UINT* TriangleIndexDimensionBuffer::GetIndexData() const {
+	return reinterpret_cast<const UINT*>(DimensionBuffer::GetData());
+}
+
 TriangleIndexDimensionBuffer TriangleIndexDimensionBuffer::Create(uint32_t faceCount, uint8_t frameCount) {
 	return Graphics::Core::CreateDimensionBuffer<TriangleIndexDimension>(faceCount, frameCount);
 }

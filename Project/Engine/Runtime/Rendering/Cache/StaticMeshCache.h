@@ -7,6 +7,7 @@
 #include "../Meshlet/PositionVertexBuffer.h"
 #include "../Meshlet/StaticMeshVertexBuffer.h"
 #include "../Meshlet/TriangleIndexDimensionBuffer.h"
+#include "../Meshlet/MeshletBuffer.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -47,7 +48,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* Buffer *//
+	//* Vertex Buffer *//
 
 	PositionVertexBuffer positionVertexBuffer_;
 	StaticMeshVertexBuffer staticMeshVertexBuffer_;
@@ -57,6 +58,10 @@ private:
 	//* Acceleration Structure *//
 
 	Graphics::BottomLevelAccelerationStructure bottomLevelAS_;
+
+	//* Meshlet Buffer *//
+
+	MeshletBuffer meshletBuffer_;
 
 	//* address *//
 
@@ -75,6 +80,10 @@ private:
 	//* acceleration structure methods *//
 
 	void BuildBottomLevelAccelerationStructure(const std::string_view& name);
+
+	//* meshlet methods *//
+
+	static MeshletBuffer CreateMeshletBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
 };
 

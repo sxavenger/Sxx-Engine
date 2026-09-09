@@ -47,6 +47,9 @@ public:
 	//! @brief インデックスバッファのデータを取得する
 	UINT* GetIndexData();
 
+	//! @brief インデックスバッファのデータを取得する
+	const UINT* GetIndexData() const;
+
 	//* operator [copy] <TriangleIndexDimensionBuffer> (delete) *//
 
 	TriangleIndexDimensionBuffer(const TriangleIndexDimensionBuffer&)            = delete;

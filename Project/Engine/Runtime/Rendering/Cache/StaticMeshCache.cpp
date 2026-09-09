@@ -4,10 +4,16 @@ SXAVENGER_ENGINE_USING_(Rendering)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* rendering
+#include "../Meshlet/MeshletBuildOutput.h"
+
 //* engine
 #include <Runtime/Graphics/Core.h>
 #include <Runtime/Scheduler/Common/TaskHandle.h>
 #include <Runtime/Scheduler/System.h>
+
+//* meshoptimizer
+#include <meshoptimizer/meshoptimizer.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StaticMeshCache class methods
@@ -18,16 +24,20 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	Scheduler::TaskHandle handle = mesh->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
+		STREAM_LOG_WARNING("Rendering::StaticMeshCache | static mesh is not ready. name: {}, state: {}", mesh->GetName(), handle.GetState());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
 	//!< descriptionの取得
 	const Assets::StaticMesh::Description& description = mesh->GetDescription();
 
-	//!< bufferの作成
+	//!< 頂点bufferの作成
 	positionVertexBuffer_   = StaticMeshCache::CreatePositionVertexBuffer(mesh->GetName(), description);
 	staticMeshVertexBuffer_ = StaticMeshCache::CreateStaticMeshVertexBuffer(mesh->GetName(), description);
 	indexBuffer_            = StaticMeshCache::CreateIndexBuffer(mesh->GetName(), description);
+
+	//!< meshlet bufferの作成
+	meshletBuffer_ = StaticMeshCache::CreateMeshletBuffer(mesh->GetName(), description);
 
 	//!< BLASの構築
 	BuildBottomLevelAccelerationStructure(mesh->GetName());
@@ -116,8 +126,51 @@ void StaticMeshCache::BuildBottomLevelAccelerationStructure(const std::string_vi
 			context.SubmitWait(); //!< GPUの処理完了まで待機.
 		}
 	);
+	// xxx: ダブルバッファリングの場合, Resourceが1つしかないので二重で実行してしまう.
 
 	task.Wait(); //!< taskが完了するまで待機.
 
-	bottomLevelAS_.SetName(std::format("StaticMeshCache | Bottom Level Acceleration Structure | {}", name));
+	bottomLevelAS_.SetName(std::format("StaticMeshCache | {}", name));
+}
+
+MeshletBuffer StaticMeshCache::CreateMeshletBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description) {
+
+	//!< 頂点データの取得
+	std::span<const uint32_t> indices = description.GetIndices();
+
+	//!< meshletの構築
+	MeshletBuildOutput output = MeshletBuildOutput::Build(
+		description.GetIndexCount(), indices.data(),
+		description.vertices.size(), &description.vertices[0].position, sizeof(Assets::MeshVertex)
+	);
+
+	if (output.Empty()) {
+		STREAM_LOG_ERROR("Rendering::StaticMeshCache | meshlet build failed. name: {}", name);
+		return {};
+	}
+
+	//!< bufferの作成
+	MeshletBuffer buffer;
+
+	buffer.meshlets = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Meshlet>(
+		static_cast<uint32_t>(output.meshlets.size()),
+		1
+	);
+	std::memcpy(buffer.meshlets.GetData(), output.meshlets.data(), buffer.meshlets.GetByteSize());
+
+	buffer.vertexIndices = Graphics::Core::CreateDimensionBuffer<uint32_t>(
+		static_cast<uint32_t>(output.vertexIndices.size()),
+		1
+	);
+	std::memcpy(buffer.vertexIndices.GetData(), output.vertexIndices.data(), buffer.vertexIndices.GetByteSize());
+
+	buffer.triangles = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Triangle>(
+		static_cast<uint32_t>(output.triangles.size()),
+		1
+	);
+	std::memcpy(buffer.triangles.GetData(), output.triangles.data(), buffer.triangles.GetByteSize());
+
+	buffer.SetName(name);
+
+	return buffer;
 }

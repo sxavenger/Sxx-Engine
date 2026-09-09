@@ -690,6 +690,9 @@
     <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Upscaler\UpscalerInput.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1071,5 +1074,7 @@
     <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp" />
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp" />
   </ItemGroup>
 </Project>
