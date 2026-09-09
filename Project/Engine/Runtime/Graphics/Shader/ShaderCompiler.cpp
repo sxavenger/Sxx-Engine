@@ -92,10 +92,6 @@ void ShaderCompiler::Init(const Configuration& config, const Device& device) {
 
 	//!< 共通defineの設定
 	arguments_.Append(L"-Zpr"); //!< メモリレイアウトは行優先
-	
-	if (device.GetSupport().raytracingTier >= D3D12_RAYTRACING_TIER_1_1) {
-		arguments_.AppendDefine(L"SUPPORT_INLINE_RAYTRACING"); //!< inline raytracingをサポートしていることをdefineで伝える
-	}
 
 	STREAM_LOG_INFO("Graphics::ShaderCompiler | complete initialize.");
 }
@@ -202,6 +198,8 @@ ShaderBlob ShaderCompiler::Compile(
 
 	arguments.Append(L"-Zi");           //!< デバッグ情報を生成
 	arguments.Append(L"-Qembed_debug"); //!< デバッグ情報をシェーダバイナリに埋め込む
+
+	arguments.AppendDefine(L"DEVELOPMENT"); //!< "DEVELOPMENT"をdefineする
 
 #else
 	arguments.Append(L"-O3"); //!< 最適化を最大にする
