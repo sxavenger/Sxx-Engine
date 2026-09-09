@@ -76,9 +76,6 @@ public:
 	constexpr T& operator[](size_t index) noexcept { return data[index]; }
 	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
 
-	constexpr T* operator&() noexcept { return data.data(); }
-	constexpr const T* operator&() const noexcept { return data.data(); }
-
 	//* constant value methods *//
 
 	constexpr static Vector4 Origin() noexcept { return { T(0), T(0), T(0), T(0) }; }
