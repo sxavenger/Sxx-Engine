@@ -32,7 +32,7 @@ namespace ComPtrUtil {
 	// methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	std::wstring_view GetComErrorMessage(HRESULT hr);
+	std::wstring GetComErrorMessage(HRESULT hr);
 
 	void Assert(HRESULT hr, const std::wstring_view& message);
 

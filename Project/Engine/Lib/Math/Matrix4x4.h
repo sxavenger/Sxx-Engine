@@ -85,7 +85,7 @@ public:
 	static Matrix4x4 MakeAffine(const Vector3<T>& translation, const Vector3<T>& euler, const Vector3<T>& scale) noexcept;
 	static Matrix4x4 MakeAffine(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale) noexcept;
 
-	static Matrix4x4 MakePerspectiveFov(T fov, T aspect, T nearZ, T farZ) noexcept;
+	static Matrix4x4 MakePerspective(T fov, T aspect, T nearZ, T farZ) noexcept;
 
 	static Matrix4x4 MakeOrthographic(T left, T right, T bottom, T top, T nearZ, T farZ) noexcept;
 
@@ -342,7 +342,7 @@ Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& translation, const Quate
 }
 
 template <std::floating_point T>
-Matrix4x4<T> Matrix4x4<T>::MakePerspectiveFov(T fov, T aspect, T nearZ, T farZ) noexcept {
+Matrix4x4<T> Matrix4x4<T>::MakePerspective(T fov, T aspect, T nearZ, T farZ) noexcept {
 	return {
 		1.0 / (aspect * std::tan(fov * 0.5)), 0.0, 0.0, 0.0,
 		0.0, 1.0 / std::tan(fov * 0.5), 0.0, 0.0,

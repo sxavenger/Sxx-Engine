@@ -129,7 +129,8 @@ enum class ColorEncoding : bool {
 // Utility methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-constexpr DXGI_FORMAT ConvertToSRGBFormat(DXGI_FORMAT format) {
+//! @brief sRGBフォーマットに変換する.
+constexpr DXGI_FORMAT ConvertSRGBFormat(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_R8G8B8A8_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_BC1_UNORM:      return DXGI_FORMAT_BC1_UNORM_SRGB;
@@ -142,7 +143,8 @@ constexpr DXGI_FORMAT ConvertToSRGBFormat(DXGI_FORMAT format) {
 	}
 }
 
-constexpr DXGI_FORMAT ConvertToLinearFormat(DXGI_FORMAT format) {
+//! @brief sRGBフォーマットをLinearフォーマットに変換する.
+constexpr DXGI_FORMAT ConvertLinearFormat(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM;
 		case DXGI_FORMAT_BC1_UNORM_SRGB:      return DXGI_FORMAT_BC1_UNORM;
@@ -155,7 +157,8 @@ constexpr DXGI_FORMAT ConvertToLinearFormat(DXGI_FORMAT format) {
 	}
 }
 
-constexpr DXGI_FORMAT ConvertToDepthViewFormat(DXGI_FORMAT format) {
+//! @brief DepthStencilView用のフォーマットに変換する.
+constexpr DXGI_FORMAT ConvertDepthViewFormat(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT: return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
 		case DXGI_FORMAT_D32_FLOAT:            return DXGI_FORMAT_R32_FLOAT;

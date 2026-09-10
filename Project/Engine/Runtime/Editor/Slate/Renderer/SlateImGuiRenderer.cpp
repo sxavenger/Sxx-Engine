@@ -402,11 +402,11 @@ void Slate::ImGuiRenderer::InitContext() {
 	info.NumFramesInFlight = Graphics::kFrameCount;
 	//!< PSOのRTV formatは, 実際にbindされるRTVのformatと完全に一致していなければ
 	//!< DrawIndexedInstancedが EXECUTION ERROR #613 で失敗する.
-	//!< note: SwapChainのresource自体は ConvertToLinearFormat で作られるが(FLIP_DISCARDが
+	//!< note: SwapChainのresource自体は ConvertLinearFormat で作られるが(FLIP_DISCARDが
 	//!<       sRGB backbufferを許さないため), bindされるRTVは Init / Resize ともに
-	//!<       ConvertToSRGBFormat で生成される. 合わせるべき相手はresourceではなくRTV側.
+	//!<       ConvertSRGBFormat で生成される. 合わせるべき相手はresourceではなくRTV側.
 	//!< TODO: formatをuser側で設定できるように変更. (SwapChainのformatと二重管理になっているため.)
-	info.RTVFormat         = Graphics::ConvertToSRGBFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
+	info.RTVFormat         = Graphics::ConvertSRGBFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
 	info.DSVFormat         = DXGI_FORMAT_UNKNOWN;
 
 	info.UserData = &descriptors_; //!< Descriptors構造体のポインタを設定.

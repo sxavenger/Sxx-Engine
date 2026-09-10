@@ -61,7 +61,7 @@ void SwapChain::Init(
 
 		//!< RenderTargetの作成
 		D3D12_RENDER_TARGET_VIEW_DESC desc = {};
-		desc.Format        = Graphics::ConvertToSRGBFormat(format); //!< SRGBに変換しておく.
+		desc.Format        = Graphics::ConvertSRGBFormat(format); //!< SRGBに変換しておく.
 		desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
 		device.GetDevice()->CreateRenderTargetView(
@@ -113,7 +113,7 @@ void SwapChain::Resize(
 
 		//!< RenderTargetの作成
 		D3D12_RENDER_TARGET_VIEW_DESC desc = {};
-		desc.Format        = Graphics::ConvertToSRGBFormat(format_); //!< SRGBに変換しておく.
+		desc.Format        = Graphics::ConvertSRGBFormat(format_); //!< SRGBに変換しておく.
 		desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
 		device.GetDevice()->CreateRenderTargetView(
@@ -144,7 +144,7 @@ void SwapChain::Present(const Device& device, bool vsync) {
 }
 
 DXGI_FORMAT SwapChain::GetRenderTargetFormat() const {
-	return Graphics::ConvertToSRGBFormat(format_); //!< RenderTargetはSRGBに変換しておく.
+	return Graphics::ConvertSRGBFormat(format_); //!< RenderTargetはSRGBに変換しておく.
 }
 
 void SwapChain::BeginRenderPass(const GraphicsCommandContext& context, const Color4f& color) {
@@ -185,7 +185,7 @@ ComPtr<IDXGISwapChain4> SwapChain::CreateSwapChain(RefPtr<IDXGIFactory7> factory
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
 	desc.Width            = resolution.x;
 	desc.Height           = resolution.y;
-	desc.Format           = Graphics::ConvertToLinearFormat(format);
+	desc.Format           = Graphics::ConvertLinearFormat(format);
 	desc.SampleDesc.Count = 1;
 	desc.BufferUsage      = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	desc.BufferCount      = kFrameCount;

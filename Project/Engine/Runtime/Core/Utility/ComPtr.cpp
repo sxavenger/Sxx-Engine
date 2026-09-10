@@ -17,9 +17,9 @@ SXAVENGER_ENGINE_USING
 // ComPtrUtil namespace methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-std::wstring_view ComPtrUtil::GetComErrorMessage(HRESULT hr) {
+std::wstring ComPtrUtil::GetComErrorMessage(HRESULT hr) {
 	if (SUCCEEDED(hr)) {
-		return std::wstring_view();
+		return std::wstring();
 	}
 
 	return _com_error(hr).ErrorMessage();
