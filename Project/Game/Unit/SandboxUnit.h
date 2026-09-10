@@ -8,7 +8,12 @@
 
 //* engine [graphics]
 #include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
-#include <Engine/Runtime/Graphics/Buffer/ConstantBuffer.h>
+#include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
+
+//* engine [rendering]
+#include <Engine/Runtime/Rendering/Cache/StaticMeshCache.h>
+#include <Engine/Runtime/Rendering/Texture/RenderTargetTexture.h>
+#include <Engine/Runtime/Rendering/Texture/DepthStencilTexture.h>
 
 //* lib
 #include <Lib/Math/Color4.h>
@@ -39,9 +44,13 @@ private:
 	// private variables
 	//=========================================================================================
 
-	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline_;
+	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline0_;
+	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline1_;
 
-	Sxx::Graphics::ConstantBuffer<Color4f> buffer_;
+	Sxx::Rendering::StaticMeshCache cache_;
+
+	Sxx::Rendering::RenderTargetTexture renderTarget_;
+	Sxx::Rendering::DepthStencilTexture depthStencil_;
 
 	//=========================================================================================
 	// private methods
