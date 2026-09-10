@@ -1,24 +1,23 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-#include "Test.hlsli"
+#include "Present.hlsli"
 
 //=========================================================================================
 // buffers
 //=========================================================================================
 
-RWTexture2D<float4> gOutput : register(u0);
+Texture2D<float4> gTexture : register(t0);
+SamplerState gLinearSampler : register(s0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
-[numthreads(8, 8, 1)]
-void main(uint3 dispatchThreadId : SV_DispatchThreadID) {
+FragmentOutputData main(FragmentInputData input) {
 
-	if (any(dispatchThreadId.xy >= dimension)) {
-		return; //!< dimensionの範囲外.
-	}
+	FragmentOutputData output;
+	output.color = gTexture.SampleLevel(gLinearSampler, input.texcoord, 0.0f);
 
-	gOutput[dispatchThreadId.xy] = float4(dispatchThreadId.xy, 0.0f, 1.0f);
-	
+	return output;
+
 }

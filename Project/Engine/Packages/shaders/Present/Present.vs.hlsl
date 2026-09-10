@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-#include "Test.hlsli"
+#include "Present.hlsli"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Vertex structure
@@ -11,32 +11,33 @@ struct Vertex {
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
-	
-	float3 position;
-	float2 texcoord;
-	
+
+	float32_t3 position;
+	float32_t2 texcoord;
+
 };
 
-//-----------------------------------------------------------------------------------------
+//=========================================================================================
 // constants
-//-----------------------------------------------------------------------------------------
+//=========================================================================================
 
 static const Vertex kVertices[3] = {
-	{ float3(-1.0f, -1.0f, 0.0f), float2(0.0f, 1.0f) },
-	{ float3(-1.0f,  3.0f, 0.0f), float2(0.0f, -1.0f) },
-	{ float3( 3.0f, -1.0f, 0.0f), float2(2.0f,  1.0f) }
+	{ float32_t3(-1.0f, -1.0f, 0.0f), float32_t2(0.0f,  1.0f) },
+	{ float32_t3(-1.0f,  3.0f, 0.0f), float32_t2(0.0f, -1.0f) },
+	{ float32_t3( 3.0f, -1.0f, 0.0f), float32_t2(2.0f,  1.0f) }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
-PSInputData main(uint vertexId : SV_VertexID) {
-	
-	PSInputData output;
-	output.position = float4(kVertices[vertexId].position, 1.0f);
-	output.texcoord = kVertices[vertexId].texcoord;
-	
-	return output;
-	
-}
+FragmentInputData main(uint vertex_id : SV_VertexID) {
 
+	Vertex vertex = kVertices[vertex_id];
+
+	FragmentInputData output;
+	output.position = float32_t4(vertex.position, 1.0f);
+	output.texcoord = vertex.texcoord;
+
+	return output;
+
+}

@@ -142,6 +142,15 @@
     <Filter Include="Runtime\Rendering\Cache">
       <UniqueIdentifier>{5999462F-C5D0-8EC6-CEDA-F2E93A91B5BF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Rendering\Meshlet">
+      <UniqueIdentifier>{F7088F27-63CB-C2B1-AC7B-513E187D9B8F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Rendering\Texture">
+      <UniqueIdentifier>{36E9C742-A2AB-FBCC-EB5B-8A59575DD4AA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Rendering\Upscaler">
+      <UniqueIdentifier>{C404DFC9-B014-8B9A-19CE-EFB805FD7933}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Scheduler">
       <UniqueIdentifier>{77699C32-E37F-9AC8-2CF7-25EA984C6B50}</UniqueIdentifier>
     </Filter>
@@ -477,6 +486,21 @@
     <ClInclude Include="Runtime\Framework\Core\Pipeline.h">
       <Filter>Runtime\Framework\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\AccelerationStructure.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\ConstantBuffer.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Graphics\Buffer\Resource.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClInclude>
@@ -591,8 +615,44 @@
     <ClInclude Include="Runtime\Platform\Window.h">
       <Filter>Runtime\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h">
+      <Filter>Runtime\Rendering\Cache</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h">
       <Filter>Runtime\Rendering\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Texture\DepthStencilTexture.h">
+      <Filter>Runtime\Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Texture\RenderTargetTexture.h">
+      <Filter>Runtime\Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Upscaler\UpscalerInput.h">
+      <Filter>Runtime\Rendering\Upscaler</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h">
       <Filter>Runtime\Scheduler\Common</Filter>
@@ -678,21 +738,6 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\DimensionBuffer.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\ConstantBuffer.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\AccelerationStructure.h" />
-    <ClInclude Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\PackedTexcoord.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
-    <ClInclude Include="Runtime\Rendering\Upscaler\UpscalerInput.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h" />
-    <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -742,6 +787,9 @@
     </ClCompile>
     <ClCompile Include="Lib\Time\TimePoint.cpp">
       <Filter>Lib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\TracePoint\TracePoint.cpp">
+      <Filter>Lib\TracePoint</Filter>
     </ClCompile>
     <ClCompile Include="Lib\Uuid\Uuid.cpp">
       <Filter>Lib\Uuid</Filter>
@@ -881,6 +929,15 @@
     <ClCompile Include="Runtime\Framework\Core\Pipeline.cpp">
       <Filter>Runtime\Framework\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\AccelerationStructure.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.cpp">
+      <Filter>Runtime\Graphics\Buffer</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Graphics\Buffer\Resource.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClCompile>
@@ -989,8 +1046,38 @@
     <ClCompile Include="Runtime\Platform\Window.cpp">
       <Filter>Runtime\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp">
+      <Filter>Runtime\Rendering\Cache</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp">
       <Filter>Runtime\Rendering\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp">
+      <Filter>Runtime\Rendering\Meshlet</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Texture\DepthStencilTexture.cpp">
+      <Filter>Runtime\Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Texture\RenderTargetTexture.cpp">
+      <Filter>Runtime\Rendering\Texture</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp">
       <Filter>Runtime\Scheduler\Common</Filter>
@@ -1064,17 +1151,5 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\BaseDimensionBuffer.cpp" />
-    <ClCompile Include="Lib\TracePoint\TracePoint.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\AccelerationStructure.cpp" />
-    <ClCompile Include="Runtime\Graphics\Buffer\BottomLevelAccelerationStructure.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\PackedTexcoord.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp" />
-    <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp" />
   </ItemGroup>
 </Project>

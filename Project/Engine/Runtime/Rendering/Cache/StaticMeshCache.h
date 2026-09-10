@@ -42,6 +42,14 @@ public:
 	//! @brief キャッシュされたアドレスを取得する.
 	uintptr_t GetAddress() const { return address_.value_or(NULL); }
 
+	//* cache option *//
+
+	const PositionVertexBuffer& GetPositionVertexBuffer() const { return positionVertexBuffer_; }
+
+	const StaticMeshVertexBuffer& GetStaticMeshVertexBuffer() const { return staticMeshVertexBuffer_; }
+
+	const TriangleIndexDimensionBuffer& GetIndexBuffer() const { return indexBuffer_; }
+
 private:
 
 	//=========================================================================================

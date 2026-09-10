@@ -329,6 +329,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\VertexDimensionBuffer.h" />
+    <ClInclude Include="Runtime\Rendering\Texture\DepthStencilTexture.h" />
+    <ClInclude Include="Runtime\Rendering\Texture\RenderTargetTexture.h" />
     <ClInclude Include="Runtime\Rendering\Upscaler\UpscalerInput.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskHandle.h" />
     <ClInclude Include="Runtime\Scheduler\Common\TaskPriority.h" />
@@ -471,6 +473,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Rendering\Meshlet\PositionVertexBuffer.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\StaticMeshVertexBuffer.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\TriangleIndexDimensionBuffer.cpp" />
+    <ClCompile Include="Runtime\Rendering\Texture\DepthStencilTexture.cpp" />
+    <ClCompile Include="Runtime\Rendering\Texture\RenderTargetTexture.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\TaskHandle.cpp" />
     <ClCompile Include="Runtime\Scheduler\Common\WorkerThread.cpp" />
     <ClCompile Include="Runtime\Scheduler\Cpu\CpuScheduler.cpp" />
