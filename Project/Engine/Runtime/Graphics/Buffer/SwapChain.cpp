@@ -160,7 +160,7 @@ void SwapChain::BeginRenderPass(const GraphicsCommandContext& context, const Col
 	desc.BeginningAccess.Clear.ClearValue.Color[1] = color.g;
 	desc.BeginningAccess.Clear.ClearValue.Color[2] = color.b;
 	desc.BeginningAccess.Clear.ClearValue.Color[3] = color.a;
-	desc.EndingAccess.Type                       = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+	desc.EndingAccess.Type                         = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
 
 	context.BeginRenderPass(desc, std::nullopt);
 }

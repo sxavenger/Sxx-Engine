@@ -45,7 +45,7 @@ project "Sandbox"
 	includedirs {
 		"%{prj.location}",
 		"%{prj.location}/Engine",
-		
+
 		"%{prj.location}/Engine/Externals/magic_enum", -- [magic_enum](https://github.com/Neargye/magic_enum.git)
 		"%{prj.location}/Engine/Externals/nlohmann", -- [nlohmann](https://github.com/nlohmann/json.git)
 		"%{prj.location}/Engine/Externals/tomlplusplus", -- [toml++](https://github.com/marzer/tomlplusplus.git)
@@ -70,7 +70,7 @@ project "Sandbox"
 	multiprocessorcompile "On" -- 複数コアのでの並列コアコンパイル
 	staticruntime "On"
 	buildoptions { "/utf-8" }
-	
+
 	-- define定義(共通) --
 	defines { '_PROFILE="$(Configuration)"', "NOMINMAX" }
 
@@ -79,11 +79,11 @@ project "Sandbox"
 		"/WX",
 		"/IGNORE:4099", -- [LNK4099](https://learn.microsoft.com/ja-jp/cpp/error-messages/tool-errors/linker-tools-warning-lnk4099)
 	}
-	
+
 	--- application構成ごとのビルドオプション設定 ---
 	filter "kind:ConsoleApp"
     	defines { "CONSOLE" }
-	
+
 	--- project構成ごとのビルドオプション設定 ---
 	-- Debug
 	filter "configurations:Debug"
@@ -95,12 +95,14 @@ project "Sandbox"
 
 		-- ビルド済みライブラリ参照
 		libdirs {
-			"%{wks.location}/../Generated/bin/DirectXTex/Debug",
 			"%{wks.location}/Engine/Externals/PixEvents/lib/Debug",
+			"%{wks.location}/Engine//Externals/assimp/lib/Debug",
 		}
 
 		links {
 			"WinPixEventRuntime",
+			"assimp-vc145-mtd",
+			"zlibstaticd",
 		}
 
 	-- Develop
@@ -113,12 +115,14 @@ project "Sandbox"
 
 		-- ビルド済みライブラリ参照
 		libdirs {
-			"%{wks.location}/../Generated/bin/DirectXTex/Release",
 			"%{wks.location}/Engine/Externals/PixEvents/lib/Release",
+			"%{wks.location}/Engine//Externals/assimp/lib/Release",
 		}
 
 		links {
 			"WinPixEventRuntime",
+			"assimp-vc145-mt",
+			"zlibstatic",
 		}
 
 	-- Release
@@ -132,5 +136,10 @@ project "Sandbox"
 
 		-- ビルド済みライブラリ参照
 		libdirs {
-			"%{wks.location}/../Generated/bin/DirectXTex/Release",
+			"%{wks.location}/Engine/Externals/PixEvents/lib/Release",
+		}
+
+		links {
+			"assimp-vc145-mt",
+			"zlibstatic",
 		}

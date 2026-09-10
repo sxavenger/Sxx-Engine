@@ -87,7 +87,7 @@ project "SxavengerEngine"
 	multiprocessorcompile "On" -- 複数コアのでの並列コアコンパイル
 	staticruntime "On"
 	buildoptions { "/utf-8" }
-	
+
 	-- define定義(共通) --
 	defines { '_PROFILE="$(Configuration)"', "NOMINMAX" }
 
@@ -104,7 +104,7 @@ project "SxavengerEngine"
 		'copy /Y "$(WindowsSdkDir)bin\\$(TargetPlatformVersion)\\x64\\dxcompiler.dll" "%{cfg.targetdir}"',
 		'copy /Y "$(WindowsSdkDir)bin\\$(TargetPlatformVersion)\\x64\\dxil.dll" "%{cfg.targetdir}"'
 	}
-	
+
 	--- Hostfxr
 	-- ビルド後イベント --
 	postbuildcommands {
@@ -131,7 +131,7 @@ project "SxavengerEngine"
 		postbuildcommands {
 			'copy /Y "%{prj.location}\\Externals\\PixEvents\\bin\\Debug\\WinPixEventRuntime.dll" "%{cfg.targetdir}"'
 		}
-	
+
 	filter "configurations:Develop"
 		-- リンカー設定 --
 		libdirs {
@@ -176,13 +176,13 @@ project "SxavengerEngine"
 	--- application構成ごとのビルドオプション設定 ---
 	filter "kind:ConsoleApp"
     	defines { "CONSOLE" }
-	
+
 	--- project構成ごとのビルドオプション設定 ---
 	-- Debug
 	filter "configurations:Debug"
 		-- ビルドオプション
 		symbols "On"
-		
+
 		-- define定義
 		defines { "DEVELOPMENT" }
 
