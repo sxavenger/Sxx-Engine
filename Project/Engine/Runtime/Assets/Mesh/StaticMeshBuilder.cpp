@@ -138,8 +138,7 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 
 		meshopt_remapVertexBuffer(
 			remappedVertices.data(),
-			vertices.data(), vertices.size(),
-			sizeof(MeshVertex),
+			vertices.data(), vertices.size(), sizeof(MeshVertex),
 			remap.data()
 		);
 
@@ -167,8 +166,7 @@ void StaticMeshBuilder::Optimize(StaticMesh::Description& description) {
 		const size_t kFetchedVertexCount = meshopt_optimizeVertexFetch(
 			fetchedVertices.data(),
 			indices.data(), indices.size(),
-			vertices.data(), vertices.size(),
-			sizeof(MeshVertex)
+			vertices.data(), vertices.size(), sizeof(MeshVertex)
 		);
 		fetchedVertices.resize(kFetchedVertexCount); //!< fetchされた頂点数にリサイズ
 
