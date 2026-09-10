@@ -1,0 +1,23 @@
+{
+	"shader-validator.hlsl.shaderModel": "ShaderModel6_8",
+	"shader-validator.hlsl.version": "V2021",
+	"shader-validator.hlsl.enable16bitTypes": true,
+	"shader-validator.symbols": true,
+	"shader-validator.validateConfig": true,
+	"files.associations": {
+		"*.hlsli": "hlsl",
+		"*.hlsl": "hlsl"
+	},
+	"[hlsl]": {
+		"editor.quickSuggestions": {
+			"other": "on",
+			"comments": "off",
+			"strings": "off"
+		},
+		"editor.quickSuggestionsDelay": 0,
+		"editor.suggestOnTriggerCharacters": true,
+		"editor.suggest.snippetsPreventQuickSuggestions": false,
+		"editor.wordBasedSuggestions": "allDocuments",
+		"editor.inlayHints.enabled": "offUnlessPressed"
+	}
+}
