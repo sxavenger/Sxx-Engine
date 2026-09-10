@@ -4,6 +4,10 @@
 	"shader-validator.hlsl.enable16bitTypes": true,
 	"shader-validator.symbols": true,
 	"shader-validator.validateConfig": true,
+	"shader-validator.trace.server": "verbose",
+	"shader-validator.includes": [
+		"${workspaceFolder}",
+	],
 	"files.associations": {
 		"*.hlsli": "hlsl",
 		"*.hlsl": "hlsl"
