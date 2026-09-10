@@ -59,8 +59,6 @@ void StaticMeshBuilder::Build(std::shared_ptr<StaticMesh>& mesh) {
 
 StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem::path& directory, const StaticMeshMetadata::ReferenceData& data) {
 
-	StaticMesh::Description description;
-
 	//!< 参照されているmeshのファイルパスの取得
 	std::filesystem::path path = (directory / data.filepath).lexically_normal();
 
@@ -68,39 +66,47 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	const AssimpImporter importer = AssimpCommon::GetImporter(path);
 	const AssimpMesh mesh         = importer.GetMesh(data.index);
 
+	//!< descriptionの作成
+	StaticMesh::Description description;
+	description.vertices.resize(mesh.GetVertexCount());
+	description.polygons.resize(mesh.GetFaceCount());
+
 	//!< 頂点データの取得
-	for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
-
-		MeshVertex vertex = {};
-
-		if (mesh.HasPosition()) {
-			vertex.position = mesh.GetPosition(i);
+	
+	if (mesh.HasPosition()) {
+		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
+			const Vector3f position = mesh.GetPosition(i);
+			description.vertices[i].position = position;
 		}
+	}
 
-		if (mesh.HasNormal()) {
-			vertex.normal = mesh.GetNormal(i);
+	if (mesh.HasNormal()) {
+		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
+			const Vector3f normal = mesh.GetNormal(i);
+			description.vertices[i].normal = normal;
 		}
+	}
 
-		if (mesh.HasTexcoord()) {
-			vertex.texcoord = mesh.GetTexcoord(i);
+	if (mesh.HasTexcoord()) {
+		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
+			const Vector2f texcoord = mesh.GetTexcoord(i);
+			description.vertices[i].texcoord = texcoord;
 		}
+	}
 
-		if (mesh.HasTangentBitangent()) {
-			vertex.tangent   = mesh.GetTangent(i);
-			vertex.bitangent = mesh.GetBitangent(i);
+	if (mesh.HasTangentBitangent()) {
+		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
+			const Vector3f tangent   = mesh.GetTangent(i);
+			const Vector3f bitangent = mesh.GetBitangent(i);
+			description.vertices[i].tangent   = tangent;
+			description.vertices[i].bitangent = bitangent;
 		}
-
-		description.vertices.emplace_back(vertex);
 	}
 
 	//!< 三角形データの取得
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
-
-		MeshPolygon polygon = {};
-
-		polygon.indices = mesh.GetTriangle(i);
-
-		description.polygons.emplace_back(polygon);
+		const MeshPolygon polygon = { mesh.GetTriangle(i) };
+		description.polygons[i] = polygon;
 	}
 
 	return description;

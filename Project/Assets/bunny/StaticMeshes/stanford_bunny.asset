@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../stanford_bunny.obj",
+			"index": 0
+		}
+	},
+	"type": "StaticMesh",
+	"uuid": "0825278a-e66a-407f-aa9c-69a0d68d026d"
+}

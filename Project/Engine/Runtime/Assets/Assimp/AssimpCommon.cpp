@@ -32,7 +32,6 @@ const AssimpImporter& AssimpCommon::GetImporter(const std::filesystem::path& fil
 			= AssimpOption::ConvertToLeftHanded
 			| AssimpOption::Triangulate
 			| AssimpOption::CalcTangentSpace
-			| AssimpOption::JoinIdenticalVertices
 			| AssimpOption::LimitBoneWeights
 			| AssimpOption::SortByPrimitiveType
 			| AssimpOption::FindDegenerates

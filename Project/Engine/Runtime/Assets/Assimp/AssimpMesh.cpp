@@ -19,8 +19,6 @@ bool AssimpMesh::HasPosition() const {
 }
 
 Vector3f AssimpMesh::GetPosition(uint32_t index) const {
-	STREAM_ASSERT(mesh_->HasPositions(), "mesh has no positions.");
-	STREAM_ASSERT(index < GetVertexCount(), "index is out of bounds.");
 	const aiVector3D& position = mesh_->mVertices[index];
 	return { position.x, position.y, position.z };
 }
@@ -30,8 +28,6 @@ bool AssimpMesh::HasNormal() const {
 }
 
 Vector3f AssimpMesh::GetNormal(uint32_t index) const {
-	STREAM_ASSERT(mesh_->HasNormals(), "mesh has no normals.");
-	STREAM_ASSERT(index < GetVertexCount(), "index is out of bounds.");
 	const aiVector3D& normal = mesh_->mNormals[index];
 	return { normal.x, normal.y, normal.z };
 }
@@ -41,8 +37,6 @@ bool AssimpMesh::HasTexcoord(uint32_t channel) const {
 }
 
 Vector2f AssimpMesh::GetTexcoord(uint32_t index, uint32_t channel) const {
-	STREAM_ASSERT(mesh_->HasTextureCoords(channel), "mesh has no texcoord. channel: {}", channel);
-	STREAM_ASSERT(index < GetVertexCount(), "index is out of bounds.");
 	const aiVector3D& texcoord = mesh_->mTextureCoords[channel][index];
 	return { texcoord.x, texcoord.y };
 }
@@ -52,15 +46,11 @@ bool AssimpMesh::HasTangentBitangent() const {
 }
 
 Vector3f AssimpMesh::GetTangent(uint32_t index) const {
-	STREAM_ASSERT(mesh_->HasTangentsAndBitangents(), "mesh has no tangents and bitangents.");
-	STREAM_ASSERT(index < GetVertexCount(), "index is out of bounds.");
 	const aiVector3D& tangent = mesh_->mTangents[index];
 	return { tangent.x, tangent.y, tangent.z };
 }
 
 Vector3f AssimpMesh::GetBitangent(uint32_t index) const {
-	STREAM_ASSERT(mesh_->HasTangentsAndBitangents(), "mesh has no tangents and bitangents.");
-	STREAM_ASSERT(index < GetVertexCount(), "index is out of bounds.");
 	const aiVector3D& bitangent = mesh_->mBitangents[index];
 	return { bitangent.x, bitangent.y, bitangent.z };
 }
