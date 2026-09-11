@@ -7,7 +7,7 @@
 #include "../Meshlet/StaticMeshVertex.hlsli"
 
 //* component
-#include "../Component/Camera3d.hlsli"
+#include "../Component/Camera.hlsli"
 
 //=========================================================================================
 // buffers
@@ -30,7 +30,7 @@ float32_t4x4 MakePerspective() {
 	float32_t aspect = sensor.x / sensor.y;
 	float32_t fov    = 2.0 * atan((sensor.y * 0.5) / focal);
 
-	return Component::Camera3d::MakePerspective(fov, aspect, near, far);
+	return Component::Camera::MakePerspective(fov, aspect, near, far);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

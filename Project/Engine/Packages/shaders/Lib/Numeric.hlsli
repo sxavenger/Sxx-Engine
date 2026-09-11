@@ -9,9 +9,9 @@ namespace Numeric {
 	// constant variables
 	//=========================================================================================
 
-	static const float kPi  = 3.141592653589793f;
-	static const float kTau = kPi * 2.0f;
+	static const float32_t kPi  = 3.141592653589793f;
+	static const float32_t kTau = kPi * 2.0f;
 
-	static const float kEpsilon = 1.192092896e-07f;
+	static const float32_t kEpsilon = 1.192092896e-07f;
 
 }

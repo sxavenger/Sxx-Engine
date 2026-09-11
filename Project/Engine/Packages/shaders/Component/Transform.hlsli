@@ -1,43 +1,43 @@
 #pragma once
 
-//-----------------------------------------------------------------------------------------
-// include
-//-----------------------------------------------------------------------------------------
-#include "Random.hlsli"
-
 ////////////////////////////////////////////////////////////////////////////////////////////
-// Random namespace
+// Component namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
-namespace Random {
+namespace Component {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// Engine structure
+	// Transform structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct Engine {
+	struct Transform {
 
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		uint32_t3 seed;
+		float32_t4x4 world;
+		float32_t4x4 world_inverse;
 
 		//=========================================================================================
 		// public methods
 		//=========================================================================================
 
-		uint32_t Rand1d() {
-			seed.x = Xorshift::Rand(seed.x);
-			return seed.x;
+		//* transform option *//
+
+		float32_t4 TransformPoint(float32_t4 position) {
+			return mul(position, world);
 		}
 
-		uint32_t2 Rand2d() {
-			seed.xy = Xorshift::Rand(seed.xy);
-			return seed.xy;
+		float32_t3 TransformPoint(float32_t3 position) {
+			return mul(float32_t4(position, 1.0f), world).xyz;
 		}
 
-		uint32_t3 Rand3d() {
-			seed.xyz = Xorshift::Rand(seed.xyz);
-			return seed.xyz;
+		float32_t3 TransformNormal(float32_t3 normal) {
+			return mul(normal, (float32_t3x3)transpose(world_inverse)).xyz;
+			//!< 法線の変換のため, world_inverse の転置行列を使用する.
+		}
+
+		float32_t3 GetPosition() {
+			return world[3].xyz;
 		}
 
 	};

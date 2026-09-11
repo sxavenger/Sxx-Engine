@@ -6,16 +6,14 @@
 namespace Component {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// Camera3d structure
+	// Camera structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct Camera3d {
+	struct Camera {
 
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		float32_t4x4 view;
-		float32_t4x4 world;
 		float32_t4x4 projection;
 		float32_t4x4 projection_inverse;
 		float32_t near;
@@ -26,14 +24,6 @@ namespace Component {
 		//=========================================================================================
 
 		//* camera options *//
-
-		float32_t3 GetPosition() {
-			return (float32_t3)world[3];
-		}
-
-		float32_t4x4 GetViewProjection() {
-			return mul(view, projection);
-		}
 
 		//* matrix methods *//
 
