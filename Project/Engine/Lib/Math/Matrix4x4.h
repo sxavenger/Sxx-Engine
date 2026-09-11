@@ -344,30 +344,30 @@ Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& translation, const Quate
 template <std::floating_point T>
 Matrix4x4<T> Matrix4x4<T>::MakePerspective(T fov, T aspect, T nearZ, T farZ) noexcept {
 	return {
-		1.0 / (aspect * std::tan(fov * 0.5)), 0.0, 0.0, 0.0,
-		0.0, 1.0 / std::tan(fov * 0.5), 0.0, 0.0,
-		0.0, 0.0, farZ / (farZ - nearZ), 1.0,
-		0.0, 0.0, -nearZ * farZ / (farZ - nearZ), 0.0
+		T(1.0) / (aspect * std::tan(fov * T(0.5))), T(0.0), T(0.0), T(0.0),
+		T(0.0), T(1.0) / std::tan(fov * T(0.5)), T(0.0), T(0.0),
+		T(0.0), T(0.0), farZ / (farZ - nearZ), T(1.0),
+		T(0.0), T(0.0), -nearZ * farZ / (farZ - nearZ), T(0.0)
 	};
 }
 
 template <std::floating_point T>
 Matrix4x4<T> Matrix4x4<T>::MakeOrthographic(T left, T right, T bottom, T top, T nearZ, T farZ) noexcept {
 	return {
-		2.0 / (right - left), 0.0, 0.0, 0.0,
-		0.0, 2.0 / (top - bottom), 0.0, 0.0,
-		0.0, 0.0, 1.0 / (farZ - nearZ), 0.0,
-		(left + right) / (left - right), (top + bottom) / (bottom - top), nearZ / (nearZ - farZ), 1.0
+		T(2.0) / (right - left), T(0.0), T(0.0), T(0.0),
+		T(0.0), T(2.0) / (top - bottom), T(0.0), T(0.0),
+		T(0.0), T(0.0), T(1.0) / (farZ - nearZ), T(0.0),
+		(left + right) / (left - right), (top + bottom) / (bottom - top), nearZ / (nearZ - farZ), T(1.0)
 	};
 }
 
 template <std::floating_point T>
 Matrix4x4<T> Matrix4x4<T>::MakeViewport(T x, T y, T width, T height, T nearZ, T farZ) noexcept {
 	return {
-		width / 2.0, 0.0, 0.0, 0.0,
-		0.0, -height / 2.0, 0.0, 0.0,
-		0.0, 0.0, farZ - nearZ, 0.0,
-		x + (width / 2.0), y + (height / 2.0), nearZ, 1.0,
+		width / T(2.0), T(0.0), T(0.0), T(0.0),
+		T(0.0), -height / T(2.0), T(0.0), T(0.0),
+		T(0.0), T(0.0), farZ - nearZ, T(0.0),
+		x + (width / T(2.0)), y + (height / T(2.0)), nearZ, T(1.0),
 	};
 }
 

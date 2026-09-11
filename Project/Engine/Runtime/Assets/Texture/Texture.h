@@ -105,7 +105,7 @@ private:
 	DirectX::ScratchImage image_;
 	Description description_;
 
-	//# 参考
+	// # reference
 	// - [UE5 Texture Asset](https://dev.epicgames.com/documentation/unreal-engine/texture-asset-editor-in-unreal-engine)
 
 	//-----------------------------------------------------------------------------------------

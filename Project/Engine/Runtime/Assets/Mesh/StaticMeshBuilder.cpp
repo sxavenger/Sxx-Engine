@@ -75,38 +75,32 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	
 	if (mesh.HasPosition()) {
 		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
-			const Vector3f position = mesh.GetPosition(i);
-			description.vertices[i].position = position;
+			description.vertices[i].position = mesh.GetPosition(i);
 		}
 	}
 
 	if (mesh.HasNormal()) {
 		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
-			const Vector3f normal = mesh.GetNormal(i);
-			description.vertices[i].normal = normal;
+			description.vertices[i].normal = mesh.GetNormal(i);
 		}
 	}
 
 	if (mesh.HasTexcoord()) {
 		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
-			const Vector2f texcoord = mesh.GetTexcoord(i);
-			description.vertices[i].texcoord = texcoord;
+			description.vertices[i].texcoord = mesh.GetTexcoord(i);
 		}
 	}
 
 	if (mesh.HasTangentBitangent()) {
 		for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i) {
-			const Vector3f tangent   = mesh.GetTangent(i);
-			const Vector3f bitangent = mesh.GetBitangent(i);
-			description.vertices[i].tangent   = tangent;
-			description.vertices[i].bitangent = bitangent;
+			description.vertices[i].tangent   = mesh.GetTangent(i);
+			description.vertices[i].bitangent = mesh.GetBitangent(i);
 		}
 	}
 
 	//!< 三角形データの取得
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
-		const MeshPolygon polygon = { mesh.GetTriangle(i) };
-		description.polygons[i] = polygon;
+		description.polygons[i] = { mesh.GetTriangle(i) };
 	}
 
 	return description;
