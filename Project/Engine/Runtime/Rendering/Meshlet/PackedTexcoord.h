@@ -71,6 +71,7 @@ public:
 		uint32_t packed;
 #pragma warning(pop)
 	};
+	//!< 16bit-floating-pointが追加されたらfloat16_tに変更する.
 
 private:
 
