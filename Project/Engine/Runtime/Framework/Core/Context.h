@@ -53,8 +53,8 @@ public:
 		// public variables
 		//=========================================================================================
 
-		std::list<std::unique_ptr<IUnit>> units_; //!< Unitを格納するリスト
-		std::unordered_map<TypeInfo, IUnit*> pointers_; 
+		std::list<std::unique_ptr<IUnit>> units; //!< Unitを格納するリスト
+		std::unordered_map<TypeInfo, IUnit*> pointers; 
 
 	};
 
@@ -105,14 +105,14 @@ void Context::UnitPool::Push() {
 
 	TypeInfo type = TypeInfo::GetType<T>();
 
-	if (pointers_.contains(type)) {
+	if (pointers.contains(type)) {
 		STREAM_LOG_WARNING("Framework::Context | unit pool already contains unit. type: {}", type.GetName());
 		return; //!< すでに登録されている場合は何もしない
 	}
 
 	std::unique_ptr<T> unit = std::make_unique<T>();
-	pointers_.emplace(type, unit.get());
-	units_.push_back(std::move(unit));
+	pointers.emplace(type, unit.get());
+	units.push_back(std::move(unit));
 	STREAM_LOG_INFO("Framework::Context | unit pool push unit. type: {}", type.GetName());
 }
 
@@ -121,17 +121,17 @@ RefPtr<T> Context::UnitPool::Get() const {
 
 	TypeInfo type = TypeInfo::GetType<T>();
 
-	if (!pointers_.contains(type)) {
+	if (!pointers.contains(type)) {
 		STREAM_LOG_WARNING("Framework::Context | unit pool does not contain unit. type: {}", type.GetName());
 		return nullptr; //!< 登録されていない場合はnullptrを返す
 	}
 
-	return static_cast<T*>(pointers_.at(type));
+	return static_cast<T*>(pointers.at(type));
 }
 
 template <Unit T>
 bool Context::UnitPool::Contains() const {
-	return pointers_.contains(TypeInfo::GetType<T>());
+	return pointers.contains(TypeInfo::GetType<T>());
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

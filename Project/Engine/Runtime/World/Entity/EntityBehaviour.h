@@ -28,11 +28,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(World)
 
-//-----------------------------------------------------------------------------------------
-// forward
-//-----------------------------------------------------------------------------------------
-class Instance;
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // EntityBehaviour class
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +59,10 @@ public:
 	bool HasParent() const noexcept { return parent_.HasHandle(); }
 
 	RefPtr<EntityBehaviour> GetParent() const;
+
+	void SetName(const std::string_view& name) { name_ = name; }
+
+	const std::string_view& GetName() const noexcept { return name_; }
 
 	//* component option *//
 

@@ -58,6 +58,9 @@ public:
 	//! @brief ResourceのGPU仮想アドレスを取得する.
 	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const;
 
+	//! @brief Resourceのデスクリプタが有効かどうかを取得する.
+	bool HasHandle() const { return handle_.HasHandle(); }
+
 	//! @brief Resourceのハンドルを取得する.
 	const ResourceHandle::Handle& GetHandle() const { return handle_.GetHandle(); }
 

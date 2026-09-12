@@ -42,6 +42,8 @@ public:
 
 	Vector2ui GetClient() const;
 
+	HWND GetHwnd() const;
+
 	Platform::Window& GetWindow() { return window_; }
 	const Platform::Window& GetWindow() const { return window_; }
 

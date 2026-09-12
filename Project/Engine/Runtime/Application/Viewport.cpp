@@ -54,6 +54,10 @@ Vector2ui Viewport::GetClient() const {
 	return window_.GetClient();
 }
 
+HWND Viewport::GetHwnd() const {
+	return window_.GetHwnd();
+}
+
 Graphics::SwapChain::Buffer& Viewport::GetCurrentBackBuffer() {
 	return swapChain_.GetCurrentBackBuffer();
 }

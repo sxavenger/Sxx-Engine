@@ -13,17 +13,17 @@ SXAVENGER_ENGINE_USING_(Framework)
 
 void Context::Run() {
 
-	for (auto& unit : pool_.units_) {
+	for (auto& unit : pool_.units) {
 		unit->Setup(pipeline_); //!< Unitの処理を登録する
 	}
 
 	pipeline_.Execute(); //!< Unitの処理を実行.
 
-	pool_.pointers_.clear();
+	pool_.pointers.clear();
 
 	//!< Unitのインターフェースを破棄.
-	while (!pool_.units_.empty()) {
-		pool_.units_.pop_back();
+	while (!pool_.units.empty()) {
+		pool_.units.pop_back();
 	}
 
 
