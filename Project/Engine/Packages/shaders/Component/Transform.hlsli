@@ -36,6 +36,10 @@ namespace Component {
 			//!< 法線の変換のため, world_inverse の転置行列を使用する.
 		}
 
+		float32_t4x4 GetView() {
+			return world_inverse;
+		}
+
 		float32_t3 GetPosition() {
 			return world[3].xyz;
 		}

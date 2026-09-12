@@ -9,24 +9,6 @@ SXAVENGER_ENGINE_USING_(World)
 #include "../../Entity/EntityStorage.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// [TransformComponent] TransformationMatrix structure methods
-////////////////////////////////////////////////////////////////////////////////////////////
-
-void TransformComponent::TransformationMatrix::Transfer(const Transformation3d& transformation) {
-	world            = Transformation3d::ConvertMatrix(transformation);
-	inverseTranspose = Matrix4x4f::Transpose(Transformation3d::ConvertMatrix(Transformation3d::Inverse(transformation)));
-	//!< (mat^-1)tと同様. (Normalの計算に使用する)
-}
-
-TransformComponent::TransformationMatrix TransformComponent::TransformationMatrix::Identity() noexcept {
-	TransformationMatrix matrix = {};
-	matrix.world            = Matrix4x4f::Identity();
-	matrix.inverseTranspose = Matrix4x4f::Identity();
-
-	return matrix;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
 // TransformComponent class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 

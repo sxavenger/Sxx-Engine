@@ -25,35 +25,6 @@ class TransformComponent
 	: public BaseComponent {
 public:
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// TransformationMatrix structure
-	////////////////////////////////////////////////////////////////////////////////////////////
-	struct DEPRECATED("GPU側のcacheとして配置する予定") TransformationMatrix {
-	public:
-
-		//=========================================================================================
-		// public methods
-		//=========================================================================================
-
-		//* transfer option *//
-
-		void Transfer(const Transformation3d& transformation);
-
-		//* constant value methods *//
-
-		static TransformationMatrix Identity() noexcept;
-
-		//=========================================================================================
-		// public variables
-		//=========================================================================================
-
-		Matrix4x4f world            = Matrix4x4f::Identity();
-		Matrix4x4f inverseTranspose = Matrix4x4f::Identity();
-
-	};
-
-public:
-
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -67,6 +38,20 @@ public:
 
 	//! @brief 行列を更新
 	void Update();
+
+	void SetPosition(const Vector3f& position) { transform_.translation = position; }
+
+	const Vector3f& GetPosition() const { return transform_.translation; }
+
+	void SetRotation(const Quaternionf& rotation) { transform_.rotation = rotation; }
+
+	const Quaternionf& GetRotation() const { return transform_.rotation; }
+
+	void SetScale(const Vector3f& scale) { transform_.scale = scale; }
+
+	const Vector3f& GetScale() const { return transform_.scale; }
+
+	void SetTransform(const Transform3d& transform) { transform_ = transform; }
 
 	Transform3d& GetTransform() { return transform_; }
 	const Transform3d& GetTransform() const { return transform_; }

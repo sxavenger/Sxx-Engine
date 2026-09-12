@@ -25,6 +25,10 @@ namespace Component {
 
 		//* camera options *//
 
+		float32_t4x4 GetProjection() {
+			return projection;
+		}
+
 		//* matrix methods *//
 
 		static float32_t4x4 MakePerspective(float32_t fov, float32_t aspect, float32_t near, float32_t far) {
