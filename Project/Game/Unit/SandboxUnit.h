@@ -10,10 +10,15 @@
 #include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
 #include <Engine/Runtime/Graphics/Buffer/ResourceHandle.h>
 
+//* engine [world]
+#include <Engine/Runtime/World/Entity/GameObject.h>
+
 //* engine [rendering]
-#include <Engine/Runtime/Rendering/Cache/StaticMeshCache.h>
 #include <Engine/Runtime/Rendering/Texture/RenderTargetTexture.h>
 #include <Engine/Runtime/Rendering/Texture/DepthStencilTexture.h>
+#include <Engine/Runtime/Rendering/Cache/StaticMeshCache.h>
+#include <Engine/Runtime/Rendering/Cache/CameraCache.h>
+#include <Engine/Runtime/Rendering/Cache/TransformCache.h>
 
 //* lib
 #include <Lib/Math/Color4.h>
@@ -51,6 +56,10 @@ private:
 
 	Sxx::Rendering::RenderTargetTexture renderTarget_;
 	Sxx::Rendering::DepthStencilTexture depthStencil_;
+
+	Sxx::World::GameObject object_;
+	Sxx::Rendering::CameraCache cameraCache_;
+	Sxx::Rendering::TransformCache transformCache_;
 
 	//=========================================================================================
 	// private methods

@@ -738,6 +738,10 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\World\Component\Camera\CameraComponent.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\CameraCache.h" />
+    <ClInclude Include="Runtime\World\Entity\GameObject.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\TransformCache.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1127,9 +1131,6 @@
     <ClCompile Include="Runtime\World\Component\ComponentStorage.cpp">
       <Filter>Runtime\World\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp">
-      <Filter>Runtime\World\Component\Transform</Filter>
-    </ClCompile>
     <ClCompile Include="Runtime\World\Entity\EntityBehaviour.cpp">
       <Filter>Runtime\World\Entity</Filter>
     </ClCompile>
@@ -1151,5 +1152,10 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp" />
+    <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\CameraCache.cpp" />
+    <ClCompile Include="Runtime\World\Entity\GameObject.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\TransformCache.cpp" />
   </ItemGroup>
 </Project>

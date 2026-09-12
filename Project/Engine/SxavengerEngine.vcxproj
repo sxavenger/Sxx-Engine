@@ -319,8 +319,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Platform\Input\Mouse.h" />
     <ClInclude Include="Runtime\Platform\WinApp.h" />
     <ClInclude Include="Runtime\Platform\Window.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\CameraCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\TransformCache.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
@@ -348,6 +350,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Script\HostfxrHandle.h" />
     <ClInclude Include="Runtime\Script\HostfxrModule.h" />
     <ClInclude Include="Runtime\World\Component\BaseComponent.h" />
+    <ClInclude Include="Runtime\World\Component\Camera\CameraComponent.h" />
     <ClInclude Include="Runtime\World\Component\ComponentAllocator.h" />
     <ClInclude Include="Runtime\World\Component\ComponentHandle.h" />
     <ClInclude Include="Runtime\World\Component\ComponentStorage.h" />
@@ -355,6 +358,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\World\Entity\EntityBehaviour.h" />
     <ClInclude Include="Runtime\World\Entity\EntityHandle.h" />
     <ClInclude Include="Runtime\World\Entity\EntityStorage.h" />
+    <ClInclude Include="Runtime\World\Entity\GameObject.h" />
     <ClInclude Include="Runtime\World\Scene\BaseScene.h" />
     <ClInclude Include="Runtime\World\Scene\SceneContext.h" />
     <ClInclude Include="Unit\EngineUnit.h" />
@@ -464,8 +468,10 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Platform\Input\Mouse.cpp" />
     <ClCompile Include="Runtime\Platform\WinApp.cpp" />
     <ClCompile Include="Runtime\Platform\Window.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\CameraCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\TransformCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
@@ -488,6 +494,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Scheduler\System.cpp" />
     <ClCompile Include="Runtime\Script\HostfxrHandle.cpp" />
     <ClCompile Include="Runtime\Script\HostfxrModule.cpp" />
+    <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp" />
     <ClCompile Include="Runtime\World\Component\ComponentAllocator.cpp" />
     <ClCompile Include="Runtime\World\Component\ComponentHandle.cpp" />
     <ClCompile Include="Runtime\World\Component\ComponentStorage.cpp" />
@@ -495,6 +502,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\World\Entity\EntityBehaviour.cpp" />
     <ClCompile Include="Runtime\World\Entity\EntityHandle.cpp" />
     <ClCompile Include="Runtime\World\Entity\EntityStorage.cpp" />
+    <ClCompile Include="Runtime\World\Entity\GameObject.cpp" />
     <ClCompile Include="Runtime\World\Scene\SceneContext.cpp" />
     <ClCompile Include="Unit\EngineUnit.cpp" />
     <ClCompile Include="Unit\SlateEditorUnit.cpp" />

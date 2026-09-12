@@ -45,8 +45,4 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="obj\Debug\net10.0\EngineScript.AssemblyInfo.cs" />
-    <Compile Include="obj\Develop\net10.0\EngineScript.AssemblyInfo.cs" />
-  </ItemGroup>
 </Project>

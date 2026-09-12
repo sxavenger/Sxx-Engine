@@ -55,6 +55,9 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 		//!< graphicsの終了frame処理
 		Graphics::Core::SubmitDirectQueueAdvance();
 
+		World::EntityStorage::GetInstance()->Destroy();    //!< entityの解放処理
+		World::ComponentStorage::GetInstance()->Destroy(); //!< componentの解放処理
+
 		Graphics::Core::FreeDescriptor(); //!< descriptorの解放処理
 		Graphics::Core::FreeResource();   //!< resourceの解放処理
 	});
@@ -65,15 +68,11 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 	});
 
 	pipeline.SetProcess(Framework::Phase::Terminate, Framework::Priority::Highest, [this]() {
-		//!< Worldの終了処理.
-		World::EntityStorage::GetInstance()->Destroy();
-		World::ComponentStorage::GetInstance()->Destroy();
+		//!< graphicsのQueueの処理の終了.
+		Graphics::Core::SubmitDirectQueueWait(); //!< direct queueの処理を全て実行する.
 
 		//!< Schedulerの終了処理.
 		Scheduler::System::Shutdown();
-
-		//!< graphicsのQueueの処理の終了.
-		Graphics::Core::SubmitDirectQueueWait(); //!< direct queueの処理を全て実行する.
 	});
 }
 
@@ -102,6 +101,9 @@ void EngineUnit::InitEngine() {
 }
 
 void EngineUnit::TermEngine() {
+
+	World::EntityStorage::GetInstance()->Destroy(); //!< entityの解放処理
+	World::ComponentStorage::GetInstance()->Destroy(); //!< componentの解放処理
 
 	Graphics::Core::Term();
 

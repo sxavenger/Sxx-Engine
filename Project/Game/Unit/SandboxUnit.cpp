@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* engine [platform]
+#include <Engine/Runtime/Platform/Input/Input.h>
+
 //* engine [graphics]
 #include <Engine/Runtime/Graphics/Core.h>
 
@@ -13,6 +16,10 @@
 #include <Engine/Runtime/Assets/Texture/Texture.h>
 #include <Engine/Runtime/Assets/Mesh/StaticMesh.h>
 #include <Engine/Runtime/Assets/Handle/AssetHandle.h>
+
+//* world [world]
+#include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
+#include <Engine/Runtime/World/Component/Camera/CameraComponent.h>
 
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Cache/StaticMeshCache.h>
@@ -111,12 +118,72 @@ void SandboxUnit::InitSandbox() {
 
 		depthStencil_ = Sxx::Rendering::DepthStencilTexture::Create(options);
 	}
+
+	{
+		object_->AddComponent<Sxx::World::CameraComponent>();
+		object_->AddComponent<Sxx::World::TransformComponent>();
+
+		Sxx::World::CameraComponent::Perspective perspective = {};
+		perspective.sensor   = { 16.0f, 9.0f };
+		perspective.focal    = 20.0f;
+		perspective.nearClip = 0.1f;
+		perspective.farClip  = 1024.0f;
+
+		auto camera = object_->GetComponent<Sxx::World::CameraComponent>();
+		camera->SetProjection(perspective);
+
+		auto transform = object_->GetComponent<Sxx::World::TransformComponent>();
+		transform->SetPosition({ 0.0f, 1.0f, -20.0f });
+	}
 }
 
 void SandboxUnit::TermSandbox() {
 }
 
 void SandboxUnit::UpdateSandbox() {
+
+	{
+		auto camera = object_->GetComponent<Sxx::World::CameraComponent>();
+		cameraCache_.Cache(*camera);
+	}
+
+	{
+		const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
+
+		auto transform = object_->GetComponent<Sxx::World::TransformComponent>();
+
+		Vector3f position = transform->GetPosition();
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::A).IsPress()) {
+			position.x -= 0.1f;
+		}
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::D).IsPress()) {
+			position.x += 0.1f;
+		}
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::W).IsPress()) {
+			position.z += 0.1f;
+		}
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::S).IsPress()) {
+			position.z -= 0.1f;
+		}
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::Q).IsPress()) {
+			position.y += 0.1f;
+		}
+
+		if (keyboard.GetKey(Sxx::Platform::KeyId::E).IsPress()) {
+			position.y -= 0.1f;
+		}
+
+		transform->SetPosition(position);
+
+		transform->Update();
+
+		transformCache_.Cache(*transform);
+	}
 }
 
 void SandboxUnit::RenderSandbox() {
@@ -146,6 +213,8 @@ void SandboxUnit::RenderSandbox() {
 		Sxx::Graphics::ShaderParameter parameter;
 		parameter.SetAddress("gPositions", cache_.GetPositionVertexBuffer().positions.GetGpuVirtualAddress());
 		parameter.SetAddress("gVertices", cache_.GetStaticMeshVertexBuffer().vertices.GetGpuVirtualAddress());
+		parameter.SetAddress("gCameraProjection", cameraCache_.GetProjectionBuffer().GetGpuVirtualAddress());
+		parameter.SetAddress("gCameraTransform",  transformCache_.GetTransformationBuffer().GetGpuVirtualAddress());
 
 		pipeline0_.BindShaderParameter(context, parameter);
 

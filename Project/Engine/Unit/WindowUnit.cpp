@@ -4,6 +4,8 @@ SXAVENGER_ENGINE_USING
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* engine [platform]
+#include <Runtime/Platform/Input/Input.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // WindowUnit class methods
@@ -23,6 +25,8 @@ void WindowUnit::InitWindow() {
 		Platform::Window::Category::Main,
 		DXGI_FORMAT_R8G8B8A8_UNORM
 	);
+
+	Sxx::Platform::Input::SetWindow(viewport_.GetHwnd()); //!< inputのwindowとして設定する.
 }
 
 void WindowUnit::UpdateWindow() {
