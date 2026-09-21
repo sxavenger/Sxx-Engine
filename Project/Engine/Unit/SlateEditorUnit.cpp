@@ -40,6 +40,7 @@ SXAVENGER_ENGINE_USING
 //* c++
 #include <algorithm>
 #include <format>
+#include <functional>
 #include <string>
 
 //-----------------------------------------------------------------------------------------
@@ -52,6 +53,11 @@ namespace {
 	//!< note: SwapChainがRTVを ConvertToSRGBFormat() で作るため, ImGuiRendererのPSOも同じ変換を通している.
 	//!< TODO: Configurationから取得できるようにする.
 	constexpr DXGI_FORMAT kBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	//!< design.md §3 の余白トークン. (4px grid)
+	constexpr float kPadS = 4.0f;
+	constexpr float kPadM = 8.0f;
+	constexpr float kPadL = 16.0f;
 
 }
 
@@ -112,6 +118,212 @@ namespace {
 		out = { static_cast<float>(point.x), static_cast<float>(point.y) };
 		return true;
 	}
+
+	//!< design.md のビジュアル仕様(Recessed -> Panel -> Header の3階層)をStyleへ適用する.
+	//!< note: 色の直値はこの関数の中にだけ書く. 描画側は必ず Style::GetStyle().colors 経由で参照すること.
+	void ApplyEditorStyle() {
+
+		//* semantic tokens *//
+		//!< sRGB, UE5 Starship Darkテーマの近似値.
+
+		const Color4f recessed    = static_cast<Color4f>(Color4ui{ 0x1A, 0x1A, 0x1A });
+		const Color4f panel       = static_cast<Color4f>(Color4ui{ 0x24, 0x24, 0x24 });
+		const Color4f header      = static_cast<Color4f>(Color4ui{ 0x2F, 0x2F, 0x2F });
+		const Color4f secondary   = static_cast<Color4f>(Color4ui{ 0x38, 0x38, 0x38 }); //!< ボタン面・入力枠.
+		const Color4f hover       = static_cast<Color4f>(Color4ui{ 0x57, 0x57, 0x57 });
+		const Color4f foreground  = static_cast<Color4f>(Color4ui{ 0xC0, 0xC0, 0xC0 });
+		const Color4f subdued     = static_cast<Color4f>(Color4ui{ 0x9A, 0x9A, 0x9A });
+		const Color4f iconDim     = static_cast<Color4f>(Color4ui{ 0x8A, 0x8A, 0x8A });
+		const Color4f outline     = static_cast<Color4f>(Color4ui{ 0x4C, 0x4C, 0x4C });
+		const Color4f primary     = static_cast<Color4f>(Color4ui{ 0x00, 0x70, 0xE0 });
+		const Color4f primarySoft = static_cast<Color4f>(Color4ui{ 0x00, 0x70, 0xE0, 0x40 }); //!< ドロップ先プレビュー専用.
+		const Color4f error       = static_cast<Color4f>(Color4ui{ 0xEF, 0x35, 0x35 });
+
+		Editor::Slate::Style& style = Editor::Slate::Style::GetStyle();
+
+		//* colors *//
+
+		style.colors.background    = recessed;    //!< 分割の溝 / clear色.
+		style.colors.panel         = panel;
+		style.colors.titleBar      = recessed;
+		style.colors.menuBar       = panel;
+		style.colors.tabBar        = recessed;
+		style.colors.tabActive     = panel;       //!< アクティブタブをパネルと地続きに見せる.
+		style.colors.tabUnderline  = secondary;
+		style.colors.border        = secondary;
+		style.colors.hover         = secondary;   //!< ImGuiのButton / FrameBgHoveredに写される.
+		style.colors.buttonHover   = hover;
+		style.colors.selection     = primary;
+		style.colors.active        = primary;
+		style.colors.activeSoft    = primarySoft;
+		style.colors.text          = foreground;
+		style.colors.textDim       = subdued;
+		style.colors.iconDim       = iconDim;
+		style.colors.close         = error;
+		style.colors.tooltipBg     = header; //!< 不透明. alphaを付けない.
+		style.colors.tooltipBorder = outline;
+
+		//* metrics *//
+		//!< 4px gridに揃える.
+
+		style.metrics.paddingM = kPadM;
+		style.metrics.marginL  = kPadM; //!< メニュー項目の左右余白にも使われるため, 密度を保つ目的で16ではなく8にする.
+
+		style.metrics.titleBarHeight = 32.0f;
+		style.metrics.menuBarHeight  = 24.0f;
+		style.metrics.tabBarHeight   = 24.0f;
+		style.metrics.tabRounding    = 4.0f;
+		style.metrics.dividerSize    = 4.0f;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// ChromeBand class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	//! @brief toolBar / statusBarに使う葉のwidget.
+	//! @note 背景と区切り線はSlate側(renderer->DrawRect / DrawLine)で描き, 中身は自前で開いたImGui
+	//!       ウィンドウで描く. (ImGuiMenuBarと同じ手法)
+	//! @note ImGuiWidgetは使わない. ImGuiWidgetはBeginRegionでWindowPaddingが効いてしまい,
+	//!       24px等の高さに縦が収まらずスクロールバーが出るため.
+	class ChromeBand final
+		: public Editor::Slate::Widget {
+	public:
+
+		////////////////////////////////////////////////////////////////////////////////////////////
+		// Separator enum class
+		////////////////////////////////////////////////////////////////////////////////////////////
+		enum class Separator : uint8_t {
+			Top,
+			Bottom
+		};
+
+		//-----------------------------------------------------------------------------------------
+		// using
+		//-----------------------------------------------------------------------------------------
+
+		using FDrawCallback = std::function<void()>;
+
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		//* constructor *//
+
+		ChromeBand(float height, Separator separator, FDrawCallback draw)
+			: height_(height), separator_(separator), draw_(std::move(draw)) {
+		}
+
+		//* widget option *//
+
+		Vector2f ComputeDesiredSize(float /*scale*/, Editor::Slate::ImGuiRenderer* /*renderer*/) const override {
+			return Vector2f{ 0.0f, height_ };
+		}
+
+		int32_t OnPaint(const Editor::Slate::Widget::PaintArguments& /*arguments*/, const Editor::Slate::Geometry& geometry, Editor::Slate::ImGuiRenderer* renderer, int32_t layer) const override {
+
+			if (renderer == nullptr) {
+				return layer;
+			}
+
+			//!< 背景と区切り線はSlate側で描く. 色は都度参照する(静的変数に写すとスタイル変更に追従しない).
+			renderer->DrawRect(geometry, Editor::Slate::Style::GetStyle().colors.panel);
+
+			const float y = (separator_ == Separator::Top)
+				? geometry.absolutePosition.y + 0.5f
+				: geometry.absolutePosition.y + geometry.localSize.y - 0.5f;
+
+			renderer->DrawLine(
+				{ geometry.absolutePosition.x, y },
+				{ geometry.absolutePosition.x + geometry.localSize.x, y },
+				Editor::Slate::Style::GetStyle().colors.border, Editor::Slate::Style::GetStyle().metrics.borderThin
+			);
+
+			//!< フレーム外・サイズ0・callback未設定ではImGuiウィンドウを開かない.
+			if (draw_ == nullptr || !renderer->IsActiveFrame() || geometry.localSize.x <= 0.0f || geometry.localSize.y <= 0.0f) {
+				return layer + 1;
+			}
+
+			renderer->SetCurrentContext();
+
+			if (id_.empty()) {
+				id_ = std::format("##slate_band_{:016X}", reinterpret_cast<uintptr_t>(this));
+			}
+
+			ImGui::SetNextWindowPos(ImVec2(geometry.absolutePosition.x, geometry.absolutePosition.y));
+			ImGui::SetNextWindowSize(ImVec2(geometry.localSize.x, geometry.localSize.y));
+
+			static const ImGuiWindowFlags kFlags
+				= ImGuiWindowFlags_NoTitleBar
+				| ImGuiWindowFlags_NoResize
+				| ImGuiWindowFlags_NoMove
+				| ImGuiWindowFlags_NoCollapse
+				| ImGuiWindowFlags_NoBackground
+				| ImGuiWindowFlags_NoSavedSettings
+				| ImGuiWindowFlags_NoScrollbar
+				| ImGuiWindowFlags_NoScrollWithMouse
+				| ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			//!< WindowMinSizeの既定は32x32で, SetNextWindowSizeの値をこれで下から丸める.
+			//!< pushしないとstatusBar(24px)が本体へはみ出してホバーを奪ってしまう.
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(1.0f, 1.0f));
+
+			//!< Begin()の間だけ効かせ, 直後に戻す. 積んだままだとポップアップにも余白ゼロが波及するため.
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPadM, 0.0f));
+			const bool isOpen = ImGui::Begin(id_.c_str(), nullptr, kFlags);
+			ImGui::PopStyleVar(1);
+
+			//!< Begin()を呼んだ場合, 戻り値によらずEnd()を呼ぶ.
+			if (isOpen) {
+				draw_();
+			}
+
+			ImGui::End();
+
+			ImGui::PopStyleVar(3);
+
+			return layer + 1;
+		}
+
+	private:
+
+		//=========================================================================================
+		// private variables
+		//=========================================================================================
+
+		float height_;
+		Separator separator_;
+		FDrawCallback draw_;
+
+		//!< ImGuiウィンドウのID. アドレスから一度だけ作る(毎frame変えると状態が引き継がれない).
+		mutable std::string id_;
+
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Spacer class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	//! @brief 何も描かず領域だけを占める葉のwidget.
+	//! @note dockが空(全panelを失った)main windowでもstatusBarをclientの下端に固定するために使う.
+	class Spacer final
+		: public Editor::Slate::Widget {
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		Vector2f ComputeDesiredSize(float /*scale*/, Editor::Slate::ImGuiRenderer* /*renderer*/) const override {
+			return Vector2f{ 0.0f, 0.0f };
+		}
+
+		int32_t OnPaint(const Editor::Slate::Widget::PaintArguments& /*arguments*/, const Editor::Slate::Geometry& /*geometry*/, Editor::Slate::ImGuiRenderer* /*renderer*/, int32_t layer) const override {
+			return layer;
+		}
+
+	};
 
 }
 
@@ -183,6 +395,10 @@ void SlateEditorUnit::Setup(Framework::Pipeline& pipeline) {
 }
 
 void SlateEditorUnit::InitEditor() {
+
+	//!< ImGuiRenderer::Init が ImGuiStyleIO::SetCurrentStyle と LoadFont でStyleをその時点で写し取るため,
+	//!< window生成(CreateEditorWindow内でrenderer.Init()を呼ぶ)より前に適用する.
+	ApplyEditorStyle();
 
 	//!< main windowを生成する. 以降のsub windowは切り離しから生成される.
 	RefPtr<EditorWindow> window = CreateEditorWindow(L"[Sxavenger Engine] Slate Editor", kDefaultClientSize, true);
@@ -420,6 +636,7 @@ void SlateEditorUnit::TermEditor() {
 	closeRequests_.clear();
 	tearOffRequests_.clear();
 	panelCloseRequests_.clear();
+	panelOpenRequests_.clear();
 	windowDrag_ = {};
 
 	//!< 全windowのGPU resourceを解放する前にGPUの完了を待つ. (理由はCollectClosedWindowsと同じ)
@@ -428,7 +645,9 @@ void SlateEditorUnit::TermEditor() {
 	}
 
 	for (const EditorWindowPointer& window : windows_) {
-		window->dockRoot = nullptr;
+		window->dockRoot  = nullptr;
+		window->toolBar   = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
+		window->statusBar = nullptr;
 		window->root.reset();                 //!< widget treeを先に破棄する.
 		window->renderer.Shutdown();          //!< ImGuiのcontextはwidgetの後に破棄する.
 		window->viewport.GetWindow().Reset(); //!< DestroyWindowとUnregisterClassを行う.
@@ -552,7 +771,9 @@ void SlateEditorUnit::CollectClosedWindows() {
 		//!< このwindowを指す遅延要求とdrag状態を捨てる. 残すとerase後にdangling pointerを触る.
 		DiscardRequests(request);
 
-		(*it)->dockRoot = nullptr;
+		(*it)->dockRoot  = nullptr;
+		(*it)->toolBar   = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
+		(*it)->statusBar = nullptr;
 		(*it)->root.reset();
 		(*it)->renderer.Shutdown();
 
@@ -576,6 +797,26 @@ bool SlateEditorUnit::IsAliveEditorWindow(const EditorWindow* window) const {
 	return std::any_of(windows_.begin(), windows_.end(), [window](const EditorWindowPointer& entry) {
 		return entry.get() == window;
 	});
+}
+
+bool SlateEditorUnit::IsPanelOpen(const Editor::Slate::EditorPanelPointer& panel) const {
+
+	if (panel == nullptr || !panel->HasDockPanel()) {
+		return false; //!< DockPanelが未生成なら, どのwindowのtreeにも入っていない.
+	}
+
+	const Editor::Slate::DockPanelPointer& dockPanel = panel->GetDockPanel();
+
+	for (const EditorWindowPointer& window : windows_) {
+
+		const std::vector<Editor::Slate::DockPanelPointer> all = Editor::Slate::CollectAllPanels(window->dockRoot);
+
+		if (std::find(all.begin(), all.end(), dockPanel) != all.end()) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void SlateEditorUnit::DiscardRequests(EditorWindow* window) {
@@ -702,9 +943,11 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 	const Editor::Slate::WidgetPointer dock = window.dockRoot;
 
 	if (window.isMain) {
-		//!< main windowはTitleBarとMenuBarを縦に積む.
+		//!< main windowはTitleBar / MenuBar / toolBar / dock / statusBarを縦に積む.
 		//!< note: ImGuiMenuBarは自前でImGui::Beginするため, ImGuiWidgetのBeginRegionの内側に
-		//!<       置いてはいけない. chromeとして外側に置く.
+		//!<       置いてはいけない. chromeとして外側に置く. toolBar/statusBar(ChromeBand)も同じ理由.
+		//!< note: GetChromeTopHeight / GetChromeBottomHeight / GetDockAreaは, ここでの積み方と
+		//!<       必ず一致させる. ずれるとドロップ先マーカーの描画位置と当たり判定がずれる.
 		Editor::Slate::Decl<Editor::Slate::VerticalBox> box;
 		box->AddSlot().AutoSize().Content(CreateTitleBar(window, false));
 
@@ -713,9 +956,34 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 			box->AddSlot().AutoSize().Content(menuBar_->GetWidget());
 		}
 
+		//!< toolBar/statusBarはRebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため,
+		//!< 一度だけ作ってwindowへ保持する.
+		if (window.toolBar == nullptr) {
+			EditorWindow* pointer = &window; //!< windows_(std::list)が所有するためアドレスは安定する.
+			window.toolBar = std::make_shared<ChromeBand>(
+				kToolBarHeight, ChromeBand::Separator::Bottom, [this, pointer]() { DrawToolBar(*pointer); }
+			);
+		}
+
+		box->AddSlot().AutoSize().Content(window.toolBar);
+
+		//!< dockが空(全panelを失った)場合もstatusBarをclientの下端に固定するため, Spacerで埋める.
+		//!< (GetDockAreaと積み方を一致させるため, dockが無い分をFillスロットの有無で吸収しない)
 		if (dock != nullptr) {
 			box->AddSlot().Fill(1.0f).Content(dock);
+
+		} else {
+			box->AddSlot().Fill(1.0f).Content(std::make_shared<Spacer>());
 		}
+
+		if (window.statusBar == nullptr) {
+			EditorWindow* pointer = &window;
+			window.statusBar = std::make_shared<ChromeBand>(
+				kStatusBarHeight, ChromeBand::Separator::Top, [this, pointer]() { DrawStatusBar(*pointer); }
+			);
+		}
+
+		box->AddSlot().AutoSize().Content(window.statusBar);
 
 		window.root->SetPointer(box.pointer);
 		return;
@@ -769,29 +1037,108 @@ void SlateEditorUnit::BuildLayout(EditorWindow& window) {
 	//!< main windowのlayout. splitterで左右に分割し, それぞれにtab stackを置く.
 	//!< note: アイコンは専用APIではなくtitleの文字列に埋め込む. 位置も個数も自由に決められる.
 
-	Editor::Slate::Decl<Editor::Slate::DockTabStack> stack;
+	Editor::Slate::Decl<Editor::Slate::DockTabStack> left;
 	{
 		//!< EditorPanelを継承したpanelの例. titleとtab色はpanel側のconstructorで決まる.
 		//!< note: layoutを組んでいる途中でdockRootがまだ無いためAddPanel()は使えない.
 		//!<       ここではpanelを直接作ってtab stackへ入れ, 所有だけpanels_へ預ける.
 		const Editor::Slate::EditorPanelPointer test = std::make_shared<Editor::EditorTestPanel>();
 		panels_.push_back(test);
-		stack->AddPanel(test->GetDockPanel());
+		left->AddPanel(test->GetDockPanel());
 	}
 
+	Editor::Slate::Decl<Editor::Slate::DockTabStack> right;
 	{
 		//!< Styleの調整タブ. EditorPanelを継承して作る例になっている.
 		//!< note: layoutを組んでいる途中なのでdockRootがまだ無く, AddPanel()は使えない.
 		//!<       ここではpanelを直接作ってtab stackへ入れ, 所有だけpanels_へ預ける.
 		const Editor::Slate::EditorPanelPointer style = std::make_shared<StyleEditorPanel>();
 		panels_.push_back(style);
-		stack->AddPanel(style->GetDockPanel());
+		right->AddPanel(style->GetDockPanel());
 	}
 
-	window.dockRoot = stack.pointer;
+	//!< 左35 : 右65のsplitterで分割する. (design.md §2.3)
+	window.dockRoot = std::make_shared<Editor::Slate::Splitter>(
+		Editor::Slate::Splitter::Orientation::Horizontal, left.pointer, right.pointer, kListPaneRatio
+	);
 	RebuildWindowChrome(window); //!< chromeで包んでrootへ設定する.
 
 	ApplyDockingHostToWindow(window); //!< 生成した全tab stackへ切り離し要求の通知先を配る.
+}
+
+void SlateEditorUnit::DrawToolBar(EditorWindow& /*window*/) {
+
+	//!< 縦中央に寄せる.
+	ImGui::SetCursorPosY(std::max(0.0f, (ImGui::GetWindowHeight() - ImGui::GetFrameHeight()) * 0.5f));
+
+	//!< 閉じたtabを開き直すための左グループ. ボタンの動的な出し入れはせず, 使えない(既に開いている)
+	//!< ときはDisabledで表示する.
+	for (size_t index = 0; index < panels_.size(); ++index) {
+
+		const Editor::Slate::EditorPanelPointer& panel = panels_[index];
+
+		if (panel == nullptr) {
+			continue;
+		}
+
+		if (index > 0) {
+			ImGui::SameLine(0.0f, kPadS);
+		}
+
+		const bool isOpen = IsPanelOpen(panel);
+
+		if (isOpen) {
+			ImGui::BeginDisabled(true);
+		}
+
+		const bool pressed = ImGui::Button(std::format("{}##open_panel_{}", panel->GetTitle(), index).c_str());
+
+		if (isOpen) {
+			ImGui::EndDisabled();
+		}
+
+		//!< SetItemTooltipはHoverFlagsForTooltipMouseの既定にAllowWhenDisabledを含むため,
+		//!< Disabled状態のボタンでも表示される.
+		ImGui::SetItemTooltip(isOpen ? "既に開いています" : "タブとして開き直す");
+
+		if (pressed) {
+			EnqueuePanelOpen(panel);
+		}
+	}
+}
+
+void SlateEditorUnit::DrawStatusBar(EditorWindow& /*window*/) {
+
+	//!< 縦中央に寄せる. 操作要素は置かない(Text系のみ).
+	ImGui::SetCursorPosY(std::max(0.0f, (ImGui::GetWindowHeight() - ImGui::GetTextLineHeight()) * 0.5f));
+
+	int32_t openCount = 0;
+
+	for (const Editor::Slate::EditorPanelPointer& panel : panels_) {
+		if (panel != nullptr && IsPanelOpen(panel)) {
+			++openCount;
+		}
+	}
+
+	const int32_t totalCount  = static_cast<int32_t>(panels_.size());
+	const int32_t closedCount = totalCount - openCount;
+
+	ImGui::Text("%d panels", openCount);
+
+	if (closedCount > 0) {
+		ImGui::SameLine(0.0f, kPadS);
+		ImGui::TextDisabled("(%d closed)", closedCount);
+	}
+
+	ImGui::SameLine(0.0f, kPadL);
+	ImGui::TextDisabled("%d windows", static_cast<int32_t>(windows_.size()));
+
+	//!< 右端: frame timeとfps. CalcTextSizeで実寸を測ってから右揃えにする.
+	const float fps = ImGui::GetIO().Framerate;
+	const std::string text = std::format("{:.2f} ms  {:.0f} fps", (fps > 0.0f) ? 1000.0f / fps : 0.0f, fps);
+
+	ImGui::SameLine(std::max(0.0f, ImGui::GetWindowWidth() - ImGui::CalcTextSize(text.c_str()).x - kPadM));
+	ImGui::TextDisabled("%s", text.c_str()); //!< std::stringを渡すため書式文字列インジェクションを避ける.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -883,6 +1230,22 @@ void SlateEditorUnit::EnqueuePanelClose(EditorWindow* source, Editor::Slate::Doc
 	panelCloseRequests_.push_back(std::move(request));
 }
 
+void SlateEditorUnit::EnqueuePanelOpen(const Editor::Slate::EditorPanelPointer& panel) {
+
+	if (panel == nullptr) {
+		return;
+	}
+
+	//!< 同じpanelの要求が既にあるなら捨てる.
+	for (const Editor::Slate::EditorPanelPointer& queued : panelOpenRequests_) {
+		if (queued == panel) {
+			return;
+		}
+	}
+
+	panelOpenRequests_.push_back(panel);
+}
+
 void SlateEditorUnit::ProcessPendingRequests() {
 
 	//!< closeを先に処理する. 逆順にすると, 同じframeで × を押されたpanelが新しいwindowへ移った後に
@@ -894,6 +1257,16 @@ void SlateEditorUnit::ProcessPendingRequests() {
 
 		for (const PanelCloseRequest& request : requests) {
 			ProcessPanelCloseRequest(request);
+		}
+	}
+
+	if (!panelOpenRequests_.empty()) {
+		//!< 処理中にwindowが増減するため, 要求は先に取り出しておく.
+		std::vector<Editor::Slate::EditorPanelPointer> requests;
+		requests.swap(panelOpenRequests_);
+
+		for (const Editor::Slate::EditorPanelPointer& request : requests) {
+			ProcessPanelOpenRequest(request);
 		}
 	}
 
@@ -979,6 +1352,21 @@ void SlateEditorUnit::ProcessPanelCloseRequest(const PanelCloseRequest& request)
 	ApplyDockingHostToWindow(source);
 
 	CloseIfEmptyEditorWindow(source);
+}
+
+void SlateEditorUnit::ProcessPanelOpenRequest(const Editor::Slate::EditorPanelPointer& panel) {
+
+	if (panel == nullptr || IsPanelOpen(panel)) {
+		return; //!< 既に開いているtabを開き直す必要はない.
+	}
+
+	RefPtr<EditorWindow> main = GetMainEditorWindow();
+
+	if (main == nullptr) {
+		return;
+	}
+
+	AddPanelToEditorWindow(*main, panel->GetDockPanel());
 }
 
 void SlateEditorUnit::ApplyDockingHostToWindow(EditorWindow& window) {
@@ -1373,7 +1761,18 @@ float SlateEditorUnit::GetChromeTopHeight(const EditorWindow& window) const {
 		height += (menuBarHeight > 0.0f) ? menuBarHeight : Editor::Slate::ImGuiMenuBar::Height();
 	}
 
+	height += kToolBarHeight; //!< main windowは常にtoolBarを積む. (RebuildWindowChromeと必ず一致させる)
+
 	return height;
+}
+
+float SlateEditorUnit::GetChromeBottomHeight(const EditorWindow& window) const {
+
+	if (!window.isMain) {
+		return 0.0f; //!< sub windowはstatusBarを持たない.
+	}
+
+	return kStatusBarHeight; //!< main windowは常にstatusBarを積む. (RebuildWindowChromeと必ず一致させる)
 }
 
 Editor::Slate::Geometry SlateEditorUnit::GetDockArea(const EditorWindow& window) const {
@@ -1383,15 +1782,16 @@ Editor::Slate::Geometry SlateEditorUnit::GetDockArea(const EditorWindow& window)
 	}
 
 	//!< dockRootが実際に置かれている矩形. chromeの分だけclientより小さい.
-	//!< main windowはTitleBarと(あれば)MenuBarを縦に積んでいるためその高さだけ下がる.
-	//!< sub windowはOverlayで全面に敷いているためclient全体と一致する.
+	//!< main windowはTitleBar / (あれば)MenuBar / toolBarを上に, statusBarを下に積んでいるため
+	//!< その高さだけ狭まる. sub windowはOverlayで全面に敷いているためclient全体と一致する.
 	const Vector2f client = window.root->GetClientSize();
 
-	const float chromeTop = GetChromeTopHeight(window);
+	const float chromeTop    = GetChromeTopHeight(window);
+	const float chromeBottom = GetChromeBottomHeight(window);
 
 	Editor::Slate::Geometry area = {};
 	area.absolutePosition        = { 0.0f, chromeTop };
-	area.localSize               = { client.x, client.y - chromeTop };
+	area.localSize               = { client.x, std::max(0.0f, client.y - chromeTop - chromeBottom) };
 	area.scale                   = window.root->GetDpiScale();
 
 	return area;
