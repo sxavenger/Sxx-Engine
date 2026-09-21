@@ -114,6 +114,10 @@ public:
 		//!<       1段目で打ち切られてhostが配られない. そのため必ず分けて持つ.
 		Editor::Slate::WidgetPointer dockRoot = nullptr;
 
+		//!< main windowのchrome. RebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため保持する.
+		Editor::Slate::WidgetPointer toolBar   = nullptr;
+		Editor::Slate::WidgetPointer statusBar = nullptr;
+
 		//* runtime parameter *//
 
 		Vector2f mousePosition   = {}; //!< client座標系のマウス位置.
@@ -263,6 +267,10 @@ private:
 	//!< drag中のwindowの不透明度. 下のマーカーが見えるように薄くする.
 	static constexpr uint8_t kWindowDragAlpha = 160;
 
+	static constexpr float kToolBarHeight   = 32.0f; //!< ツールバー帯の高さ. (design.md §2.2)
+	static constexpr float kStatusBarHeight = 24.0f; //!< ステータスバーの高さ.
+	static constexpr float kListPaneRatio   = 0.35f; //!< main windowの左右分割の既定比率. (35 : 65)
+
 	//* windows *//
 
 	std::list<EditorWindowPointer> windows_;       //!< 所有しているeditor window.
@@ -274,6 +282,10 @@ private:
 
 	std::vector<TearOffRequest>     tearOffRequests_;
 	std::vector<PanelCloseRequest>  panelCloseRequests_;
+
+	//!< 閉じたtabを開き直す要求. 積むのは描画中(Application::TickのImGui callbackの中)のため,
+	//!< 積む側ではtreeを触らず, ProcessPendingRequestsでまとめて処理する.
+	std::vector<Editor::Slate::EditorPanelPointer> panelOpenRequests_;
 
 	WindowDrag windowDrag_ = {}; //!< 自前で移動中のwindow.
 
@@ -345,11 +357,21 @@ private:
 	//! @brief widget treeを構築する.
 	void BuildLayout(EditorWindow& window);
 
+	//! @brief toolBarの中身を描く. ChromeBandのImGui Beginの内側(ImGuiのframe内)で呼ばれる.
+	void DrawToolBar(EditorWindow& window);
+
+	//! @brief statusBarの中身を描く. ChromeBandのImGui Beginの内側(ImGuiのframe内)で呼ばれる.
+	void DrawStatusBar(EditorWindow& window);
+
 	//* docking helper methods *//
 
 	void EnqueueTearOff(EditorWindow* source, Editor::Slate::DockPanelPointer panel, Vector2f clientPosition);
 
 	void EnqueuePanelClose(EditorWindow* source, Editor::Slate::DockPanelPointer panel);
+
+	//! @brief 閉じたtabを開き直す要求を積む. 同じpanelが既に積まれていれば捨てる.
+	//! @note 積むのは描画中(Application::TickのImGui callbackの中)のため, ここではtreeを触らない.
+	void EnqueuePanelOpen(const Editor::Slate::EditorPanelPointer& panel);
 
 	void ProcessPendingRequests();
 
@@ -357,10 +379,15 @@ private:
 
 	void ProcessPanelCloseRequest(const PanelCloseRequest& request);
 
+	void ProcessPanelOpenRequest(const Editor::Slate::EditorPanelPointer& panel);
+
 	//! @brief 破棄されるwindowを指す要求とdrag状態を捨てる.
 	void DiscardRequests(EditorWindow* window);
 
 	bool IsAliveEditorWindow(const EditorWindow* window) const;
+
+	//! @brief panelが既にどこかのwindowのtreeへ開かれているか.
+	bool IsPanelOpen(const Editor::Slate::EditorPanelPointer& panel) const;
 
 	//! @brief treeの全DockTabStackへhostを配り直す.
 	void ApplyDockingHostToWindow(EditorWindow& window);
@@ -409,10 +436,16 @@ private:
 	//! @brief dockRootが実際に置かれている矩形を返す.
 	//! @note chromeの分だけclientより小さい. ここがずれるとマーカーの描画位置と当たり判定がずれる.
 	//! @note menu barの有無を見るためstaticにできない.
+	//! @note RebuildWindowChromeの積み方と必ず一致させる. ずれるとドロップ先マーカーの描画位置と当たり判定がずれる.
 	Editor::Slate::Geometry GetDockArea(const EditorWindow& window) const;
 
 	//! @brief main windowのchromeがclientの上端から占める高さ.
+	//! @note RebuildWindowChromeの積み方と必ず一致させる. ずれるとドロップ先マーカーの描画位置と当たり判定がずれる.
 	float GetChromeTopHeight(const EditorWindow& window) const;
+
+	//! @brief main windowのchromeがclientの下端から占める高さ. (statusBarの分)
+	//! @note RebuildWindowChromeの積み方と必ず一致させる. ずれるとドロップ先マーカーの描画位置と当たり判定がずれる.
+	float GetChromeBottomHeight(const EditorWindow& window) const;
 
 	static bool CanDockInto(const EditorWindow* dragged, const EditorWindow* target);
 
