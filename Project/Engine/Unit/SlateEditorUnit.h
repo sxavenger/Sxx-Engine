@@ -204,7 +204,7 @@ public:
 
 	//! @brief editor windowを生成する.
 	//! @retval 生成したwindow. 失敗した場合はnullptr.
-	RefPtr<EditorWindow> CreateEditorWindow(const std::wstring& name, const Vector2ui& client, bool isMain = false);
+	RefPtr<EditorWindow> CreateEditorWindow(const std::wstring& name, const Vector2u& client, bool isMain = false);
 
 	//! @brief editor windowの破棄を予約する.
 	//! @note frameの途中でlistから消すとiteratorが壊れるため, EndFrameで回収する.
@@ -255,8 +255,8 @@ private:
 
 	static constexpr size_t kMouseButtonCount = 3; //!< pollingするマウスボタンの数.
 
-	static constexpr Vector2ui kDefaultClientSize = { 1280, 720 }; //!< main windowの既定サイズ.
-	static constexpr Vector2ui kTearOffClientSize = { 640, 480 };  //!< 切り離したwindowの既定サイズ.
+	static constexpr Vector2u kDefaultClientSize = { 1280, 720 }; //!< main windowの既定サイズ.
+	static constexpr Vector2u kTearOffClientSize = { 640, 480 };  //!< 切り離したwindowの既定サイズ.
 
 	static constexpr int32_t kTearOffCursorOffsetX = 80; //!< 掴んだままdragを続けられるようにする横offset.
 

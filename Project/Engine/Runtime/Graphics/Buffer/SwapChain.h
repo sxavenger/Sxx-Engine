@@ -85,12 +85,12 @@ public:
 	void Init(
 		const Device& device, DescriptorHeaps& descriptorHeaps, const GraphicsCommandContext& command,
 		DXGI_FORMAT format,
-		const Vector2ui& resolution, HWND hwnd
+		const Vector2u& resolution, HWND hwnd
 	);
 
 	void Resize(
 		const Device& device,
-		const Vector2ui& resolution, HWND hwnd
+		const Vector2u& resolution, HWND hwnd
 	);
 
 	void Present(const Device& device, bool vsync);
@@ -135,7 +135,7 @@ private:
 
 	//* initailize helper methods *//
 
-	static ComPtr<IDXGISwapChain4> CreateSwapChain(RefPtr<IDXGIFactory7> factory, RefPtr<ID3D12CommandQueue> queue, DXGI_FORMAT format, const Vector2ui& resolution, HWND hwnd);
+	static ComPtr<IDXGISwapChain4> CreateSwapChain(RefPtr<IDXGIFactory7> factory, RefPtr<ID3D12CommandQueue> queue, DXGI_FORMAT format, const Vector2u& resolution, HWND hwnd);
 
 	static ComPtr<ID3D12Resource> GetBufferResource(uint32_t index, RefPtr<IDXGISwapChain4> swapChain);
 

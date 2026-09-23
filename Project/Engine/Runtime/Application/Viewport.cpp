@@ -12,7 +12,7 @@ SXAVENGER_ENGINE_USING_(Application)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void Viewport::Create(
-	const std::wstring& name, const Vector2ui& client,
+	const std::wstring& name, const Vector2u& client,
 	Platform::Window::Category category,
 	DXGI_FORMAT format,
 	FlagEnum<Platform::Window::Style> style) {
@@ -37,7 +37,7 @@ void Viewport::Update() {
 
 	if (event == Platform::Window::Event::Resize) {
 		//!< windowのサイズが変更された場合、SwapChainのサイズを変更する
-		Vector2ui client = window_.GetClient();
+		Vector2u client = window_.GetClient();
 		swapChain_.Resize(Graphics::Core::GetDevice(), client, window_.GetHwnd());
 	}
 }
@@ -50,7 +50,7 @@ void Viewport::Close() {
 	window_.Close();
 }
 
-Vector2ui Viewport::GetClient() const {
+Vector2u Viewport::GetClient() const {
 	return window_.GetClient();
 }
 

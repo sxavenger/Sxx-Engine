@@ -38,43 +38,43 @@ namespace Slate {
 
 			//* surfaces *//
 
-			Color4f background   = static_cast<Color4f>(Color4ui{ 0x20, 0x20, 0x20 }); //!< 分割の溝.
-			Color4f panel        = static_cast<Color4f>(Color4ui{ 0x2D, 0x2D, 0x30 }); //!< パネル面.
-			Color4f titleBar     = static_cast<Color4f>(Color4ui{ 0x25, 0x25, 0x26 });
-			Color4f menuBar      = static_cast<Color4f>(Color4ui{ 0x2D, 0x2D, 0x30 });
-			Color4f tabBar       = static_cast<Color4f>(Color4ui{ 0x25, 0x25, 0x26 });
-			Color4f tabActive    = static_cast<Color4f>(Color4ui{ 0x2D, 0x2D, 0x30 }); //!< パネルと地続きに見せる.
-			Color4f tabUnderline = static_cast<Color4f>(Color4ui{ 0x3F, 0x3F, 0x46 }); //!< タブバーの下線.
+			Color4f background   = static_cast<Color4f>(Color4u{ 0x20, 0x20, 0x20 }); //!< 分割の溝.
+			Color4f panel        = static_cast<Color4f>(Color4u{ 0x2D, 0x2D, 0x30 }); //!< パネル面.
+			Color4f titleBar     = static_cast<Color4f>(Color4u{ 0x25, 0x25, 0x26 });
+			Color4f menuBar      = static_cast<Color4f>(Color4u{ 0x2D, 0x2D, 0x30 });
+			Color4f tabBar       = static_cast<Color4f>(Color4u{ 0x25, 0x25, 0x26 });
+			Color4f tabActive    = static_cast<Color4f>(Color4u{ 0x2D, 0x2D, 0x30 }); //!< パネルと地続きに見せる.
+			Color4f tabUnderline = static_cast<Color4f>(Color4u{ 0x3F, 0x3F, 0x46 }); //!< タブバーの下線.
 
 			//* lines *//
 
-			Color4f border = static_cast<Color4f>(Color4ui{ 0x3F, 0x3F, 0x46 });
+			Color4f border = static_cast<Color4f>(Color4u{ 0x3F, 0x3F, 0x46 });
 
 			//* hover / accent *//
 
-			Color4f hover      = static_cast<Color4f>(Color4ui{ 0x3E, 0x3E, 0x42 });
-			Color4f selection  = static_cast<Color4f>(Color4ui{ 0xFF, 0x8A, 0x1E });       //!< 選択（橙）.
-			Color4f active     = static_cast<Color4f>(Color4ui{ 0x00, 0x7A, 0xCC });       //!< 実行中（青）.
-			Color4f activeSoft = static_cast<Color4f>(Color4ui{ 0x00, 0x7A, 0xCC, 0x40 }); //!< 実行中（青）.
+			Color4f hover      = static_cast<Color4f>(Color4u{ 0x3E, 0x3E, 0x42 });
+			Color4f selection  = static_cast<Color4f>(Color4u{ 0xFF, 0x8A, 0x1E });       //!< 選択（橙）.
+			Color4f active     = static_cast<Color4f>(Color4u{ 0x00, 0x7A, 0xCC });       //!< 実行中（青）.
+			Color4f activeSoft = static_cast<Color4f>(Color4u{ 0x00, 0x7A, 0xCC, 0x40 }); //!< 実行中（青）.
 
 			//* controls *//
 
-			Color4f buttonHover = static_cast<Color4f>(Color4ui{ 0x3E, 0x3E, 0x42 });
+			Color4f buttonHover = static_cast<Color4f>(Color4u{ 0x3E, 0x3E, 0x42 });
 
 			//* text *//
 
-			Color4f text    = static_cast<Color4f>(Color4ui{ 0xDC, 0xDC, 0xDC });
-			Color4f textDim = static_cast<Color4f>(Color4ui{ 0x9A, 0x9A, 0x9E });
+			Color4f text    = static_cast<Color4f>(Color4u{ 0xDC, 0xDC, 0xDC });
+			Color4f textDim = static_cast<Color4f>(Color4u{ 0x9A, 0x9A, 0x9E });
 
 			//* icon *//
 
-			Color4f iconDim = static_cast<Color4f>(Color4ui{ 0x8A, 0x8A, 0x8E }); //!< 単色・線画のアイコン.
-			Color4f close   = static_cast<Color4f>(Color4ui{ 0xC4, 0x2B, 0x2B });
+			Color4f iconDim = static_cast<Color4f>(Color4u{ 0x8A, 0x8A, 0x8E }); //!< 単色・線画のアイコン.
+			Color4f close   = static_cast<Color4f>(Color4u{ 0xC4, 0x2B, 0x2B });
 
 			//* tooltip *//
 
-			Color4f tooltipBg     = static_cast<Color4f>(Color4ui{ 0x30, 0x30, 0x38, 0xE0 });
-			Color4f tooltipBorder = static_cast<Color4f>(Color4ui{ 0x50, 0x50, 0x58 });
+			Color4f tooltipBg     = static_cast<Color4f>(Color4u{ 0x30, 0x30, 0x38, 0xE0 });
+			Color4f tooltipBorder = static_cast<Color4f>(Color4u{ 0x50, 0x50, 0x58 });
 
 		};
 

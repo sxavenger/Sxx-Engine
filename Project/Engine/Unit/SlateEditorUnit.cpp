@@ -126,18 +126,18 @@ namespace {
 		//* semantic tokens *//
 		//!< sRGB, UE5 Starship Darkテーマの近似値.
 
-		const Color4f recessed    = static_cast<Color4f>(Color4ui{ 0x1A, 0x1A, 0x1A });
-		const Color4f panel       = static_cast<Color4f>(Color4ui{ 0x24, 0x24, 0x24 });
-		const Color4f header      = static_cast<Color4f>(Color4ui{ 0x2F, 0x2F, 0x2F });
-		const Color4f secondary   = static_cast<Color4f>(Color4ui{ 0x38, 0x38, 0x38 }); //!< ボタン面・入力枠.
-		const Color4f hover       = static_cast<Color4f>(Color4ui{ 0x57, 0x57, 0x57 });
-		const Color4f foreground  = static_cast<Color4f>(Color4ui{ 0xC0, 0xC0, 0xC0 });
-		const Color4f subdued     = static_cast<Color4f>(Color4ui{ 0x9A, 0x9A, 0x9A });
-		const Color4f iconDim     = static_cast<Color4f>(Color4ui{ 0x8A, 0x8A, 0x8A });
-		const Color4f outline     = static_cast<Color4f>(Color4ui{ 0x4C, 0x4C, 0x4C });
-		const Color4f primary     = static_cast<Color4f>(Color4ui{ 0x00, 0x70, 0xE0 });
-		const Color4f primarySoft = static_cast<Color4f>(Color4ui{ 0x00, 0x70, 0xE0, 0x40 }); //!< ドロップ先プレビュー専用.
-		const Color4f error       = static_cast<Color4f>(Color4ui{ 0xEF, 0x35, 0x35 });
+		const Color4f recessed    = static_cast<Color4f>(Color4u{ 0x1A, 0x1A, 0x1A });
+		const Color4f panel       = static_cast<Color4f>(Color4u{ 0x24, 0x24, 0x24 });
+		const Color4f header      = static_cast<Color4f>(Color4u{ 0x2F, 0x2F, 0x2F });
+		const Color4f secondary   = static_cast<Color4f>(Color4u{ 0x38, 0x38, 0x38 }); //!< ボタン面・入力枠.
+		const Color4f hover       = static_cast<Color4f>(Color4u{ 0x57, 0x57, 0x57 });
+		const Color4f foreground  = static_cast<Color4f>(Color4u{ 0xC0, 0xC0, 0xC0 });
+		const Color4f subdued     = static_cast<Color4f>(Color4u{ 0x9A, 0x9A, 0x9A });
+		const Color4f iconDim     = static_cast<Color4f>(Color4u{ 0x8A, 0x8A, 0x8A });
+		const Color4f outline     = static_cast<Color4f>(Color4u{ 0x4C, 0x4C, 0x4C });
+		const Color4f primary     = static_cast<Color4f>(Color4u{ 0x00, 0x70, 0xE0 });
+		const Color4f primarySoft = static_cast<Color4f>(Color4u{ 0x00, 0x70, 0xE0, 0x40 }); //!< ドロップ先プレビュー専用.
+		const Color4f error       = static_cast<Color4f>(Color4u{ 0xEF, 0x35, 0x35 });
 
 		Editor::Slate::Style& style = Editor::Slate::Style::GetStyle();
 
@@ -671,7 +671,7 @@ bool SlateEditorUnit::IsRequestExit() {
 // SlateEditorUnit class window methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-RefPtr<SlateEditorUnit::EditorWindow> SlateEditorUnit::CreateEditorWindow(const std::wstring& name, const Vector2ui& client, bool isMain) {
+RefPtr<SlateEditorUnit::EditorWindow> SlateEditorUnit::CreateEditorWindow(const std::wstring& name, const Vector2u& client, bool isMain) {
 
 	if (isMain && GetMainEditorWindow() != nullptr) {
 		STREAM_LOG_WARNING("SlateEditorUnit | main editor window already exists.");

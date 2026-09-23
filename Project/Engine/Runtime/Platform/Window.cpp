@@ -17,7 +17,7 @@ SXAVENGER_ENGINE_USING_(Platform)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void Window::Create(
-	const std::wstring& name, const Vector2ui& client, Category category,
+	const std::wstring& name, const Vector2u& client, Category category,
 	const FlagEnum<Style>& style) {
 
 	//!< windowクラス名の設定
@@ -57,7 +57,7 @@ void Window::Create(
 		//!< そのため調整を行わない.
 		AdjustWindowRect(&rect, static_cast<DWORD>(style_), false);
 	}
-	Vector2ui size = Window::ConvertClientSize(rect);
+	Vector2u size = Window::ConvertClientSize(rect);
 
 	//!< windowの生成
 	hwnd_ = CreateWindow(
@@ -133,21 +133,21 @@ void Window::Close() {
 	);
 }
 
-void Window::SetWindowIcon(const std::filesystem::path& filepath, const Vector2ui& size) const {
+void Window::SetWindowIcon(const std::filesystem::path& filepath, const Vector2u& size) const {
 	HICON icon
 		= static_cast<HICON>(LoadImageA(GetModuleHandle(NULL), filepath.generic_string().c_str(), IMAGE_ICON, size.x, size.y, LR_LOADFROMFILE));
 
 	SendMessage(hwnd_, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
 }
 
-void Window::SetTaskbarIcon(const std::filesystem::path& filepath, const Vector2ui& size) const {
+void Window::SetTaskbarIcon(const std::filesystem::path& filepath, const Vector2u& size) const {
 	HICON icon
 		= static_cast<HICON>(LoadImageA(GetModuleHandle(NULL), filepath.generic_string().c_str(), IMAGE_ICON, size.x, size.y, LR_LOADFROMFILE));
 
 	SendMessage(hwnd_, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
 }
 
-void Window::SetIcon(const std::filesystem::path& filepath, const Vector2ui& size) const {
+void Window::SetIcon(const std::filesystem::path& filepath, const Vector2u& size) const {
 	Window::SetWindowIcon(filepath, size);
 	Window::SetTaskbarIcon(filepath, size);
 }
@@ -446,7 +446,7 @@ LPCWSTR Window::ConvertCursorResource(CursorShape shape) {
 	}
 }
 
-RECT Window::ConvertClientRect(const Vector2ui& client) {
+RECT Window::ConvertClientRect(const Vector2u& client) {
 	RECT rect = {};
 	rect.right  = static_cast<LONG>(client.x);
 	rect.bottom = static_cast<LONG>(client.y);
@@ -454,8 +454,8 @@ RECT Window::ConvertClientRect(const Vector2ui& client) {
 	return rect;
 }
 
-Vector2ui Window::ConvertClientSize(const RECT& rect) {
-	Vector2ui client = {};
+Vector2u Window::ConvertClientSize(const RECT& rect) {
+	Vector2u client = {};
 	client.x = static_cast<std::uint32_t>(rect.right - rect.left);
 	client.y = static_cast<std::uint32_t>(rect.bottom - rect.top);
 
@@ -470,8 +470,8 @@ RECT Window::GetCurrentClientRect(HWND hwnd) {
 }
 
 void Window::UpdateRect(const RECT& rect) {
-	Vector2ui previous = Window::ConvertClientSize(rect_);
-	Vector2ui current  = Window::ConvertClientSize(rect);
+	Vector2u previous = Window::ConvertClientSize(rect_);
+	Vector2u current  = Window::ConvertClientSize(rect);
 
 	if (Comparison::All(previous == current)) {
 		return; //!< サイズが変更されていない場合はリサイズ処理を行わない

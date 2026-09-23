@@ -158,7 +158,7 @@ public:
 //* integral types *//
 
 using Vector3i  = Vector3<std::int32_t>;
-using Vector3ui = Vector3<std::uint32_t>;
+using Vector3u  = Vector3<std::uint32_t>;
 using Vector3sz = Vector3<std::size_t>;
 
 //* floating-point types *//

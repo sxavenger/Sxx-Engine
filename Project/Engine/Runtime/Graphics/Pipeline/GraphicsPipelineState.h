@@ -156,7 +156,7 @@ public:
 	void SetName(const std::string_view& name) const;
 
 	void BindPipeline(const GraphicsCommandContext& context, const D3D12_VIEWPORT& viewport, const D3D12_RECT& rect) const;
-	void BindPipeline(const GraphicsCommandContext& context, const Vector2ui& resolution) const;
+	void BindPipeline(const GraphicsCommandContext& context, const Vector2u& resolution) const;
 
 	//* operator [comparison] <std::nullptr_t> *//
 

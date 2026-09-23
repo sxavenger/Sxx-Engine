@@ -62,7 +62,7 @@ public:
 		//=========================================================================================
 
 		D3D12_RESOURCE_DIMENSION dimension;
-		Vector2ui size;
+		Vector2u size;
 		uint16_t depth;
 		uint16_t arraySize;
 		uint16_t miplevels;

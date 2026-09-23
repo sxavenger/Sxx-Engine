@@ -345,8 +345,8 @@ public:
 
 //* Color3 integral *//
 
-using Color3i  = Color3Integral<std::int32_t>;
-using Color3ui = Color3Integral<std::uint32_t>;
+using Color3i = Color3Integral<std::int32_t>;
+using Color3u = Color3Integral<std::uint32_t>;
 
 //* Color3 floating-point *//
 

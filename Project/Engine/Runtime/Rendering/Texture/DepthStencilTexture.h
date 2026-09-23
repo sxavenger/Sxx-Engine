@@ -40,8 +40,8 @@ public:
 		// private variables
 		//=========================================================================================
 
-		DXGI_FORMAT format   = DXGI_FORMAT_UNKNOWN;
-		Vector2ui resolution = {};
+		DXGI_FORMAT format  = DXGI_FORMAT_UNKNOWN;
+		Vector2u resolution = {};
 
 		float depthClearValue     = 1.0f;
 		uint8_t stencilClearValue = 0;

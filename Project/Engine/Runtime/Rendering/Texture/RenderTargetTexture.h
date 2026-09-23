@@ -41,8 +41,8 @@ public:
 		// private variables
 		//=========================================================================================
 
-		DXGI_FORMAT format   = DXGI_FORMAT_UNKNOWN;
-		Vector2ui resolution = {};
+		DXGI_FORMAT format  = DXGI_FORMAT_UNKNOWN;
+		Vector2u resolution = {};
 
 		Color4f clearColor = {};
 
@@ -83,7 +83,7 @@ public:
 	//* options *//
 
 	//! @brief 解像度を取得する.
-	const Vector2ui& GetResolution() const { return options_.resolution; }
+	const Vector2u& GetResolution() const { return options_.resolution; }
 
 	//* static methods *//
 

@@ -210,7 +210,7 @@ void GraphicsPipelineState::BindPipeline(const GraphicsCommandContext& context, 
 
 }
 
-void GraphicsPipelineState::BindPipeline(const GraphicsCommandContext& context, const Vector2ui& resolution) const {
+void GraphicsPipelineState::BindPipeline(const GraphicsCommandContext& context, const Vector2u& resolution) const {
 
 	//!< viewportの設定
 	D3D12_VIEWPORT viewport = {};

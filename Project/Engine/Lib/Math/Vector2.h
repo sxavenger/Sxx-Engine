@@ -153,7 +153,7 @@ public:
 //* integral types *//
 
 using Vector2i  = Vector2<std::int32_t>;
-using Vector2ui = Vector2<std::uint32_t>;
+using Vector2u  = Vector2<std::uint32_t>;
 using Vector2sz = Vector2<std::size_t>;
 
 //* floating-point types *//

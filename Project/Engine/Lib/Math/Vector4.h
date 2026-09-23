@@ -148,7 +148,7 @@ public:
 //* integral types *//
 
 using Vector4i  = Vector4<std::int32_t>;
-using Vector4ui = Vector4<std::uint32_t>;
+using Vector4u  = Vector4<std::uint32_t>;
 using Vector4sz = Vector4<std::size_t>;
 
 //* floating-point types *//

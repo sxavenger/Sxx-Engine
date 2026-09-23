@@ -26,7 +26,7 @@ public:
 	//* viewport option *//
 
 	void Create(
-		const std::wstring& name, const Vector2ui& client,
+		const std::wstring& name, const Vector2u& client,
 		Platform::Window::Category category,
 		DXGI_FORMAT format,
 		FlagEnum<Platform::Window::Style> style = Platform::Window::Style::Default
@@ -40,7 +40,7 @@ public:
 
 	void Close();
 
-	Vector2ui GetClient() const;
+	Vector2u GetClient() const;
 
 	HWND GetHwnd() const;
 

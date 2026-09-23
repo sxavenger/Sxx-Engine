@@ -37,7 +37,7 @@ void SwapChain::Buffer::OMSetRenderTarget(const GraphicsCommandContext& context)
 void SwapChain::Init(
 	const Device& device, DescriptorHeaps& descriptorHeaps, const GraphicsCommandContext& command,
 	DXGI_FORMAT format,
-	const Vector2ui& resolution, HWND hwnd) {
+	const Vector2u& resolution, HWND hwnd) {
 
 	//!< 設定の保存.
 	format_ = format;
@@ -76,7 +76,7 @@ void SwapChain::Init(
 
 void SwapChain::Resize(
 	const Device& device,
-	const Vector2ui& resolution, HWND hwnd) {
+	const Vector2u& resolution, HWND hwnd) {
 
 	if (swapChain_ == nullptr) {
 		STREAM_LOG_WARNING("Graphics::SwapChain | resize called but swap chain is nullptr.");
@@ -177,7 +177,7 @@ SwapChain::Buffer& SwapChain::GetCurrentBackBuffer() {
 	return buffers_[index];
 }
 
-ComPtr<IDXGISwapChain4> SwapChain::CreateSwapChain(RefPtr<IDXGIFactory7> factory, RefPtr<ID3D12CommandQueue> queue, DXGI_FORMAT format, const Vector2ui& resolution, HWND hwnd) {
+ComPtr<IDXGISwapChain4> SwapChain::CreateSwapChain(RefPtr<IDXGIFactory7> factory, RefPtr<ID3D12CommandQueue> queue, DXGI_FORMAT format, const Vector2u& resolution, HWND hwnd) {
 
 	ComPtr<IDXGISwapChain4> swapChain;
 

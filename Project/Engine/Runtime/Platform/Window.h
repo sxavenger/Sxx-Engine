@@ -137,7 +137,7 @@ public:
 	//* window option *//
 
 	void Create(
-		const std::wstring& name, const Vector2ui& client, Category category,
+		const std::wstring& name, const Vector2u& client, Category category,
 		const FlagEnum<Style>& style = Style::Default
 	);
 
@@ -150,13 +150,13 @@ public:
 	void Close();
 
 	//! @brief ウィンドウアイコンを設定する
-	void SetWindowIcon(const std::filesystem::path& filepath, const Vector2ui& size) const;
+	void SetWindowIcon(const std::filesystem::path& filepath, const Vector2u& size) const;
 
 	//! @brief タスクバーアイコンを設定する
-	void SetTaskbarIcon(const std::filesystem::path& filepath, const Vector2ui& size) const;
+	void SetTaskbarIcon(const std::filesystem::path& filepath, const Vector2u& size) const;
 
 	//! @brief ウィンドウとタスクバーのアイコンを設定する
-	void SetIcon(const std::filesystem::path& filepath, const Vector2ui& size) const;
+	void SetIcon(const std::filesystem::path& filepath, const Vector2u& size) const;
 
 	bool IsOpen() const;
 
@@ -164,7 +164,7 @@ public:
 
 	HWND GetHwnd() const { return hwnd_; }
 
-	Vector2ui GetClient() const { return Window::ConvertClientSize(rect_); }
+	Vector2u GetClient() const { return Window::ConvertClientSize(rect_); }
 
 	Event GetEvent() const { return event_; }
 
@@ -276,9 +276,9 @@ private:
 
 	//* window style helper methods *//
 
-	static RECT ConvertClientRect(const Vector2ui& client);
+	static RECT ConvertClientRect(const Vector2u& client);
 
-	static Vector2ui ConvertClientSize(const RECT& rect);
+	static Vector2u ConvertClientSize(const RECT& rect);
 
 	static RECT GetCurrentClientRect(HWND hwnd);
 

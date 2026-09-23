@@ -355,8 +355,8 @@ public:
 
 //* Color4 integral *//
 
-using Color4i  = Color4Integral<std::int32_t>;
-using Color4ui = Color4Integral<std::uint32_t>;
+using Color4i = Color4Integral<std::int32_t>;
+using Color4u = Color4Integral<std::uint32_t>;
 
 //* Color4 floating-point *//
 
