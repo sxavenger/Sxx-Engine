@@ -188,6 +188,7 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Lib\Format\Toml\TomlNode.h" />
     <ClInclude Include="Lib\Format\Toml\TomlReader.h" />
     <ClInclude Include="Lib\Format\Toml\TomlUtil.h" />
+    <ClInclude Include="Lib\Hash\Hash.h" />
     <ClInclude Include="Lib\Logger\ConsoleLogger.h" />
     <ClInclude Include="Lib\Logger\CrashHandler.h" />
     <ClInclude Include="Lib\Logger\FileLogger.h" />

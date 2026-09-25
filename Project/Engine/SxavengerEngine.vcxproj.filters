@@ -742,6 +742,7 @@
     <ClInclude Include="Runtime\Rendering\Cache\CameraCache.h" />
     <ClInclude Include="Runtime\World\Entity\GameObject.h" />
     <ClInclude Include="Runtime\Rendering\Cache\TransformCache.h" />
+    <ClInclude Include="Lib\Hash\Hash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">

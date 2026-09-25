@@ -5,7 +5,9 @@
 //-----------------------------------------------------------------------------------------
 //* c++
 #include <random>
-#include <concepts>
+
+//* Lib
+#include <Lib/Traits/Concept.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Random class
@@ -19,14 +21,14 @@ public:
 
 	//* uniform distribution *//
 
-	template <std::floating_point T>
+	template <Concept::FloatingPoint T>
 	static T UniformDistribution(T min, T max) {
 		//! https://cpprefjp.github.io/reference/random/uniform_real_distribution.html
 		std::uniform_real_distribution<T> dist(min, max);
 		return dist(seed_);
 	}
 
-	template <std::integral T>
+	template <Concept::Integral T>
 	static T UniformDistribution(T min, T max) {
 		//! https://cpprefjp.github.io/reference/random/uniform_int_distribution.html
 		std::uniform_int_distribution<T> dist(min, max);
@@ -35,14 +37,14 @@ public:
 
 	//* normal distribution *//
 
-	template <std::floating_point T>
+	template <Concept::FloatingPoint T>
 	static T NormalDistribution(T mean = 0.0, T stddev = 0.5) {
 		//! https://cpprefjp.github.io/reference/random/normal_distribution.html
 		std::normal_distribution<T> dist(mean, stddev);
 		return dist(seed_);
 	}
 
-	template <std::floating_point T>
+	template <Concept::FloatingPoint T>
 	static T NormalDistributionRange(T min, T max) {
 		T value = Random::NormalDistribution<T>(static_cast<T>(0.0), static_cast<T>(0.3));
 

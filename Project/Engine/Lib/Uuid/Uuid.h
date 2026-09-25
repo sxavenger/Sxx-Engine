@@ -7,6 +7,9 @@
 #include <cstdint>
 #include <string>
 
+//* Lib
+#include <Lib/Hash/Hash.h>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Uuid structure
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +56,7 @@ public:
 	uint16_t data2 = NULL; //!< second part - 16 bits
 	uint16_t data3 = NULL; //!< third part  - 16 bits
 	uint16_t data4 = NULL; //!< fourth part - 16 bits
-	uint64_t data5 = NULL; //!< fifth part - 64 bits
+	uint64_t data5 = NULL; //!< fifth part  - 64 bits
 	//!< "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"の形式で各部分を整数型として保持する.
 	//!< "data1" - "data2" - "data3" - "data4" - "data5" と定義する.
 	
@@ -73,13 +76,12 @@ public:
 	//* operator [hash] <Uuid> *//
 
 	std::size_t operator()(const Uuid& uuid) const noexcept {
-		// ハッシュ結合（Boostのhash_combine風）
 		std::size_t seed = 0;
-		seed ^= std::hash<uint32_t>{}(uuid.data1) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-		seed ^= std::hash<uint16_t>{}(uuid.data2) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-		seed ^= std::hash<uint16_t>{}(uuid.data3) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-		seed ^= std::hash<uint16_t>{}(uuid.data4) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-		seed ^= std::hash<uint64_t>{}(uuid.data5) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		seed = Util::Hash::Combine(seed, std::hash<uint32_t>{}(uuid.data1));
+		seed = Util::Hash::Combine(seed, std::hash<uint16_t>{}(uuid.data2));
+		seed = Util::Hash::Combine(seed, std::hash<uint16_t>{}(uuid.data3));
+		seed = Util::Hash::Combine(seed, std::hash<uint16_t>{}(uuid.data4));
+		seed = Util::Hash::Combine(seed, std::hash<uint64_t>{}(uuid.data5));
 
 		return seed;
 	}
