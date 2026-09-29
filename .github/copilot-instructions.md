@@ -27,7 +27,7 @@
 - タグのグループ内では、元の記述順を維持する
 
 ### Examples
-```markdown
+```text
 <feature>: Transform構造体を実装
 <feature>: StaticMeshのキャッシュノードの実装
 <refactor>: Premake5.luaのフィルタ整理
