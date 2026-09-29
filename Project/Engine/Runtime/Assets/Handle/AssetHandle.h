@@ -40,7 +40,9 @@ public:
 
 	//* handle option *//
 
-	bool HasId() const noexcept { return uuid_.has_value(); }
+	bool HasUuid() const noexcept { return uuid_.has_value(); }
+
+	const Uuid& GetUuid() const;
 
 	std::shared_ptr<T> Get() const;
 
@@ -86,6 +88,12 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 // AssetHandle class template methods
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+template <Asset T>
+inline const Uuid& AssetHandle<T>::GetUuid() const {
+	STREAM_ASSERT(uuid_.has_value(), "asset id is empty.");
+	return uuid_.value();
+}
 
 template <Asset T>
 std::shared_ptr<T> AssetHandle<T>::Get() const {
