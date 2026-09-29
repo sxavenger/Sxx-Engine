@@ -3,13 +3,17 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* cahce
+#include "BaseDynamicCache.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Graphics/Buffer/ConstantBuffer.h>
-#include <Runtime/World/Component/Camera/CameraComponent.h>
+#include <Runtime/World/Component/Transform/TransformComponent.h>
 
 //* lib
 #include <Lib/Math/Matrix4x4.h>
+#include <Lib/Math/Transform/Transformation3d.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -17,31 +21,34 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// CameraCache class
+// TransformCache class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class CameraCache final {
+class TransformCache final
+	: public BaseDynamicCache {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// ProjectionData structure
+	// TransformationData structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct ProjectionData {
+	struct TransformationData {
 	public:
 
 		//=========================================================================================
 		// public methods
 		//=========================================================================================
 
-		static ProjectionData Identity() noexcept;
+		static TransformationData Transfer(const Transformation3d& transformation);
 
-		static ProjectionData Transfer(const Matrix4x4f& projection);
+		//* constant value methods *//
+
+		static TransformationData Identity() noexcept;
 
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		Matrix4x4f projection;
-		Matrix4x4f projectionInverse;
+		Matrix4x4f world;
+		Matrix4x4f worldInverse;
 
 	};
 
@@ -51,11 +58,16 @@ public:
 	// public methods
 	//=========================================================================================
 
-	void Cache(const World::CameraComponent& camera);
+	//* constructor / destructor *//
+
+	TransformCache() noexcept  = default;
+	~TransformCache() override = default;
 
 	//* cache option *//
 
-	const Graphics::ConstantBuffer<ProjectionData>& GetProjectionBuffer() const { return projectionBuffer_; }
+	void Cache(const World::TransformComponent& transform);
+
+	const Graphics::ConstantBuffer<TransformationData>& GetTransformationBuffer() const { return transformationBuffer_; }
 
 private:
 
@@ -65,9 +77,8 @@ private:
 
 	//* projection *//
 
-	Graphics::ConstantBuffer<ProjectionData> projectionBuffer_;
+	Graphics::ConstantBuffer<TransformationData> transformationBuffer_;
 
-	//!< ComponentのCache方法を考える.
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

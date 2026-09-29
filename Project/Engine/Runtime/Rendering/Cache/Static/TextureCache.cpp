@@ -24,6 +24,7 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 	Scheduler::TaskHandle handle = texture->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
+		// STREAM_LOG_WARNING("Rendering::TextureCache | texture is not ready. name: {}", texture->GetName());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 

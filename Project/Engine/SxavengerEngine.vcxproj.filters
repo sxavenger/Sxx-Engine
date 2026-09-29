@@ -615,10 +615,10 @@
     <ClInclude Include="Runtime\Platform\Window.h">
       <Filter>Runtime\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Rendering\Cache\StaticMeshCache.h">
+    <ClInclude Include="Runtime\Rendering\Cache\Static\StaticMeshCache.h">
       <Filter>Runtime\Rendering\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Rendering\Cache\TextureCache.h">
+    <ClInclude Include="Runtime\Rendering\Cache\Static\TextureCache.h">
       <Filter>Runtime\Rendering\Cache</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h">
@@ -739,10 +739,15 @@
       <Filter>Unit</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\World\Component\Camera\CameraComponent.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\CameraCache.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\CameraCache.h" />
     <ClInclude Include="Runtime\World\Entity\GameObject.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\TransformCache.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\TransformCache.h" />
     <ClInclude Include="Lib\Hash\Hash.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\CacheCollection.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\BaseDynamicCache.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Static\BaseStaticCache.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1051,10 +1056,10 @@
     <ClCompile Include="Runtime\Platform\Window.cpp">
       <Filter>Runtime\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Rendering\Cache\StaticMeshCache.cpp">
+    <ClCompile Include="Runtime\Rendering\Cache\Static\StaticMeshCache.cpp">
       <Filter>Runtime\Rendering\Cache</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Rendering\Cache\TextureCache.cpp">
+    <ClCompile Include="Runtime\Rendering\Cache\Static\TextureCache.cpp">
       <Filter>Runtime\Rendering\Cache</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp">
@@ -1155,8 +1160,11 @@
     </ClCompile>
     <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp" />
     <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\CameraCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\CameraCache.cpp" />
     <ClCompile Include="Runtime\World\Entity\GameObject.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\TransformCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\TransformCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\CacheCollection.cpp" />
   </ItemGroup>
 </Project>

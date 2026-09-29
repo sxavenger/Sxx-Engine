@@ -5,13 +5,9 @@
 //-----------------------------------------------------------------------------------------
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Graphics/Core/GraphicsCommandContext.h>
-#include <Runtime/Graphics/Core/Descriptor.h>
-#include <Runtime/Graphics/Buffer/ResourceHandle.h>
-#include <Runtime/Graphics/Buffer/Resource.h>
-#include <Runtime/Assets/Texture/Texture.h>
 
 //* c++
+#include <concepts>
 #include <optional>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,18 +16,19 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// TextureCache class
+// BaseStaticCache class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class TextureCache final {
+class BaseStaticCache {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	void Cache(const std::shared_ptr<Assets::Texture>& texture);
+	//* constructor / destructor *//
 
-	//* address option *//
+	BaseStaticCache() noexcept          = default;
+	virtual ~BaseStaticCache() noexcept = default;
 
 	//! @brief chaceが有効かどうかを取得する.
 	bool HasCache() const { return address_.has_value(); }
@@ -39,35 +36,20 @@ public:
 	//! @brief キャッシュされたアドレスを取得する.
 	uintptr_t GetAddress() const { return address_.value_or(NULL); }
 
-private:
+protected:
 
 	//=========================================================================================
-	// private variables
+	// protected variables
 	//=========================================================================================
-
-	//* Graphics *//
-
-	Graphics::ResourceHandle handle_;
-	Graphics::Descriptor descriptor_;
-
-	//* address *//
 
 	std::optional<uintptr_t> address_ = std::nullopt;
 
-	//=========================================================================================
-	// private methods
-	//=========================================================================================
-
-	//* resource methods *//
-
-	static Graphics::ResourceHandle CreateTextureResource(const std::string_view& name, const Assets::Texture::Description& description);
-
-	NODISCARD static Graphics::Resource UploadResourceData(const Graphics::GraphicsCommandContext& context, const Graphics::Resource& resource, const DirectX::ScratchImage& image);
-
-	//* descriptor methods *//
-
-	static void CreateDescriptor(Graphics::Descriptor& descriptor, const Graphics::Resource& resource, const Assets::Texture::Description& description);
-
 };
+
+//-----------------------------------------------------------------------------------------
+// concepts
+//-----------------------------------------------------------------------------------------
+template <typename T>
+concept StaticCache = std::derived_from<T, BaseStaticCache>;
 
 SXAVENGER_ENGINE_NAMESPACE_END

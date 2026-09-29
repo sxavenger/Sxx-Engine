@@ -3,16 +3,17 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-//* rendering
-#include "../Meshlet/PositionVertexBuffer.h"
-#include "../Meshlet/StaticMeshVertexBuffer.h"
-#include "../Meshlet/TriangleIndexDimensionBuffer.h"
-#include "../Meshlet/MeshletBuffer.h"
+//* cache
+#include "BaseStaticCache.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Graphics/Buffer/BottomLevelAccelerationStructure.h>
 #include <Runtime/Assets/Mesh/StaticMesh.h>
+#include <Runtime/Rendering/Meshlet/PositionVertexBuffer.h>
+#include <Runtime/Rendering/Meshlet/StaticMeshVertexBuffer.h>
+#include <Runtime/Rendering/Meshlet/TriangleIndexDimensionBuffer.h>
+#include <Runtime/Rendering/Meshlet/MeshletBuffer.h>
 
 //* c++
 #include <optional>
@@ -25,7 +26,8 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StaticMeshCache class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class StaticMeshCache final {
+class StaticMeshCache final
+	: public BaseStaticCache {
 public:
 
 	//=========================================================================================
@@ -33,14 +35,6 @@ public:
 	//=========================================================================================
 
 	void Cache(const std::shared_ptr<Assets::StaticMesh>& mesh);
-
-	//* address option *//
-
-	//! @brief chaceが有効かどうかを取得する.
-	bool HasCache() const { return address_.has_value(); }
-
-	//! @brief キャッシュされたアドレスを取得する.
-	uintptr_t GetAddress() const { return address_.value_or(NULL); }
 
 	//* cache option *//
 
@@ -70,10 +64,6 @@ private:
 	//* Meshlet Buffer *//
 
 	MeshletBuffer meshletBuffer_;
-
-	//* address *//
-
-	std::optional<uintptr_t> address_ = std::nullopt;
 
 	//=========================================================================================
 	// private methods

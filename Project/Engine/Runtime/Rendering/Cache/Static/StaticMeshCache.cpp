@@ -4,13 +4,11 @@ SXAVENGER_ENGINE_USING_(Rendering)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-//* rendering
-#include "../Meshlet/MeshletBuildOutput.h"
-
 //* engine
 #include <Runtime/Graphics/Core.h>
 #include <Runtime/Scheduler/Common/TaskHandle.h>
 #include <Runtime/Scheduler/System.h>
+#include <Runtime/Rendering/Meshlet/MeshletBuildOutput.h>
 
 //* meshoptimizer
 #include <meshoptimizer/meshoptimizer.h>
@@ -24,7 +22,7 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	Scheduler::TaskHandle handle = mesh->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
-		STREAM_LOG_WARNING("Rendering::StaticMeshCache | static mesh is not ready. name: {}, state: {}", mesh->GetName(), handle.GetState());
+		// STREAM_LOG_WARNING("Rendering::StaticMeshCache | static mesh is not ready. name: {}", mesh->GetName());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
