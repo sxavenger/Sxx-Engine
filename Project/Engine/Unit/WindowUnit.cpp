@@ -34,5 +34,5 @@ void WindowUnit::UpdateWindow() {
 }
 
 void WindowUnit::PresentWindow() {
-	viewport_.Present(false);
+	viewport_.Present(true);
 }
