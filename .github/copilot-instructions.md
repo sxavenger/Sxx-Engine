@@ -26,6 +26,13 @@
 - 可能な限り具体的な名前を使用する
 - タグのグループ内では、元の記述順を維持する
 
+### Examples
+```markdown
+<feature>: Transform構造体を実装
+<feature>: StaticMeshのキャッシュノードの実装
+<refactor>: Premake5.luaのフィルタ整理
+```
+
 ## Github Copilot Chatの指示
 - chat等の回答は, 日本語で行う.
 - codeや設計等に関する指示について特に指定がない場合は, コードの編集や追加を行わない.
