@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* math
+#include "ColorCode3.h"
+
 //* c++
 #include <cstdint>
 #include <array>
@@ -42,6 +45,11 @@ public:
 
 	constexpr Color3Integral(Color3Integral&&) noexcept            = default;
 	constexpr Color3Integral& operator=(Color3Integral&&) noexcept = default;
+
+	//* operator [assignment] <ColorCode3> *//
+
+	constexpr Color3Integral(ColorCode3 code) noexcept : r(code.r), g(code.g), b(code.b) {};
+	constexpr Color3Integral& operator=(ColorCode3 code) noexcept { r = code.r; g = code.g; b = code.b; return *this; }
 
 	//* operator [compound assignment] <Color3Integral> *//
 
@@ -83,23 +91,10 @@ public:
 
 	//* operator [access] *//
 
-	constexpr T& operator[](size_t index) noexcept { return data[index]; }
-	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
+	constexpr T& operator[](size_t index) { return data[index]; }
+	constexpr const T& operator[](size_t index) const { return data[index]; }
 
-	constexpr T* operator&() noexcept { return data.data(); }
-	constexpr const T* operator&() const noexcept { return data.data(); }
-
-	//* convert methods *//
-
-	static constexpr Color3Integral Convert(std::uint32_t code) {
-		return {
-			static_cast<T>((code >> 2 * 8) & 0xFF),
-			static_cast<T>((code >> 1 * 8) & 0xFF),
-			static_cast<T>((code >> 0 * 8) & 0xFF)
-		};
-	}
-
-	//* color container methods *//
+	//* container methods *//
 
 	constexpr T* Data() noexcept { return data.data(); }
 	constexpr const T* Data() const noexcept { return data.data(); }
@@ -207,6 +202,11 @@ public:
 	constexpr Color3floating(Color3floating&&) noexcept            = default;
 	constexpr Color3floating& operator=(Color3floating&&) noexcept = default;
 
+	//* operator [assignment] <ColorCode3> *//
+
+	constexpr Color3floating(ColorCode3 code) noexcept : r(T(code.r) / (T)255.0), g(T(code.g) / (T)255.0), b(T(code.b) / (T)255.0) {};
+	constexpr Color3floating& operator=(ColorCode3 code) noexcept { r = T(code.r) / (T)255.0; g = T(code.g) / (T)255.0; b = T(code.b) / (T)255.0; return *this; }
+
 	//* operator [compound assignment] <Color3floating> *//
 
 	constexpr Color3floating& operator+=(const Color3floating& rhs) noexcept { r += rhs.r; g += rhs.g; b += rhs.b; return *this; }
@@ -247,18 +247,8 @@ public:
 
 	//* operator [access] *//
 
-	constexpr T& operator[](size_t index) noexcept { return data[index]; }
-	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
-
-	//* convert methods *//
-
-	static constexpr Color3Integral Convert(std::uint32_t code) {
-		return {
-			static_cast<T>((code >> 2 * 8) & 0xFF) / (T)255.0,
-			static_cast<T>((code >> 1 * 8) & 0xFF) / (T)255.0,
-			static_cast<T>((code >> 0 * 8) & 0xFF) / (T)255.0
-		};
-	}
+	constexpr T& operator[](size_t index) { return data[index]; }
+	constexpr const T& operator[](size_t index) const { return data[index]; }
 
 	//* constant value methods *//
 

@@ -73,8 +73,13 @@ public:
 
 	//* operator [access] *//
 
-	constexpr T& operator[](size_t index) noexcept { return data[index]; }
-	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
+	constexpr T& operator[](size_t index) { return data[index]; }
+	constexpr const T& operator[](size_t index) const { return data[index]; }
+
+	//* container methods *//
+
+	constexpr T* Data() noexcept { return data.data(); }
+	constexpr const T* Data() const noexcept { return data.data(); }
 
 	//* constant value methods *//
 
@@ -149,7 +154,7 @@ public:
 
 using Vector4i  = Vector4<std::int32_t>;
 using Vector4u  = Vector4<std::uint32_t>;
-using Vector4sz = Vector4<std::size_t>;
+using Vector4uz = Vector4<std::size_t>;
 
 //* floating-point types *//
 

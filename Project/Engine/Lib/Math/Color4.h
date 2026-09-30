@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* math
+#include "ColorCode4.h"
+
 //* c++
 #include <cstdint>
 #include <array>
@@ -42,6 +45,11 @@ public:
 
 	constexpr Color4Integral(Color4Integral&&) noexcept            = default;
 	constexpr Color4Integral& operator=(Color4Integral&&) noexcept = default;
+
+	//* operator [assignment] <ColorCode4> *//
+
+	constexpr Color4Integral(ColorCode4 code) noexcept : r(code.r), g(code.g), b(code.b), a(code.a) {};
+	constexpr Color4Integral& operator=(ColorCode4 code) noexcept { r = code.r; g = code.g; b = code.b; a = code.a; return *this; }
 
 	//* operator [compound assignment] <Color4Integral> *//
 
@@ -86,19 +94,13 @@ public:
 
 	//* operator [access] *//
 
-	constexpr T& operator[](size_t index) noexcept { return data[index]; }
-	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
+	constexpr T& operator[](size_t index) { return data[index]; }
+	constexpr const T& operator[](size_t index) const { return data[index]; }
 
-	//* convert methods *//
+	//* container methods *//
 
-	static constexpr Color4Integral Convert(std::uint32_t code) {
-		return {
-			static_cast<T>((code >> 3 * 8) & 0xFF),
-			static_cast<T>((code >> 2 * 8) & 0xFF),
-			static_cast<T>((code >> 1 * 8) & 0xFF),
-			static_cast<T>((code >> 0 * 8) & 0xFF)
-		};
-	}
+	constexpr T* Data() noexcept { return data.data(); }
+	constexpr const T* Data() const noexcept { return data.data(); }
 
 	//* constant value methods *//
 
@@ -205,6 +207,11 @@ public:
 	constexpr Color4floating(Color4floating&&) noexcept            = default;
 	constexpr Color4floating& operator=(Color4floating&&) noexcept = default;
 
+	//* operator [assignment] <ColorCode4> *//
+
+	constexpr Color4floating(ColorCode4 code) noexcept : r(T(code.r) / (T)255.0), g(T(code.g) / (T)255.0), b(T(code.b) / (T)255.0), a(T(code.a) / (T)255.0) {};
+	constexpr Color4floating& operator=(ColorCode4 code) noexcept { r = T(code.r) / (T)255.0; g = T(code.g) / (T)255.0; b = T(code.b) / (T)255.0; a = T(code.a) / (T)255.0; return *this; }
+
 	//* operator [compound assignment] <Color4floating> *//
 
 	constexpr Color4floating& operator+=(const Color4floating& rhs) noexcept { r += rhs.r; g += rhs.g; b += rhs.b; a += rhs.a; return *this; }
@@ -248,22 +255,11 @@ public:
 
 	//* operator [access] *//
 
-	constexpr T& operator[](size_t index) noexcept { return data[index]; }
-	constexpr const T& operator[](size_t index) const noexcept { return data[index]; }
+	constexpr T& operator[](size_t index) { return data[index]; }
+	constexpr const T& operator[](size_t index) const { return data[index]; }
 
 	constexpr T* operator&() noexcept { return data.data(); }
 	constexpr const T* operator&() const noexcept { return data.data(); }
-
-	//* convert methods *//
-
-	static constexpr Color4floating Convert(std::uint32_t code) {
-		return {
-			static_cast<T>((code >> 3 * 8) & 0xFF) / (T)255.0,
-			static_cast<T>((code >> 2 * 8) & 0xFF) / (T)255.0,
-			static_cast<T>((code >> 1 * 8) & 0xFF) / (T)255.0,
-			static_cast<T>((code >> 0 * 8) & 0xFF) / (T)255.0
-		};
-	}
 
 	//* color container methods *//
 

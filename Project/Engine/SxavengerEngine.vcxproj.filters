@@ -19,6 +19,9 @@
     <Filter Include="Lib\Format\Toml">
       <UniqueIdentifier>{7F8A0BAB-EB15-796F-F426-FC636031D56F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lib\Hash">
+      <UniqueIdentifier>{6F9CF619-5B69-5125-8482-3FCD70AE86B3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Lib\Logger">
       <UniqueIdentifier>{6BE25A7C-579A-9CC9-C0A1-7525AC7837BA}</UniqueIdentifier>
     </Filter>
@@ -142,6 +145,15 @@
     <Filter Include="Runtime\Rendering\Cache">
       <UniqueIdentifier>{5999462F-C5D0-8EC6-CEDA-F2E93A91B5BF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Runtime\Rendering\Cache\Dynamic">
+      <UniqueIdentifier>{CDE4DEE8-39C8-ED28-42CB-1B65AE2DB479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Rendering\Cache\Manager">
+      <UniqueIdentifier>{831EAF65-EF01-BEA5-F804-ECE1646784F6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Rendering\Cache\Static">
+      <UniqueIdentifier>{70159BEB-5C3B-6552-4581-EA1D31468A1E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Runtime\Rendering\Meshlet">
       <UniqueIdentifier>{F7088F27-63CB-C2B1-AC7B-513E187D9B8F}</UniqueIdentifier>
     </Filter>
@@ -171,6 +183,9 @@
     </Filter>
     <Filter Include="Runtime\World\Component">
       <UniqueIdentifier>{228B8DEB-8EC2-D582-97CC-39A60383FC7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\World\Component\Camera">
+      <UniqueIdentifier>{5A0595AF-462B-5F16-2F71-E4E11B3684E2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\World\Component\Transform">
       <UniqueIdentifier>{6D3561EC-D9A3-B66B-228D-716B8E3AAC07}</UniqueIdentifier>
@@ -222,6 +237,9 @@
     <ClInclude Include="Lib\Format\Toml\TomlUtil.h">
       <Filter>Lib\Format\Toml</Filter>
     </ClInclude>
+    <ClInclude Include="Lib\Hash\Hash.h">
+      <Filter>Lib\Hash</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\Logger\ConsoleLogger.h">
       <Filter>Lib\Logger</Filter>
     </ClInclude>
@@ -244,6 +262,12 @@
       <Filter>Lib\Math</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Math\Color4.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\ColorCode3.h">
+      <Filter>Lib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Math\ColorCode4.h">
       <Filter>Lib\Math</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Math\MathConstants.h">
@@ -615,11 +639,32 @@
     <ClInclude Include="Runtime\Platform\Window.h">
       <Filter>Runtime\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\BaseDynamicCache.h">
+      <Filter>Runtime\Rendering\Cache\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\CameraCache.h">
+      <Filter>Runtime\Rendering\Cache\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\TransformCache.h">
+      <Filter>Runtime\Rendering\Cache\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\CacheCollection.h">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.h">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.h">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Rendering\Cache\Static\BaseStaticCache.h">
+      <Filter>Runtime\Rendering\Cache\Static</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Rendering\Cache\Static\StaticMeshCache.h">
-      <Filter>Runtime\Rendering\Cache</Filter>
+      <Filter>Runtime\Rendering\Cache\Static</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Rendering\Cache\Static\TextureCache.h">
-      <Filter>Runtime\Rendering\Cache</Filter>
+      <Filter>Runtime\Rendering\Cache\Static</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h">
       <Filter>Runtime\Rendering\Meshlet</Filter>
@@ -702,6 +747,9 @@
     <ClInclude Include="Runtime\World\Component\BaseComponent.h">
       <Filter>Runtime\World\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\World\Component\Camera\CameraComponent.h">
+      <Filter>Runtime\World\Component\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\World\Component\ComponentAllocator.h">
       <Filter>Runtime\World\Component</Filter>
     </ClInclude>
@@ -723,6 +771,9 @@
     <ClInclude Include="Runtime\World\Entity\EntityStorage.h">
       <Filter>Runtime\World\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\World\Entity\GameObject.h">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\World\Scene\BaseScene.h">
       <Filter>Runtime\World\Scene</Filter>
     </ClInclude>
@@ -738,16 +789,6 @@
     <ClInclude Include="Unit\WindowUnit.h">
       <Filter>Unit</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\World\Component\Camera\CameraComponent.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\CameraCache.h" />
-    <ClInclude Include="Runtime\World\Entity\GameObject.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\TransformCache.h" />
-    <ClInclude Include="Lib\Hash\Hash.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Manager\CacheCollection.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\BaseDynamicCache.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Static\BaseStaticCache.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lib\Format\Json\JsonFile.cpp">
@@ -1056,11 +1097,26 @@
     <ClCompile Include="Runtime\Platform\Window.cpp">
       <Filter>Runtime\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\CameraCache.cpp">
+      <Filter>Runtime\Rendering\Cache\Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\TransformCache.cpp">
+      <Filter>Runtime\Rendering\Cache\Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\CacheCollection.cpp">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.cpp">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.cpp">
+      <Filter>Runtime\Rendering\Cache\Manager</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Rendering\Cache\Static\StaticMeshCache.cpp">
-      <Filter>Runtime\Rendering\Cache</Filter>
+      <Filter>Runtime\Rendering\Cache\Static</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Rendering\Cache\Static\TextureCache.cpp">
-      <Filter>Runtime\Rendering\Cache</Filter>
+      <Filter>Runtime\Rendering\Cache\Static</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp">
       <Filter>Runtime\Rendering\Meshlet</Filter>
@@ -1128,6 +1184,9 @@
     <ClCompile Include="Runtime\Script\HostfxrModule.cpp">
       <Filter>Runtime\Script</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp">
+      <Filter>Runtime\World\Component\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\World\Component\ComponentAllocator.cpp">
       <Filter>Runtime\World\Component</Filter>
     </ClCompile>
@@ -1137,6 +1196,9 @@
     <ClCompile Include="Runtime\World\Component\ComponentStorage.cpp">
       <Filter>Runtime\World\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp">
+      <Filter>Runtime\World\Component\Transform</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\World\Entity\EntityBehaviour.cpp">
       <Filter>Runtime\World\Entity</Filter>
     </ClCompile>
@@ -1144,6 +1206,9 @@
       <Filter>Runtime\World\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\World\Entity\EntityStorage.cpp">
+      <Filter>Runtime\World\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\World\Entity\GameObject.cpp">
       <Filter>Runtime\World\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\World\Scene\SceneContext.cpp">
@@ -1158,13 +1223,5 @@
     <ClCompile Include="Unit\WindowUnit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp" />
-    <ClCompile Include="Runtime\World\Component\Transform\TransformComponent.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\CameraCache.cpp" />
-    <ClCompile Include="Runtime\World\Entity\GameObject.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\TransformCache.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Manager\CacheCollection.cpp" />
   </ItemGroup>
 </Project>

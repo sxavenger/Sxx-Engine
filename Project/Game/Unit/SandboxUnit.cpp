@@ -165,6 +165,10 @@ void SandboxUnit::UpdateSandbox() {
 			position.y -= 0.1f;
 		}
 
+		if (keyboard.GetKey(Sxx::Platform::KeyId::R).IsTrigger()) {
+			Sxx::Assets::AssetStorage::GetInstance()->Reload<Sxx::Assets::StaticMesh>(handle_.GetUuid());
+		}
+
 		transform->SetPosition(position);
 
 		transform->Update();
@@ -240,7 +244,7 @@ void SandboxUnit::RenderSandbox() {
 
 		auto& viewport = unit->GetViewport();
 
-		viewport.BeginRenderPass(context, Color4f::Convert(0x9BA8A8FF));
+		viewport.BeginRenderPass(context, ColorCode4(0x9BA8A8FF));
 
 		{ //!< Shaderでの書き込み
 

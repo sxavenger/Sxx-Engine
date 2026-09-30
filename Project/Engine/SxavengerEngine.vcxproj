@@ -197,6 +197,8 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Lib\Logger\StreamLogger.h" />
     <ClInclude Include="Lib\Math\Color3.h" />
     <ClInclude Include="Lib\Math\Color4.h" />
+    <ClInclude Include="Lib\Math\ColorCode3.h" />
+    <ClInclude Include="Lib\Math\ColorCode4.h" />
     <ClInclude Include="Lib\Math\MathConstants.h" />
     <ClInclude Include="Lib\Math\MathFunctions.h" />
     <ClInclude Include="Lib\Math\Matrix4x4.h" />
@@ -322,13 +324,13 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClInclude Include="Runtime\Platform\Window.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Dynamic\BaseDynamicCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Dynamic\CameraCache.h" />
+    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\TransformCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Manager\CacheCollection.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Static\BaseStaticCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Static\StaticMeshCache.h" />
     <ClInclude Include="Runtime\Rendering\Cache\Static\TextureCache.h" />
-    <ClInclude Include="Runtime\Rendering\Cache\Dynamic\TransformCache.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuffer.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.h" />
     <ClInclude Include="Runtime\Rendering\Meshlet\PackedNormal.h" />
@@ -475,12 +477,12 @@ xcopy /E /Y /I "$(ProjectDir)/Externals/dotnet/shared" "../../Generated/outputs/
     <ClCompile Include="Runtime\Platform\WinApp.cpp" />
     <ClCompile Include="Runtime\Platform\Window.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Dynamic\CameraCache.cpp" />
+    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\TransformCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Manager\CacheCollection.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Manager\DynamicCacheCollection.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Manager\StaticCacheCollection.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Static\StaticMeshCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Cache\Static\TextureCache.cpp" />
-    <ClCompile Include="Runtime\Rendering\Cache\Dynamic\TransformCache.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuffer.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\MeshletBuildOutput.cpp" />
     <ClCompile Include="Runtime\Rendering\Meshlet\PackedNormal.cpp" />
