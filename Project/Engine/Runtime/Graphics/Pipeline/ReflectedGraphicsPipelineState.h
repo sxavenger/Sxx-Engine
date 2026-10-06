@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/GraphicsCommandContext.h"
+#include "../Command/GraphicsCommandContext.h"
 #include "GraphicsPipelineState.h"
 #include "ShaderBindingLayout.h"
 #include "StaticSamplerSet.h"

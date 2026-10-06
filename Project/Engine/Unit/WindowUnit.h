@@ -7,8 +7,8 @@
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Framework/Core/IUnit.h>
 
-//* engine [core]
-#include <Runtime/Core/Configuration/Configuration.h>
+//* engine
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* engine [application]
 #include <Runtime/Application/Viewport.h>

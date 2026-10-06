@@ -96,7 +96,7 @@ void PixEvent::CaptureNextFrames(const std::filesystem::path& filepath, uint32_t
 
 	auto hr = PixEvent::PIXGpuCaptureNextFramesImpl(filepath, frames);
 	if (FAILED(hr)) {
-		STREAM_LOG_ERROR(L"Graphics::PixEvent | capture frame failed. filepath: {}, _com_error: {}", filepath.generic_wstring(), ComPtrUtil::GetComErrorMessage(hr));
+		STREAM_LOG_ERROR(L"Graphics::PixEvent | capture frame failed. filepath: {}, _com_error: {}", filepath.generic_wstring(), GetComErrorMessage(hr));
 		return;
 	}
 

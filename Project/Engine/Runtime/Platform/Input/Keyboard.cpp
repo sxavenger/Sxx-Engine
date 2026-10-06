@@ -41,13 +41,13 @@ void Keyboard::Init(IDirectInput8* dinput) {
 	auto hr = dinput->CreateDevice(
 		GUID_SysKeyboard, &device_, NULL
 	);
-	ComPtrUtil::Assert(hr, L"failed to create keyboard device.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"failed to create keyboard device.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	// 入力データ形式のセット
 	hr = device_->SetDataFormat(
 		&c_dfDIKeyboard // 標準形式
 	);
-	ComPtrUtil::Assert(hr, L"keyboard set data format failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"keyboard set data format failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	STREAM_LOG_INFO("Platform::Keyboard | keyboard device created.");
 }
@@ -121,7 +121,7 @@ bool Keyboard::SetCooperativeLevel(HWND hwnd) {
 		if (FAILED(hr)) {
 			STREAM_LOG_ERROR(
 				L"Platform::InputMouse | failed to set cooperative level. hwnd: {:p} _com_error: {}",
-				static_cast<const void*>(hwnd), ComPtrUtil::GetComErrorMessage(hr)
+				static_cast<const void*>(hwnd), GetComErrorMessage(hr)
 			);
 			return false; //!< cooperative levelの設定に失敗した場合は、入力が取得できないためfalseを返す
 		}

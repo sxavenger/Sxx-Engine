@@ -181,7 +181,7 @@ ComPtr<ID3D12CommandAllocator> GraphicsCommandContext::CreateCommandAllocator(Re
 		GetCommandListType(type),
 		IID_PPV_ARGS(&allocator)
 	);
-	ComPtrUtil::Assert(hr, L"create command allocator failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"create command allocator failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return allocator;
 }
@@ -199,7 +199,7 @@ ComPtr<ID3D12CommandQueue> GraphicsCommandContext::CreateCommandQueue(RefPtr<ID3
 		&desc,
 		IID_PPV_ARGS(&queue)
 	);
-	ComPtrUtil::Assert(hr, L"create command queue failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"create command queue failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return queue;
 }
@@ -215,7 +215,7 @@ ComPtr<ID3D12GraphicsCommandList6> GraphicsCommandContext::CreateCommandList(Ref
 		nullptr,
 		IID_PPV_ARGS(&commandList)
 	);
-	ComPtrUtil::Assert(hr, L"create command list failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"create command list failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return commandList;
 }
@@ -229,7 +229,7 @@ ComPtr<ID3D12Fence> GraphicsCommandContext::CreateFence(RefPtr<ID3D12Device> dev
 		D3D12_FENCE_FLAG_NONE,
 		IID_PPV_ARGS(&fence)
 	);
-	ComPtrUtil::Assert(hr, L"create fence failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"create fence failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return fence;
 }
@@ -251,7 +251,7 @@ HANDLE GraphicsCommandContext::CreateFenceEvent() {
 void GraphicsCommandContext::Execute() {
 	//!< コマンドリストをクローズ.
 	auto hr = commandList_->Close();
-	ComPtrUtil::Assert(hr, L"close command list failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"close command list failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< コマンドリストをコマンドキューに送信.
 	ID3D12CommandList* lists[] = { commandList_.Get() };
@@ -283,11 +283,11 @@ void GraphicsCommandContext::Reset(uint8_t allocatorIndex) {
 
 	//!< allocatorのリセット
 	auto hr = commandAllocators_[allocatorIndex]->Reset();
-	ComPtrUtil::Assert(hr, L"command allocator reset failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"command allocator reset failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< commandListのリセット.
 	hr = commandList_->Reset(commandAllocators_[allocatorIndex].Get(), nullptr);
-	ComPtrUtil::Assert(hr, L"command list reset failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"command list reset failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	// 現在のindexとして設定
 	currentAllocatorIndex_ = allocatorIndex;

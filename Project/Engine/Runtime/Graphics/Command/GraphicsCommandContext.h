@@ -5,12 +5,12 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "Device.h"
-#include "DescriptorHeaps.h"
+#include "../Device/Device.h"
+#include "../Descriptor/DescriptorHeaps.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* c++
 #include <vector>

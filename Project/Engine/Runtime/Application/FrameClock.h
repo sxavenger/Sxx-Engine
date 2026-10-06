@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* lib
 #include <Lib/Time/TimePoint.h>

@@ -85,15 +85,6 @@
     <Filter Include="Runtime\Assets\Texture">
       <UniqueIdentifier>{6BF009F7-57EA-3249-4057-C9592CF098B5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Runtime\Core">
-      <UniqueIdentifier>{416F811B-2DD2-10C0-D657-4976C299DC42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Runtime\Core\Configuration">
-      <UniqueIdentifier>{885E23F6-746E-CFC6-DD27-34E5C956BE5F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Runtime\Core\Utility">
-      <UniqueIdentifier>{84DE849A-706D-0E64-198C-225F05FA1E0A}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Runtime\Editor">
       <UniqueIdentifier>{5FE67805-4BB4-6C0B-3448-DD3120B54870}</UniqueIdentifier>
     </Filter>
@@ -124,8 +115,14 @@
     <Filter Include="Runtime\Graphics\Buffer">
       <UniqueIdentifier>{72894218-DEC0-8AAF-E7CA-EED25381B1A8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Runtime\Graphics\Core">
-      <UniqueIdentifier>{A1B5ED67-0D22-A962-D615-41C04241CBCA}</UniqueIdentifier>
+    <Filter Include="Runtime\Graphics\Command">
+      <UniqueIdentifier>{B7711160-A396-60E0-CCE1-4570B8655FFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics\Descriptor">
+      <UniqueIdentifier>{17B81417-83C5-42FD-0CAC-3EE878B80EB4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Graphics\Device">
+      <UniqueIdentifier>{2825D41B-945C-1CB3-9D66-80D6091D43AC}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\Graphics\Pipeline">
       <UniqueIdentifier>{EEB52E9A-5A78-6224-A328-F1B00F2A3B02}</UniqueIdentifier>
@@ -177,6 +174,12 @@
     </Filter>
     <Filter Include="Runtime\Script">
       <UniqueIdentifier>{6DC71326-5995-072C-4229-78522E96E390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Util">
+      <UniqueIdentifier>{36628B1B-22C5-1AC0-CB4A-5376B78CE642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Util\Configuration">
+      <UniqueIdentifier>{3DDA089B-29EA-B46B-92A3-198A7ED2A304}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\World">
       <UniqueIdentifier>{C042198D-2C03-95C3-F53D-DE4061BDD99F}</UniqueIdentifier>
@@ -411,12 +414,6 @@
     <ClInclude Include="Runtime\Assets\Texture\TextureTraits.h">
       <Filter>Runtime\Assets\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Core\Configuration\Configuration.h">
-      <Filter>Runtime\Core\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="Runtime\Core\Utility\ComPtr.h">
-      <Filter>Runtime\Core\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Runtime\Editor\EditorTestMainMenu.h">
       <Filter>Runtime\Editor</Filter>
     </ClInclude>
@@ -540,32 +537,32 @@
     <ClInclude Include="Runtime\Graphics\Buffer\SwapChain.h">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Graphics\Command\GraphicsCommandContext.h">
+      <Filter>Runtime\Graphics\Command</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\Graphics\Core.h">
       <Filter>Runtime\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\DebugLayer.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Descriptor\Descriptor.h">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\DebugReporter.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Descriptor\DescriptorAllocator.h">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\Descriptor.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Descriptor\DescriptorHeaps.h">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\DescriptorAllocator.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Device\DebugLayer.h">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\DescriptorHeaps.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Device\DebugReporter.h">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\Device.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Device\Device.h">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\GraphicsCommandContext.h">
-      <Filter>Runtime\Graphics\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Runtime\Graphics\Core\InfoQueue.h">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClInclude Include="Runtime\Graphics\Device\InfoQueue.h">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClInclude>
     <ClInclude Include="Runtime\Graphics\GraphicsUtil.h">
       <Filter>Runtime\Graphics</Filter>
@@ -744,6 +741,12 @@
     <ClInclude Include="Runtime\Script\HostfxrModule.h">
       <Filter>Runtime\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Runtime\Util\ComPtr.h">
+      <Filter>Runtime\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Util\Configuration\Configuration.h">
+      <Filter>Runtime\Util\Configuration</Filter>
+    </ClInclude>
     <ClInclude Include="Runtime\World\Component\BaseComponent.h">
       <Filter>Runtime\World\Component</Filter>
     </ClInclude>
@@ -896,12 +899,6 @@
     <ClCompile Include="Runtime\Assets\Texture\TextureMetadata.cpp">
       <Filter>Runtime\Assets\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Core\Configuration\Configuration.cpp">
-      <Filter>Runtime\Core\Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Core\Utility\ComPtr.cpp">
-      <Filter>Runtime\Core\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="Runtime\Editor\EditorTestMainMenu.cpp">
       <Filter>Runtime\Editor</Filter>
     </ClCompile>
@@ -1004,32 +1001,32 @@
     <ClCompile Include="Runtime\Graphics\Buffer\SwapChain.cpp">
       <Filter>Runtime\Graphics\Buffer</Filter>
     </ClCompile>
+    <ClCompile Include="Runtime\Graphics\Command\GraphicsCommandContext.cpp">
+      <Filter>Runtime\Graphics\Command</Filter>
+    </ClCompile>
     <ClCompile Include="Runtime\Graphics\Core.cpp">
       <Filter>Runtime\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\DebugLayer.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Descriptor\Descriptor.cpp">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\DebugReporter.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Descriptor\DescriptorAllocator.cpp">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\Descriptor.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Descriptor\DescriptorHeaps.cpp">
+      <Filter>Runtime\Graphics\Descriptor</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\DescriptorAllocator.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Device\DebugLayer.cpp">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\DescriptorHeaps.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Device\DebugReporter.cpp">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\Device.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Device\Device.cpp">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\GraphicsCommandContext.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Runtime\Graphics\Core\InfoQueue.cpp">
-      <Filter>Runtime\Graphics\Core</Filter>
+    <ClCompile Include="Runtime\Graphics\Device\InfoQueue.cpp">
+      <Filter>Runtime\Graphics\Device</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\Graphics\Pipeline\BlendState.cpp">
       <Filter>Runtime\Graphics\Pipeline</Filter>
@@ -1183,6 +1180,9 @@
     </ClCompile>
     <ClCompile Include="Runtime\Script\HostfxrModule.cpp">
       <Filter>Runtime\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Util\Configuration\Configuration.cpp">
+      <Filter>Runtime\Util\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="Runtime\World\Component\Camera\CameraComponent.cpp">
       <Filter>Runtime\World\Component\Camera</Filter>

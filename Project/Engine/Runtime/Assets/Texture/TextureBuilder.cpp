@@ -67,7 +67,7 @@ DirectX::ScratchImage TextureBuilder::GenerateMipmaps(const DirectX::ScratchImag
 		0,
 		image
 	);
-	ComPtrUtil::Assert(hr, L"mipmaps create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"mipmaps create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return image;
 }
@@ -86,7 +86,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromDDS(const std::filesystem::
 		nullptr,
 		image
 	);
-	ComPtrUtil::Assert(hr, L"dds texture load failed. filepath: " + filepath.generic_wstring());
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"dds texture load failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		return image; //!< 圧縮formatの場合, 変更できないのでここで終了.
@@ -112,7 +112,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromHDR(const std::filesystem::
 		nullptr,
 		image
 	);
-	ComPtrUtil::Assert(hr, L"hdr texture load failed. filepath: " + filepath.generic_wstring());
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"hdr texture load failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		return image; //!< 圧縮formatの場合, 変更できないのでここで終了.
@@ -138,7 +138,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromTGA(const std::filesystem::
 		nullptr,
 		image
 	);
-	ComPtrUtil::Assert(hr, L"tga texture load failed. filepath: " + filepath.generic_wstring());
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"tga texture load failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		return image; //!< 圧縮formatの場合, 変更できないのでここで終了.
@@ -168,7 +168,7 @@ DirectX::ScratchImage TextureBuilder::LoadTextureFromWIC(const std::filesystem::
 		nullptr,
 		image
 	);
-	ComPtrUtil::Assert(hr, L"wic texture load failed. filepath: " + filepath.generic_wstring());
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"wic texture load failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		return image; //!< 圧縮formatの場合, 変更できないのでここで終了.

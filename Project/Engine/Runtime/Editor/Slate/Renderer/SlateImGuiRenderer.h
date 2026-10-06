@@ -8,7 +8,7 @@
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Graphics/Core/Descriptor.h>
+#include <Runtime/Graphics/Descriptor/Descriptor.h>
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>

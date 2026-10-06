@@ -292,7 +292,7 @@ ComPtr<ID3D12PipelineState> GraphicsPipelineState::CreateVertexPipelineState(Ref
 		&state,
 		IID_PPV_ARGS(&pipeline)
 	);
-	ComPtrUtil::Assert(hr, L"vertex pipeline state creation failed");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"vertex pipeline state creation failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return pipeline;
 }
@@ -335,7 +335,7 @@ ComPtr<ID3D12PipelineState> GraphicsPipelineState::CreateMeshPipelineState(RefPt
 		&streamDesc,
 		IID_PPV_ARGS(&pipeline)
 	);
-	ComPtrUtil::Assert(hr, L"mesh pipeline state creation failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"mesh pipeline state creation failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return pipeline;
 }

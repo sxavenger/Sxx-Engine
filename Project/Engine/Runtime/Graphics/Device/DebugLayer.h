@@ -5,11 +5,13 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "Device.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
+
+//* c++
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -17,9 +19,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// InfoQueue class
+// DebugLayer class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class InfoQueue final {
+class DebugLayer final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,11 +44,10 @@ public:
 		// public variables
 		//=========================================================================================
 
-		static inline constexpr Configuration::Path kConfigPath{ "Graphics.InfoQueue" }; //!< 設定のパス.
+		static inline constexpr Configuration::Path kConfigPath{ "Graphics.DebugLayer" }; //!< 設定のパス.
 
-		std::vector<D3D12_MESSAGE_SEVERITY> breakSeverity = { D3D12_MESSAGE_SEVERITY_CORRUPTION, D3D12_MESSAGE_SEVERITY_ERROR }; //!< デバッグブレークするメッセージの重大度.
-		std::vector<D3D12_MESSAGE_SEVERITY> filterSeverity = { D3D12_MESSAGE_SEVERITY_INFO }; //!< フィルタリングするメッセージの重大度.
-		std::vector<D3D12_MESSAGE_ID> filterId = {}; //!< フィルタリングするメッセージのID.
+		bool enable                   = false; //!< デバッグレイヤーを有効にするか.
+		bool enableGpuBasedValidation = false; //!< GPUベースのバリデーションを有効にするか.
 
 	};
 
@@ -58,10 +59,12 @@ public:
 
 	//* constructor / destructor *//
 
-	InfoQueue() noexcept = default;
-	~InfoQueue();
+	DebugLayer() noexcept = default;
+	~DebugLayer();
 
-	void Init(const Configuration& config, const Device& device);
+	//* debug layer option *//
+
+	void Init(const Configuration& config);
 
 private:
 
@@ -71,7 +74,7 @@ private:
 
 	//* DirectX12 *//
 
-	ComPtr<ID3D12InfoQueue> infoQueue_;
+	ComPtr<ID3D12Debug1> layer_;
 
 	//* settings *//
 
@@ -83,11 +86,7 @@ private:
 
 	//* initailize helper methods *//
 
-	static ComPtr<ID3D12InfoQueue> CreateInfoQueue(RefPtr<ID3D12Device8> device);
-
-	//* settings helper methods *//
-
-	void ApplySettings();
+	static ComPtr<ID3D12Debug1> CreateDebugLayer();
 
 };
 

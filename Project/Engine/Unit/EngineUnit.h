@@ -8,7 +8,7 @@
 #include <Runtime/Framework/Core/IUnit.h>
 
 //* engine [core]
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* engine [application]
 #include <Runtime/Application/FrameClock.h>

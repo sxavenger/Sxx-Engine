@@ -141,7 +141,7 @@ ComPtr<ID3D12DescriptorHeap> DescriptorAllocator::CreateDescriptorHeap(RefPtr<ID
 	auto hr = device->CreateDescriptorHeap(
 		&desc, IID_PPV_ARGS(descriptorHeap.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"descriptor heap create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"descriptor heap create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return descriptorHeap;
 }

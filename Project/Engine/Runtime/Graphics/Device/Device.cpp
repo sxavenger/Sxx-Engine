@@ -53,7 +53,7 @@ void Device::Settings::Log(const Settings& settings) {
 bool Device::Support::CheckAllowTearing(RefPtr<IDXGIFactory7> factory) {
 	BOOL isSupport = false;
 	auto hr = factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &isSupport, sizeof(BOOL));
-	ComPtrUtil::Assert(hr, L"check feature tearing support error.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature tearing support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (isSupport) {
 		STREAM_LOG_INFO("Graphics::Device::Support | tearing is allowed.");
@@ -69,7 +69,7 @@ D3D_SHADER_MODEL Device::Support::CheckShaderModel(RefPtr<ID3D12Device8> device)
 	//!< Shader Modelの機能レベルの確認.
 	D3D12_FEATURE_DATA_SHADER_MODEL shaderModel = { D3D_HIGHEST_SHADER_MODEL };
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shaderModel, sizeof(D3D12_FEATURE_DATA_SHADER_MODEL));
-	ComPtrUtil::Assert(hr, L"check feature shader model support error.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature shader model support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	STREAM_LOG_INFO("Graphics::Device::Support | supported highest shader model tier: {}", shaderModel.HighestShaderModel);
 	return shaderModel.HighestShaderModel;
@@ -81,7 +81,7 @@ bool Device::Support::CheckMeshShader(RefPtr<ID3D12Device8> device) {
 
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 features = {};
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &features, sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS7));
-	ComPtrUtil::Assert(hr, L"check feature mesh shader support error.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature mesh shader support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	isSupport = (features.MeshShaderTier != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED);
 
@@ -98,7 +98,7 @@ bool Device::Support::CheckMeshShader(RefPtr<ID3D12Device8> device) {
 D3D12_RAYTRACING_TIER Device::Support::CheckRaytracing(RefPtr<ID3D12Device8> device) {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS5 option = {};
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &option, sizeof(option));
-	ComPtrUtil::Assert(hr, L"check feature raytracing support error.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature raytracing support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	STREAM_LOG_INFO("Graphics::Device::Support | supported raytracing tier: {}", option.RaytracingTier);
 	return option.RaytracingTier;
@@ -108,7 +108,7 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 	{ //!< Render Passのサポート確認.
 		D3D12_FEATURE_DATA_D3D12_OPTIONS18 option = {};
 		auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS18, &option, sizeof(option));
-		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
+		STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature render pass support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 		if (!option.RenderPassesValid) {
 			STREAM_LOG_INFO("Graphics::Device::Support | render pass not supported.");
@@ -119,7 +119,7 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 	{ //!< Render PassのサポートTierの確認.
 		D3D12_FEATURE_DATA_D3D12_OPTIONS5 option = {};
 		auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &option, sizeof(option));
-		ComPtrUtil::Assert(hr, L"check feature render pass support error.");
+		STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature render pass support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 		STREAM_LOG_INFO("Graphics::Device::Support | supported render passes tier: {}", option.RenderPassesTier);
 		return option.RenderPassesTier;
@@ -154,7 +154,7 @@ void Device::Init(const Configuration& config) {
 DXGI_QUERY_VIDEO_MEMORY_INFO Device::GetVideoMemoryInfo() const {
 	DXGI_QUERY_VIDEO_MEMORY_INFO info = {};
 	auto hr = adapter_->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
-	ComPtrUtil::Assert(hr, L"query video memory info failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"query video memory info failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return info;
 }
@@ -166,7 +166,7 @@ Device::Status Device::CheckDeviceStatus() const {
 	}
 
 	STREAM_LOG_CRITICAL(
-		L"Graphics::Device | device removed. _com_error_: {}", ComPtrUtil::GetComErrorMessage(hr)
+		L"Graphics::Device | device removed. _com_error_: {}", GetComErrorMessage(hr)
 	);
 
 	return Device::Status::Removed; //!< デバイスは異常.
@@ -185,7 +185,7 @@ ComPtr<IDXGIFactory7> Device::CreateFactory() {
 	ComPtr<IDXGIFactory7> factory;
 
 	auto hr = CreateDXGIFactory(IID_PPV_ARGS(factory.GetAddressOf()));
-	ComPtrUtil::Assert(hr, L"dxgi factory create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxgi factory create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return factory;
 }
@@ -202,12 +202,12 @@ ComPtr<IDXGIAdapter4> Device::CreateAdapter(RefPtr<IDXGIFactory7> factory) {
 		if (hr == DXGI_ERROR_NOT_FOUND) {
 			break; //!< アダプタが見つからない.
 		}
-		ComPtrUtil::Assert(hr, L"dxgi adapter enum failed.");
+		STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxgi adapter enum failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 		//!< アダプタ情報の取得
 		DXGI_ADAPTER_DESC3 desc = {};
 		hr = adapter->GetDesc3(&desc);
-		ComPtrUtil::Assert(hr, L"dxgi adapter get desc failed.");
+		STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxgi adapter get desc failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 		if (desc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE) {
 			continue; //!< ソフトウェアアダプタはスキップ.

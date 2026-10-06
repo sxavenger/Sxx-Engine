@@ -54,9 +54,9 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Graphics Pipeline State 0 の作成
 		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/Simple.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/Simple.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
-		desc.SetRasterizer(D3D12_CULL_MODE_NONE, D3D12_FILL_MODE_SOLID);
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/VS-PS/Simple.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/VS-PS/Simple.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
 		desc.SetDepthStencil(true);
 		desc.SetDepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT);
 		desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
@@ -142,27 +142,27 @@ void SandboxUnit::UpdateSandbox() {
 		Vector3f position = transform->GetPosition();
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::A).IsPress()) {
-			position.x -= 0.1f;
+			position.x -= 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::D).IsPress()) {
-			position.x += 0.1f;
+			position.x += 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::W).IsPress()) {
-			position.z += 0.1f;
+			position.z += 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::S).IsPress()) {
-			position.z -= 0.1f;
+			position.z -= 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::Q).IsPress()) {
-			position.y += 0.1f;
+			position.y += 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::E).IsPress()) {
-			position.y -= 0.1f;
+			position.y -= 0.01f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::R).IsTrigger()) {
@@ -180,6 +180,7 @@ void SandboxUnit::RenderSandbox() {
 	auto& context = Sxx::Graphics::Core::GetCommandContextDirect();
 
 	{ //!< cacheの更新
+		// TODO: 別threadでcacheの更新を行うようにする.
 
 		auto mesh = handle_.Get();
 		Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::StaticMeshCache>(mesh->GetUuid(), mesh->GetAddress(), mesh);

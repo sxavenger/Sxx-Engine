@@ -7,13 +7,17 @@
 #include "GraphicsUtil.h"
 #include "PixEvent.h"
 
-//* graphics [core]
-#include "Core/DebugReporter.h"
-#include "Core/DebugLayer.h"
-#include "Core/Device.h"
-#include "Core/InfoQueue.h"
-#include "Core/DescriptorHeaps.h"
-#include "Core/GraphicsCommandContext.h"
+//* graphics [device]
+#include "Device/DebugReporter.h"
+#include "Device/DebugLayer.h"
+#include "Device/Device.h"
+#include "Device/InfoQueue.h"
+
+//* graphics [descriptor]
+#include "Descriptor/DescriptorHeaps.h"
+
+//* graphics [command]
+#include "Command/GraphicsCommandContext.h"
 
 //* graphics [shader]
 #include "Shader/ShaderCompiler.h"
@@ -25,7 +29,7 @@
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* lib
 #include <Lib/Reflection/EnumUtil.h>
@@ -122,14 +126,20 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* Graphics [core] *//
+	//* Graphics [device] *//
 
 	static inline DebugReporter reporter_; //!< LiveObjectのレポートを行うオブジェクト.
 	
 	static inline DebugLayer debugLayer_;
 	static inline Device device_;
 	static inline InfoQueue infoQueue_;
+
+	//* Graphics [descriptor] *//
+
 	static inline DescriptorHeaps descriptorHeaps_;
+
+	//* Graphics [command] *//
+
 	static inline GraphicsCommandContext contexts_[EnumUtil<GraphicsCommandType>::GetCount()]; //!< GraphicsCommandContextの配列.
 	//!< copy, computeは非同期側の使用を想定.
 

@@ -57,13 +57,13 @@ void Mouse::Init(IDirectInput8* dinput) {
 	auto hr = dinput->CreateDevice(
 		GUID_SysMouse, &device_, NULL
 	);
-	ComPtrUtil::Assert(hr, L"failed to create mouse device.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"failed to create mouse device.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< 入力データ形式のセット
 	hr = device_->SetDataFormat(
 		&c_dfDIMouse2 // 標準形式
 	);
-	ComPtrUtil::Assert(hr, L"mouse set data format failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"mouse set data format failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	STREAM_LOG_INFO("Platform::Mouse | mouse device created.");
 }
@@ -203,7 +203,7 @@ bool Mouse::SetCooperativeLevel(HWND hwnd) {
 		if (FAILED(hr)) {
 			STREAM_LOG_ERROR(
 				L"Platform::Mouse | failed to set cooperative level. hwnd: {:p} _com_error: {}",
-				static_cast<const void*>(hwnd), ComPtrUtil::GetComErrorMessage(hr)
+				static_cast<const void*>(hwnd), GetComErrorMessage(hr)
 			);
 
 			return false; //!< cooperative levelの設定に失敗した場合は、入力が取得できないためfalseを返す

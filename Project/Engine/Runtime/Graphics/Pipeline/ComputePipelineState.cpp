@@ -87,7 +87,7 @@ ComPtr<ID3D12PipelineState> ComputePipelineState::CreateComputePipelineState(Ref
 		&state,
 		IID_PPV_ARGS(&pipeline)
 	);
-	ComPtrUtil::Assert(hr, L"compute pipeline state creation failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"compute pipeline state creation failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return pipeline;
 }

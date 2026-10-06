@@ -110,7 +110,7 @@ ShaderBlob ShaderCompiler::Compile(
 		nullptr,
 		&source
 	);
-	ComPtrUtil::Assert(hr, std::format(L"dxcompiler load file failed. filepath: {}", path.generic_wstring()));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"dxcompiler load file failed. filepath: {}", path.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return Compile(path, source.Get(), profile, entryPoint);
 }
@@ -124,7 +124,7 @@ ShaderReflection ShaderCompiler::Reflect(const ShaderBlob& blob) const {
 		&buffer,
 		IID_PPV_ARGS(&reflection)
 	);
-	ComPtrUtil::Assert(hr, L"dxcompiler reflection create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxcompiler reflection create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return reflection;
 }
@@ -136,7 +136,7 @@ ComPtr<IDxcUtils> ShaderCompiler::CreateUtils() {
 	auto hr = DxcCreateInstance(
 		CLSID_DxcUtils, IID_PPV_ARGS(utils.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"dxcompiler utils create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxcompiler utils create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return utils;
 }
@@ -148,7 +148,7 @@ ComPtr<IDxcCompiler3> ShaderCompiler::CreateCompiler() {
 	auto hr = DxcCreateInstance(
 		CLSID_DxcCompiler, IID_PPV_ARGS(compiler.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"dxcompiler compiler create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxcompiler compiler create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return compiler;
 	
@@ -161,7 +161,7 @@ ComPtr<IDxcIncludeHandler> ShaderCompiler::CreateIncludeHandler(RefPtr<IDxcUtils
 	auto hr = utils->CreateDefaultIncludeHandler(
 		handler.GetAddressOf()
 	);
-	ComPtrUtil::Assert(hr, L"dxcompiler include handler create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"dxcompiler include handler create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return handler;
 }
@@ -214,12 +214,12 @@ ShaderBlob ShaderCompiler::Compile(
 		includeHandler_.Get(),
 		IID_PPV_ARGS(result.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, std::format(L"shader compile failed. filepath: {}", filepath.generic_wstring()));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"shader compile failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< コンパイルエラーがある場合はログに出力する
 	ComPtr<IDxcBlobUtf8> error;
 	hr = result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(error.GetAddressOf()), nullptr);
-	ComPtrUtil::Assert(hr, std::format(L"shader compile error output failed. filepath: {}", filepath.generic_wstring()));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"shader compile error output failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	if (error != nullptr && error->GetStringLength() != 0) {
 		std::string_view message(error->GetStringPointer(), error->GetStringLength());
@@ -232,7 +232,7 @@ ShaderBlob ShaderCompiler::Compile(
 	//!< コンパイル結果からバイナリを取得する
 	ComPtr<IDxcBlob> blob;
 	hr = result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(blob.GetAddressOf()), nullptr);
-	ComPtrUtil::Assert(hr, std::format(L"shader compile object output failed. filepath: {}", filepath.generic_wstring()));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), std::format(L"shader compile object output failed. filepath: {}", filepath.generic_wstring()), L"_com_error_: {}", GetComErrorMessage(hr));
 
 	STREAM_LOG_INFO("shader compile success. filepath: {}", filepath.generic_string());
 	return ShaderBlob(blob, profile, this);

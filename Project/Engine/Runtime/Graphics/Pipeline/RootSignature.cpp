@@ -324,7 +324,7 @@ ComPtr<ID3D12RootSignature> RootSignature::CreateRootSignature(RefPtr<ID3D12Devi
 		blob->GetBufferSize(),
 		IID_PPV_ARGS(rootSignature.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"root signature create error.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"root signature create error.", L"_com_error_: {}", GetComErrorMessage(hr));
 	
 	return rootSignature;
 }

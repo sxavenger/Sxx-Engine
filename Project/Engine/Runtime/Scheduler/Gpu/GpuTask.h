@@ -11,7 +11,7 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 #include <Runtime/Graphics/GraphicsUtil.h>
-#include <Runtime/Graphics/Core/GraphicsCommandContext.h>
+#include <Runtime/Graphics/Command/GraphicsCommandContext.h>
 
 //* lib
 #include <Lib/Reflection/EnumUtil.h>

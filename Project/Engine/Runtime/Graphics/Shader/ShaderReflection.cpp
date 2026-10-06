@@ -8,7 +8,7 @@ SXAVENGER_ENGINE_USING_(Graphics)
 D3D12_SHADER_DESC ShaderReflection::GetShaderDesc() const {
 	D3D12_SHADER_DESC desc = {};
 	auto hr = reflection_->GetDesc(&desc);
-	ComPtrUtil::Assert(hr, L"shader reflection get desc failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"shader reflection get desc failed. _com_error_: {}", GetComErrorMessage(hr));
 
 	return desc;
 }
@@ -16,7 +16,7 @@ D3D12_SHADER_DESC ShaderReflection::GetShaderDesc() const {
 D3D12_SHADER_INPUT_BIND_DESC ShaderReflection::GetResourceBindingDesc(UINT index) const {
 	D3D12_SHADER_INPUT_BIND_DESC desc = {};
 	auto hr = reflection_->GetResourceBindingDesc(index, &desc);
-	ComPtrUtil::Assert(hr, L"shader reflection get resource binding desc failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"shader reflection get resource binding desc failed. _com_error_: {}", GetComErrorMessage(hr));
 
 	return desc;
 }

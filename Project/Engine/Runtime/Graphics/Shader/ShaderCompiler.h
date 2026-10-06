@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
+#include "../Device/Device.h"
 #include "ShaderBlob.h"
 #include "ShaderReflection.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 //* lib
 #include <Lib/Reflection/EnumUtil.h>

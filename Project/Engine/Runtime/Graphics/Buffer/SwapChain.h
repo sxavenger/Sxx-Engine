@@ -5,10 +5,10 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
-#include "../Core/GraphicsCommandContext.h"
-#include "../Core/DescriptorHeaps.h"
-#include "../Core/Descriptor.h"
+#include "../Device/Device.h"
+#include "../Descriptor/DescriptorHeaps.h"
+#include "../Descriptor/Descriptor.h"
+#include "../Command/GraphicsCommandContext.h"
 #include "Resource.h"
 
 //* engine

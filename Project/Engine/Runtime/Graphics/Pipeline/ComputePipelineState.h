@@ -5,8 +5,8 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
-#include "../Core/GraphicsCommandContext.h"
+#include "../Device/Device.h"
+#include "../Command/GraphicsCommandContext.h"
 #include "../Shader/ShaderBlob.h"
 #include "RootSignature.h"
 

@@ -5,13 +5,22 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
+#include "../Device/Device.h"
+#include "DescriptorAllocator.h"
+#include "Descriptor.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
+#include <Runtime/Util/Configuration/Configuration.h>
+
+//* lib
+#include <Lib/CXXAttribute.hpp>
+#include <Lib/Pointer/ReferencePointer.h>
+#include <Lib/Reflection/EnumUtil.h>
+#include <Lib/Container/IndexAllocator.h>
 
 //* c++
-#include <string>
+#include <array>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -19,9 +28,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// DebugLayer class
+// DescriptorHeaps class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class DebugLayer final {
+class DescriptorHeaps final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,10 +53,11 @@ public:
 		// public variables
 		//=========================================================================================
 
-		static inline constexpr Configuration::Path kConfigPath{ "Graphics.DebugLayer" }; //!< 設定のパス.
+		static inline constexpr Configuration::Path kConfigPath{ "Graphics.DescriptorHeaps" }; //!< 設定のパス.
 
-		bool enable                   = false; //!< デバッグレイヤーを有効にするか.
-		bool enableGpuBasedValidation = false; //!< GPUベースのバリデーションを有効にするか.
+		UINT descriptorCapacityRTV         = 12; //!< RTVのデスクリプタヒープのデスクリプタ数.
+		UINT descriptorCapacityDSV         = 12; //!< DSVのデスクリプタヒープのデスクリプタ数.
+		UINT descriptorCapacityCBV_SRV_UAV = 12; //!< CBV/SRV/UAVのデスクリプタヒープのデスクリプタ数.
 
 	};
 
@@ -57,14 +67,18 @@ public:
 	// public methods
 	//=========================================================================================
 
-	//* constructor / destructor *//
+	void Init(const Configuration& config, const Device& device);
 
-	DebugLayer() noexcept = default;
-	~DebugLayer();
+	//* descriptor option *//
 
-	//* debug layer option *//
+	NODISCARD Descriptor Allocate(DescriptorCategory category);
 
-	void Init(const Configuration& config);
+	void Free();
+
+	//* descriptor allocator option *//
+
+	DescriptorAllocator& GetAllocator(DescriptorCategory category);
+	const DescriptorAllocator& GetAllocator(DescriptorCategory category) const;
 
 private:
 
@@ -72,21 +86,13 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* DirectX12 *//
+	//* descriptor pools *//
 
-	ComPtr<ID3D12Debug1> layer_;
+	std::array<DescriptorAllocator, EnumUtil<DescriptorCategory>::GetCount()> pools_;
 
-	//* settings *//
+	//* status *//
 
 	Settings settings_;
-
-	//=========================================================================================
-	// private methods
-	//=========================================================================================
-
-	//* initailize helper methods *//
-
-	static ComPtr<ID3D12Debug1> CreateDebugLayer();
 
 };
 

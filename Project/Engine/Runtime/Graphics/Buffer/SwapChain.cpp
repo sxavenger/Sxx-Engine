@@ -201,7 +201,7 @@ ComPtr<IDXGISwapChain4> SwapChain::CreateSwapChain(RefPtr<IDXGIFactory7> factory
 		nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(swapChain.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"swap chain create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"swap chain create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return swapChain;
 }
@@ -211,7 +211,7 @@ ComPtr<ID3D12Resource> SwapChain::GetBufferResource(uint32_t index, RefPtr<IDXGI
 	ComPtr<ID3D12Resource> resource;
 
 	auto hr = swapChain->GetBuffer(index, IID_PPV_ARGS(resource.GetAddressOf()));
-	ComPtrUtil::Assert(hr, L"swap chain get buffer failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"swap chain get buffer failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 	
 	return resource;
 }

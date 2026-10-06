@@ -1,5 +1,4 @@
 #include "Core.h"
-#include "Core.h"
 SXAVENGER_ENGINE_USING_(Graphics)
 
 //-----------------------------------------------------------------------------------------

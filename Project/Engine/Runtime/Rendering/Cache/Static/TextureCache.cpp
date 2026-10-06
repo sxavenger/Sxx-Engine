@@ -87,7 +87,7 @@ NODISCARD Graphics::Resource TextureCache::UploadResourceData(const Graphics::Gr
 		image.GetMetadata(),
 		subresources
 	);
-	ComPtrUtil::Assert(hr, L"texture prepare upload failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"texture prepare upload failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< upload用の中間bufferを作成
 	Graphics::Resource intermediate = Graphics::Resource::CreateCommitted(

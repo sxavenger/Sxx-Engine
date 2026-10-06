@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Utility/ComPtr.h>
+#include <Runtime/Util/ComPtr.h>
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>

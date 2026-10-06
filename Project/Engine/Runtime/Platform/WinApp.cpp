@@ -5,7 +5,7 @@ SXAVENGER_ENGINE_USING_(Platform)
 // include
 //-----------------------------------------------------------------------------------------
 //* engine
-#include <Runtime/Core/Utility/ComPtr.h>
+#include <Runtime/Util/ComPtr.h>
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>

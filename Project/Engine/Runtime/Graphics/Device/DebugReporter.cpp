@@ -20,10 +20,8 @@ void DebugReporter::ReportLiveObjects() {
 	auto hr = DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf()));
 	if (FAILED(hr)) {
 		STREAM_LOG_ERROR(
-			
-				L"Graphics::DebugReporter | failed to get debug interface. _com_error: {}",
-				ComPtrUtil::GetComErrorMessage(hr)
-			
+			L"Graphics::DebugReporter | failed to get debug interface. _com_error: {}",
+			GetComErrorMessage(hr)
 		);
 		return;
 	}

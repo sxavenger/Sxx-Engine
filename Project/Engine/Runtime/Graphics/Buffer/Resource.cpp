@@ -135,7 +135,7 @@ Resource Resource::CreateCommitted(const Device& device, const ResourceDesc& des
 		desc.GetClearValue(),
 		IID_PPV_ARGS(resource.GetAddressOf())
 	);
-	ComPtrUtil::Assert(hr, L"resource create failed.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"resource create failed.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	return Resource::Wrap(std::move(resource), desc.state);
 }

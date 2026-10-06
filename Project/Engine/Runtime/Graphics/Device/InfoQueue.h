@@ -6,21 +6,10 @@
 //* graphics
 #include "../GraphicsUtil.h"
 #include "Device.h"
-#include "DescriptorAllocator.h"
-#include "Descriptor.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Core/Configuration/Configuration.h>
-
-//* lib
-#include <Lib/CXXAttribute.hpp>
-#include <Lib/Pointer/ReferencePointer.h>
-#include <Lib/Reflection/EnumUtil.h>
-#include <Lib/Container/IndexAllocator.h>
-
-//* c++
-#include <array>
+#include <Runtime/Util/Configuration/Configuration.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -28,9 +17,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Graphics)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// DescriptorHeaps class
+// InfoQueue class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class DescriptorHeaps final {
+class InfoQueue final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +42,11 @@ public:
 		// public variables
 		//=========================================================================================
 
-		static inline constexpr Configuration::Path kConfigPath{ "Graphics.DescriptorHeaps" }; //!< 設定のパス.
+		static inline constexpr Configuration::Path kConfigPath{ "Graphics.InfoQueue" }; //!< 設定のパス.
 
-		UINT descriptorCapacityRTV         = 12; //!< RTVのデスクリプタヒープのデスクリプタ数.
-		UINT descriptorCapacityDSV         = 12; //!< DSVのデスクリプタヒープのデスクリプタ数.
-		UINT descriptorCapacityCBV_SRV_UAV = 12; //!< CBV/SRV/UAVのデスクリプタヒープのデスクリプタ数.
+		std::vector<D3D12_MESSAGE_SEVERITY> breakSeverity = { D3D12_MESSAGE_SEVERITY_CORRUPTION, D3D12_MESSAGE_SEVERITY_ERROR }; //!< デバッグブレークするメッセージの重大度.
+		std::vector<D3D12_MESSAGE_SEVERITY> filterSeverity = { D3D12_MESSAGE_SEVERITY_INFO }; //!< フィルタリングするメッセージの重大度.
+		std::vector<D3D12_MESSAGE_ID> filterId = {}; //!< フィルタリングするメッセージのID.
 
 	};
 
@@ -67,18 +56,12 @@ public:
 	// public methods
 	//=========================================================================================
 
+	//* constructor / destructor *//
+
+	InfoQueue() noexcept = default;
+	~InfoQueue();
+
 	void Init(const Configuration& config, const Device& device);
-
-	//* descriptor option *//
-
-	NODISCARD Descriptor Allocate(DescriptorCategory category);
-
-	void Free();
-
-	//* descriptor allocator option *//
-
-	DescriptorAllocator& GetAllocator(DescriptorCategory category);
-	const DescriptorAllocator& GetAllocator(DescriptorCategory category) const;
 
 private:
 
@@ -86,13 +69,25 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* descriptor pools *//
+	//* DirectX12 *//
 
-	std::array<DescriptorAllocator, EnumUtil<DescriptorCategory>::GetCount()> pools_;
+	ComPtr<ID3D12InfoQueue> infoQueue_;
 
-	//* status *//
+	//* settings *//
 
 	Settings settings_;
+
+	//=========================================================================================
+	// private methods
+	//=========================================================================================
+
+	//* initailize helper methods *//
+
+	static ComPtr<ID3D12InfoQueue> CreateInfoQueue(RefPtr<ID3D12Device8> device);
+
+	//* settings helper methods *//
+
+	void ApplySettings();
 
 };
 

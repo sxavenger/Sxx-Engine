@@ -109,7 +109,7 @@ ComPtr<ID3D12InfoQueue> InfoQueue::CreateInfoQueue(RefPtr<ID3D12Device8> device)
 	if (FAILED(hr)) {
 		STREAM_LOG_ERROR(
 			L"Graphics::InfoQueue | failed to get info queue interface. _com_error: {}",
-			ComPtrUtil::GetComErrorMessage(hr)
+			GetComErrorMessage(hr)
 		);
 
 		return nullptr;

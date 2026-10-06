@@ -56,7 +56,7 @@ void InputContext::Init(const Configuration& config) {
 		reinterpret_cast<void**>(directInput_.GetAddressOf()),
 		nullptr
 	);
-	ComPtrUtil::Assert(hr, L"failed to create DirectInput.");
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"failed to create DirectInput.", L"_com_error_: {}", GetComErrorMessage(hr));
 
 	//!< dinput関係の初期化
 

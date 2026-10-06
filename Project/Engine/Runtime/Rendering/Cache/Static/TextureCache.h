@@ -8,8 +8,8 @@
 
 //* engine
 #include <Runtime/Foundation.hpp>
-#include <Runtime/Graphics/Core/GraphicsCommandContext.h>
-#include <Runtime/Graphics/Core/Descriptor.h>
+#include <Runtime/Graphics/Descriptor/Descriptor.h>
+#include <Runtime/Graphics/Command/GraphicsCommandContext.h>
 #include <Runtime/Graphics/Buffer/ResourceHandle.h>
 #include <Runtime/Graphics/Buffer/Resource.h>
 #include <Runtime/Assets/Texture/Texture.h>

@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* graphics
 #include "../GraphicsUtil.h"
-#include "../Core/Device.h"
+#include "../Device/Device.h"
 #include "Resource.h"
 #include "ResourceAllocator.h"
 #include "ResourceHandle.h"
