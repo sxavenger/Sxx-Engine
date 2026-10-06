@@ -13,7 +13,7 @@ project "DirectXTex"
 
 	-- 構成プロパティの修正(DevelopをReleaseと同等に)
 	removeconfigurations { "Develop" }
-    configmap { ["Develop"] = "Release" }
+	configmap { ["Develop"] = "Release" }
 
 	-- ファイル位置の設定 --
 	location "Externals/DirectXTex"
@@ -56,7 +56,7 @@ project "DirectXTex"
 
 	buildoptions {
 		"/Zc:__cplusplus",
-    	"/Zc:twoPhase-",
+		"/Zc:twoPhase-",
 		"/utf-8",
 	}
 
@@ -72,24 +72,24 @@ project "DirectXTex"
 
 	-- ShaderCompile起動
 	prebuildcommands {
-   		'if not exist "%{prj.location}\\Shaders\\Compiled\\BC6HEncode_EncodeBlockCS.inc" ( ' ..
-        'echo Compiling shaders... && ' ..
-        'cd /d "%{prj.location}\\Shaders" && ' ..
-        'CompileShaders.cmd' ..
-    	' )'
-    }
+		'if not exist "%{prj.location}\\Shaders\\Compiled\\BC6HEncode_EncodeBlockCS.inc" ( ' ..
+		'echo Compiling shaders... && ' ..
+		'cd /d "%{prj.location}\\Shaders" && ' ..
+		'CompileShaders.cmd' ..
+		' )'
+	}
 
 	cleancommands {
-        "del /Q %{prj.location}/Shaders/Compiled\\*.inc",
-        "del /Q %{prj.location}/Shaders/Compiled\\*.pdb"
-    }
+		"del /Q %{prj.location}/Shaders/Compiled\\*.inc",
+		"del /Q %{prj.location}/Shaders/Compiled\\*.pdb"
+	}
 
 	--- 構成ごとの設定 ---
 	filter "configurations:Debug"
 		-- ビルドオプション
 			symbols "On"
 			fatalwarnings { "All" }
-		
+
 	filter "configurations:Release"
 		-- ビルドオプション
 		optimize "On"

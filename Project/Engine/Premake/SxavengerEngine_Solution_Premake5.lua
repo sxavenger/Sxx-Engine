@@ -109,10 +109,10 @@ project "SxavengerEngine"
 	-- ビルド後イベント --
 	postbuildcommands {
 		-- host
-    	'xcopy /E /Y /I "%{prj.location}/Externals/dotnet/host" "%{cfg.targetdir}/dotnet/host"',
+		'xcopy /E /Y /I "%{prj.location}/Externals/dotnet/host" "%{cfg.targetdir}/dotnet/host"',
 
-    	-- shared
-    	'xcopy /E /Y /I "%{prj.location}/Externals/dotnet/shared" "%{cfg.targetdir}/dotnet/shared"',
+		-- shared
+		'xcopy /E /Y /I "%{prj.location}/Externals/dotnet/shared" "%{cfg.targetdir}/dotnet/shared"',
 	}
 
 	-- PixEvents
@@ -175,7 +175,7 @@ project "SxavengerEngine"
 
 	--- application構成ごとのビルドオプション設定 ---
 	filter "kind:ConsoleApp"
-    	defines { "CONSOLE" }
+		defines { "CONSOLE" }
 
 	--- project構成ごとのビルドオプション設定 ---
 	-- Debug
