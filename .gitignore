@@ -448,6 +448,13 @@ FodyWeavers.xsd
 !/Project/Engine/Externals/assimp/lib/[Rr]elease/
 /Project/Engine/Externals/assimp/lib/**/*.pdb
 
+# solution
+*.slnx
+*.vcxproj
+*.filters
+*.user
+*.csproj
+
 #-----------------------------------------------------------------------------------------
 # User ignore files
 #-----------------------------------------------------------------------------------------
