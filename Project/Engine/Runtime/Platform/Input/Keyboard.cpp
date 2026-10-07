@@ -93,13 +93,13 @@ bool Keyboard::IsEnableAcquire(InputUtil::Buffer buffer) const {
 	return inputs_[static_cast<uint8_t>(buffer)].IsEnableAcquire();
 }
 
-InputUtil::StateView Keyboard::GetKey(KeyId id) const {
+InputUtil::State Keyboard::GetKey(KeyId id) const {
 	if (!IsEnableAcquire(InputUtil::Buffer::Current)) {
 		//!< windowが非アクティブで入力が取得できない場合は入力なし
-		return InputUtil::State::None;
+		return InputUtil::State::Condition::None;
 	}
 
-	return InputUtil::GetInputState(
+	return InputUtil::State::Determine(
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetKey(static_cast<KeyId>(id)),
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetKey(static_cast<KeyId>(id))
 	);

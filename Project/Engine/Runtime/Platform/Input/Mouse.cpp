@@ -164,12 +164,12 @@ void Mouse::SetScreenPosition(const Vector2i& position) const {
 	SetCursorPos(point.x, point.y);
 }
 
-InputUtil::StateView Mouse::GetButton(MouseId id) const {
+InputUtil::State Mouse::GetButton(MouseId id) const {
 	if (!IsEnableAcquire(InputUtil::Buffer::Current)) {
-		return InputUtil::State::None; //!< 入力が取得できない場合は入力なし
+		return InputUtil::State::Condition::None; //!< 入力が取得できない場合は入力なし
 	}
 
-	return InputUtil::GetInputState(
+	return InputUtil::State::Determine(
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(static_cast<MouseId>(id)),
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(static_cast<MouseId>(id))
 	);

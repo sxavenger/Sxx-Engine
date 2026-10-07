@@ -35,16 +35,6 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Platform)
 namespace InputUtil {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// State enum class
-	////////////////////////////////////////////////////////////////////////////////////////////
-	enum class State : uint8_t {
-		None,    //!< 入力なし
-		Trigger, //!< トリガー (押された瞬間)
-		Hold,    //!< ホールド (押されている状態)
-		Release  //!< リリース (離された瞬間)
-	};
-
-	////////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Buffer : uint8_t {
@@ -68,16 +58,21 @@ namespace InputUtil {
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// methods
+	// State structure
 	////////////////////////////////////////////////////////////////////////////////////////////
+	struct State final {
+	public:
 
-	State GetInputState(bool current, bool previous);
+		////////////////////////////////////////////////////////////////////////////////////////////
+		// Condition enum class
+		////////////////////////////////////////////////////////////////////////////////////////////
+		enum class Condition : uint8_t {
+			None,    //!< 入力なし
+			Trigger, //!< トリガー (押された瞬間)
+			Hold,    //!< ホールド (押されている状態)
+			Release  //!< リリース (離された瞬間)
+		};
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// StateView class
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//! @brief 入力状態を簡単に確認するためのクラス
-	struct StateView {
 	public:
 
 		//=========================================================================================
@@ -86,49 +81,50 @@ namespace InputUtil {
 
 		//* constructor *//
 
-		constexpr StateView() noexcept = default;
+		constexpr State() noexcept = default;
 
-		//* state option *//
+		//* condition option *//
 
-		constexpr bool IsPress() const { return state == State::Trigger || state == State::Hold; }
+		constexpr bool IsPress() const { return condition == Condition::Trigger || condition == Condition::Hold; }
 
-		constexpr bool IsTrigger() const { return state == State::Trigger; }
+		constexpr bool IsTrigger() const { return condition == Condition::Trigger; }
 
-		constexpr bool IsHold() const { return state == State::Hold; }
+		constexpr bool IsHold() const { return condition == Condition::Hold; }
 
-		constexpr bool IsRelease() const { return state == State::Release; }
+		constexpr bool IsRelease() const { return condition == Condition::Release; }
 
-		//* operatpr [copy] <StateView> *//
+		//* operator [assignment] <Condition> *//
 
-		constexpr StateView(const StateView&) noexcept            = default;
-		constexpr StateView& operator=(const StateView&) noexcept = default;
+		constexpr State(Condition rhs) noexcept : condition(rhs) {}
+		constexpr State& operator=(Condition rhs) noexcept { condition = rhs; return *this; }
 
-		//* operator [assignment] <State> *//
-
-		constexpr StateView(State _state) noexcept : state(_state) {}
-		constexpr StateView& operator=(State _state) noexcept { state = _state; return *this; }
-
-		//* operator [comparison] <StateView> *//
-
-		constexpr bool operator==(const StateView& rhs) const noexcept { return state == rhs.state; }
-		constexpr bool operator!=(const StateView& rhs) const noexcept { return state != rhs.state; }
 
 		//* operator [comparison] <State> *//
 
-		constexpr bool operator==(State rhs) const noexcept { return state == rhs; }
-		constexpr bool operator!=(State rhs) const noexcept { return state != rhs; }
+		constexpr bool operator==(const State& rhs) const noexcept { return condition == rhs.condition; }
+		constexpr bool operator!=(const State& rhs) const noexcept { return condition != rhs.condition; }
 
-		//* operator [cast] <State> *//
+		//* operator [comparison] <Condition> *//
 
-		constexpr operator State() const noexcept { return state; }
+		constexpr bool operator==(const Condition& rhs) const noexcept { return condition == rhs; }
+		constexpr bool operator!=(const Condition& rhs) const noexcept { return condition != rhs; }
+
+		//* operator [cast] <Condition> *//
+
+		constexpr operator Condition() const noexcept { return condition; }
+
+		//* static methods *//
+
+		static State Determine(bool current, bool previous);
 
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		State state = State::None; //!< 入力状態
-		
+		Condition condition = Condition::None; //!< 入力状態
+
 	};
+	
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

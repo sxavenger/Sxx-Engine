@@ -98,7 +98,7 @@ public:
 	void SetScreenPosition(const Vector2i& position) const;
 
 	//! @brief mouseの入力状態を取得する
-	InputUtil::StateView GetButton(MouseId id) const;
+	InputUtil::State GetButton(MouseId id) const;
 
 	//! @brief ホイールが回転しているか
 	bool IsWheel() const;

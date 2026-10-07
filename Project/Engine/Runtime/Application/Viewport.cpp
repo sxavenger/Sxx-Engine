@@ -36,6 +36,9 @@ void Viewport::Update() {
 	Platform::Window::Event event = window_.GetEvent();
 
 	if (event == Platform::Window::Event::Resize) {
+
+		Graphics::Core::SubmitQueueWait(Graphics::GraphicsCommandType::Direct); //!< DirectQueueのコマンドが全て完了している必要がある.
+
 		//!< windowのサイズが変更された場合、SwapChainのサイズを変更する
 		Vector2u client = window_.GetClient();
 		swapChain_.Resize(Graphics::Core::GetDevice(), client, window_.GetHwnd());

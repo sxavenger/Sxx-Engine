@@ -85,6 +85,8 @@ public:
 	//! @brief 解像度を取得する.
 	const Vector2u& GetResolution() const { return options_.resolution; }
 
+	const Options& GetOptions() const { return options_; }
+
 	//* static methods *//
 
 	static RenderTargetTexture Create(const Options& options);

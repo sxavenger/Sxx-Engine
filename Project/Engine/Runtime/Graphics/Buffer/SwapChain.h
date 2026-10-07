@@ -88,6 +88,8 @@ public:
 		const Vector2u& resolution, HWND hwnd
 	);
 
+	//! @brief スワップチェインのサイズを変更する.
+	//! @pre GraphicsCommand側のコマンドリストは全て完了している必要がある.
 	void Resize(
 		const Device& device,
 		const Vector2u& resolution, HWND hwnd

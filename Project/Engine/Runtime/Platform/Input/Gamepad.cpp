@@ -120,23 +120,23 @@ bool Gamepad::IsConnect(InputUtil::Buffer buffer) const {
 	return inputs_[static_cast<uint8_t>(buffer)].IsConnect();
 }
 
-InputUtil::StateView Gamepad::GetButton(GamepadButtonId id) const {
+InputUtil::State Gamepad::GetButton(GamepadButtonId id) const {
 	if (!IsConnect(InputUtil::Buffer::Current)) {
-		return InputUtil::State::None; //!< 接続されてない場合はNoneを返す
+		return InputUtil::State::Condition::None; //!< 接続されてない場合はNoneを返す
 	}
 
-	return InputUtil::GetInputState(
+	return InputUtil::State::Determine(
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(id),
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(id)
 	);
 }
 
-InputUtil::StateView Gamepad::GetButton(GamepadTriggerId id) const {
+InputUtil::State Gamepad::GetButton(GamepadTriggerId id) const {
 	if (!IsConnect(InputUtil::Buffer::Current)) {
-		return InputUtil::State::None; //!< 接続されてない場合はNoneを返す
+		return InputUtil::State::Condition::None; //!< 接続されてない場合はNoneを返す
 	}
 
-	return InputUtil::GetInputState(
+	return InputUtil::State::Determine(
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(id),
 		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(id)
 	);

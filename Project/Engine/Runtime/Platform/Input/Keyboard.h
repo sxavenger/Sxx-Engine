@@ -86,7 +86,7 @@ public:
 	bool IsEnableAcquire(InputUtil::Buffer buffer = InputUtil::Buffer::Current) const;
 	
 	//! @brief keyの入力状態を取得する
-	InputUtil::StateView GetKey(KeyId id) const;
+	InputUtil::State GetKey(KeyId id) const;
 
 private:
 

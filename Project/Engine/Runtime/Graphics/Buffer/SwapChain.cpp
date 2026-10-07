@@ -96,8 +96,6 @@ void SwapChain::Resize(
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
 	);
 
-	// XXX: リサイズでのResource解放時は, GPUの処理が完了していることを保証する必要がある. (Present後にResizeBuffersを呼ぶと, GPUがまだ使用中のResourceを解放しようとしてエラーになる.
-
 	for (uint32_t i = 0; i < kFrameCount; ++i) {
 
 		Buffer& buffer = buffers_[i];
@@ -153,9 +151,9 @@ void SwapChain::BeginRenderPass(const GraphicsCommandContext& context, const Col
 
 	//!< render target の設定.
 	D3D12_RENDER_PASS_RENDER_TARGET_DESC desc = {};
-	desc.cpuDescriptor                           = buffer.descriptorRTV.GetCPUHandle();
-	desc.BeginningAccess.Type                    = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
-	desc.BeginningAccess.Clear.ClearValue.Format = GetRenderTargetFormat();
+	desc.cpuDescriptor                             = buffer.descriptorRTV.GetCPUHandle();
+	desc.BeginningAccess.Type                      = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+	desc.BeginningAccess.Clear.ClearValue.Format   = GetRenderTargetFormat();
 	desc.BeginningAccess.Clear.ClearValue.Color[0] = color.r;
 	desc.BeginningAccess.Clear.ClearValue.Color[1] = color.g;
 	desc.BeginningAccess.Clear.ClearValue.Color[2] = color.b;

@@ -77,8 +77,8 @@ public:
 	//! @brief コントローラーが接続されているか確認する
 	bool IsConnect(InputUtil::Buffer buffer = InputUtil::Buffer::Current) const;
 
-	InputUtil::StateView GetButton(GamepadButtonId id) const;
-	InputUtil::StateView GetButton(GamepadTriggerId id) const;
+	InputUtil::State GetButton(GamepadButtonId id) const;
+	InputUtil::State GetButton(GamepadTriggerId id) const;
 
 	//! @brief スティックの値を取得する
 	//! @return スティックの値[-SHRT_MAX, SHRT_MAX]
