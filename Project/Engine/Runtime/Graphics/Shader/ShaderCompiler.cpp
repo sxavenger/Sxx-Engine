@@ -187,6 +187,13 @@ ShaderBlob ShaderCompiler::Compile(
 		arguments.AppendEntryPoint(entryPoint);
 	}
 
+	if (profile == CompileProfile::Compute || profile == CompileProfile::Library) {
+		arguments.AppendDefine(L"COMPUTE_PIPELINE"); //!< "COMPUTE_PIPELINE"をdefineする
+		
+	} else {
+		arguments.AppendDefine(L"GRAPHICS_PIPELINE"); //!< "GRAPHICS_PIPELINE"をdefineする
+	}
+
 #ifdef DEVELOPMENT
 	//!< 最適化の有無を設定
 	if (settings_.optimize) {
