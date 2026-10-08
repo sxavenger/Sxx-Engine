@@ -32,6 +32,8 @@ void Core::Init(const Configuration& config) {
 
 	shaderCompiler_.Init(config, device_);
 
+	NGXContext::Install(device_); //!< NGXの初期化
+
 	STREAM_LOG_INFO("Graphics::Core | graphics initialized.");
 }
 
@@ -40,6 +42,8 @@ void Core::Term() {
 	for (uint8_t i = 0; i < EnumUtil<GraphicsCommandType>::GetCount(); ++i) {
 		contexts_[i].SubmitWait(); //!< CommandListを全て実行する.
 	}
+
+	NGXContext::Uninstall(device_); //!< NGXの終了処理
 
 	STREAM_LOG_INFO("Graphics::Core | graphics terminated.");
 }

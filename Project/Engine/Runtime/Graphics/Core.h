@@ -6,6 +6,7 @@
 //* graphics
 #include "GraphicsUtil.h"
 #include "PixEvent.h"
+#include "NGXContext.h"
 
 //* graphics [device]
 #include "Device/DebugReporter.h"
