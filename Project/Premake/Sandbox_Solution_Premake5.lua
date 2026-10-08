@@ -96,13 +96,15 @@ project "Sandbox"
 		-- ビルド済みライブラリ参照
 		libdirs {
 			"%{wks.location}/Engine/Externals/PixEvents/lib/Debug",
-			"%{wks.location}/Engine//Externals/assimp/lib/Debug",
+			"%{wks.location}/Engine/Externals/assimp/lib/Debug",
+			"%{wks.location}/Engine/Externals/DLSS/lib/Debug",
 		}
 
 		links {
 			"WinPixEventRuntime",
 			"assimp-vc145-mtd",
 			"zlibstaticd",
+			"nvsdk_ngx_s_dbg",
 		}
 
 	-- Develop
@@ -116,13 +118,15 @@ project "Sandbox"
 		-- ビルド済みライブラリ参照
 		libdirs {
 			"%{wks.location}/Engine/Externals/PixEvents/lib/Release",
-			"%{wks.location}/Engine//Externals/assimp/lib/Release",
+			"%{wks.location}/Engine/Externals/assimp/lib/Release",
+			"%{wks.location}/Engine/Externals/DLSS/lib/Release",
 		}
 
 		links {
 			"WinPixEventRuntime",
 			"assimp-vc145-mt",
 			"zlibstatic",
+			"nvsdk_ngx_s",
 		}
 
 	-- Release
@@ -136,10 +140,12 @@ project "Sandbox"
 
 		-- ビルド済みライブラリ参照
 		libdirs {
-			"%{wks.location}/Engine/Externals/PixEvents/lib/Release",
+			"%{wks.location}/Engine/Externals/assimp/lib/Release",
+			"%{wks.location}/Engine/Externals/DLSS/lib/Release",
 		}
 
 		links {
 			"assimp-vc145-mt",
 			"zlibstatic",
+			"nvsdk_ngx_s",
 		}
