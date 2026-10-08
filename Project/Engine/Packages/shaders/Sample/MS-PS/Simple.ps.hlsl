@@ -3,16 +3,18 @@
 //-----------------------------------------------------------------------------------------
 #include "Simple.hlsli"
 
+//* Dev
+#include "../../Dev/Visualization.hlsli"
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
-FragmentOutputData main(FragmentInputData input) {
+PixelOutputData main(PixelInputData input) {
 
-	FragmentOutputData output;
+	PixelOutputData output = (PixelOutputData)0;
 
-	output.color = float32_t4(input.normal * 0.5f + 0.5f, 1.0f); //!< 法線を表示
-	// output.color = float32_t4(input.texcoord, 0.0f, 1.0f); //!< texcoordを表示
-	// output.color = float32_t4(input.raster.position.z, 0.0f, 0.0f, 1.0f); //!< depthを表示
+	output.color.rgb = Dev::IntToColor(input.raster.meshlet_index);
+	output.color.a   = 1.0f;
 
 	return output;
 

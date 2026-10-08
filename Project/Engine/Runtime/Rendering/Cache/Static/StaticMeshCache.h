@@ -44,6 +44,8 @@ public:
 
 	const TriangleIndexDimensionBuffer& GetIndexBuffer() const { return indexBuffer_; }
 
+	const MeshletBuffer& GetMeshletBuffer() const { return meshletBuffer_; }
+
 private:
 
 	//=========================================================================================

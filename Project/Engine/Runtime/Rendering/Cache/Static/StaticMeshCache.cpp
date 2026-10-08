@@ -10,6 +10,10 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Runtime/Scheduler/System.h>
 #include <Runtime/Rendering/Meshlet/MeshletBuildOutput.h>
 
+//* lib
+#include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
+
 //* meshoptimizer
 #include <meshoptimizer/meshoptimizer.h>
 
@@ -22,7 +26,7 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	Scheduler::TaskHandle handle = mesh->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
-		// STREAM_LOG_WARNING("Rendering::StaticMeshCache | static mesh is not ready. name: {}", mesh->GetName());
+		STACK_LOG_WARNING("Rendering::StaticMeshCache | static mesh is not ready. name: {}", mesh->GetName());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
@@ -173,6 +177,8 @@ MeshletBuffer StaticMeshCache::CreateMeshletBuffer(const std::string_view& name,
 		1
 	);
 	std::memcpy(buffer.bounds.GetData(), output.bounds.data(), buffer.bounds.GetByteSize());
+
+	buffer.meshletCount = static_cast<uint32_t>(output.meshlets.size());
 
 	buffer.SetName(name);
 

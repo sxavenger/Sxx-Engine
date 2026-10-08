@@ -4,11 +4,11 @@
 #include "Simple.hlsli"
 
 //* meshlet
-#include "../Meshlet/StaticMeshVertex.hlsli"
+#include "../../Meshlet/StaticMeshVertex.hlsli"
 
 //* component
-#include "../Component/Camera.hlsli"
-#include "../Component/Transform.hlsli"
+#include "../../Component/Camera.hlsli"
+#include "../../Component/Transform.hlsli"
 
 //=========================================================================================
 // buffers
@@ -27,12 +27,12 @@ ConstantBuffer<Component::Transform> gCameraTransform : register(b1);
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
-FragmentInputData main(uint32_t vertex_id : SV_VertexID) {
+PixelInputData main(VertexSemantics semantics) {
 
-	FragmentInputData output;
+	PixelInputData output = (PixelInputData)0;
 
-	float3 position         = gPositions[vertex_id];
-	StaticMeshVertex vertex = gVertices[vertex_id];
+	float3 position         = gPositions[semantics.vertex_id];
+	StaticMeshVertex vertex = gVertices[semantics.vertex_id];
 
 	//!< 頂点情報の登録
 	output.position  = position;

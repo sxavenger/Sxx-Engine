@@ -26,6 +26,9 @@
 #include <Engine/Unit/WindowUnit.h>
 #include <Engine/Unit/SlateEditorUnit.h>
 
+//* lib
+#include <Lib/Math/VectorComparison.h>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +57,9 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Graphics Pipeline State 0 の作成
 		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/VS-PS/Simple.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/VS-PS/Simple.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.as.hlsl", Sxx::Graphics::CompileProfile::Amplification, L"main"));
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.ms.hlsl", Sxx::Graphics::CompileProfile::Mesh, L"main"));
+		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
 		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
 		desc.SetDepthStencil(true);
 		desc.SetDepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT);
@@ -133,6 +137,33 @@ void SandboxUnit::TermSandbox() {
 }
 
 void SandboxUnit::UpdateSandbox() {
+
+	if (Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>()) {
+
+		RefPtr<Sxx::WindowUnit> unit
+			= Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>(); //!< windowを管理しているunitを取得.
+
+		auto& viewport = unit->GetViewport();
+		const Vector2u& client = viewport.GetClient();
+
+		{ //!< RenderTargetのリサイズ
+			if (Comparison::Any(renderTarget_.GetResolution() != client)) {
+				Sxx::Rendering::RenderTargetTexture::Options options = renderTarget_.GetOptions();
+				options.resolution = client;
+
+				renderTarget_ = Sxx::Rendering::RenderTargetTexture::Create(options);
+			}
+		}
+
+		{ //!< DepthStencilのリサイズ
+			if (Comparison::Any(depthStencil_.GetResolution() != client)) {
+				Sxx::Rendering::DepthStencilTexture::Options options = depthStencil_.GetOptions();
+				options.resolution = client;
+
+				depthStencil_ = Sxx::Rendering::DepthStencilTexture::Create(options);
+			}
+		}
+	}
 
 	{
 		const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
@@ -218,20 +249,25 @@ void SandboxUnit::RenderSandbox() {
 				&depthStencil_.GetDescriptorDSV().GetCPUHandle()
 			);
 
-			D3D12_INDEX_BUFFER_VIEW ibv = meshCache->GetIndexBuffer().GetIndexBufferView();
-			commandList->IASetIndexBuffer(&ibv);
+			//D3D12_INDEX_BUFFER_VIEW ibv = meshCache->GetIndexBuffer().GetIndexBufferView();
+			//commandList->IASetIndexBuffer(&ibv);
 
-			pipeline0_.BindPipeline(context, { 1280, 720 });
+			pipeline0_.BindPipeline(context, renderTarget_.GetResolution());
 
 			Sxx::Graphics::ShaderParameter parameter;
 			parameter.SetAddress("gPositions", meshCache->GetPositionVertexBuffer().positions.GetGpuVirtualAddress());
 			parameter.SetAddress("gVertices", meshCache->GetStaticMeshVertexBuffer().vertices.GetGpuVirtualAddress());
+			parameter.SetAddress("gMeshlets", meshCache->GetMeshletBuffer().meshlets.GetGpuVirtualAddress());
+			parameter.SetAddress("gVertexIndices", meshCache->GetMeshletBuffer().vertexIndices.GetGpuVirtualAddress());
+			parameter.SetAddress("gTriangles", meshCache->GetMeshletBuffer().triangles.GetGpuVirtualAddress());
+			parameter.Set32bitConstants("Information", meshCache->GetMeshletBuffer().meshletCount);
 			parameter.SetAddress("gCameraProjection", cameraCache->GetProjectionBuffer().GetGpuVirtualAddress());
 			parameter.SetAddress("gCameraTransform", transformCache->GetTransformationBuffer().GetGpuVirtualAddress());
 
 			pipeline0_.BindShaderParameter(context, parameter);
 
-			commandList->DrawIndexedInstanced(meshCache->GetIndexBuffer().GetIndexCount(), 1, 0, 0, 0);
+			//commandList->DrawIndexedInstanced(meshCache->GetIndexBuffer().GetIndexCount(), 1, 0, 0, 0);
+			commandList->DispatchMesh(Sxx::Graphics::RoundUp(meshCache->GetMeshletBuffer().meshletCount, 32), 1, 1);
 
 			renderTarget_.Transition(context, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 			depthStencil_.Transition(context, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

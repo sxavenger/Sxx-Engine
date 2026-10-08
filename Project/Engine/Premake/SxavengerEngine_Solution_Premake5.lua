@@ -67,6 +67,7 @@ project "SxavengerEngine"
 		"%{prj.location}/Externals/PixEvents/include", -- [PixEvents](https://github.com/microsoft/PixEvents.git)
 		"%{prj.location}/Externals/imgui", -- [imgui](https://github.com/ocornut/imgui.git)
 		"%{prj.location}/Externals/assimp/include", -- [assimp](https://github.com/assimp/assimp.git)
+		"%{prj.location}/Externals/DLSS/include", -- [DLSS](https://github.com/NVIDIA/DLSS.git)
 	}
 
 	-- 依存プロジェクト --
@@ -97,7 +98,7 @@ project "SxavengerEngine"
 		"/IGNORE:4099", -- [LNK4099](https://learn.microsoft.com/ja-jp/cpp/error-messages/tool-errors/linker-tools-warning-lnk4099)
 	}
 
-	--- 外部プログラムごとの設定 ---
+	--- vvv 外部プログラムごとの設定 vvv ---
 	-- dxcompiler
 	-- ビルド後イベント --
 	postbuildcommands {
@@ -171,6 +172,30 @@ project "SxavengerEngine"
 		links {
 			"assimp-vc145-mt",
 			"zlibstatic",
+		}
+
+	-- DLSS --
+	filter "configurations:Debug"
+
+		-- リンカー設定 --
+		libdirs {
+			"%{prj.location}/Externals/DLSS/lib/Debug"
+		}
+
+		-- 依存ファイル --
+		links {
+			"nvsdk_ngx_s_dbg",
+		}
+
+	filter "configurations:Develop, Release"
+		-- リンカー設定 --
+		libdirs {
+			"%{prj.location}/Externals/DLSS/lib/Release"
+		}
+
+		-- 依存ファイル --
+		links {
+			"nvsdk_ngx_s",
 		}
 
 	--- application構成ごとのビルドオプション設定 ---

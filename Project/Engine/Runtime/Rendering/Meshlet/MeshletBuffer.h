@@ -89,19 +89,23 @@ public:
 	// public variables
 	//=========================================================================================
 
-	//* Buffer *//
+	//* buffer *//
 
 	Graphics::DimensionBuffer<Meshlet> meshlets;
 	Graphics::DimensionBuffer<Triangle> triangles;
 	Graphics::DimensionBuffer<uint32_t> vertexIndices;
 	Graphics::DimensionBuffer<Bounds> bounds;
 
+	//* parameter *//
+
+	uint32_t meshletCount;
+
 	//* constants *//
 
-	static constexpr const uint32_t kMaxVertices  = 64;
-	static constexpr const uint32_t kMaxTriangles = 124;
+	constexpr static const uint32_t kMaxVertices  = 64;
+	constexpr static const uint32_t kMaxTriangles = 128;
 
-	static constexpr const float kConeWeight = 0.5f;
+	constexpr static const float kConeWeight = 0.5f;
 
 private:
 };

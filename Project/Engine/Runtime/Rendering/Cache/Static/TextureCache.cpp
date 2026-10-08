@@ -11,6 +11,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 //* DirectXTex
 #include <DirectXTex/Common/d3dx12.h>
@@ -24,7 +25,7 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 	Scheduler::TaskHandle handle = texture->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
-		// STREAM_LOG_WARNING("Rendering::TextureCache | texture is not ready. name: {}", texture->GetName());
+		STACK_LOG_WARNING("Rendering::TextureCache | texture is not ready. name: {}", texture->GetName());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
