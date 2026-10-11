@@ -15,7 +15,7 @@ CameraCache::ProjectionData CameraCache::ProjectionData::Transfer(const Matrix4x
 	ProjectionData data = {};
 	data.projection        = projection;
 	data.projectionInverse = Matrix4x4f::Inverse(projection);
-
+	
 	return data;
 }
 

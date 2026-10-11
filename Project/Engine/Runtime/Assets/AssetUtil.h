@@ -49,8 +49,8 @@ enum class FileType : bool {
 // constant variables
 //=========================================================================================
 
-static inline std::filesystem::path kAssetFileExtension = ".asset";
-static inline Uuid kAssetNullUuid = { NULL, NULL, NULL, NULL, NULL };
+static inline const std::filesystem::path kAssetFileExtension = ".asset";
+static inline const Uuid kAssetNullUuid = { NULL, NULL, NULL, NULL, NULL };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // methods
