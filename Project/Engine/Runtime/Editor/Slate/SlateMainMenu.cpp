@@ -1,4 +1,4 @@
-#include "SlateEditorMenuBar.h"
+#include "SlateMainMenu.h"
 SXAVENGER_ENGINE_USING_(Editor)
 
 //-----------------------------------------------------------------------------------------
@@ -9,10 +9,10 @@ SXAVENGER_ENGINE_USING_(Editor)
 #include "Widgets/SlateImGuiMenuBar.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// EditorMenuBar class methods
+// MainMenu class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void Slate::EditorMenuBar::SetHeight(float height) {
+void Slate::MainMenu::SetHeight(float height) {
 
 	height_ = height;
 
@@ -22,7 +22,7 @@ void Slate::EditorMenuBar::SetHeight(float height) {
 	}
 }
 
-const Slate::WidgetPointer& Slate::EditorMenuBar::GetWidget() {
+const Slate::WidgetPointer& Slate::MainMenu::GetWidget() {
 
 	if (widget_ == nullptr) {
 		CreateWidget();
@@ -31,15 +31,15 @@ const Slate::WidgetPointer& Slate::EditorMenuBar::GetWidget() {
 	return widget_;
 }
 
-void Slate::EditorMenuBar::CreateWidget() {
+void Slate::MainMenu::CreateWidget() {
 
 	//!< callbackはweak_ptrを握る. menu barが破棄された後にwidgetだけ生き残っても安全にするため.
 	//!< note: shared_ptrを握るとmenu barとwidgetが相互に参照して解放されない.
-	std::weak_ptr<EditorMenuBar> self = weak_from_this();
+	std::weak_ptr<MainMenu> self = weak_from_this();
 
 	Decl<ImGuiMenuBar> menuBar;
 	menuBar->Draw([self]() {
-		if (const EditorMenuBarPointer bar = self.lock()) {
+		if (const MainMenuPointer bar = self.lock()) {
 			bar->OnDraw();
 		}
 	});

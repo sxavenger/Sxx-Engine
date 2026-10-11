@@ -336,6 +336,7 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 	//!< TODO: fontのパスと基準サイズからの倍率をConfigurationで管理できるようにする.
 	//!<       以下3ブロックのfilepathと baseFontSize への係数がその対象.
+	//!<       (アイコンfontの GlyphOffset.y の比 2/13 もその対象.)
 
 	ImFontConfig font = {};
 	font.FontDataOwnedByAtlas = false; //!< フォントデータの所有権をImFontAtlasに渡さない. (自前で管理する)
@@ -382,6 +383,15 @@ void Slate::ImGuiRenderer::LoadFont() {
 
 		ImFontConfig conf = font;
 		conf.MergeMode = true;
+
+		//!< アイコンの縦位置を行箱の中心へ合わせる.
+		//!< note: Material Symbolsの字形はem boxの中心(0.5em = ベースラインの6.5px上)に描かれるが,
+		//!<       行箱の中心はベースラインの4.5px上(Ascent 11 / size 13)なので,
+		//!<       ベースラインを揃えただけだとiconが2px上に出る.
+		//!<       imguiはmerge時にascentの差を補正しない(imgui_draw.cpp の FontBakedInit / font_off_y は
+		//!<       先頭fontのAscentだけを使う)ため, GlyphOffset.y で下げる. (imgui.h の MergeMode の注記を参照)
+		//!<       値は fontBody に比例させる. (13px時にちょうど2px. imguiが基準サイズ比でscaleし, 整数へ丸める)
+		conf.GlyphOffset.y = baseFontSize * (2.0f / 13.0f);
 
 		ImFont* pointer = io.Fonts->AddFontFromFileTTF(
 			filepath.generic_string().c_str(),

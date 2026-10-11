@@ -20,9 +20,10 @@
 #include <Runtime/Editor/Slate/SlateApplication.h>
 #include <Runtime/Editor/Slate/Renderer/SlateImGuiRenderer.h>
 #include <Runtime/Editor/Slate/Widgets/SlateWindow.h>
+#include <Runtime/Editor/Slate/Widgets/SlateImGuiMenuBar.h>
 #include <Runtime/Editor/Slate/Docking/SlateDocking.h>
 #include <Runtime/Editor/Slate/SlateEditorPanel.h>
-#include <Runtime/Editor/Slate/SlateEditorMenuBar.h>
+#include <Runtime/Editor/Slate/SlateMainMenu.h>
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>
@@ -114,8 +115,7 @@ public:
 		//!<       1段目で打ち切られてhostが配られない. そのため必ず分けて持つ.
 		Editor::Slate::WidgetPointer dockRoot = nullptr;
 
-		//!< main windowのchrome. RebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため保持する.
-		Editor::Slate::WidgetPointer toolBar   = nullptr;
+		//!< main windowのstatusBar. RebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため保持する.
 		Editor::Slate::WidgetPointer statusBar = nullptr;
 
 		//* runtime parameter *//
@@ -231,17 +231,17 @@ public:
 
 	//* menu bar option *//
 
-	//! @brief EditorMenuBarを継承したmain menu barを設定する.
-	//! @note main windowのchromeへ組み込まれる. 設定しなければmenu barは出ない.
-	//! @retval 設定したmenu bar.
+	//! @brief MainMenuを継承したmain menuを追加する.
+	//! @note 追加した順にmenu barの1行へ左から並ぶ. 複数追加しても行は増えない.
+	//! @retval 追加したmain menu.
 	template <class T, class... Args>
-		requires std::derived_from<T, Editor::Slate::EditorMenuBar>
-	std::shared_ptr<T> SetMenuBar(Args&&... args);
+		requires std::derived_from<T, Editor::Slate::MainMenu>
+	std::shared_ptr<T> AddMainMenu(Args&&... args);
 
-	//! @brief 生成済みのmenu barを設定する.
-	void SetMenuBar(const Editor::Slate::EditorMenuBarPointer& menuBar);
+	//! @brief 生成済みのmain menuを追加する.
+	void AddMainMenu(const Editor::Slate::MainMenuPointer& menu);
 
-	const Editor::Slate::EditorMenuBarPointer& GetMenuBar() const { return menuBar_; }
+	const std::vector<Editor::Slate::MainMenuPointer>& GetMainMenus() const { return mainMenus_; }
 
 	const std::list<EditorWindowPointer>& GetEditorWindows() const { return windows_; }
 
@@ -267,7 +267,6 @@ private:
 	//!< drag中のwindowの不透明度. 下のマーカーが見えるように薄くする.
 	static constexpr uint8_t kWindowDragAlpha = 160;
 
-	static constexpr float kToolBarHeight   = 32.0f; //!< ツールバー帯の高さ. (design.md §2.2)
 	static constexpr float kStatusBarHeight = 24.0f; //!< ステータスバーの高さ.
 	static constexpr float kListPaneRatio   = 0.35f; //!< main windowの左右分割の既定比率. (35 : 65)
 
@@ -297,8 +296,12 @@ private:
 	//!< ここが唯一の所有者になる. tabを閉じてもインスタンスは残る.
 	std::vector<Editor::Slate::EditorPanelPointer> panels_;
 
-	//!< main menu bar. 設定されていなければchromeへ積まない.
-	Editor::Slate::EditorMenuBarPointer menuBar_ = nullptr;
+	//!< 追加されたmain menu. 追加順にmenu barの1行へ並べる.
+	std::vector<Editor::Slate::MainMenuPointer> mainMenus_;
+
+	//!< mainMenus_をまとめて描く1行. 各main menuのGetWidget()は使わない.
+	//!< note: RebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため保持する.
+	std::shared_ptr<Editor::Slate::ImGuiMenuBar> mainMenuBar_ = nullptr;
 
 	//* runtime parameter *//
 
@@ -357,8 +360,13 @@ private:
 	//! @brief widget treeを構築する.
 	void BuildLayout(EditorWindow& window);
 
-	//! @brief toolBarの中身を描く. ChromeBandのImGui Beginの内側(ImGuiのframe内)で呼ばれる.
-	void DrawToolBar(EditorWindow& window);
+	//! @brief mainMenus_をまとめて描くmenu barを返す. 無ければ生成する.
+	const std::shared_ptr<Editor::Slate::ImGuiMenuBar>& GetOrCreateMainMenuBar();
+
+	//! @brief menu bar 1行の高さ. 各main menuのSetHeightの最大値. (0以下ならStyleの既定)
+	//! @note GetChromeTopHeightとmenu bar widgetの高さは必ずこの関数から取る. ずれるとドロップ先
+	//!       マーカーの描画位置と当たり判定がずれる.
+	float ResolveMainMenuBarHeight() const;
 
 	//! @brief statusBarの中身を描く. ChromeBandのImGui Beginの内側(ImGuiのframe内)で呼ばれる.
 	void DrawStatusBar(EditorWindow& window);
@@ -371,6 +379,7 @@ private:
 
 	//! @brief 閉じたtabを開き直す要求を積む. 同じpanelが既に積まれていれば捨てる.
 	//! @note 積むのは描画中(Application::TickのImGui callbackの中)のため, ここではtreeを触らない.
+	//! @note 現在の呼び出し元は無い. 閉じたtabを開き直すAPIとして残している. (menu barなどから呼ぶ想定)
 	void EnqueuePanelOpen(const Editor::Slate::EditorPanelPointer& panel);
 
 	void ProcessPendingRequests();
@@ -471,14 +480,14 @@ std::shared_ptr<T> SlateEditorUnit::AddPanel(Args&&... args) {
 }
 
 template <class T, class... Args>
-	requires std::derived_from<T, Editor::Slate::EditorMenuBar>
-std::shared_ptr<T> SlateEditorUnit::SetMenuBar(Args&&... args) {
+	requires std::derived_from<T, Editor::Slate::MainMenu>
+std::shared_ptr<T> SlateEditorUnit::AddMainMenu(Args&&... args) {
 
-	std::shared_ptr<T> menuBar = std::make_shared<T>(std::forward<Args>(args)...);
+	std::shared_ptr<T> menu = std::make_shared<T>(std::forward<Args>(args)...);
 
-	SetMenuBar(Editor::Slate::EditorMenuBarPointer(menuBar));
+	AddMainMenu(Editor::Slate::MainMenuPointer(menu));
 
-	return menuBar;
+	return menu;
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

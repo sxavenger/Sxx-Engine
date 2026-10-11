@@ -4,7 +4,7 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* editor
-#include "Slate/SlateEditorMenuBar.h"
+#include "Slate/SlateMainMenu.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -18,7 +18,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Editor)
 // EditorTestMainMenu class
 ////////////////////////////////////////////////////////////////////////////////////////////
 class EditorTestMainMenu final
-	: public Slate::EditorMenuBar {
+	: public Slate::MainMenu {
 public:
 
 	//=====================================================================================

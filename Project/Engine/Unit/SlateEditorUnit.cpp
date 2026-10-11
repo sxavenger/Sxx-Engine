@@ -22,7 +22,7 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/Editor/Slate/Docking/SlateDockTabStack.h>
 #include <Runtime/Editor/Slate/Docking/SlateSplitter.h>
 #include <Runtime/Editor/Slate/SlateEditorPanel.h>
-#include <Runtime/Editor/Slate/SlateEditorMenuBar.h>
+#include <Runtime/Editor/Slate/SlateMainMenu.h>
 #include <Runtime/Editor/EditorTestPanel.h>
 #include <Runtime/Editor/EditorTestMainMenu.h>
 
@@ -179,7 +179,7 @@ namespace {
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// ChromeBand class
 	////////////////////////////////////////////////////////////////////////////////////////////
-	//! @brief toolBar / statusBarに使う葉のwidget.
+	//! @brief statusBarに使う葉のwidget.
 	//! @note 背景と区切り線はSlate側(renderer->DrawRect / DrawLine)で描き, 中身は自前で開いたImGui
 	//!       ウィンドウで描く. (ImGuiMenuBarと同じ手法)
 	//! @note ImGuiWidgetは使わない. ImGuiWidgetはBeginRegionでWindowPaddingが効いてしまい,
@@ -408,8 +408,8 @@ void SlateEditorUnit::InitEditor() {
 		return;
 	}
 
-	//!< 既定のmain menu bar. 差し替えるなら SetMenuBar<T>() を呼ぶ.
-	SetMenuBar<Editor::EditorTestMainMenu>();
+	//!< 既定のmain menu. 追加するなら AddMainMenu<T>() を呼ぶ.
+	AddMainMenu<Editor::EditorTestMainMenu>();
 
 	BuildLayout(*window);
 
@@ -452,9 +452,18 @@ void SlateEditorUnit::UpdateEditor() {
 		UpdateInput(*window);
 	}
 
-	//!< main menu barの更新.
-	if (menuBar_ != nullptr) {
-		menuBar_->OnUpdate();
+	//!< main menuの更新.
+	for (const Editor::Slate::MainMenuPointer& menu : mainMenus_) {
+		if (menu != nullptr) {
+			menu->OnUpdate();
+		}
+	}
+
+	//!< menu bar widgetの高さをGetChromeTopHeightの加算値と揃える.
+	//!< main menuのSetHeightは実行時にも変わり得るため, 追加時に一度だけでなく毎frame同期する.
+	//!< (widgetの高さとGetChromeTopHeightがずれると, ドロップ先マーカーの描画位置と当たり判定がずれる)
+	if (mainMenuBar_ != nullptr) {
+		mainMenuBar_->SetHeight(ResolveMainMenuBarHeight());
 	}
 
 	//!< EditorPanelの更新. 描画に依存しない処理をここで回す.
@@ -639,6 +648,10 @@ void SlateEditorUnit::TermEditor() {
 	panelOpenRequests_.clear();
 	windowDrag_ = {};
 
+	//!< menu barのcallbackがUnitのthisを握るため, widget treeを壊す前に外す.
+	//!< note: panels_と同じくmainMenus_のインスタンスは残す. (所有はUnitで, 破棄はUnitの寿命に任せる)
+	mainMenuBar_ = nullptr;
+
 	//!< 全windowのGPU resourceを解放する前にGPUの完了を待つ. (理由はCollectClosedWindowsと同じ)
 	if (!windows_.empty()) {
 		Graphics::Core::SubmitDirectQueueWait();
@@ -646,8 +659,7 @@ void SlateEditorUnit::TermEditor() {
 
 	for (const EditorWindowPointer& window : windows_) {
 		window->dockRoot  = nullptr;
-		window->toolBar   = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
-		window->statusBar = nullptr;
+		window->statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
 		window->root.reset();                 //!< widget treeを先に破棄する.
 		window->renderer.Shutdown();          //!< ImGuiのcontextはwidgetの後に破棄する.
 		window->viewport.GetWindow().Reset(); //!< DestroyWindowとUnregisterClassを行う.
@@ -772,8 +784,7 @@ void SlateEditorUnit::CollectClosedWindows() {
 		DiscardRequests(request);
 
 		(*it)->dockRoot  = nullptr;
-		(*it)->toolBar   = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
-		(*it)->statusBar = nullptr;
+		(*it)->statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
 		(*it)->root.reset();
 		(*it)->renderer.Shutdown();
 
@@ -943,29 +954,19 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 	const Editor::Slate::WidgetPointer dock = window.dockRoot;
 
 	if (window.isMain) {
-		//!< main windowはTitleBar / MenuBar / toolBar / dock / statusBarを縦に積む.
+		//!< main windowはTitleBar / MenuBar / dock / statusBarを縦に積む.
 		//!< note: ImGuiMenuBarは自前でImGui::Beginするため, ImGuiWidgetのBeginRegionの内側に
-		//!<       置いてはいけない. chromeとして外側に置く. toolBar/statusBar(ChromeBand)も同じ理由.
+		//!<       置いてはいけない. chromeとして外側に置く. statusBar(ChromeBand)も同じ理由.
 		//!< note: GetChromeTopHeight / GetChromeBottomHeight / GetDockAreaは, ここでの積み方と
 		//!<       必ず一致させる. ずれるとドロップ先マーカーの描画位置と当たり判定がずれる.
 		Editor::Slate::Decl<Editor::Slate::VerticalBox> box;
 		box->AddSlot().AutoSize().Content(CreateTitleBar(window, false));
 
-		//!< menu barは設定されているときだけ積む.
-		if (menuBar_ != nullptr) {
-			box->AddSlot().AutoSize().Content(menuBar_->GetWidget());
+		//!< menu barはmain menuが1つ以上追加されているときだけ積む.
+		//!< 複数のmain menuは1行のmenu barにまとめて描く. (追加順に左から並ぶ)
+		if (!mainMenus_.empty()) {
+			box->AddSlot().AutoSize().Content(GetOrCreateMainMenuBar());
 		}
-
-		//!< toolBar/statusBarはRebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため,
-		//!< 一度だけ作ってwindowへ保持する.
-		if (window.toolBar == nullptr) {
-			EditorWindow* pointer = &window; //!< windows_(std::list)が所有するためアドレスは安定する.
-			window.toolBar = std::make_shared<ChromeBand>(
-				kToolBarHeight, ChromeBand::Separator::Bottom, [this, pointer]() { DrawToolBar(*pointer); }
-			);
-		}
-
-		box->AddSlot().AutoSize().Content(window.toolBar);
 
 		//!< dockが空(全panelを失った)場合もstatusBarをclientの下端に固定するため, Spacerで埋める.
 		//!< (GetDockAreaと積み方を一致させるため, dockが無い分をFillスロットの有無で吸収しない)
@@ -976,8 +977,10 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 			box->AddSlot().Fill(1.0f).Content(std::make_shared<Spacer>());
 		}
 
+		//!< statusBarはRebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため,
+		//!< 一度だけ作ってwindowへ保持する.
 		if (window.statusBar == nullptr) {
-			EditorWindow* pointer = &window;
+			EditorWindow* pointer = &window; //!< windows_(std::list)が所有するためアドレスは安定する.
 			window.statusBar = std::make_shared<ChromeBand>(
 				kStatusBarHeight, ChromeBand::Separator::Top, [this, pointer]() { DrawStatusBar(*pointer); }
 			);
@@ -1066,45 +1069,28 @@ void SlateEditorUnit::BuildLayout(EditorWindow& window) {
 	ApplyDockingHostToWindow(window); //!< 生成した全tab stackへ切り離し要求の通知先を配る.
 }
 
-void SlateEditorUnit::DrawToolBar(EditorWindow& /*window*/) {
+const std::shared_ptr<Editor::Slate::ImGuiMenuBar>& SlateEditorUnit::GetOrCreateMainMenuBar() {
 
-	//!< 縦中央に寄せる.
-	ImGui::SetCursorPosY(std::max(0.0f, (ImGui::GetWindowHeight() - ImGui::GetFrameHeight()) * 0.5f));
+	if (mainMenuBar_ == nullptr) {
+		Editor::Slate::Decl<Editor::Slate::ImGuiMenuBar> menuBar;
 
-	//!< 閉じたtabを開き直すための左グループ. ボタンの動的な出し入れはせず, 使えない(既に開いている)
-	//!< ときはDisabledで表示する.
-	for (size_t index = 0; index < panels_.size(); ++index) {
+		//!< 1回のBeginMenuBarの中で順に呼ばれるため, 追加順に左から並び, 行は増えない.
+		//!< note: callbackがthisを握るが, Unitはwindow treeより長生きする. (TermEditorでtreeより先に外す)
+		menuBar->Draw([this]() {
+			for (const Editor::Slate::MainMenuPointer& menu : mainMenus_) {
+				if (menu != nullptr) {
+					menu->OnDraw();
+				}
+			}
+		});
 
-		const Editor::Slate::EditorPanelPointer& panel = panels_[index];
-
-		if (panel == nullptr) {
-			continue;
-		}
-
-		if (index > 0) {
-			ImGui::SameLine(0.0f, kPadS);
-		}
-
-		const bool isOpen = IsPanelOpen(panel);
-
-		if (isOpen) {
-			ImGui::BeginDisabled(true);
-		}
-
-		const bool pressed = ImGui::Button(std::format("{}##open_panel_{}", panel->GetTitle(), index).c_str());
-
-		if (isOpen) {
-			ImGui::EndDisabled();
-		}
-
-		//!< SetItemTooltipはHoverFlagsForTooltipMouseの既定にAllowWhenDisabledを含むため,
-		//!< Disabled状態のボタンでも表示される.
-		ImGui::SetItemTooltip(isOpen ? "既に開いています" : "タブとして開き直す");
-
-		if (pressed) {
-			EnqueuePanelOpen(panel);
-		}
+		mainMenuBar_ = menuBar.pointer;
 	}
+
+	//!< 生成直後 / main menuの追加直後でも, UpdateEditorの同期を待たずに高さを揃える.
+	mainMenuBar_->SetHeight(ResolveMainMenuBarHeight());
+
+	return mainMenuBar_;
 }
 
 void SlateEditorUnit::DrawStatusBar(EditorWindow& /*window*/) {
@@ -1145,9 +1131,18 @@ void SlateEditorUnit::DrawStatusBar(EditorWindow& /*window*/) {
 // SlateEditorUnit class panel methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void SlateEditorUnit::SetMenuBar(const Editor::Slate::EditorMenuBarPointer& menuBar) {
+void SlateEditorUnit::AddMainMenu(const Editor::Slate::MainMenuPointer& menu) {
 
-	menuBar_ = menuBar;
+	if (menu == nullptr) {
+		return;
+	}
+
+	//!< 同じmain menuは二重に追加しない. (menu barに同じ項目が2回並ぶのを避ける)
+	if (std::find(mainMenus_.begin(), mainMenus_.end(), menu) != mainMenus_.end()) {
+		return;
+	}
+
+	mainMenus_.push_back(menu);
 
 	//!< 既に生成済みのmain windowがあればchromeを巻き直して反映する.
 	//!< note: RefPtrをconstにすると operator*() const が const T& を返すため,
@@ -1755,15 +1750,26 @@ float SlateEditorUnit::GetChromeTopHeight(const EditorWindow& window) const {
 
 	float height = Editor::Slate::TitleBar::Height();
 
-	//!< menu barは設定されているときだけ積まれる. (RebuildWindowChromeと必ず一致させる)
-	if (menuBar_ != nullptr) {
-		const float menuBarHeight = menuBar_->GetHeight();
-		height += (menuBarHeight > 0.0f) ? menuBarHeight : Editor::Slate::ImGuiMenuBar::Height();
+	//!< menu barはmain menuが1つ以上あるときだけ積まれる. (RebuildWindowChromeと必ず一致させる)
+	if (!mainMenus_.empty()) {
+		height += ResolveMainMenuBarHeight();
 	}
 
-	height += kToolBarHeight; //!< main windowは常にtoolBarを積む. (RebuildWindowChromeと必ず一致させる)
-
 	return height;
+}
+
+float SlateEditorUnit::ResolveMainMenuBarHeight() const {
+
+	float height = 0.0f;
+
+	for (const Editor::Slate::MainMenuPointer& menu : mainMenus_) {
+		if (menu != nullptr) {
+			height = std::max(height, menu->GetHeight());
+		}
+	}
+
+	//!< 0以下ならStyleの既定を使う. (ImGuiMenuBarと同じ規則)
+	return (height > 0.0f) ? height : Editor::Slate::ImGuiMenuBar::Height();
 }
 
 float SlateEditorUnit::GetChromeBottomHeight(const EditorWindow& window) const {
@@ -1782,7 +1788,7 @@ Editor::Slate::Geometry SlateEditorUnit::GetDockArea(const EditorWindow& window)
 	}
 
 	//!< dockRootが実際に置かれている矩形. chromeの分だけclientより小さい.
-	//!< main windowはTitleBar / (あれば)MenuBar / toolBarを上に, statusBarを下に積んでいるため
+	//!< main windowはTitleBar / (あれば)MenuBarを上に, statusBarを下に積んでいるため
 	//!< その高さだけ狭まる. sub windowはOverlayで全面に敷いているためclient全体と一致する.
 	const Vector2f client = window.root->GetClientSize();
 

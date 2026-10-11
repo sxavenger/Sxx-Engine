@@ -24,7 +24,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Editor)
 namespace Slate {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// EditorMenuBar class
+	// MainMenu class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	//! @brief ImGuiでmain menu barの中身を描くための基底クラス.
 	//! @note 継承してOnDraw()にmenuを並べる. BeginMenuBar / EndMenuBar は基底が面倒を見るので,
@@ -32,8 +32,8 @@ namespace Slate {
 	//!
 	//! ex.
 	//! @code
-	//! class MainMenuBar final
-	//! 	: public Editor::Slate::EditorMenuBar {
+	//! class FileMenu final
+	//! 	: public Editor::Slate::MainMenu {
 	//! public:
 	//! 	void OnDraw() override {
 	//! 		if (ImGui::BeginMenu("File")) {
@@ -44,13 +44,13 @@ namespace Slate {
 	//! };
 	//! @endcode
 	//!
-	//! 登録は SlateEditorUnit::SetMenuBar<MainMenuBar>() で行う.
+	//! 登録は SlateEditorUnit::AddMainMenu<FileMenu>() で行う.
 	//!
 	//! @note このクラスは必ず std::shared_ptr で保持すること.
 	//!       widgetへ渡すcallbackは weak_ptr を握るため, 破棄後に呼ばれても安全になる.
 	//!       生ポインタやスタック上のインスタンスで使うと dangling する.
-	class EditorMenuBar
-		: public std::enable_shared_from_this<EditorMenuBar> {
+	class MainMenu
+		: public std::enable_shared_from_this<MainMenu> {
 	public:
 
 		//=========================================================================================
@@ -59,8 +59,8 @@ namespace Slate {
 
 		//* constructor / destructor *//
 
-		EditorMenuBar() noexcept          = default;
-		virtual ~EditorMenuBar() noexcept = default;
+		MainMenu() noexcept          = default;
+		virtual ~MainMenu() noexcept = default;
 
 		//* menu bar methods *//
 
@@ -87,10 +87,10 @@ namespace Slate {
 
 		bool HasWidget() const { return widget_ != nullptr; }
 
-		//* operator [copy] <EditorMenuBar> (delete) *//
+		//* operator [copy] <MainMenu> (delete) *//
 
-		EditorMenuBar(const EditorMenuBar&)            = delete;
-		EditorMenuBar& operator=(const EditorMenuBar&) = delete;
+		MainMenu(const MainMenu&)            = delete;
+		MainMenu& operator=(const MainMenu&) = delete;
 
 	private:
 
@@ -111,7 +111,7 @@ namespace Slate {
 
 	};
 
-	using EditorMenuBarPointer = std::shared_ptr<EditorMenuBar>;
+	using MainMenuPointer = std::shared_ptr<MainMenu>;
 
 }
 
