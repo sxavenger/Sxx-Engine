@@ -41,11 +41,11 @@ public:
 
 	//* operator [copy] <std::type_info*> *//
 
-	TypeInfo(const std::type_info& info) noexcept : info_(&info) {}
-	TypeInfo& operator=(const std::type_info& info) noexcept { info_ = &info; return *this; }
+	constexpr TypeInfo(const std::type_info& info) noexcept : info_(&info) {}
+	constexpr TypeInfo& operator=(const std::type_info& info) noexcept { info_ = &info; return *this; }
 
-	TypeInfo(const std::type_info* info) noexcept : info_(info) {}
-	TypeInfo& operator=(const std::type_info* info) noexcept { info_ = info; return *this; }
+	constexpr TypeInfo(const std::type_info* info) noexcept : info_(info) {}
+	constexpr TypeInfo& operator=(const std::type_info* info) noexcept { info_ = info; return *this; }
 
 	//* operator [comparison] <TypeInfo> *//
 
@@ -60,7 +60,7 @@ public:
 	//* type info option *//
 
 	template <typename T>
-	static TypeInfo GetType() noexcept { return typeid(T); }
+	constexpr static TypeInfo GetType() noexcept { return typeid(std::decay_t<T>); }
 
 	//=========================================================================================
 	// public variables

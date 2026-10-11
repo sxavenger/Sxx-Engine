@@ -22,20 +22,20 @@ public:
 
 	//* constructor *//
 	
-	ReferencePointer() = default;
+	constexpr ReferencePointer() = default;
 
 	//* operator [copy / move] <ReferencePointer> *//
 
-	ReferencePointer(const ReferencePointer&)            = default;
-	ReferencePointer& operator=(const ReferencePointer&) = default;
+	constexpr ReferencePointer(const ReferencePointer&)            = default;
+	constexpr ReferencePointer& operator=(const ReferencePointer&) = default;
 
-	ReferencePointer(ReferencePointer&&)            = default;
-	ReferencePointer& operator=(ReferencePointer&&) = default;
+	constexpr ReferencePointer(ReferencePointer&&)            = default;
+	constexpr ReferencePointer& operator=(ReferencePointer&&) = default;
 
 	//* operator [copy] <T*> *//
 
-	ReferencePointer(T* pointer) : pointer_(pointer) {}
-	ReferencePointer& operator=(T* pointer) { pointer_ = pointer; return *this; }
+	constexpr ReferencePointer(T* pointer) : pointer_(pointer) {}
+	constexpr ReferencePointer& operator=(T* pointer) { pointer_ = pointer; return *this; }
 
 	//* operator [copy] <ReferencePointer<U>> *//
 
@@ -48,25 +48,25 @@ public:
 	//* operator [copy] <U*> *//
 
 	template <typename U> requires std::convertible_to<U*, T*>
-	ReferencePointer(U* pointer) : pointer_(pointer) {}
+	constexpr ReferencePointer(U* pointer) : pointer_(pointer) {}
 
 	template <typename U> requires std::convertible_to<U*, T*>
-	ReferencePointer& operator=(U* pointer) { pointer_ = pointer; return *this; }
+	constexpr ReferencePointer& operator=(U* pointer) { pointer_ = pointer; return *this; }
 
 	//* operator [copy] <std::nullptr_t> *//
 
-	ReferencePointer(std::nullptr_t) : pointer_(nullptr) {}
-	ReferencePointer& operator=(std::nullptr_t) { pointer_ = nullptr; return *this; }
+	constexpr ReferencePointer(std::nullptr_t) : pointer_(nullptr) {}
+	constexpr ReferencePointer& operator=(std::nullptr_t) { pointer_ = nullptr; return *this; }
 
 	//* operator [comparison] <ReferencePointer> *//
 
-	bool operator==(const ReferencePointer& other) const { return pointer_ == other.pointer_; }
-	bool operator!=(const ReferencePointer& other) const { return pointer_ != other.pointer_; }
+	constexpr bool operator==(const ReferencePointer& other) const { return pointer_ == other.pointer_; }
+	constexpr bool operator!=(const ReferencePointer& other) const { return pointer_ != other.pointer_; }
 
 	//* operator [comparison] <T*> *//
 
-	bool operator==(const T* pointer) const { return pointer_ == pointer; }
-	bool operator!=(const T* pointer) const { return pointer_ != pointer; }
+	constexpr bool operator==(const T* pointer) const { return pointer_ == pointer; }
+	constexpr bool operator!=(const T* pointer) const { return pointer_ != pointer; }
 
 	//* operator [comparison] <std::nullptr_t> *//
 
@@ -75,12 +75,12 @@ public:
 
 	//* operator [cast] <T*> *//
 
-	operator T* const () { return pointer_; }
-	operator const T* () const { return pointer_; }
+	constexpr operator T* const () { return pointer_; }
+	constexpr operator const T* () const { return pointer_; }
 
 	//* operator [cast] <bool> *//
 
-	explicit operator bool() const { return pointer_ != nullptr; }
+	constexpr explicit operator bool() const { return pointer_ != nullptr; }
 
 	//* operator [dereference] *//
 
@@ -94,7 +94,7 @@ public:
 
 	//* pointer methods *//
 
-	void Reset() { pointer_ = nullptr; }
+	constexpr void Reset() { pointer_ = nullptr; }
 
 	T* Get() noexcept { return pointer_; }
 	T* Get() const noexcept { return pointer_; }
@@ -102,7 +102,7 @@ public:
 	T& GetRef();
 	const T& GetRef() const;
 
-	uintptr_t GetAddress() const { return reinterpret_cast<uintptr_t>(pointer_); }
+	constexpr uintptr_t GetAddress() const { return reinterpret_cast<uintptr_t>(pointer_); }
 
 private:
 

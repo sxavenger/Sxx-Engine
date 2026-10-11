@@ -82,8 +82,8 @@ public:
 
 	static Matrix4x4 MakeTranslate(const Vector3<T>& translation) noexcept;
 
-	static Matrix4x4 MakeAffine(const Vector3<T>& translation, const Vector3<T>& euler, const Vector3<T>& scale) noexcept;
-	static Matrix4x4 MakeAffine(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale) noexcept;
+	static Matrix4x4 MakeAffine(const Vector3<T>& scale, const Vector3<T>& euler, const Vector3<T>& translation) noexcept;
+	static Matrix4x4 MakeAffine(const Vector3<T>& scale, const Quaternion<T>& rotation, const Vector3<T>& translation) noexcept;
 
 	static Matrix4x4 MakePerspective(T fov, T aspect, T nearZ, T farZ) noexcept;
 
@@ -324,21 +324,21 @@ Matrix4x4<T> Matrix4x4<T>::MakeRotate(const Quaternion<T>& quaternion) noexcept 
 template <std::floating_point T>
 Matrix4x4<T> Matrix4x4<T>::MakeTranslate(const Vector3<T>& translation) noexcept {
 	Matrix4x4<T> mat = Matrix4x4<T>::Identity();
-	mat.m[0][3] = translation.x;
-	mat.m[1][3] = translation.y;
-	mat.m[2][3] = translation.z;
+	mat.m[3][0] = translation.x;
+	mat.m[3][1] = translation.y;
+	mat.m[3][2] = translation.z;
 
 	return mat;
 }
 
 template <std::floating_point T>
-Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& translation, const Vector3<T>& rotation, const Vector3<T>& scale) noexcept {
-	return Matrix4x4<T>::MakeTranslate(translation) * Matrix4x4<T>::MakeRotate(rotation) * Matrix4x4<T>::MakeScale(scale);
+Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& scale, const Vector3<T>& rotation, const Vector3<T>& translation) noexcept {
+	return Matrix4x4<T>::MakeScale(scale) * Matrix4x4<T>::MakeRotate(rotation) * Matrix4x4<T>::MakeTranslate(translation);
 }
 
 template <std::floating_point T>
-Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale) noexcept {
-	return Matrix4x4<T>::MakeTranslate(translation) * Matrix4x4<T>::MakeRotate(rotation) * Matrix4x4<T>::MakeScale(scale);
+Matrix4x4<T> Matrix4x4<T>::MakeAffine(const Vector3<T>& scale, const Quaternion<T>& rotation, const Vector3<T>& translation) noexcept {
+	return Matrix4x4<T>::MakeScale(scale) * Matrix4x4<T>::MakeRotate(rotation) * Matrix4x4<T>::MakeTranslate(translation);
 }
 
 template <std::floating_point T>
