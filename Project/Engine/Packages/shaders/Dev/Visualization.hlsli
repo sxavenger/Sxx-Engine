@@ -16,6 +16,7 @@ namespace Dev {
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	float32_t3 IntToColor(uint32_t index) {
+		index++; //!< 0で黒くなってしまう対策で加算する
 
 		uint32_t hash = Hash::Murmur(index);
 
