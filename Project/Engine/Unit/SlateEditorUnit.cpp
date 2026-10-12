@@ -7,7 +7,7 @@ SXAVENGER_ENGINE_USING
 //* engine [graphics]
 #include <Runtime/Graphics/Core.h>
 
-//* engine [editor]
+//* engine [editor/slate]
 #include <Runtime/Editor/Slate/SlateIcon.h>
 #include <Runtime/Editor/Slate/SlateTypes.h>
 #include <Runtime/Editor/Slate/Style/SlateStyle.h>
@@ -23,8 +23,10 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/Editor/Slate/Docking/SlateSplitter.h>
 #include <Runtime/Editor/Slate/SlateEditorPanel.h>
 #include <Runtime/Editor/Slate/SlateMainMenu.h>
+
+//* engine [editor]
+#include <Runtime/Editor/CaptureMainMenu.h>
 #include <Runtime/Editor/EditorTestPanel.h>
-#include <Runtime/Editor/EditorTestMainMenu.h>
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -409,7 +411,7 @@ void SlateEditorUnit::InitEditor() {
 	}
 
 	//!< 既定のmain menu. 追加するなら AddMainMenu<T>() を呼ぶ.
-	AddMainMenu<Editor::EditorTestMainMenu>();
+	AddMainMenu<Editor::CaptureMainMenu>();
 
 	BuildLayout(*window);
 
@@ -570,7 +572,7 @@ void SlateEditorUnit::RenderDockOverlay(EditorWindow& window) {
 	if (window.dockPreview.zone != Editor::Slate::DockZone::None) {
 		const Editor::Slate::Geometry preview
 			= Editor::Slate::DockZonePreviewGeometry(target, window.dockPreview.zone);
-
+		
 		window.renderer.DrawRect(preview, style.colors.activeSoft);
 		window.renderer.DrawBorder(preview, style.colors.active, style.metrics.borderThick);
 
