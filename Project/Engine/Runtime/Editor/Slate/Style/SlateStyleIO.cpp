@@ -84,7 +84,7 @@ std::span<const Slate::StyleIO::ColorEntry> Slate::StyleIO::GetColorEntries() {
 		{ "Border",        std::addressof(GetColors().border),        kDefault.border,        "Lines & States", "枠線・区切り線" },
 		{ "Hover",         std::addressof(GetColors().hover),         kDefault.hover,         "Lines & States", "分割の仕切りなどのホバー" },
 		{ "ButtonHover",   std::addressof(GetColors().buttonHover),   kDefault.buttonHover,   "Lines & States", "タイトルバーのボタンのホバー" },
-		{ "Selection",     std::addressof(GetColors().selection),     kDefault.selection,     "Lines & States", "選択(橙)" },
+		{ "Selection",     std::addressof(GetColors().selection),     kDefault.selection,     "Lines & States", "選択(青)" },
 		{ "Active",        std::addressof(GetColors().active),        kDefault.active,        "Lines & States", "ドラッグ中・ドロップ先(青)" },
 		{ "ActiveSoft",    std::addressof(GetColors().activeSoft),    kDefault.activeSoft,    "Lines & States", "ドロップゾーンの塗り(半透明)" },
 
@@ -94,7 +94,7 @@ std::span<const Slate::StyleIO::ColorEntry> Slate::StyleIO::GetColorEntries() {
 		{ "IconDim",       std::addressof(GetColors().iconDim),       kDefault.iconDim,       "Text & Icons",   "単色・線画のアイコンの線" },
 
 		//* tooltip *//
-		{ "TooltipBg",     std::addressof(GetColors().tooltipBg),     kDefault.tooltipBg,     "Tooltip",        "ツールチップの背景(半透明)" },
+		{ "TooltipBg",     std::addressof(GetColors().tooltipBg),     kDefault.tooltipBg,     "Tooltip",        "ツールチップの背景" },
 		{ "TooltipBorder", std::addressof(GetColors().tooltipBorder), kDefault.tooltipBorder, "Tooltip",        "ツールチップの枠線" },
 	}};
 

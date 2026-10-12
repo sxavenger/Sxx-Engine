@@ -8,16 +8,16 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/Graphics/Core.h>
 
 //* engine [editor/slate]
-#include <Runtime/Editor/Slate/SlateIcon.h>
 #include <Runtime/Editor/Slate/SlateTypes.h>
 #include <Runtime/Editor/Slate/Style/SlateStyle.h>
-#include <Runtime/Editor/Slate/Style/SlateStyleEditor.h>
 #include <Runtime/Editor/Slate/Widgets/SlateDecl.h>
 #include <Runtime/Editor/Slate/Widgets/SlateBoxPanel.h>
 #include <Runtime/Editor/Slate/Widgets/SlateOverlay.h>
 #include <Runtime/Editor/Slate/Widgets/SlateTitleBar.h>
 #include <Runtime/Editor/Slate/Widgets/SlateImGuiWidget.h>
 #include <Runtime/Editor/Slate/Widgets/SlateImGuiMenuBar.h>
+#include <Runtime/Editor/Slate/Widgets/SlateChromeBand.h>
+#include <Runtime/Editor/Slate/Widgets/SlateSpacer.h>
 #include <Runtime/Editor/Slate/Docking/SlateDockPanel.h>
 #include <Runtime/Editor/Slate/Docking/SlateDockTabStack.h>
 #include <Runtime/Editor/Slate/Docking/SlateSplitter.h>
@@ -27,6 +27,7 @@ SXAVENGER_ENGINE_USING
 //* engine [editor]
 #include <Runtime/Editor/CaptureMainMenu.h>
 #include <Runtime/Editor/EditorTestPanel.h>
+#include <Runtime/Editor/StyleEditorPanel.h>
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -42,7 +43,6 @@ SXAVENGER_ENGINE_USING
 //* c++
 #include <algorithm>
 #include <format>
-#include <functional>
 #include <string>
 
 //-----------------------------------------------------------------------------------------
@@ -81,22 +81,6 @@ namespace {
 		return { static_cast<int32_t>(point.x), static_cast<int32_t>(point.y) };
 	}
 
-	//!< EditorPanelを継承したpanelの実例.
-	//!< OnDraw()の中はImGuiの呼び出しを並べるだけでよい. Begin / Endは基底が面倒を見る.
-	class StyleEditorPanel final
-		: public Editor::Slate::EditorPanel {
-	public:
-
-		StyleEditorPanel() {
-			SetTitle(std::format("{} Style", Editor::Slate::Icon::Settings));
-		}
-
-		void OnDraw() override {
-			Editor::Slate::StyleEditor::Draw();
-		}
-
-	};
-
 	//!< screen座標をclient座標へ変換する.
 	//!< @retval false client領域の外.
 	bool ToClientPosition(HWND hwnd, const Vector2i& screen, Vector2f& out) {
@@ -120,212 +104,6 @@ namespace {
 		out = { static_cast<float>(point.x), static_cast<float>(point.y) };
 		return true;
 	}
-
-	//!< design.md のビジュアル仕様(Recessed -> Panel -> Header の3階層)をStyleへ適用する.
-	//!< note: 色の直値はこの関数の中にだけ書く. 描画側は必ず Style::GetStyle().colors 経由で参照すること.
-	void ApplyEditorStyle() {
-
-		//* semantic tokens *//
-		//!< sRGB, UE5 Starship Darkテーマの近似値.
-
-		const Color4f recessed    = static_cast<Color4f>(Color4u{ 0x1A, 0x1A, 0x1A });
-		const Color4f panel       = static_cast<Color4f>(Color4u{ 0x24, 0x24, 0x24 });
-		const Color4f header      = static_cast<Color4f>(Color4u{ 0x2F, 0x2F, 0x2F });
-		const Color4f secondary   = static_cast<Color4f>(Color4u{ 0x38, 0x38, 0x38 }); //!< ボタン面・入力枠.
-		const Color4f hover       = static_cast<Color4f>(Color4u{ 0x57, 0x57, 0x57 });
-		const Color4f foreground  = static_cast<Color4f>(Color4u{ 0xC0, 0xC0, 0xC0 });
-		const Color4f subdued     = static_cast<Color4f>(Color4u{ 0x9A, 0x9A, 0x9A });
-		const Color4f iconDim     = static_cast<Color4f>(Color4u{ 0x8A, 0x8A, 0x8A });
-		const Color4f outline     = static_cast<Color4f>(Color4u{ 0x4C, 0x4C, 0x4C });
-		const Color4f primary     = static_cast<Color4f>(Color4u{ 0x00, 0x70, 0xE0 });
-		const Color4f primarySoft = static_cast<Color4f>(Color4u{ 0x00, 0x70, 0xE0, 0x40 }); //!< ドロップ先プレビュー専用.
-		const Color4f error       = static_cast<Color4f>(Color4u{ 0xEF, 0x35, 0x35 });
-
-		Editor::Slate::Style& style = Editor::Slate::Style::GetStyle();
-
-		//* colors *//
-
-		style.colors.background    = recessed;    //!< 分割の溝 / clear色.
-		style.colors.panel         = panel;
-		style.colors.titleBar      = recessed;
-		style.colors.menuBar       = panel;
-		style.colors.tabBar        = recessed;
-		style.colors.tabActive     = panel;       //!< アクティブタブをパネルと地続きに見せる.
-		style.colors.tabUnderline  = secondary;
-		style.colors.border        = secondary;
-		style.colors.hover         = secondary;   //!< ImGuiのButton / FrameBgHoveredに写される.
-		style.colors.buttonHover   = hover;
-		style.colors.selection     = primary;
-		style.colors.active        = primary;
-		style.colors.activeSoft    = primarySoft;
-		style.colors.text          = foreground;
-		style.colors.textDim       = subdued;
-		style.colors.iconDim       = iconDim;
-		style.colors.close         = error;
-		style.colors.tooltipBg     = header; //!< 不透明. alphaを付けない.
-		style.colors.tooltipBorder = outline;
-
-		//* metrics *//
-		//!< 4px gridに揃える.
-
-		style.metrics.paddingM = kPadM;
-		style.metrics.marginL  = kPadM; //!< メニュー項目の左右余白にも使われるため, 密度を保つ目的で16ではなく8にする.
-
-		style.metrics.titleBarHeight = 32.0f;
-		style.metrics.menuBarHeight  = 24.0f;
-		style.metrics.tabBarHeight   = 24.0f;
-		style.metrics.tabRounding    = 4.0f;
-		style.metrics.dividerSize    = 4.0f;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// ChromeBand class
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//! @brief statusBarに使う葉のwidget.
-	//! @note 背景と区切り線はSlate側(renderer->DrawRect / DrawLine)で描き, 中身は自前で開いたImGui
-	//!       ウィンドウで描く. (ImGuiMenuBarと同じ手法)
-	//! @note ImGuiWidgetは使わない. ImGuiWidgetはBeginRegionでWindowPaddingが効いてしまい,
-	//!       24px等の高さに縦が収まらずスクロールバーが出るため.
-	class ChromeBand final
-		: public Editor::Slate::Widget {
-	public:
-
-		////////////////////////////////////////////////////////////////////////////////////////////
-		// Separator enum class
-		////////////////////////////////////////////////////////////////////////////////////////////
-		enum class Separator : uint8_t {
-			Top,
-			Bottom
-		};
-
-		//-----------------------------------------------------------------------------------------
-		// using
-		//-----------------------------------------------------------------------------------------
-
-		using FDrawCallback = std::function<void()>;
-
-	public:
-
-		//=========================================================================================
-		// public methods
-		//=========================================================================================
-
-		//* constructor *//
-
-		ChromeBand(float height, Separator separator, FDrawCallback draw)
-			: height_(height), separator_(separator), draw_(std::move(draw)) {
-		}
-
-		//* widget option *//
-
-		Vector2f ComputeDesiredSize(float /*scale*/, Editor::Slate::ImGuiRenderer* /*renderer*/) const override {
-			return Vector2f{ 0.0f, height_ };
-		}
-
-		int32_t OnPaint(const Editor::Slate::Widget::PaintArguments& /*arguments*/, const Editor::Slate::Geometry& geometry, Editor::Slate::ImGuiRenderer* renderer, int32_t layer) const override {
-
-			if (renderer == nullptr) {
-				return layer;
-			}
-
-			//!< 背景と区切り線はSlate側で描く. 色は都度参照する(静的変数に写すとスタイル変更に追従しない).
-			renderer->DrawRect(geometry, Editor::Slate::Style::GetStyle().colors.panel);
-
-			const float y = (separator_ == Separator::Top)
-				? geometry.absolutePosition.y + 0.5f
-				: geometry.absolutePosition.y + geometry.localSize.y - 0.5f;
-
-			renderer->DrawLine(
-				{ geometry.absolutePosition.x, y },
-				{ geometry.absolutePosition.x + geometry.localSize.x, y },
-				Editor::Slate::Style::GetStyle().colors.border, Editor::Slate::Style::GetStyle().metrics.borderThin
-			);
-
-			//!< フレーム外・サイズ0・callback未設定ではImGuiウィンドウを開かない.
-			if (draw_ == nullptr || !renderer->IsActiveFrame() || geometry.localSize.x <= 0.0f || geometry.localSize.y <= 0.0f) {
-				return layer + 1;
-			}
-
-			renderer->SetCurrentContext();
-
-			if (id_.empty()) {
-				id_ = std::format("##slate_band_{:016X}", reinterpret_cast<uintptr_t>(this));
-			}
-
-			ImGui::SetNextWindowPos(ImVec2(geometry.absolutePosition.x, geometry.absolutePosition.y));
-			ImGui::SetNextWindowSize(ImVec2(geometry.localSize.x, geometry.localSize.y));
-
-			static const ImGuiWindowFlags kFlags
-				= ImGuiWindowFlags_NoTitleBar
-				| ImGuiWindowFlags_NoResize
-				| ImGuiWindowFlags_NoMove
-				| ImGuiWindowFlags_NoCollapse
-				| ImGuiWindowFlags_NoBackground
-				| ImGuiWindowFlags_NoSavedSettings
-				| ImGuiWindowFlags_NoScrollbar
-				| ImGuiWindowFlags_NoScrollWithMouse
-				| ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			//!< WindowMinSizeの既定は32x32で, SetNextWindowSizeの値をこれで下から丸める.
-			//!< pushしないとstatusBar(24px)が本体へはみ出してホバーを奪ってしまう.
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(1.0f, 1.0f));
-
-			//!< Begin()の間だけ効かせ, 直後に戻す. 積んだままだとポップアップにも余白ゼロが波及するため.
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(kPadM, 0.0f));
-			const bool isOpen = ImGui::Begin(id_.c_str(), nullptr, kFlags);
-			ImGui::PopStyleVar(1);
-
-			//!< Begin()を呼んだ場合, 戻り値によらずEnd()を呼ぶ.
-			if (isOpen) {
-				draw_();
-			}
-
-			ImGui::End();
-
-			ImGui::PopStyleVar(3);
-
-			return layer + 1;
-		}
-
-	private:
-
-		//=========================================================================================
-		// private variables
-		//=========================================================================================
-
-		float height_;
-		Separator separator_;
-		FDrawCallback draw_;
-
-		//!< ImGuiウィンドウのID. アドレスから一度だけ作る(毎frame変えると状態が引き継がれない).
-		mutable std::string id_;
-
-	};
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Spacer class
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//! @brief 何も描かず領域だけを占める葉のwidget.
-	//! @note dockが空(全panelを失った)main windowでもstatusBarをclientの下端に固定するために使う.
-	class Spacer final
-		: public Editor::Slate::Widget {
-	public:
-
-		//=========================================================================================
-		// public methods
-		//=========================================================================================
-
-		Vector2f ComputeDesiredSize(float /*scale*/, Editor::Slate::ImGuiRenderer* /*renderer*/) const override {
-			return Vector2f{ 0.0f, 0.0f };
-		}
-
-		int32_t OnPaint(const Editor::Slate::Widget::PaintArguments& /*arguments*/, const Editor::Slate::Geometry& /*geometry*/, Editor::Slate::ImGuiRenderer* /*renderer*/, int32_t layer) const override {
-			return layer;
-		}
-
-	};
 
 }
 
@@ -397,10 +175,6 @@ void SlateEditorUnit::Setup(Framework::Pipeline& pipeline) {
 }
 
 void SlateEditorUnit::InitEditor() {
-
-	//!< ImGuiRenderer::Init が ImGuiStyleIO::SetCurrentStyle と LoadFont でStyleをその時点で写し取るため,
-	//!< window生成(CreateEditorWindow内でrenderer.Init()を呼ぶ)より前に適用する.
-	ApplyEditorStyle();
 
 	//!< main windowを生成する. 以降のsub windowは切り離しから生成される.
 	RefPtr<EditorWindow> window = CreateEditorWindow(L"[Sxavenger Engine] Slate Editor", kDefaultClientSize, true);
@@ -976,15 +750,15 @@ void SlateEditorUnit::RebuildWindowChrome(EditorWindow& window) {
 			box->AddSlot().Fill(1.0f).Content(dock);
 
 		} else {
-			box->AddSlot().Fill(1.0f).Content(std::make_shared<Spacer>());
+			box->AddSlot().Fill(1.0f).Content(std::make_shared<Editor::Slate::Spacer>());
 		}
 
 		//!< statusBarはRebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため,
 		//!< 一度だけ作ってwindowへ保持する.
 		if (window.statusBar == nullptr) {
 			EditorWindow* pointer = &window; //!< windows_(std::list)が所有するためアドレスは安定する.
-			window.statusBar = std::make_shared<ChromeBand>(
-				kStatusBarHeight, ChromeBand::Separator::Top, [this, pointer]() { DrawStatusBar(*pointer); }
+			window.statusBar = std::make_shared<Editor::Slate::ChromeBand>(
+				kStatusBarHeight, Editor::Slate::ChromeBand::Separator::Top, [this, pointer]() { DrawStatusBar(*pointer); }
 			);
 		}
 
@@ -1057,7 +831,7 @@ void SlateEditorUnit::BuildLayout(EditorWindow& window) {
 		//!< Styleの調整タブ. EditorPanelを継承して作る例になっている.
 		//!< note: layoutを組んでいる途中なのでdockRootがまだ無く, AddPanel()は使えない.
 		//!<       ここではpanelを直接作ってtab stackへ入れ, 所有だけpanels_へ預ける.
-		const Editor::Slate::EditorPanelPointer style = std::make_shared<StyleEditorPanel>();
+		const Editor::Slate::EditorPanelPointer style = std::make_shared<Editor::StyleEditorPanel>();
 		panels_.push_back(style);
 		right->AddPanel(style->GetDockPanel());
 	}
