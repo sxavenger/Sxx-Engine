@@ -441,6 +441,7 @@ FodyWeavers.xsd
 
 # 出力関係
 *.log
+*.dmp
 *.wpix
 
 # Externals: assimp prebuilt libraries (Git LFS)
@@ -449,6 +450,7 @@ FodyWeavers.xsd
 /Project/Engine/Externals/assimp/lib/**/*.pdb
 
 # solution
+*.sln
 *.slnx
 *.vcxproj
 *.filters
