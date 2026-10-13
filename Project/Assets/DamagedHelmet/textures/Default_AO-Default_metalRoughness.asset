@@ -1,0 +1,11 @@
+{
+	"metadata": {
+		"reference": {
+			"encoding": "Intensity",
+			"filepath": "Default_AO-Default_metalRoughness.png",
+			"isGenerateMipmaps": true
+		}
+	},
+	"type": "Texture",
+	"uuid": "0ac8651e-e4cd-4a49-98b4-7c0590b1c84e"
+}

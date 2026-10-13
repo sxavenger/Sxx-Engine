@@ -1,0 +1,11 @@
+{
+	"metadata": {
+		"reference": {
+			"encoding": "Intensity",
+			"filepath": "Default_normal.jpg",
+			"isGenerateMipmaps": true
+		}
+	},
+	"type": "Texture",
+	"uuid": "2c4aec9c-7a04-4eec-a672-b4f834e40670"
+}

@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../DamagedHelmet.gltf",
+			"index": 0
+		}
+	},
+	"type": "SurfaceMaterial",
+	"uuid": "fe45f194-7b2a-4ce8-bc2b-240b02ce958b"
+}

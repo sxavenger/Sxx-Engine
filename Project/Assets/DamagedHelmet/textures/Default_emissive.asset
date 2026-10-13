@@ -1,0 +1,11 @@
+{
+	"metadata": {
+		"reference": {
+			"encoding": "Lightness",
+			"filepath": "Default_emissive.jpg",
+			"isGenerateMipmaps": true
+		}
+	},
+	"type": "Texture",
+	"uuid": "2a9e0721-52bd-42ab-9894-6efd00c7a1ac"
+}

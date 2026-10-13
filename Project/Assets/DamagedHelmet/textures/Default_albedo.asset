@@ -1,0 +1,11 @@
+{
+	"metadata": {
+		"reference": {
+			"encoding": "Lightness",
+			"filepath": "Default_albedo.jpg",
+			"isGenerateMipmaps": true
+		}
+	},
+	"type": "Texture",
+	"uuid": "cbb27739-2cad-43e5-a5bb-8c60a3ce4688"
+}
