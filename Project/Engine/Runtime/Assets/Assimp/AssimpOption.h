@@ -11,6 +11,7 @@
 
 //* assimp
 #include <assimp/postprocess.h>
+#include <assimp/material.h>
 
 //* c++
 #include <cstdint>
@@ -81,5 +82,18 @@ enum class AssimpOption : uint32_t {
 
 };
 ENUM_FLAG_OPERATORS(AssimpOption);
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// AssimpTextureType enum class
+////////////////////////////////////////////////////////////////////////////////////////////
+enum class AssimpTextureType : uint32_t {
+	Diffuse   = aiTextureType_DIFFUSE,
+	BaseColor = aiTextureType_BASE_COLOR,
+	Height    = aiTextureType_HEIGHT,
+	Normals   = aiTextureType_NORMALS,
+	Roughness = aiTextureType_DIFFUSE_ROUGHNESS,
+	Metalness = aiTextureType_METALNESS,
+	Emissive  = aiTextureType_EMISSIVE,
+};
 
 SXAVENGER_ENGINE_NAMESPACE_END

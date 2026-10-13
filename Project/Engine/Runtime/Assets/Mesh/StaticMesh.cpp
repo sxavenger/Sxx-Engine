@@ -29,11 +29,15 @@ size_t StaticMesh::Description::GetIndexCount() const {
 	return polygons.size() * 3; //!< 三角形の数 * 3
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+// StaticMesh class methods
+////////////////////////////////////////////////////////////////////////////////////////////
+
 const StaticMesh::Description& StaticMesh::GetDescription() const {
 	Scheduler::TaskHandle handle = BaseAsset::GetTaskHandle();
 
 	if (handle != Scheduler::TaskState::State::Completed) {
-		STREAM_LOG_WARNING("Asset::StaticMesh | static mesh is not ready. name: {}, state: {}", GetName(), handle.GetState());
+		STREAM_LOG_WARNING("Assets::StaticMesh | static mesh is not ready. name: {}, state: {}", GetName(), handle.GetState());
 		handle.Wait(); //!< meshが準備できるまで待機
 	}
 

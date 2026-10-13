@@ -31,8 +31,19 @@ uint32_t AssimpImporter::GetMeshCount() const {
 
 AssimpMesh AssimpImporter::GetMesh(uint32_t index) const {
 	STREAM_ASSERT(HasScene(), "importer has no scene");
-	STREAM_ASSERT(index < GetMeshCount(), "index is out of bounds");
+	STREAM_ASSERT(index < GetMeshCount(), "mesh index is out of bounds");
 	return importer_->GetScene()->mMeshes[index];
+}
+
+uint32_t AssimpImporter::GetMaterialCount() const {
+	STREAM_ASSERT(HasScene(), "importer has no scene");
+	return importer_->GetScene()->mNumMaterials;
+}
+
+AssimpMaterial AssimpImporter::GetMaterial(uint32_t index) const {
+	STREAM_ASSERT(HasScene(), "importer has no scene");
+	STREAM_ASSERT(index < GetMaterialCount(), "material index is out of bounds");
+	return importer_->GetScene()->mMaterials[index];
 }
 
 AssimpImporter AssimpImporter::Load(const std::filesystem::path& filepath, FlagEnum<AssimpOption> option) {

@@ -8,6 +8,7 @@
 
 //* engine
 #include <Runtime/Foundation.hpp>
+#include <Runtime/Graphics/GraphicsUtil.h>
 
 //* lib
 #include <Lib/Uuid/Uuid.h>
@@ -30,7 +31,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath);
+	static Uuid Import(const std::filesystem::path& filepath, Graphics::ColorEncoding encoding = Graphics::ColorEncoding::Lightness);
 
 };
 

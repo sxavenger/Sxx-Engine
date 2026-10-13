@@ -50,6 +50,9 @@ public:
 		std::vector<MeshVertex> vertices;
 		std::vector<MeshPolygon> polygons;
 
+		Uuid materialId; //!< このMeshに適用されるMaterialのuuid
+		// TODO: Material情報の保持.
+
 	};
 
 public:

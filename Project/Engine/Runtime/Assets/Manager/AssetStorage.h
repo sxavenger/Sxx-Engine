@@ -7,6 +7,7 @@
 #include "../Base/BaseAsset.h"
 #include "../Texture/TextureTraits.h"
 #include "../Mesh/StaticMeshTraits.h"
+#include "../Material/SurfaceMaterialTraits.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -94,7 +95,6 @@ Uuid AssetStorage::Import(const std::filesystem::path& filepath) {
 	BaseAssetMetadata metadata = AssetStorage::LoadMetadata(filepath); //!< metadataの取得
 
 	if (storage_.contains(metadata.uuid)) {
-		STREAM_LOG_WARNING("Assets::AssetStorage | asset already imported. filepath: {}, uuid: {}", filepath.generic_string(), metadata.uuid.Serialize());
 		return metadata.uuid; //!< すでに登録されている場合は警告を出す
 	}
 

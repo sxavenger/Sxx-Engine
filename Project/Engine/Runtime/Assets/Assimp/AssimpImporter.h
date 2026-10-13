@@ -6,6 +6,7 @@
 //* assimp
 #include "AssimpOption.h"
 #include "AssimpMesh.h"
+#include "AssimpMaterial.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -50,6 +51,10 @@ public:
 	uint32_t GetMeshCount() const;
 
 	AssimpMesh GetMesh(uint32_t index) const;
+
+	uint32_t GetMaterialCount() const;
+
+	AssimpMaterial GetMaterial(uint32_t index) const;
 
 	// TODO: Material/Animation関係の関数の追加.
 
