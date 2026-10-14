@@ -52,6 +52,7 @@ project "Sandbox"
 
 		"%{prj.location}/Engine/Externals/DirectXTex/include", -- [DirectXTex](https://github.com/microsoft/DirectXTex.git)
 		"%{prj.location}/Engine/Externals/dotnet/include", -- [dotnet](https://dotnet.microsoft.com)
+		"%{prj.location}/Engine/Externals/assimp/include", -- [assimp](https://github.com/assimp/assimp.git)
 		"%{prj.location}/Engine/Externals/PixEvents/include", -- [PixEvents](https://github.com/microsoft/PixEvents.git)
 	}
 
