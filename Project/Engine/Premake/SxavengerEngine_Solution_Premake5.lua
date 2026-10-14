@@ -32,7 +32,7 @@ project "SxavengerEngine"
 
 	-- 言語 --
 	language "c++"
-	cppdialect "c++20"
+	cppdialect "c++23"
 
 	-- ファイルの追加 --
 	files {
