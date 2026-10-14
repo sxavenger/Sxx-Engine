@@ -12,6 +12,10 @@
 //* engine [framework]
 #include <Engine/Runtime/Framework/Core/Context.h>
 
+//* engine [assets]
+#include <Engine/Runtime/Assets/Importer/TextureImporter.h>
+#include <Engine/Runtime/Assets/Importer/SurfaceMaterialImporter.h>
+
 //* world [world]
 #include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
 #include <Engine/Runtime/World/Component/Camera/CameraComponent.h>
@@ -35,8 +39,8 @@
 
 SandboxUnit::SandboxUnit() {
 #ifdef DEVELOPMENT
-	//Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
-	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
+	Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+	//Sxx::Framework::Context::Push<Sxx::WindowUnit>();
 #else
 	//!< windowの追加
 	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
@@ -131,6 +135,11 @@ void SandboxUnit::InitSandbox() {
 		auto transform = camera_->GetComponent<Sxx::World::TransformComponent>();
 		transform->SetPosition({ 0.0f, 1.0f, -20.0f });
 	}
+
+	Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial> handle
+		= Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 });
+
+	std::shared_ptr<Sxx::Assets::SurfaceMaterial> material = handle.WaitGet();
 }
 
 void SandboxUnit::TermSandbox() {

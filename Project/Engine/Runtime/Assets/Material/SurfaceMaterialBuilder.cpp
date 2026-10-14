@@ -70,20 +70,24 @@ SurfaceMaterial::Description SurfaceMaterialBuilder::BuildReference(const std::f
 
 	//!< textureの設定
 
-	description.diffuseTextureId = SurfaceMaterialBuilder::Unify(
+	description.textures[SurfaceMaterial::TextureType::Diffuse] = SurfaceMaterialBuilder::Unify(
 		SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Diffuse),
 		SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::BaseColor)
 	);
 
-	description.emissiveTextureId = SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Emissive);
+	description.textures[SurfaceMaterial::TextureType::Emissive]
+		= SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Emissive);
 
-	description.normalTextureId = SurfaceMaterialBuilder::Unify(
+	description.textures[SurfaceMaterial::TextureType::Normal] = SurfaceMaterialBuilder::Unify(
 		SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Normals),
 		SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Height)
 	);
 
-	description.roughnessTextureId = SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Roughness);
-	description.metallicTextureId  = SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Metalness);
+	description.textures[SurfaceMaterial::TextureType::Roughness]
+		= SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Roughness);
+
+	description.textures[SurfaceMaterial::TextureType::Metallic]
+		= SurfaceMaterialBuilder::GetTextureId(material, directory, AssimpTextureType::Metalness);
 
 	//!< transformの設定
 	description.transform = material.GetTransform();

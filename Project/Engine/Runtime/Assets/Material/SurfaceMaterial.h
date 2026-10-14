@@ -11,8 +11,13 @@
 #include <Runtime/Foundation.hpp>
 
 //* lib
+#include <Lib/Reflection/EnumUtil.h>
+#include <Lib/Container/ArrayEnum.h>
 #include <Lib/Math/Color3.h>
 #include <Lib/Math/Transform/Transform2d.h>
+
+//* c++
+#include <filesystem>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -25,6 +30,17 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 class SurfaceMaterial final
 	: public BaseAsset {
 public:
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// TextureType enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class TextureType : uint8_t {
+		Diffuse,
+		Emissive,
+		Normal,
+		Roughness,
+		Metallic,
+	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// Description structure
@@ -42,11 +58,7 @@ public:
 		// public variables
 		//=========================================================================================
 
-		std::optional<Uuid> diffuseTextureId;
-		std::optional<Uuid> emissiveTextureId;
-		std::optional<Uuid> normalTextureId;
-		std::optional<Uuid> roughnessTextureId;
-		std::optional<Uuid> metallicTextureId;
+		ArrayEnum<std::optional<Uuid>, EnumUtil<TextureType>::GetCount(), TextureType> textures; //!< 各テクスチャのuuidを保持する配列. TextureTypeのenum順に格納する.
 
 		Transform2d transform;
 
@@ -71,6 +83,14 @@ public:
 	//* description option *//
 
 	const Description& GetDescription() const;
+
+	//=========================================================================================
+	// public variables
+	//=========================================================================================
+
+	//* directory *//
+
+	static inline const std::filesystem::path kDirectory = L"Materials"; //!< materialの保存ディレクトリ
 
 private:
 
