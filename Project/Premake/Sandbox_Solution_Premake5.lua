@@ -73,7 +73,7 @@ project "Sandbox"
 	buildoptions { "/utf-8" }
 
 	-- define定義(共通) --
-	defines { '_PROFILE="$(Configuration)"', "NOMINMAX" }
+	defines { 'PROFILE="$(Configuration)"', "NOMINMAX" }
 
 	-- リンカー設定(共通) --
 	linkoptions {

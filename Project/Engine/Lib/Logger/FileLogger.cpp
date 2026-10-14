@@ -21,7 +21,7 @@ void FileLogger::Init() {
 
 		std::ofstream file(kDirectory / kFilename, static_cast<std::ofstream::openmode>(Mode::Truncate)); //!< Mode::Truncateで新規作成
 		file << "Sxavenger Library File Logger"                                              << '\n';
-		file << "profile: "        << _PROFILE                                               << '\n';
+		file << "profile: "        << PROFILE                                                << '\n';
 		file << "main thread id: " << LoggerUtil::kMainThreadId                              << '\n';
 		file << "timestamp: "      << LoggerUtil::SerializeTimestampA(LocalTimePoint::Now()) << '\n';
 		file << std::string(100, '#') << '\n';

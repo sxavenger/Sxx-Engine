@@ -21,7 +21,7 @@ const std::string Configuration::Path::GetPath() const {
 }
 
 const std::string Configuration::Path::GetProfilePath() const {
-	return std::format("{}.{}", path, _PROFILE); //!< プロファイルパスの取得
+	return std::format("{}.{}", path, PROFILE); //!< プロファイルパスの取得
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

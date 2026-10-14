@@ -90,7 +90,7 @@ project "SxavengerEngine"
 	buildoptions { "/utf-8" }
 
 	-- define定義(共通) --
-	defines { '_PROFILE="$(Configuration)"', "NOMINMAX" }
+	defines { 'PROFILE="$(Configuration)"', "NOMINMAX" }
 
 	-- リンカー設定(共通) --
 	linkoptions {
@@ -162,7 +162,7 @@ project "SxavengerEngine"
 			"zlibstaticd",
 		}
 
-	filter "configurations:Develop, Release"
+	filter "configurations:Develop or Release"
 		-- リンカー設定 --
 		libdirs {
 			"%{prj.location}/Externals/assimp/lib/Release"
@@ -187,7 +187,7 @@ project "SxavengerEngine"
 			"nvsdk_ngx_s_dbg",
 		}
 
-	filter "configurations:Develop, Release"
+	filter "configurations:Develop or Release"
 		-- リンカー設定 --
 		libdirs {
 			"%{prj.location}/Externals/DLSS/lib/Release"
