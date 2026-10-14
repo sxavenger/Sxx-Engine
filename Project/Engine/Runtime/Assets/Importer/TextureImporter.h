@@ -27,11 +27,28 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 class TextureImporter final {
 public:
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// ReferenceParameters structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct ReferenceParameters {
+	public:
+
+		//=========================================================================================
+		// public variables
+		//=========================================================================================
+
+		Graphics::ColorEncoding encoding = Graphics::ColorEncoding::Lightness; //!< カラースペースの指定
+		bool isGenerateMipmap = true; //!< ミップマップを生成するかどうかの指定
+
+	};
+
+public:
+
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath, Graphics::ColorEncoding encoding = Graphics::ColorEncoding::Lightness);
+	static Uuid Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

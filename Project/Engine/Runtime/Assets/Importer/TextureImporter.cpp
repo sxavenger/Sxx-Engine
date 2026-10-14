@@ -17,7 +17,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 // TextureImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-Uuid TextureImporter::Import(const std::filesystem::path& filepath, Graphics::ColorEncoding encoding) {
+Uuid TextureImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "Assets::TextureImporter | file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
@@ -50,8 +50,9 @@ Uuid TextureImporter::Import(const std::filesystem::path& filepath, Graphics::Co
 		{ //!< textureのmetadataの作成
 			//!< filepathを参照するデータの作成
 			TextureMetadata::ReferenceData reference = {};
-			reference.filepath = filepath.filename(); //!< filenameのみを保持する
-			reference.encoding = encoding; //!< カラースペースを指定
+			reference.filepath          = filepath.filename(); //!< filenameのみを保持する
+			reference.encoding          = parameters.encoding;
+			reference.isGenerateMipmaps = parameters.isGenerateMipmap;
 
 			//!< metadataの作成
 			TextureMetadata metadata = {};
