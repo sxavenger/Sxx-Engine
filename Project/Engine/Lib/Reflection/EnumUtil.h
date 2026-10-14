@@ -74,7 +74,7 @@ inline constexpr const EnumUtil<Enum>::Underlying EnumUtil<Enum>::GetCount() {
 
 template <Concept::Enum Enum>
 inline constexpr const EnumUtil<Enum>::Underlying EnumUtil<Enum>::Cast(Enum value) {
-	return static_cast<Underlying>(value);
+	return std::to_underlying(value);
 }
 
 template <Concept::Enum Enum>

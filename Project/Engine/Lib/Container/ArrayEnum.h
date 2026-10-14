@@ -34,8 +34,14 @@ public:
 	constexpr T& At(Enum index) { return data_.at(std::to_underlying(index)); }
 	constexpr const T& At(Enum index) const { return data_.at(std::to_underlying(index)); }
 
+	constexpr T& At(size_t index) { return data_.at(index); }
+	constexpr const T& At(size_t index) const { return data_.at(index); }
+
 	constexpr T& operator[](Enum index) { return data_[std::to_underlying(index)]; }
 	constexpr const T& operator[](Enum index) const { return data_[std::to_underlying(index)]; }
+
+	constexpr T& operator[](size_t index) { return data_[index]; }
+	constexpr const T& operator[](size_t index) const { return data_[index]; }
 
 	constexpr T& Front() noexcept { return data_.front(); }
 	constexpr const T& Front() const noexcept { return data_.front(); }

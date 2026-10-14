@@ -29,7 +29,7 @@ bool Keyboard::InputData::IsEnableAcquire() const {
 }
 
 bool Keyboard::InputData::GetKey(KeyId id) const {
-	return keys[static_cast<uint8_t>(id)] != 0;
+	return keys[id] != 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ void Keyboard::Init(IDirectInput8* dinput) {
 
 void Keyboard::Update() {
 	
-	InputData& input = inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	InputData& input = inputs_[InputUtil::Buffer::Stack];
 
 	input.isEnableAcquire = SetCooperativeLevel(hwnd_);
 
@@ -69,7 +69,7 @@ void Keyboard::Update() {
 
 	//!< キーボードの入力状態を取得
 	KeyInput current = {};
-	device_->GetDeviceState(sizeof(current), current.data());
+	device_->GetDeviceState(sizeof(current), current.Data());
 
 	//!< 現在の状態をスタックさせる
 	input.StackState(current);
@@ -78,19 +78,19 @@ void Keyboard::Update() {
 
 void Keyboard::CommitStackInput() {
 	//!< Previousの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)];
+	inputs_[InputUtil::Buffer::Previous]
+		= inputs_[InputUtil::Buffer::Current];
 
 	//!< Currentの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	inputs_[InputUtil::Buffer::Current]
+		= inputs_[InputUtil::Buffer::Stack];
 
 	//!< Stackの状態をクリア
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)].Clear();
+	inputs_[InputUtil::Buffer::Stack].Clear();
 }
 
 bool Keyboard::IsEnableAcquire(InputUtil::Buffer buffer) const {
-	return inputs_[static_cast<uint8_t>(buffer)].IsEnableAcquire();
+	return inputs_[buffer].IsEnableAcquire();
 }
 
 InputUtil::State Keyboard::GetKey(KeyId id) const {
@@ -100,8 +100,8 @@ InputUtil::State Keyboard::GetKey(KeyId id) const {
 	}
 
 	return InputUtil::State::Determine(
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetKey(static_cast<KeyId>(id)),
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetKey(static_cast<KeyId>(id))
+		inputs_[InputUtil::Buffer::Current].GetKey(id),
+		inputs_[InputUtil::Buffer::Previous].GetKey(id)
 	);
 }
 

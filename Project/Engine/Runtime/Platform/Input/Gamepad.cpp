@@ -85,7 +85,7 @@ void Gamepad::Init(uint8_t number) {
 
 void Gamepad::Update() {
 
-	InputData& input = inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	InputData& input = inputs_[InputUtil::Buffer::Stack];
 
 	//!< コントローラーの入力状態を取得
 	XINPUT_STATE current = {};
@@ -105,19 +105,19 @@ void Gamepad::Update() {
 
 void Gamepad::CommitStackInput() {
 	//!< Previousの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)];
+	inputs_[InputUtil::Buffer::Previous]
+		= inputs_[InputUtil::Buffer::Current];
 
 	//!< Currentの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	inputs_[InputUtil::Buffer::Current]
+		= inputs_[InputUtil::Buffer::Stack];
 
 	//!< Stackの状態をクリア
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)].Clear();
+	inputs_[InputUtil::Buffer::Stack].Clear();
 }
 
 bool Gamepad::IsConnect(InputUtil::Buffer buffer) const {
-	return inputs_[static_cast<uint8_t>(buffer)].IsConnect();
+	return inputs_[buffer].IsConnect();
 }
 
 InputUtil::State Gamepad::GetButton(GamepadButtonId id) const {
@@ -126,8 +126,8 @@ InputUtil::State Gamepad::GetButton(GamepadButtonId id) const {
 	}
 
 	return InputUtil::State::Determine(
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(id),
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(id)
+		inputs_[InputUtil::Buffer::Current].GetButton(id),
+		inputs_[InputUtil::Buffer::Previous].GetButton(id)
 	);
 }
 
@@ -137,8 +137,8 @@ InputUtil::State Gamepad::GetButton(GamepadTriggerId id) const {
 	}
 
 	return InputUtil::State::Determine(
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(id),
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(id)
+		inputs_[InputUtil::Buffer::Current].GetButton(id),
+		inputs_[InputUtil::Buffer::Previous].GetButton(id)
 	);
 }
 
@@ -147,7 +147,7 @@ Vector2i Gamepad::GetStick(GamepadStickId id) const {
 		return Vector2i::Origin(); //!< 接続されてない場合は原点を返す
 	}
 
-	return inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetStick(id);
+	return inputs_[InputUtil::Buffer::Current].GetStick(id);
 }
 
 Vector2f Gamepad::GetStickNormalized(GamepadStickId id) const {

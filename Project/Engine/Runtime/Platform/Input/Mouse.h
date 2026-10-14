@@ -13,6 +13,7 @@
 
 //* lib
 #include <Lib/Flag/Flag.h>
+#include <Lib/Container/ArrayEnum.h>
 #include <Lib/Math/Vector2.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +131,7 @@ private:
 
 	//* input state *//
 
-	std::array<InputData, InputUtil::kBufferCount> inputs_;
+	ArrayEnum<InputData, InputUtil::kBufferCount, InputUtil::Buffer> inputs_;
 
 	//=========================================================================================
 	// private methods

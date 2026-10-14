@@ -11,6 +11,7 @@
 #include <Runtime/Foundation.hpp>
 
 //* lib
+#include <Lib/Container/ArrayEnum.h>
 #include <Lib/Math/Vector2.h>
 
 //* xinput
@@ -100,7 +101,7 @@ private:
 
 	//* input state *//
 
-	std::array<InputData, InputUtil::kBufferCount> inputs_;
+	ArrayEnum<InputData, InputUtil::kBufferCount, InputUtil::Buffer> inputs_;
 
 };
 

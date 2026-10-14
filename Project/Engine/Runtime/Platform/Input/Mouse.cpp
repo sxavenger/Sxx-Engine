@@ -70,7 +70,7 @@ void Mouse::Init(IDirectInput8* dinput) {
 
 void Mouse::Update() {
 
-	InputData& input = inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	InputData& input = inputs_[InputUtil::Buffer::Stack];
 
 	input.isEnableAcquire = SetCooperativeLevel(hwnd_);
 
@@ -92,19 +92,19 @@ void Mouse::Update() {
 
 void Mouse::CommitStackInput() {
 	//!< Previousの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)];
+	inputs_[InputUtil::Buffer::Previous]
+		= inputs_[InputUtil::Buffer::Current];
 
 	//!< Currentの状態を更新
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)]
-		= inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)];
+	inputs_[InputUtil::Buffer::Current]
+		= inputs_[InputUtil::Buffer::Stack];
 
 	//!< Stackの状態をクリア
-	inputs_[static_cast<uint8_t>(InputUtil::Buffer::Stack)].Clear();
+	inputs_[InputUtil::Buffer::Stack].Clear();
 }
 
 bool Mouse::IsEnableAcquire(InputUtil::Buffer buffer) const {
-	return inputs_[static_cast<uint8_t>(buffer)].IsEnableAcquire();
+	return inputs_[buffer].IsEnableAcquire();
 }
 
 Vector2i Mouse::GetPosition() const {
@@ -138,7 +138,7 @@ Vector2i Mouse::GetDeltaMove() const {
 		return Vector2i::Origin(); //!< 入力が取得できない場合は原点を返す
 	}
 
-	return inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetDeltaMove();
+	return inputs_[InputUtil::Buffer::Current].GetDeltaMove();
 }
 
 void Mouse::SetPosition(const Vector2i& position) const {
@@ -170,17 +170,17 @@ InputUtil::State Mouse::GetButton(MouseId id) const {
 	}
 
 	return InputUtil::State::Determine(
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetButton(static_cast<MouseId>(id)),
-		inputs_[static_cast<uint8_t>(InputUtil::Buffer::Previous)].GetButton(static_cast<MouseId>(id))
+		inputs_[InputUtil::Buffer::Current].GetButton(id),
+		inputs_[InputUtil::Buffer::Previous].GetButton(id)
 	);
 }
 
 bool Mouse::IsWheel() const {
-	return inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].IsWheel();
+	return inputs_[InputUtil::Buffer::Current].IsWheel();
 }
 
 int32_t Mouse::GetDeltaWheel() const {
-	return inputs_[static_cast<uint8_t>(InputUtil::Buffer::Current)].GetDeltaWheel();
+	return inputs_[InputUtil::Buffer::Current].GetDeltaWheel();
 }
 
 float Mouse::GetDeltaWheelNormalized() const {

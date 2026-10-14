@@ -13,6 +13,7 @@
 
 //* lib
 #include <Lib/Flag/Flag.h>
+#include <Lib/Container/ArrayEnum.h>
 
 //* dinput
 #include <dinput.h>
@@ -33,7 +34,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	const static size_t kKeyCount = 256; //!< keyの数
-	using KeyInput = std::array<BYTE, kKeyCount>; //!< key input data type
+	using KeyInput = ArrayEnum<BYTE, kKeyCount, KeyId>; //!< key input data type
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// InputData structure
@@ -107,7 +108,7 @@ private:
 
 	//* input state *//
 
-	std::array<InputData, InputUtil::kBufferCount> inputs_;
+	ArrayEnum<InputData, InputUtil::kBufferCount, InputUtil::Buffer> inputs_;
 	
 	//=========================================================================================
 	// private methods
