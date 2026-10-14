@@ -7,9 +7,11 @@ SXAVENGER_ENGINE_USING_(Assets)
 //* assets
 #include "../Base/BaseAssetMetadata.h"
 #include "../Texture/TextureMetadata.h"
+#include "../Texture/TextureTraits.h"
 #include "../Manager/AssetStorage.h"
 
 //* lib
+#include <Lib/Logger/StreamLogger.h>
 #include <Lib/Format/Json/JsonFile.h>
 #include <Lib/Format/Json/JsonNode.h>
 
@@ -38,19 +40,19 @@ Uuid TextureImporter::Import(const std::filesystem::path& filepath, const Refere
 
 		json::node node = json::node::object();
 
-		{
-			//!< metadataの保存
+		{ //!< metadataの作成
+			
 			BaseAssetMetadata metadata = {};
 			metadata.uuid = Uuid::Generate(); //!< 新しいuuidを生成
-			metadata.type = AssetType::Texture;
+			metadata.type = AssetTraits<Texture>::kType;
 
 			node = BaseAssetMetadata::Serialize(metadata); //!< metadataをjsonに変換
 		}
 
 		{ //!< textureのmetadataの作成
-			//!< filepathを参照するデータの作成
+			
 			TextureMetadata::ReferenceData reference = {};
-			reference.filepath          = filepath.filename(); //!< filenameのみを保持する
+			reference.filepath          = filepath.lexically_relative(parent); //!< 親ディレクトリからの相対パスを保持する
 			reference.encoding          = parameters.encoding;
 			reference.isGenerateMipmaps = parameters.isGenerateMipmap;
 
