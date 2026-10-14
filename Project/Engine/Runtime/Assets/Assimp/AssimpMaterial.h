@@ -18,6 +18,7 @@
 #include <assimp/material.h>
 
 //* c++
+#include <string>
 #include <optional>
 #include <filesystem>
 
@@ -43,7 +44,7 @@ public:
 
 	//* material option *//
 
-	std::string_view GetName() const;
+	std::string GetName() const;
 
 	//* texture option *//
 

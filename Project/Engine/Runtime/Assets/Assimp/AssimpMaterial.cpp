@@ -5,9 +5,9 @@ SXAVENGER_ENGINE_USING_(Assets)
 // AssimpMaterial class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view AssimpMaterial::GetName() const {
+std::string AssimpMaterial::GetName() const {
 	const aiString& name = material_->GetName();
-	return std::string_view(name.data, name.length);
+	return std::string(name.data, name.length);
 }
 
 std::optional<std::filesystem::path> AssimpMaterial::GetTexturePath(const std::filesystem::path& directory, AssimpTextureType type, uint32_t index) const {
