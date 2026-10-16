@@ -14,14 +14,17 @@
 // ArrayEnum class
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, Concept::Enum Enum>
-class ArrayEnum {
+struct ArrayEnum {
 public:
 
 	//-----------------------------------------------------------------------------------------
 	// using
 	//-----------------------------------------------------------------------------------------
 
-	using Iterator = typename std::array<T, S>::iterator;
+	using iterator               = typename std::array<T, S>::iterator;
+	using const_iterator         = typename std::array<T, S>::const_iterator;
+	using reverse_iterator       = typename std::array<T, S>::reverse_iterator;
+	using const_reverse_iterator = typename std::array<T, S>::const_reverse_iterator;
 
 public:
 
@@ -54,17 +57,14 @@ public:
 
 	//* iterator methods *//
 
-	constexpr Iterator begin() noexcept { return data_.begin(); }
-	constexpr const Iterator begin() const noexcept { return data_.begin(); }
+	constexpr iterator begin() noexcept { return data_.begin(); }
+	constexpr const_iterator begin() const noexcept { return data_.begin(); }
 
-	constexpr Iterator end() noexcept { return data_.end(); }
-	constexpr const Iterator end() const noexcept { return data_.end(); }
+	constexpr reverse_iterator rbegin() noexcept { return data_.rbegin(); }
+	constexpr const_reverse_iterator rbegin() const noexcept { return data_.rbegin(); }
 
-	constexpr Iterator rbegin() noexcept { return data_.rbegin(); }
-	constexpr const Iterator rbegin() const noexcept { return data_.rbegin(); }
-
-	constexpr Iterator rend() noexcept { return data_.rend(); }
-	constexpr const Iterator rend() const noexcept { return data_.rend(); }
+	constexpr reverse_iterator rend() noexcept { return data_.rend(); }
+	constexpr const_reverse_iterator rend() const noexcept { return data_.rend(); }
 
 	//* capacity methods *//
 
@@ -72,10 +72,8 @@ public:
 
 	constexpr std::size_t Size() const noexcept { return data_.size(); }
 
-private:
-
 	//=========================================================================================
-	// private variables
+	// public variables
 	//=========================================================================================
 
 	std::array<T, S> data_;
