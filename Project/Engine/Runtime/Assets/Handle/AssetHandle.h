@@ -60,10 +60,15 @@ public:
 	AssetHandle(AssetHandle&&) noexcept            = default;
 	AssetHandle& operator=(AssetHandle&&) noexcept = default;
 
-	//* operator [copy] <Uuid> *//
+	//* operator [assignment] <Uuid> *//
 
 	AssetHandle(const Uuid& id) noexcept : uuid_(id) {}
 	AssetHandle& operator=(const Uuid& id) noexcept { uuid_ = id; return *this; }
+
+	//* operator [assignment] <std::nullopt_t> *//
+
+	AssetHandle(std::nullopt_t) noexcept : uuid_(std::nullopt) {}
+	AssetHandle& operator=(std::nullopt_t) noexcept { uuid_ = std::nullopt; return *this; }
 
 	//* operator [comparison] <Uuid> *//
 
