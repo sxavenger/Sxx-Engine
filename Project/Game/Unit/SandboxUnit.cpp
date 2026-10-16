@@ -15,6 +15,7 @@
 //* engine [assets]
 #include <Engine/Runtime/Assets/Importer/TextureImporter.h>
 #include <Engine/Runtime/Assets/Importer/SurfaceMaterialImporter.h>
+#include <Engine/Runtime/Assets/Importer/StaticMeshImporter.h>
 
 //* world [world]
 #include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
@@ -93,16 +94,6 @@ void SandboxUnit::InitSandbox() {
 		);
 	}
 
-	{ //!< Mesh Asset の読み込みテスト
-#ifdef _DEBUG
-		//!< DEBUGの場合はcube読み込み
-		handle_ = Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/common/StaticMeshes/cube.asset");
-#else
-		//!< DEVELOP, RELEASEの場合はbunny読み込み
-		handle_ = Sxx::Assets::AssetStorage::GetInstance()->Import<Sxx::Assets::StaticMesh>(L"Assets/bunny/StaticMeshes/stanford_bunny.asset");
-#endif
-	}
-
 	{ //!< Render Target Textureの作成
 		Sxx::Rendering::RenderTargetTexture::Options options = {};
 		options.format     = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -136,10 +127,18 @@ void SandboxUnit::InitSandbox() {
 		transform->SetPosition({ 0.0f, 1.0f, -20.0f });
 	}
 
-	Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial> handle
-		= Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 });
+	{
+		Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial> handle_material
+			= Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/common/cube.obj", { .index = 0 });
 
-	std::shared_ptr<Sxx::Assets::SurfaceMaterial> material = handle.WaitGet();
+		std::shared_ptr<Sxx::Assets::SurfaceMaterial> material = handle_material.WaitGet();
+
+		Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle_mesh
+			= Sxx::Assets::StaticMeshImporter::Import(L"Assets/common/cube.obj", { .index = 0 });
+
+		std::shared_ptr<Sxx::Assets::StaticMesh> mesh = handle_mesh.WaitGet();
+	}
+	
 }
 
 void SandboxUnit::TermSandbox() {
@@ -205,9 +204,6 @@ void SandboxUnit::UpdateSandbox() {
 			position.y -= 0.01f;
 		}
 
-		if (keyboard.GetKey(Sxx::Platform::KeyId::R).IsTrigger()) {
-			Sxx::Assets::AssetStorage::GetInstance()->Reload<Sxx::Assets::StaticMesh>(handle_.GetUuid());
-		}
 
 		transform->SetPosition(position);
 
@@ -222,9 +218,6 @@ void SandboxUnit::RenderSandbox() {
 	{ //!< cacheの更新
 		// TODO: 別threadでcacheの更新を行うようにする.
 
-		auto mesh = handle_.Get();
-		Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::StaticMeshCache>(mesh->GetUuid(), mesh->GetAddress(), mesh);
-
 		auto camera = camera_->GetComponent<Sxx::World::CameraComponent>();
 		Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::CameraCache>(camera.GetAddress(), *camera);
 
@@ -234,53 +227,12 @@ void SandboxUnit::RenderSandbox() {
 
 	{ //!< RenderTargetへの書き込み
 
-		std::shared_ptr<Sxx::Rendering::StaticMeshCache> meshCache
-			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::StaticMeshCache>(handle_.GetUuid());
-
 		std::shared_ptr<Sxx::Rendering::CameraCache> cameraCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
 
 		std::shared_ptr<Sxx::Rendering::TransformCache> transformCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
 
-		if (meshCache->HasCache()) {
-
-			auto commandList = context.GetCommandList();
-
-			renderTarget_.Transition(context, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			renderTarget_.ClearRenderTarget(context);
-
-			depthStencil_.Transition(context, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-			depthStencil_.ClearDepthStencil(context);
-
-			commandList->OMSetRenderTargets(
-				1, &renderTarget_.GetDescriptorRTV().GetCPUHandle(), false,
-				&depthStencil_.GetDescriptorDSV().GetCPUHandle()
-			);
-
-			//D3D12_INDEX_BUFFER_VIEW ibv = meshCache->GetIndexBuffer().GetIndexBufferView();
-			//commandList->IASetIndexBuffer(&ibv);
-
-			pipeline0_.BindPipeline(context, renderTarget_.GetResolution());
-
-			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetAddress("gPositions", meshCache->GetPositionVertexBuffer().positions.GetGpuVirtualAddress());
-			parameter.SetAddress("gVertices", meshCache->GetStaticMeshVertexBuffer().vertices.GetGpuVirtualAddress());
-			parameter.SetAddress("gMeshlets", meshCache->GetMeshletBuffer().meshlets.GetGpuVirtualAddress());
-			parameter.SetAddress("gVertexIndices", meshCache->GetMeshletBuffer().vertexIndices.GetGpuVirtualAddress());
-			parameter.SetAddress("gTriangles", meshCache->GetMeshletBuffer().triangles.GetGpuVirtualAddress());
-			parameter.Set32bitConstants("Information", meshCache->GetMeshletBuffer().meshletCount);
-			parameter.SetAddress("gCameraProjection", cameraCache->GetProjectionBuffer().GetGpuVirtualAddress());
-			parameter.SetAddress("gCameraTransform", transformCache->GetTransformationBuffer().GetGpuVirtualAddress());
-
-			pipeline0_.BindShaderParameter(context, parameter);
-
-			//commandList->DrawIndexedInstanced(meshCache->GetIndexBuffer().GetIndexCount(), 1, 0, 0, 0);
-			commandList->DispatchMesh(Sxx::Graphics::RoundUp(meshCache->GetMeshletBuffer().meshletCount, 32), 1, 1);
-
-			renderTarget_.Transition(context, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-			depthStencil_.Transition(context, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		}
 	}
 
 	if (Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>()) {

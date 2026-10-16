@@ -53,8 +53,6 @@ private:
 	Sxx::Rendering::RenderTargetTexture renderTarget_;
 	Sxx::Rendering::DepthStencilTexture depthStencil_;
 
-	Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh> handle_;
-
 	Sxx::World::GameObject camera_;
 
 	//=========================================================================================

@@ -20,7 +20,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 Uuid TextureImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
-	STREAM_ASSERT(std::filesystem::exists(filepath), "Assets::TextureImporter | file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
+	STREAM_ASSERT(std::filesystem::exists(filepath), "texture file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
 
