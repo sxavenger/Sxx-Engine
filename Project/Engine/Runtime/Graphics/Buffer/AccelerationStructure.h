@@ -8,6 +8,8 @@
 #include "../Device/Device.h"
 #include "../Command/GraphicsCommandContext.h"
 #include "Resource.h"
+#include "ResourceHandle.h"
+#include "ResourceAllocator.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -72,6 +74,7 @@ public:
 	//! @brief AccelerationStructureを作成する.
 	static AccelerationStructure Create(
 		const Device& device,
+		ResourceAllocator& allocator,
 		const D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& inputs
 	);
 
@@ -81,8 +84,8 @@ public:
 
 	//* Graphics *//
 
-	Resource buffer;
-	Resource scratch;
+	ResourceHandle buffer;
+	ResourceHandle scratch;
 
 	// HACK: Resource共に, ResourceHandleとして保持しておく必要がある.
 
@@ -96,13 +99,15 @@ private:
 	// private methods
 	//=========================================================================================
 
-	static Resource CreateAccelerationStructureBuffer(
+	static ResourceHandle CreateAccelerationStructureBuffer(
 		const Device& device,
+		ResourceAllocator& allocator,
 		const D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO& info
 	);
 
-	static Resource CreateScratchBuffer(
+	static ResourceHandle CreateScratchBuffer(
 		const Device& device,
+		ResourceAllocator& allocator,
 		const D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO& info
 	);
 

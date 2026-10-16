@@ -60,6 +60,8 @@ public:
 	//! @brief 現在のフレームのデータを取得する.
 	const T* GetData() const;
 
+	void Fill(const T& value);
+
 	//* operator [copy] <DimensionBuffer> (delete) *//
 
 	DimensionBuffer(const DimensionBuffer&)            = delete;
@@ -125,6 +127,12 @@ inline T* DimensionBuffer<T>::GetData() {
 template <typename T>
 inline const T* DimensionBuffer<T>::GetData() const {
 	return datas_[handle_.GetCurrentIndex()].data();
+}
+
+template <typename T>
+inline void DimensionBuffer<T>::Fill(const T& value) {
+	auto& data = datas_[handle_.GetCurrentIndex()];
+	std::fill(data.begin(), data.end(), value);
 }
 
 template <typename T>

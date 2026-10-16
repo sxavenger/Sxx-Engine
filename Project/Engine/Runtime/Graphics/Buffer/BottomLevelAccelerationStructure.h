@@ -7,6 +7,7 @@
 #include "../GraphicsUtil.h"
 #include "../Device/Device.h"
 #include "../Command/GraphicsCommandContext.h"
+#include "ResourceAllocator.h"
 #include "AccelerationStructure.h"
 
 //* engine
@@ -75,7 +76,9 @@ public:
 
 	//! @brief BottomLevelAccelerationStructureを構築する.
 	void Build(
-		const Device& device, const GraphicsCommandContext& context,
+		const Device& device,
+		const GraphicsCommandContext& context,
+		ResourceAllocator& allocator,
 		const Geometry& geometry
 	);
 

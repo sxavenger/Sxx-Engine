@@ -39,7 +39,7 @@ void AccelerationStructure::Build(
 	//!< barrierの設定
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type          = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-	barrier.UAV.pResource = buffer.Get();
+	barrier.UAV.pResource = buffer.GetResource().Get();
 
 	//!< barrierの実行
 	context.GetCommandList()->ResourceBarrier(1, &barrier);
@@ -69,19 +69,19 @@ void AccelerationStructure::Update(
 	//!< barrierの設定
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type          = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-	barrier.UAV.pResource = buffer.Get();
+	barrier.UAV.pResource = buffer.GetResource().Get();
 
 	//!< barrierの実行
 	context.GetCommandList()->ResourceBarrier(1, &barrier);
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS AccelerationStructure::GetGpuVirtualAddress() const {
-	STREAM_ASSERT(buffer != nullptr, "acceleration structure buffer is null.");
+	STREAM_ASSERT(buffer.HasHandle(), "acceleration structure buffer is not valid.");
 	return buffer.GetGpuVirtualAddress();
 }
 
 void AccelerationStructure::SetName(const std::wstring_view& name) const {
-	if (buffer == nullptr) {
+	if (!buffer.HasHandle()) {
 		STREAM_LOG_WARNING(L"Graphics::AccelerationStructure | resource is not valid. cannot set name. name: {}", name);
 		return; //!< handleが無効な場合は設定できない.
 	}
@@ -91,7 +91,7 @@ void AccelerationStructure::SetName(const std::wstring_view& name) const {
 }
 
 void AccelerationStructure::SetName(const std::string_view& name) const {
-	if (buffer == nullptr) {
+	if (!buffer.HasHandle()) {
 		STREAM_LOG_WARNING("Graphics::AccelerationStructure | resource is not valid. cannot set name. name: {}", name);
 		return; //!< handleが無効な場合は設定できない.
 	}
@@ -102,6 +102,7 @@ void AccelerationStructure::SetName(const std::string_view& name) const {
 
 AccelerationStructure AccelerationStructure::Create(
 	const Device& device,
+	ResourceAllocator& allocator,
 	const D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& inputs) {
 
 	AccelerationStructure acceleration;
@@ -110,16 +111,17 @@ AccelerationStructure AccelerationStructure::Create(
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info = {};
 	device.GetDevice()->GetRaytracingAccelerationStructurePrebuildInfo(&inputs, &info);
 
-	acceleration.buffer  = AccelerationStructure::CreateAccelerationStructureBuffer(device, info);
-	acceleration.scratch = AccelerationStructure::CreateScratchBuffer(device, info);
+	acceleration.buffer  = AccelerationStructure::CreateAccelerationStructureBuffer(device, allocator, info);
+	acceleration.scratch = AccelerationStructure::CreateScratchBuffer(device, allocator, info);
 
 	acceleration.flags = AccelerationStructure::ConvertFlags(inputs.Flags); //!< flagsの保存
 
 	return acceleration;
 }
 
-Resource AccelerationStructure::CreateAccelerationStructureBuffer(
+ResourceHandle AccelerationStructure::CreateAccelerationStructureBuffer(
 	const Device& device,
+	ResourceAllocator& allocator,
 	const D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO& info) {
 
 	ResourceDesc desc = ResourceDesc::CreateBufferDesc(
@@ -129,14 +131,15 @@ Resource AccelerationStructure::CreateAccelerationStructureBuffer(
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE
 	);
 
-	Resource buffer = Resource::CreateCommitted(device, desc);
-	buffer.SetName(L"<Acceleration Structure | Acceleration Structure Buffer>");
+	ResourceHandle handle = allocator.Allocate(device, desc, 1);
+	handle.SetName(L"<Acceleration Structure | Acceleration Structure Buffer>");
 
-	return buffer;
+	return handle;
 }
 
-Resource AccelerationStructure::CreateScratchBuffer(
+ResourceHandle AccelerationStructure::CreateScratchBuffer(
 	const Device& device,
+	ResourceAllocator& allocator,
 	const D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO& info) {
 
 	ResourceDesc desc = ResourceDesc::CreateBufferDesc(
@@ -146,10 +149,10 @@ Resource AccelerationStructure::CreateScratchBuffer(
 		D3D12_RESOURCE_STATE_COMMON
 	);
 
-	Resource buffer = Resource::CreateCommitted(device, desc);
-	buffer.SetName(L"<Acceleration Structure | Scratch Buffer>");
+	ResourceHandle handle = allocator.Allocate(device, desc, 1);
+	handle.SetName(L"<Acceleration Structure | Scratch Buffer>");
 
-	return buffer;
+	return handle;
 }
 
 FlagEnum<AccelerationStructure::Flags> AccelerationStructure::ConvertFlags(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS flags) {

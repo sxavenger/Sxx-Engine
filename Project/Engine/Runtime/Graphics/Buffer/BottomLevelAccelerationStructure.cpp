@@ -51,13 +51,15 @@ BottomLevelAccelerationStructure::Geometry BottomLevelAccelerationStructure::Geo
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void BottomLevelAccelerationStructure::Build(
-	const Device& device, const GraphicsCommandContext& context,
+	const Device& device,
+	const GraphicsCommandContext& context,
+	ResourceAllocator& allocator,
 	const Geometry& geometry) {
 
 	//!< input情報の設定
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = geometry.GetInputs(false);
 
-	accelerationStructure_ = AccelerationStructure::Create(device, inputs); //!< input情報からbufferの生成
+	accelerationStructure_ = AccelerationStructure::Create(device, allocator, inputs); //!< input情報からbufferの生成
 	accelerationStructure_.Build(context, inputs); //!< buildの実行
 }
 
