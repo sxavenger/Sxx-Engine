@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../cube.obj",
+			"index": 1
+		}
+	},
+	"type": "SurfaceMaterial",
+	"uuid": "04191978-48c5-4583-b6f7-0bdf196b8281"
+}
