@@ -42,7 +42,7 @@ TopLevelAccelerationStructure::BuildMode TopLevelAccelerationStructure::PrepareI
 	if (!descs_.HasHandle() || instances_.size() > descs_.GetCapacity()) {
 		//!< descが未作成または, capacityが足りない場合は再作成
 		uint32_t capacity = std::max<uint32_t>(1, static_cast<uint32_t>(instances_.size())); //!< capacityは1以上にする必要がある.
-		descs_ = DimensionBuffer<D3D12_RAYTRACING_INSTANCE_DESC>::Create(device, allocator, capacity, 2);
+		descs_ = DimensionBuffer<D3D12_RAYTRACING_INSTANCE_DESC>::Create(device, allocator, capacity, Graphics::kFrameCount);
 		mode = BuildMode::Build;
 	}
 
