@@ -8,6 +8,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include "../Assimp/AssimpCommon.h"
 #include "../Assimp/AssimpImporter.h"
 #include "../Assimp/AssimpMesh.h"
+#include "../Importer/SurfaceMaterialImporter.h"
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -102,6 +103,9 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
 		description.polygons[i] = { mesh.GetTriangle(i) };
 	}
+
+	//!< materialの取得
+	description.materialId = SurfaceMaterialImporter::Import(path, { .index = mesh.GetMaterialIndex() });
 
 	return description;
 }

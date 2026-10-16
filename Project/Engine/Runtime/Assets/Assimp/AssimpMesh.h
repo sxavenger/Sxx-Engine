@@ -79,6 +79,10 @@ public:
 
 	Triangle GetTriangle(uint32_t index) const;
 
+	//* meterial option *//
+
+	uint32_t GetMaterialIndex() const;
+
 	//* bone option *//
 
 	bool HasBone() const;

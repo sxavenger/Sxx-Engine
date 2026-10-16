@@ -72,6 +72,10 @@ AssimpMesh::Triangle AssimpMesh::GetTriangle(uint32_t index) const {
 	return Triangle{ face.mIndices[0], face.mIndices[1], face.mIndices[2] };
 }
 
+uint32_t AssimpMesh::GetMaterialIndex() const {
+	return mesh_->mMaterialIndex;
+}
+
 bool AssimpMesh::HasBone() const {
 	return mesh_->mNumBones != 0;
 }
