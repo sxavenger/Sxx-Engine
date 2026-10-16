@@ -19,6 +19,14 @@ template <typename Base>
 class InstanceRegistry final {
 public:
 
+	//-----------------------------------------------------------------------------------------
+	// using
+	//-----------------------------------------------------------------------------------------
+
+	using Container = std::unordered_map<TypeInfo, std::unique_ptr<Base>>;
+
+public:
+
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -32,13 +40,15 @@ public:
 	template <typename Derived> requires std::derived_from<Derived, Base>
 	Derived* Get() const;
 
+	const Container& GetContainer() const { return container_; }
+
 private:
 
 	//=========================================================================================
 	// private variables
 	//=========================================================================================
 
-	std::unordered_map<TypeInfo, std::unique_ptr<Base>> container_;
+	Container container_;
 
 	//=========================================================================================
 	// private methods

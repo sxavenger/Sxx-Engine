@@ -80,6 +80,11 @@ public:
 	bool operator==(std::nullopt_t) const noexcept { return !uuid_.has_value(); }
 	bool operator!=(std::nullopt_t) const noexcept { return uuid_.has_value(); }
 
+	//* operator [comparison] <AssetHandle> *//
+
+	bool operator==(const AssetHandle&) const noexcept = default;
+	bool operator!=(const AssetHandle&) const noexcept = default;
+
 private:
 
 	//=========================================================================================

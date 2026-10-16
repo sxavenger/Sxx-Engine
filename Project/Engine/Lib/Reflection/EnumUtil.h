@@ -84,8 +84,8 @@ inline constexpr std::string_view EnumUtil<Enum>::GetName(Enum value) {
 
 template <Concept::Enum Enum>
 inline constexpr std::string_view EnumUtil<Enum>::GetName(EnumUtil<Enum>::Underlying index) {
-	auto name = magic_enum::enum_names<Enum>();
-	return index < name.size() ? name[index] : std::string_view{};
+	auto names = magic_enum::enum_names<Enum>();
+	return index < names.size() ? names[index] : std::string_view{};
 }
 
 template <Concept::Enum Enum>
