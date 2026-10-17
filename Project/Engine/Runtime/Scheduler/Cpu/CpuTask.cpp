@@ -23,7 +23,7 @@ void CpuTask::Execute() {
 	state.Set(TaskState::State::Completed);
 }
 
-CpuTask CpuTask::CreateTask(const std::string_view& name, const Function& function, uint8_t priority, TaskState::Pointer state) {
+CpuTask CpuTask::CreateTask(const std::string_view& name, const Function& function, TaskPriority priority, TaskState::Pointer state) {
 	CpuTask task = {};
 	task.name     = name;
 	task.priority = priority;

@@ -19,6 +19,7 @@
 #include <Lib/Math/Matrix4x4.h>
 
 //* c++
+#include <bitset>
 #include <list>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +46,7 @@ public:
 		const BottomLevelAccelerationStructure* blas     = nullptr;
 		FlagEnum< D3D12_RAYTRACING_INSTANCE_FLAGS> flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
 		UINT instanceId                                  = 0;
-		uint8_t instanceMask                             = 0xFF;
+		std::bitset<8> instanceMask                      = 0xFF;
 		
 		Matrix4x4f transform = Matrix4x4f::Identity();
 	};

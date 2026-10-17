@@ -55,7 +55,7 @@ public:
 
 	//* create task methods *//
 
-	static CpuTask CreateTask(const std::string_view& name, const Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default), TaskState::Pointer state = nullptr);
+	static CpuTask CreateTask(const std::string_view& name, const Function& function, TaskPriority priority = TaskPriority::Priority::Default, TaskState::Pointer state = nullptr);
 
 	//=========================================================================================
 	// public variables
@@ -63,7 +63,7 @@ public:
 
 	std::string name = "unnamed task"; //!< タスク名
 
-	uint8_t priority = static_cast<uint8_t>(TaskPriority::Default); //!< 優先度
+	TaskPriority priority = TaskPriority::Priority::Default; //!< 優先度
 
 	Function function; //!< 実行関数
 

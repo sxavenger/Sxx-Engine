@@ -59,7 +59,7 @@ TopLevelAccelerationStructure::BuildMode TopLevelAccelerationStructure::PrepareI
 		//!< descの設定
 		D3D12_RAYTRACING_INSTANCE_DESC desc = {};
 		desc.AccelerationStructure               = instance.blas->GetGpuVirtualAddress();
-		desc.InstanceMask                        = instance.instanceMask;
+		desc.InstanceMask                        = instance.instanceMask.to_ulong();
 		desc.InstanceID                          = instance.instanceId;
 		desc.Flags                               = instance.flags.value;
 		desc.InstanceContributionToHitGroupIndex = static_cast<UINT>(i); // HACK: 完全に同じobjectの場合, この値は同じになる

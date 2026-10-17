@@ -36,7 +36,7 @@ void AssetStorage::PushBuildTask(const std::shared_ptr<BaseAsset>& asset, const 
 	Scheduler::System::PushCpuTask(
 		std::format("build asset: {}", asset->GetName()),
 		function,
-		static_cast<uint8_t>(Scheduler::TaskPriority::Default),
+		Scheduler::TaskPriority::Priority::Default,
 		asset->GetStatePointer()
 	);
 }
