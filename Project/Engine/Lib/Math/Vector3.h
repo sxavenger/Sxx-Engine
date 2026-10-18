@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* c++
 #include <cstdint>
+#include <array>
 #include <concepts>
 #include <limits>
 #include <algorithm>
