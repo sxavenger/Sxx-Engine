@@ -60,6 +60,9 @@ public:
 	constexpr iterator begin() noexcept { return data_.begin(); }
 	constexpr const_iterator begin() const noexcept { return data_.begin(); }
 
+	constexpr iterator end() noexcept { return data_.end(); }
+	constexpr const_iterator end() const noexcept { return data_.end(); }
+
 	constexpr reverse_iterator rbegin() noexcept { return data_.rbegin(); }
 	constexpr const_reverse_iterator rbegin() const noexcept { return data_.rbegin(); }
 
