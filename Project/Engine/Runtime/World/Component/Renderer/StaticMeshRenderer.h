@@ -31,6 +31,16 @@ public:
 	StaticMeshRenderer(uint64_t handle, RefPtr<EntityBehaviour> entity) noexcept : BaseComponent(handle, entity) {}
 	~StaticMeshRenderer() override = default;
 
+	//* component option *//
+
+	void SetMesh(const Assets::AssetHandle<Assets::StaticMesh>& mesh) { mesh_ = mesh; }
+
+	Assets::AssetHandle<Assets::StaticMesh> GetMesh() const { return mesh_; }
+
+	void SetMaterial(const Assets::AssetHandle<Assets::SurfaceMaterial>& material) { material_ = material; }
+
+	Assets::AssetHandle<Assets::SurfaceMaterial> GetMaterial() const { return material_; }
+
 private:
 
 	//=========================================================================================
