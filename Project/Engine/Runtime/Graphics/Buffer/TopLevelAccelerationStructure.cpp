@@ -48,7 +48,7 @@ TopLevelAccelerationStructure::BuildMode TopLevelAccelerationStructure::PrepareI
 
 	// previousInstanceCountとの比較
 	if (previousInstanceCount_ != instances_.size()) {
-		previousInstanceCount_ = instances_.size();
+		previousInstanceCount_ = static_cast<uint32_t>(instances_.size());
 		mode = BuildMode::Build;
 	}
 
