@@ -30,7 +30,7 @@ void GpuTask::Execute(Graphics::GraphicsCommandContext& context) {
 	state.Set(TaskState::State::Completed);
 }
 
-GpuTask GpuTask::CreateTask(Graphics::GraphicsCommandType type, const std::string_view& name, const Function& function, uint8_t priority) {
+GpuTask GpuTask::CreateTask(Graphics::GraphicsCommandType type, const std::string_view& name, const Function& function, TaskPriority priority) {
 	GpuTask task = {};
 	task.type     = type;
 	task.name     = name;
@@ -40,10 +40,10 @@ GpuTask GpuTask::CreateTask(Graphics::GraphicsCommandType type, const std::strin
 	return task;
 }
 
-GpuTask GpuTask::CreateComputeTask(const std::string_view& name, const Function& function, uint8_t priority) {
+GpuTask GpuTask::CreateComputeTask(const std::string_view& name, const Function& function, TaskPriority priority) {
 	return GpuTask::CreateTask(Graphics::GraphicsCommandType::Compute, name, function, priority);
 }
 
-GpuTask GpuTask::CreateCopyTask(const std::string_view& name, const Function& function, uint8_t priority) {
+GpuTask GpuTask::CreateCopyTask(const std::string_view& name, const Function& function, TaskPriority priority) {
 	return GpuTask::CreateTask(Graphics::GraphicsCommandType::Copy, name, function, priority);
 }

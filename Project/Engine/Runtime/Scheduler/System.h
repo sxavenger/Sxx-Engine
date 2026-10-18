@@ -38,7 +38,7 @@ public:
 
 	static TaskHandle PushTask(const CpuTask& task);
 
-	static TaskHandle PushCpuTask(const std::string_view& name, const CpuTask::Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default), TaskState::Pointer state = nullptr);
+	static TaskHandle PushCpuTask(const std::string_view& name, const CpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default, TaskState::Pointer state = nullptr);
 
 	//* gpu scheduler option *//
 
@@ -46,9 +46,9 @@ public:
 
 	static TaskHandle PushTask(const GpuTask& task);
 
-	static TaskHandle PushCopyQueueTask(const std::string_view& name, const GpuTask::Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default));
+	static TaskHandle PushCopyQueueTask(const std::string_view& name, const GpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
-	static TaskHandle PushComputeQueueTask(const std::string_view& name, const GpuTask::Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default));
+	static TaskHandle PushComputeQueueTask(const std::string_view& name, const GpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
 private:
 

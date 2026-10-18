@@ -46,10 +46,15 @@ public:
 	TaskHandle(TaskHandle&&) noexcept            = default;
 	TaskHandle& operator=(TaskHandle&&) noexcept = default;
 
-	//* operator [copy] <TaskState> *//
+	//* operator [assignment] <TaskState> *//
 
 	TaskHandle(const TaskState& _state) noexcept : pointer_(_state.pointer) {}
 	TaskHandle& operator=(const TaskState& _state) noexcept { pointer_ = _state.pointer; return *this; }
+
+	//* operator [assignment] <std::nullptr_t> *//
+
+	TaskHandle(std::nullptr_t) noexcept : pointer_(nullptr) {}
+	TaskHandle& operator=(std::nullptr_t) noexcept { pointer_ = nullptr; return *this; }
 
 	//* operator [comparison] <std::nullptr_t> *//
 
@@ -67,7 +72,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	TaskState::Pointer pointer_;
+	TaskState::Pointer pointer_ = nullptr;
 
 };
 

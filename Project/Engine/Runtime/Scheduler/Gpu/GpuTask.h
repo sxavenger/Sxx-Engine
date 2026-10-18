@@ -59,11 +59,11 @@ public:
 
 	//* create task methods *//
 
-	static GpuTask CreateTask(Graphics::GraphicsCommandType type, const std::string_view& name, const Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default));
+	static GpuTask CreateTask(Graphics::GraphicsCommandType type, const std::string_view& name, const Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
-	static GpuTask CreateComputeTask(const std::string_view& name, const Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default));
+	static GpuTask CreateComputeTask(const std::string_view& name, const Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
-	static GpuTask CreateCopyTask(const std::string_view& name, const Function& function, uint8_t priority = static_cast<uint8_t>(TaskPriority::Default));
+	static GpuTask CreateCopyTask(const std::string_view& name, const Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
 	//=========================================================================================
 	// public variables
@@ -72,7 +72,7 @@ public:
 	std::string name = "unnamed task"; //!< タスク名
 
 	Graphics::GraphicsCommandType type = Graphics::GraphicsCommandType::Compute; //!< コマンドタイプ
-	uint8_t priority                   = static_cast<uint8_t>(TaskPriority::Default); //!< 優先度
+	TaskPriority priority              = TaskPriority::Priority::Default; //!< 優先度
 
 	Function function; //!< 実行関数
 
