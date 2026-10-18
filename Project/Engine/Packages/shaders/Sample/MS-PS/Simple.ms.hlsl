@@ -18,10 +18,10 @@ ConstantBuffer<Component::Transform> gCameraTransform : register(b1);
 [outputtopology("triangle")]
 void main(
 	ComputeSemantics semantics,
-	in payload MeshletPayload payload,
+	in payload Meshlet::Payload payload,
 	out vertices PixelInputData vertices[MESHLET_MAX_VERTEX_COUNT],
 	out indices uint32_t3 triangles[MESHLET_MAX_TRIANGLE_COUNT],
-	out primitives MeshletPrimitive primitives[MESHLET_MAX_TRIANGLE_COUNT]) {
+	out primitives Meshlet::Primitive primitives[MESHLET_MAX_TRIANGLE_COUNT]) {
 
 	uint32_t meshlet_index = payload.meshlet_indices[semantics.group_id.x];
 
@@ -29,7 +29,7 @@ void main(
 		return;
 	}
 
-	Meshlet meshlet = gMeshlets[meshlet_index];
+	Meshlet::Description meshlet = gMeshlets[meshlet_index];
 	meshlet.SetMeshOutputCount(); //!< meshの出力数を設定する
 
 	//!< triangleの出力

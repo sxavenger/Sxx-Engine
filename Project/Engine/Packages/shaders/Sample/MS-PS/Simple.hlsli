@@ -28,9 +28,9 @@ cbuffer Information : register(b1, space1) {
 
 StructuredBuffer<float32_t3> gPositions : register(t0, space1);
 StructuredBuffer<StaticMeshVertex> gVertices : register(t1, space1);
-StructuredBuffer<Meshlet> gMeshlets : register(t2, space1);
+StructuredBuffer<Meshlet::Description> gMeshlets : register(t2, space1);
 StructuredBuffer<uint32_t> gVertexIndices : register(t3, space1);
-StructuredBuffer<MeshletTriangle> gTriangles : register(t4, space1);
+StructuredBuffer<Meshlet::Triangle> gTriangles : register(t4, space1);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // intermediate structures

@@ -7,13 +7,13 @@
 // group shared
 //=========================================================================================
 
-groupshared MeshletPayload payload;
+groupshared Meshlet::Payload payload;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
 [shader("amplification")]
-[numthreads(MESHLET_APPLIFICATION_NUMTHREAD, 1, 1)]
+[numthreads(MESHLET_AMPLIFICATION_NUMTHREAD, 1, 1)]
 void main(ComputeSemantics semantics) {
 	//!< dispatch_thread_id.xはmeshlet_index
 
