@@ -298,7 +298,7 @@ void SandboxUnit::RenderSandbox() {
 		scene_.Setup();
 	}
 
-	{ //!< RenderTargetへの書き込み
+	{ //!< RenderTargetへの書き込み(Passとして書き込む)
 
 		std::shared_ptr<const Sxx::Rendering::StaticMeshCache> meshCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::StaticMeshCache>(object_->GetComponent<Sxx::World::StaticMeshRenderer>()->GetMesh().GetUuid());
@@ -308,14 +308,14 @@ void SandboxUnit::RenderSandbox() {
 
 		std::shared_ptr<const Sxx::Rendering::CameraCache> cameraCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
-
+		
 		std::shared_ptr<const Sxx::Rendering::TransformCache> cameraTransformCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
 
 		std::shared_ptr<const Sxx::Rendering::TransformCache> transformCache
 			= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(object_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
 
-		if (meshCache->HasCache()) {
+		if (meshCache->HasCache() && materialCache->HasCache()) {
 
 			auto commandList = context.GetCommandList();
 

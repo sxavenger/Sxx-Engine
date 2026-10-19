@@ -6,6 +6,16 @@
 //* Dev
 #include "../../Dev/Visualization.hlsli"
 
+//* mateiral
+#include "../../Material/SurfaceMaterial.hlsli"
+
+//=========================================================================================
+// buffers
+//=========================================================================================
+
+ConstantBuffer<SurfaceMaterial> gMaterial : register(b0);
+SamplerState gSampler : register(s0);
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,6 +25,9 @@ PixelOutputData main(PixelInputData input) {
 
 	output.color.rgb = Dev::IntToColor(input.raster.meshlet_index);
 	output.color.a   = 1.0f;
+
+	//output.color.rgb = float32_t3(input.texcoord, 0.0f);
+	output.color.rgb = gMaterial.albedo.Get(gSampler, input.texcoord);
 
 	return output;
 

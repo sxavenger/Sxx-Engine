@@ -7,6 +7,8 @@
 // buffers
 //=========================================================================================
 
+ConstantBuffer<Component::Transform> gTransform : register(b2);
+
 ConstantBuffer<Component::Camera> gCameraProjection : register(b0);
 ConstantBuffer<Component::Transform> gCameraTransform : register(b1);
 
@@ -46,23 +48,24 @@ void main(
 	//!< vertexの出力
 	if (semantics.group_thread_id.x < meshlet.vertex_count) {
 
-		uint32_t vertex_index   = gVertexIndices[meshlet.vertex_offset + semantics.group_thread_id.x];
-		StaticMeshVertex vertex = gVertices[vertex_index];
-		float32_t3 position     = gPositions[vertex_index];
+		uint32_t vertex_index     = gVertexIndices[meshlet.vertex_offset + semantics.group_thread_id.x];
+		StaticMeshVertex vertex   = gVertices[vertex_index];
+		float32_t3 local_position = gPositions[vertex_index];
+		float32_t3 world_position = gTransform.TransformPoint(local_position);
 
 		PixelInputData output = (PixelInputData)0;
 
 		//!< 頂点情報の登録
-		output.position  = position;
-		output.normal    = vertex.GetNormal();
-		output.tangent   = vertex.GetTangent();
-		output.bitangent = vertex.GetBitangent();
+		output.position  = world_position;
+		output.normal    = gTransform.TransformNormal(vertex.GetNormal());
+		output.tangent   = gTransform.TransformNormal(vertex.GetTangent());
+		output.bitangent = gTransform.TransformNormal(vertex.GetBitangent());
 		output.texcoord  = vertex.GetTexcoord();
 
 		float32_t4x4 view       = gCameraTransform.GetView();
 		float32_t4x4 projection = gCameraProjection.GetProjection();
 
-		output.raster.position = mul(float32_t4(position, 1.0f), mul(view, projection));
+		output.raster.position = mul(float32_t4(world_position, 1.0f), mul(view, projection));
 		output.raster.meshlet_index = meshlet_index;
 
 		vertices[semantics.group_thread_id.x] = output;
