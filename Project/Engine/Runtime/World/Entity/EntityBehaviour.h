@@ -64,6 +64,8 @@ public:
 
 	const std::string_view& GetName() const noexcept { return name_; }
 
+	bool IsActive() const noexcept { return isActive_; }
+
 	//* component option *//
 
 	//! @brief componentを追加

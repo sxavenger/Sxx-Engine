@@ -32,9 +32,6 @@ void SurfaceMaterialCache::Cache(const std::shared_ptr<const Assets::SurfaceMate
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
-	//!< descriptionの取得
-	const Assets::SurfaceMaterial::Description& description = material->GetDescription();
-
 	//!< bufferの作成
 	materialBuffer_ = SurfaceMaterialCache::CreateSurfaceMaterialBuffer(material->GetName());
 

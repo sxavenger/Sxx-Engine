@@ -20,6 +20,7 @@
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Texture/RenderTargetTexture.h>
 #include <Engine/Runtime/Rendering/Texture/DepthStencilTexture.h>
+#include <Engine/Runtime/Rendering/Scene/SceneProxy.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class
@@ -54,6 +55,9 @@ private:
 	Sxx::Rendering::DepthStencilTexture depthStencil_;
 
 	Sxx::World::GameObject camera_;
+	Sxx::World::GameObject object_;
+
+	Sxx::Rendering::SceneProxy scene_;
 
 	//=========================================================================================
 	// private methods

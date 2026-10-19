@@ -35,11 +35,11 @@ public:
 
 	void SetMesh(const Assets::AssetHandle<Assets::StaticMesh>& mesh) { mesh_ = mesh; }
 
-	Assets::AssetHandle<Assets::StaticMesh> GetMesh() const { return mesh_; }
+	const Assets::AssetHandle<Assets::StaticMesh>& GetMesh() const { return mesh_; }
 
 	void SetMaterial(const Assets::AssetHandle<Assets::SurfaceMaterial>& material) { material_ = material; }
 
-	Assets::AssetHandle<Assets::SurfaceMaterial> GetMaterial() const { return material_; }
+	const Assets::AssetHandle<Assets::SurfaceMaterial>& GetMaterial() const { return material_; }
 
 private:
 

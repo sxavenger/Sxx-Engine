@@ -18,6 +18,8 @@
 
 //* c++
 #include <unordered_map>
+#include <functional>
+#include <ranges>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -67,6 +69,20 @@ public:
 	//! @brief componentを取得
 	template <Component T>
 	RefPtr<T> GetComponent(ComponentHandle handle);
+
+	//* for each option *//
+
+	//! @brief 全てのcomponentに対してfuncを実行する
+	//! @tparam T componentの型
+	//! @param function 実行関数
+	template <Component T>
+	void ForEach(const std::function<void(T*)>& function) const;
+
+	//! @brief activeなcomponentに対してfuncを実行する
+	//! @tparam T componentの型
+	//! @param function 実行関数
+	template <Component T>
+	void ForEachActive(const std::function<void(T*)>& function) const;
 
 	//* singleton *//
 
@@ -120,6 +136,34 @@ inline void ComponentStorage::Unregister(ComponentHandle handle) {
 template <Component T>
 inline RefPtr<T> ComponentStorage::GetComponent(ComponentHandle handle) {
 	return ComponentStorage::Cast<T>(storage_[typeid(T)].Get(handle)); //!< BaseComponentをTにキャストして返却.
+}
+
+template <Component T>
+inline void ComponentStorage::ForEach(const std::function<void(T*)>& function) const {
+	if (!storage_.contains(typeid(T))) {
+		return; //!< componentが存在しない場合は何もしない.
+	}
+
+	const ComponentAllocator& allocator = storage_.at(typeid(T));
+
+	for (const auto& component : allocator.GetContainer() | std::views::values) {
+		function(static_cast<T*>(component.get()));
+	}
+}
+
+template <Component T>
+inline void ComponentStorage::ForEachActive(const std::function<void(T*)>& function) const {
+	if (!storage_.contains(typeid(T))) {
+		return; //!< componentが存在しない場合は何もしない.
+	}
+
+	const ComponentAllocator& allocator = storage_.at(typeid(T));
+
+	for (const auto& component : allocator.GetContainer() | std::views::values) {
+		if (component->IsActive()) {
+			function(static_cast<T*>(component.get()));
+		}
+	}
 }
 
 template <Component T>

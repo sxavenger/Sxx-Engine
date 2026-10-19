@@ -18,8 +18,8 @@ void TransformComponent::Update() {
 	transformation_ = Transform3d::ConvertTransformation(transform_);
 
 	//!< Entityの親が存在する場合, 親のTransformComponentのtransformationを掛ける.
-	if (BaseComponent::GetEntity()->HasParent()) {
-		RefPtr<EntityBehaviour> parent = BaseComponent::GetEntity()->GetParent();
+	if (BaseComponent::GetOwner()->HasParent()) {
+		RefPtr<EntityBehaviour> parent = BaseComponent::GetOwner()->GetParent();
 
 		if (parent->HasComponent<TransformComponent>()) {
 			RefPtr<TransformComponent> component = parent->GetComponent<TransformComponent>();

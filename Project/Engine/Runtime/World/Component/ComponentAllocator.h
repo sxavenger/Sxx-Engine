@@ -66,6 +66,8 @@ public:
 
 	size_t GetUsedCount() const { return allocator_.GetUsedCount(); }
 
+	const Container& GetContainer() const { return container_; }
+
 private:
 
 	//=========================================================================================

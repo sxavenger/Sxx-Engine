@@ -35,16 +35,20 @@ public:
 
 	//* constructor / destructor *//
 
-	BaseComponent(uint64_t handle, RefPtr<EntityBehaviour> entity) noexcept : handle_(handle), entity_(entity) {}
+	BaseComponent(uint64_t handle, RefPtr<EntityBehaviour> owner) noexcept : handle_(handle), owner_(owner) {}
 	virtual ~BaseComponent() = default;
 
 	//* component option *//
 
+	virtual bool IsActive() const;
+
 	const ComponentHandle& GetHandle() const noexcept { return handle_; }
+
+	uintptr_t GetAddress() const noexcept { return reinterpret_cast<uintptr_t>(this); }
 
 	//* entity option *//
 
-	const RefPtr<EntityBehaviour> GetEntity() const noexcept { return entity_; }
+	const RefPtr<EntityBehaviour> GetOwner() const noexcept { return owner_; }
 
 	//* serialization option *//
 
@@ -60,7 +64,7 @@ private:
 
 	//* entity *//
 
-	const RefPtr<EntityBehaviour> entity_ = nullptr; //!< componentが所属するEntity
+	const RefPtr<EntityBehaviour> owner_ = nullptr; //!< componentが所属するentity
 
 };
 
