@@ -64,22 +64,22 @@ private:
 
 template <DynamicCache T, typename... Args>
 inline void CacheCollection::Cache(uintptr_t address, const Args&... args) {
-	dynamicCollection_.Cache<T>(address, args...);
+	dynamicCollection_.Store<T>(address, args...);
 }
 
 template <DynamicCache T>
 inline std::shared_ptr<const T> CacheCollection::GetCache(uintptr_t address) const {
-	return dynamicCollection_.GetCache<T>(address);
+	return dynamicCollection_.Get<T>(address);
 }
 
 template <StaticCache T, typename... Args>
 inline void CacheCollection::Cache(Uuid id, uintptr_t address, const Args&... args) {
-	staticCollection_.Cache<T>(id, address, args...);
+	staticCollection_.Store<T>(id, address, args...);
 }
 
 template <StaticCache T>
 inline std::shared_ptr<const T> CacheCollection::GetCache(Uuid id) const {
-	return staticCollection_.GetCache<T>(id);
+	return staticCollection_.Get<T>(id);
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

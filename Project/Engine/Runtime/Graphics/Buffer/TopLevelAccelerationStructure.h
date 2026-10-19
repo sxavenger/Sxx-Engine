@@ -95,7 +95,7 @@ private:
 
 	void Build(const Device& device, const GraphicsCommandContext& context, ResourceAllocator& allocator);
 
-	void Update(const Device& device, const GraphicsCommandContext& context);
+	void Update(const GraphicsCommandContext& context);
 
 };
 

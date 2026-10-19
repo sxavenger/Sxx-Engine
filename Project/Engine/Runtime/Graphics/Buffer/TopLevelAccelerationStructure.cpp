@@ -30,7 +30,7 @@ void TopLevelAccelerationStructure::SetupInstanceDesc(const Device& device, cons
 			break;
 
 		case BuildMode::Update:
-			Update(device, context);
+			Update(context);
 			break;
 	}
 }
@@ -90,7 +90,7 @@ void TopLevelAccelerationStructure::Build(const Device& device, const GraphicsCo
 	accelerationStructure_.Build(context, inputs); //!< buildの実行
 }
 
-void TopLevelAccelerationStructure::Update(const Device& device, const GraphicsCommandContext& context) {
+void TopLevelAccelerationStructure::Update(const GraphicsCommandContext& context) {
 
 	// input情報の設定
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};

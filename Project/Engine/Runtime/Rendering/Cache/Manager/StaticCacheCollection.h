@@ -36,10 +36,10 @@ public:
 	//* collection option *//
 
 	template <StaticCache T, typename... Args>
-	void Cache(Uuid id, uintptr_t address, const Args&... args);
+	void Store(Uuid id, uintptr_t address, const Args&... args);
 
 	template <StaticCache T>
-	std::shared_ptr<T> GetCache(Uuid id) const;
+	std::shared_ptr<T> Get(Uuid id) const;
 
 	bool HasCache(Uuid id) const { return collection_.contains(id); }
 
@@ -65,7 +65,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <StaticCache T, typename... Args>
-void StaticCacheCollection::Cache(Uuid id, uintptr_t address, const Args&... args) {
+void StaticCacheCollection::Store(Uuid id, uintptr_t address, const Args&... args) {
 
 	if (!collection_.contains(id)) {
 		//!< cacheが存在しない場合, 新しいinstanceを作成する
@@ -88,7 +88,7 @@ void StaticCacheCollection::Cache(Uuid id, uintptr_t address, const Args&... arg
 }
 
 template <StaticCache T>
-inline std::shared_ptr<T> StaticCacheCollection::GetCache(Uuid id) const {
+inline std::shared_ptr<T> StaticCacheCollection::Get(Uuid id) const {
 	return StaticCacheCollection::Cast<T>(collection_.at(id));
 }
 

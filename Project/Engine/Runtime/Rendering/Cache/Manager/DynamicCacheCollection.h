@@ -36,10 +36,10 @@ public:
 	//* collection option *//
 
 	template <DynamicCache T, typename... Args>
-	void Cache(uintptr_t address, const Args&... args);
+	void Store(uintptr_t address, const Args&... args);
 
 	template <DynamicCache T>
-	std::shared_ptr<T> GetCache(uintptr_t address) const;
+	std::shared_ptr<T> Get(uintptr_t address) const;
 
 private:
 
@@ -63,7 +63,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <DynamicCache T, typename... Args>
-void DynamicCacheCollection::Cache(uintptr_t address, const Args&... args) {
+void DynamicCacheCollection::Store(uintptr_t address, const Args&... args) {
 
 	if (!collection_.contains(address)) {
 		//!< cacheが存在しない場合, 新しいinstanceを作成する
@@ -76,7 +76,7 @@ void DynamicCacheCollection::Cache(uintptr_t address, const Args&... args) {
 }
 
 template <DynamicCache T>
-std::shared_ptr<T> DynamicCacheCollection::GetCache(uintptr_t address) const {
+std::shared_ptr<T> DynamicCacheCollection::Get(uintptr_t address) const {
 	STREAM_ASSERT(collection_.contains(address), "dynamic cache not found. address: {:x}", address);
 
 	return DynamicCacheCollection::Cast<T>(collection_.at(address));

@@ -93,6 +93,8 @@ void ShaderCompiler::Init(const Configuration& config, const Device& device) {
 	//!< 共通defineの設定
 	arguments_.Append(L"-Zpr"); //!< メモリレイアウトは行優先
 
+	device; //!< todo: deviceの情報を元にサポート関係のdefineを追加する.
+
 	STREAM_LOG_INFO("Graphics::ShaderCompiler | complete initialize.");
 }
 
