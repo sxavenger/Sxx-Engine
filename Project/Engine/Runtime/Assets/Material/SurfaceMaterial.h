@@ -52,7 +52,9 @@ public:
 		// public methods
 		//=========================================================================================
 
+		bool HasTexture(TextureType type) const { return textures.At(type).has_value(); }
 
+		Uuid GetTextureUuid(TextureType type) const;
 
 		//=========================================================================================
 		// public variables

@@ -52,6 +52,10 @@ public:
 
 	void Reload() const;
 
+	Scheduler::TaskHandle GetTaskHandle() const;
+
+	uintptr_t GetAddress() const;
+
 	//* operator [copy / move] <AssetHandle> *//
 
 	AssetHandle(const AssetHandle&) noexcept            = default;
@@ -118,7 +122,6 @@ void AssetHandle<T>::Wait() const {
 		return; //!< idが空の場合は何もしない
 	}
 
-
 	std::shared_ptr<BaseAsset> asset = AssetStorage::GetInstance()->Get<T>(uuid_.value()); //!< assetの取得
 
 	//!< assetのビルドが完了するまで待機
@@ -140,6 +143,16 @@ void AssetHandle<T>::Reload() const {
 	}
 	
 	AssetStorage::GetInstance()->Reload<T>(uuid_.value());
+}
+
+template<Asset T>
+inline Scheduler::TaskHandle AssetHandle<T>::GetTaskHandle() const {
+	return Get()->GetTaskHandle();
+}
+
+template <Asset T>
+inline uintptr_t AssetHandle<T>::GetAddress() const {
+	return Get()->GetAddress();
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

@@ -10,6 +10,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Math/VectorComparison.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // [RenderTargetTexture] Options structure methods
@@ -55,6 +56,18 @@ void RenderTargetTexture::ClearRenderTarget(const Graphics::GraphicsCommandConte
 		0, nullptr
 	);
 
+}
+
+void RenderTargetTexture::Resize(const Vector2u& resolution) {
+	if (Comparison::All(resolution == options_.resolution)) {
+		return; //!< 解像度が同じ場合は何もしない.
+	}
+
+	//!< optionsの更新
+	Options options = options_;
+	options.resolution = resolution; //!< 解像度を更新する.
+
+	*this = RenderTargetTexture::Create(options);
 }
 
 void RenderTargetTexture::SetName(const std::string_view& name) const {

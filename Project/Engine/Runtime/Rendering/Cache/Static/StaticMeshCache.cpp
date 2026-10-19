@@ -123,13 +123,11 @@ void StaticMeshCache::BuildBottomLevelAccelerationStructure(const std::string_vi
 			);
 
 			//!< BLASの構築
-			bottomLevelAS_.Build(Graphics::Core::GetDevice(), context, geometry);
+			bottomLevelAS_.Build(Graphics::Core::GetDevice(), context, Graphics::Core::GetResourceAllocator(), geometry);
 
 			context.SubmitWait(); //!< GPUの処理完了まで待機.
 		}
 	);
-	// xxx: ダブルバッファリングの場合, Resourceが1つしかないので二重で実行してしまう.
-
 	task.Wait(); //!< taskが完了するまで待機.
 
 	bottomLevelAS_.SetName(std::format("StaticMeshCache | {}", name));
@@ -154,7 +152,7 @@ MeshletBuffer StaticMeshCache::CreateMeshletBuffer(const std::string_view& name,
 	//!< bufferの作成
 	MeshletBuffer buffer;
 
-	buffer.meshlets = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Meshlet>(
+	buffer.meshlets = Graphics::Core::CreateDimensionBuffer<Meshlet::Description>(
 		static_cast<uint32_t>(output.meshlets.size()),
 		1
 	);
@@ -166,13 +164,13 @@ MeshletBuffer StaticMeshCache::CreateMeshletBuffer(const std::string_view& name,
 	);
 	std::memcpy(buffer.vertexIndices.GetData(), output.vertexIndices.data(), buffer.vertexIndices.GetByteSize());
 
-	buffer.triangles = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Triangle>(
+	buffer.triangles = Graphics::Core::CreateDimensionBuffer<Meshlet::Triangle>(
 		static_cast<uint32_t>(output.triangles.size()),
 		1
 	);
 	std::memcpy(buffer.triangles.GetData(), output.triangles.data(), buffer.triangles.GetByteSize());
 
-	buffer.bounds = Graphics::Core::CreateDimensionBuffer<MeshletBuffer::Bounds>(
+	buffer.bounds = Graphics::Core::CreateDimensionBuffer<Meshlet::Bounds>(
 		static_cast<uint32_t>(output.bounds.size()),
 		1
 	);

@@ -31,7 +31,7 @@ public:
 	void Cache(uintptr_t address, const Args&... args);
 
 	template <DynamicCache T>
-	std::shared_ptr<T> GetCache(uintptr_t address) const;
+	std::shared_ptr<const T> GetCache(uintptr_t address) const;
 
 	//* static cache option *//
 
@@ -39,7 +39,9 @@ public:
 	void Cache(Uuid id, uintptr_t address, const Args&... args);
 
 	template <StaticCache T>
-	std::shared_ptr<T> GetCache(Uuid id) const;
+	std::shared_ptr<const T> GetCache(Uuid id) const;
+
+	bool HasCache(Uuid id) const { return staticCollection_.HasCache(id); }
 
 	//* singleton *//
 
@@ -66,7 +68,7 @@ inline void CacheCollection::Cache(uintptr_t address, const Args&... args) {
 }
 
 template <DynamicCache T>
-inline std::shared_ptr<T> CacheCollection::GetCache(uintptr_t address) const {
+inline std::shared_ptr<const T> CacheCollection::GetCache(uintptr_t address) const {
 	return dynamicCollection_.GetCache<T>(address);
 }
 
@@ -76,7 +78,7 @@ inline void CacheCollection::Cache(Uuid id, uintptr_t address, const Args&... ar
 }
 
 template <StaticCache T>
-inline std::shared_ptr<T> CacheCollection::GetCache(Uuid id) const {
+inline std::shared_ptr<const T> CacheCollection::GetCache(Uuid id) const {
 	return staticCollection_.GetCache<T>(id);
 }
 

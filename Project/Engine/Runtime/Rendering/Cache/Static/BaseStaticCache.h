@@ -30,6 +30,8 @@ public:
 	BaseStaticCache() noexcept          = default;
 	virtual ~BaseStaticCache() noexcept = default;
 
+	virtual void Refresh() {}
+
 	//! @brief chaceが有効かどうかを取得する.
 	bool HasCache() const { return address_.has_value(); }
 

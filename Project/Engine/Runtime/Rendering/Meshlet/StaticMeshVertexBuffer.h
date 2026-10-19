@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-//* rendering
+//* meshlet
 #include "PackedNormal.h"
 #include "PackedTexcoord.h"
 #include "VertexDimensionBuffer.h"
@@ -40,7 +40,7 @@ public:
 
 		PackedNormal normal;
 		PackedNormal tangent;
-		PackedTexcoord texcoord;
+		Vector2f texcoord;
 
 	};
 

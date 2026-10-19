@@ -53,7 +53,7 @@ struct StaticMeshVertex {
 
 	//! @brief texcoordを取得.
 	float32_t2 GetTexcoord() {
-		return texcoord.Unpack2();
+		return texcoord.Get();
 	}
 
 };

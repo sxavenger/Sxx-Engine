@@ -35,6 +35,10 @@ public:
 
 	void Cache(const std::shared_ptr<Assets::Texture>& texture);
 
+	//* cache option *//
+
+	const Graphics::Descriptor& GetDescriptor() const { return descriptor_; }
+
 private:
 
 	//=========================================================================================

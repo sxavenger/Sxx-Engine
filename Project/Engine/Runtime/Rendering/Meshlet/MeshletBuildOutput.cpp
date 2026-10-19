@@ -21,22 +21,22 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 	//!< meshletの最大個数を見積もり
 	const size_t kMaxMeshletCount = meshopt_buildMeshletsBound(
 		indexCount,
-		MeshletBuffer::kMaxVertices,
-		MeshletBuffer::kMaxTriangles
+		Meshlet::kMaxVertices,
+		Meshlet::kMaxTriangles
 	);
 
 	std::vector<meshopt_Meshlet> meshlets(kMaxMeshletCount);
-	std::vector<uint32_t>        vertexIndices(kMaxMeshletCount * MeshletBuffer::kMaxVertices);
-	std::vector<uint8_t>         primitives(kMaxMeshletCount * MeshletBuffer::kMaxTriangles * 3);
+	std::vector<uint32_t>        vertexIndices(kMaxMeshletCount * Meshlet::kMaxVertices);
+	std::vector<uint8_t>         primitives(kMaxMeshletCount * Meshlet::kMaxTriangles * 3);
 
 	//!< meshletの構築
 	const size_t kMeshletCount = meshopt_buildMeshlets(
 		meshlets.data(), vertexIndices.data(), primitives.data(),
 		indices, indexCount,
 		&positions->x, vertexCount, stride,
-		MeshletBuffer::kMaxVertices,
-		MeshletBuffer::kMaxTriangles,
-		MeshletBuffer::kConeWeight
+		Meshlet::kMaxVertices,
+		Meshlet::kMaxTriangles,
+		Meshlet::kConeWeight
 	);
 
 	if (kMeshletCount == 0) {
@@ -88,7 +88,7 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 
 			const uint32_t triangleIndex = m.triangle_offset + j * 3;
 
-			MeshletBuffer::Triangle triangle = {};
+			Meshlet::Triangle triangle = {};
 			triangle.i0 = primitives[triangleIndex + 0];
 			triangle.i1 = primitives[triangleIndex + 1];
 			triangle.i2 = primitives[triangleIndex + 2];
@@ -99,7 +99,7 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 		
 		{ //!< meshlet情報の詰め替え
 
-			MeshletBuffer::Meshlet meshlet = {};
+			Meshlet::Description meshlet = {};
 			meshlet.vertexOffset   = vertexOffset;
 			meshlet.triangleOffset = triangleOffset;
 			meshlet.vertexCount    = m.vertex_count;
@@ -116,7 +116,7 @@ MeshletBuildOutput MeshletBuildOutput::Build(
 				&positions->x, vertexCount, stride
 			);
 
-			MeshletBuffer::Bounds bounds = {};
+			Meshlet::Bounds bounds = {};
 			bounds.center   = { b.center[0], b.center[1], b.center[2] };
 			bounds.radius   = b.radius;
 			bounds.coneAxis = { b.cone_axis_s8[0], b.cone_axis_s8[1], b.cone_axis_s8[2] };

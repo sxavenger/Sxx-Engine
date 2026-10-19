@@ -68,6 +68,8 @@ public:
 
 	//* texture option *//
 
+	void Resize(const Vector2u& resolution);
+
 	void SetName(const std::string_view& name) const;
 	void SetName(const std::wstring_view& name) const;
 

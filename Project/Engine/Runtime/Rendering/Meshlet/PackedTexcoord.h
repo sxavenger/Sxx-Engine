@@ -63,28 +63,17 @@ public:
 #pragma warning(push)
 #pragma warning(disable:4201) // [C4201](https://learn.microsoft.com/cpp/error-messages/compiler-warnings/compiler-warning-level-4-c4201)
 		struct {
-			uint16_t x, y;
+			float x, y;
 		};
 
-		std::array<uint16_t, 2> data;
+		std::array<float, 2> data;
 
-		uint32_t packed;
+		uint64_t packed;
 #pragma warning(pop)
 	};
 	//!< 16bit-floating-pointが追加されたらfloat16_tに変更する.
 
 private:
-
-	//=========================================================================================
-	// private methods
-	//=========================================================================================
-
-	//! @brief float値をuint16_tに変換(エンコード)する.
-	static uint16_t Encode(float value) noexcept;
-
-	//! @brief uint16_t値をfloatに変換(デコード)する.
-	static float Decode(uint16_t value) noexcept;
-
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

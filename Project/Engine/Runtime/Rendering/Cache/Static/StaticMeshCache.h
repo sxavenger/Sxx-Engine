@@ -15,9 +15,6 @@
 #include <Runtime/Rendering/Meshlet/TriangleIndexDimensionBuffer.h>
 #include <Runtime/Rendering/Meshlet/MeshletBuffer.h>
 
-//* c++
-#include <optional>
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +40,12 @@ public:
 	const StaticMeshVertexBuffer& GetStaticMeshVertexBuffer() const { return staticMeshVertexBuffer_; }
 
 	const TriangleIndexDimensionBuffer& GetIndexBuffer() const { return indexBuffer_; }
+
+	//* acceleration structure option *//
+
+	const Graphics::BottomLevelAccelerationStructure& GetBottomLevelAccelerationStructure() const { return bottomLevelAS_; }
+
+	//* meshlet option *//
 
 	const MeshletBuffer& GetMeshletBuffer() const { return meshletBuffer_; }
 

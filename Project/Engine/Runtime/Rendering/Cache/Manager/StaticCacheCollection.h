@@ -41,6 +41,8 @@ public:
 	template <StaticCache T>
 	std::shared_ptr<T> GetCache(Uuid id) const;
 
+	bool HasCache(Uuid id) const { return collection_.contains(id); }
+
 private:
 
 	//=========================================================================================
@@ -72,10 +74,11 @@ void StaticCacheCollection::Cache(Uuid id, uintptr_t address, const Args&... arg
 
 	{
 		//!< cache更新の確認
-		std::shared_ptr<BaseStaticCache> pointer = collection_[id];
+		std::shared_ptr<T> pointer = StaticCacheCollection::Cast<T>(collection_[id]);
 
 		if (pointer->GetAddress() == address) {
-			return; //!< cacheが最新の場合は更新しない
+			pointer->Refresh();
+			return; //!< cacheが更新されていない場合は何もしない
 		}
 	}
 

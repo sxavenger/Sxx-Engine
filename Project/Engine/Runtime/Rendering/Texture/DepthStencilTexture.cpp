@@ -10,6 +10,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Math/VectorComparison.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // [DepthStencilTexture] Options structure methods
@@ -53,6 +54,18 @@ void DepthStencilTexture::ClearDepthStencil(const Graphics::GraphicsCommandConte
 	);
 }
 
+void DepthStencilTexture::Resize(const Vector2u& resolution) {
+
+	if (Comparison::All(resolution == options_.resolution)) {
+		return; //!< 解像度が同じ場合は何もしない.
+	}
+
+	Options options = options_; //!< 現在のoptionsをコピーする.
+	options.resolution = resolution; //!< 解像度を更新する.
+
+	*this = DepthStencilTexture::Create(options);
+}
+
 void DepthStencilTexture::SetName(const std::string_view& name) const {
 	resource_.SetName(std::format("DepthStencilTexture | {}", name));
 }
@@ -94,7 +107,7 @@ DepthStencilTexture DepthStencilTexture::Create(const Options& options) {
 
 	//!< optionsの設定
 	texture.options_ = options;
-
+	
 	return texture;
 	
 }
