@@ -10,14 +10,21 @@
 `<type>` の部分は山括弧を付けず、以下のいずれかの単語に置き換えること（例: `refactor:`）
 
 ```text
+build: ビルドシステム・依存関係の変更
+chore: その他の変更
+docs: ドキュメントの追加・修正
 feature: 新機能の追加
 fix: バグ修正
 refactor: コードのリファクタリング
-docs: ドキュメントの追加・修正
 test: テストの追加・修正
-build: ビルドシステム・依存関係の変更
-chore: その他の変更
 ```
+
+### 出力順のルール
+- 複数行を出力する場合、行は **`<type>` ごとにまとめて並べる**。同じ `<type>` の行の間に、別の `<type>` の行を挟まない
+- `<type>` の並び順は、上の一覧の順（アルファベット順）に固定する
+  - `build` → `chore` → `docs` → `feature` → `fix` → `refactor` → `test`
+- 同じ `<type>` の中では、差分に現れた順（元の記述順）を維持する
+- 出力に含まれない `<type>` は飛ばしてよい
 
 ### 最重要ルール: 1行に1つの変更
 - 1行のコミットメッセージには、変更を **1つだけ** 書く
@@ -45,7 +52,8 @@ chore: その他の変更
 4. 作った各行を見直し、以下の語や記号が **異なるクラス・ファイル、または異なる種類の変更** 同士をつないでいないか確認する。つないでいる場合は、その行を分割する
    - 「と」「および」「及び」「ならびに」「並びに」「や」「かつ」「、」「・」「＆」「&」「/」「+」「and」
 5. 同じクラス名で始まり、同じ種類の変更を表す行が複数できていないか確認する。できている場合は、クラス名だけを使って1行にまとめる
-6. グループが1つしかない場合だけ、1行で出力する
+6. 「出力順のルール」に従い、行を `<type>` の順（`build` → `chore` → `docs` → `feature` → `fix` → `refactor` → `test`）に並べ替える。同じ `<type>` の中では元の順を保つ
+7. グループが1つしかない場合だけ、1行で出力する
 
 ### Format
 必ず以下の形式で出力すること
@@ -62,7 +70,7 @@ chore: その他の変更
 - 複数行で出力する場合、各行を独立したコミットメッセージとして扱う
 - 各行には必ず `<type>:` を付ける
 - 同じ `<type>` のコミットメッセージであっても、変更内容をまとめない
-- 元の変更記述に複数の変更が含まれている場合、元の記述順を維持する
+- 行の並びは「出力順のルール」に従い、`<type>` ごとにまとめる。元の記述順は同じ `<type>` の中でのみ維持する
 - Markdownの箇条書き記号（`-`、`*`、`1.` など）は使用しない
 
 ### Examples
@@ -131,12 +139,22 @@ ReferencePointerのコンストラクタ、代入演算子、比較演算子、�
 ```text
 docs: copilot-instructions.mdのコミットメッセージ規則整理
 feature: InstanceRegistryを追加
+fix: Matrix4x4のMakeTranslate行列要素配置修正
+refactor: Matrix4x4のMakeAffine引数順変更
+refactor: ReferencePointerをconstexpr化
+```
+
+以下のように `<type>` の順がそろっていない出力は禁止（`refactor` の行の間に `fix` の行が挟まっている）
+
+```text
+docs: copilot-instructions.mdのコミットメッセージ規則整理
+feature: InstanceRegistryを追加
 refactor: Matrix4x4のMakeAffine引数順変更
 fix: Matrix4x4のMakeTranslate行列要素配置修正
 refactor: ReferencePointerをconstexpr化
 ```
 
-以下のように同じクラス内の同じ種類の変更をメンバーごとに分ける出力は禁止
+以下のように同じクラス内の同じ種類の変更をメンバーごとに分ける出力も禁止
 
 ```text
 refactor: ReferencePointerの各コンストラクタをconstexpr化
