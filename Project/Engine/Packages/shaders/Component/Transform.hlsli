@@ -32,8 +32,12 @@ namespace Component {
 		}
 
 		float32_t3 TransformNormal(float32_t3 normal) {
-			return mul(normal, (float32_t3x3)transpose(world_inverse)).xyz;
+			return mul(normal, (float32_t3x3)transpose(world_inverse));
 			//!< 法線の変換のため, world_inverse の転置行列を使用する.
+		}
+
+		float32_t3 TransformDirection(float32_t3 direction) {
+			return mul(direction, (float32_t3x3)world);
 		}
 
 		float32_t4x4 GetView() {
