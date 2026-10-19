@@ -40,6 +40,11 @@ void RenderTargetTexture::Transition(const Graphics::GraphicsCommandContext& con
 	resource_.GetResource().Transition(context, state);
 }
 
+void RenderTargetTexture::Transition(const Graphics::GraphicsCommandContext& context, State state) {
+	STREAM_ASSERT(resource_.HasHandle(), "resource is not allocated.");
+	resource_.GetResource().Transition(context, static_cast<D3D12_RESOURCE_STATES>(state));
+}
+
 void RenderTargetTexture::ClearRenderTarget(const Graphics::GraphicsCommandContext& context) {
 	if (!resource_.HasHandle()) {
 		return;  //!< resourceが未割り当ての場合は何もしない.
@@ -129,7 +134,7 @@ Graphics::ResourceHandle RenderTargetTexture::CreateResource(const Options& opti
 		options.resolution.x, options.resolution.y, 1, 1,
 		options.format,
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
+		static_cast<D3D12_RESOURCE_STATES>(State::Default),
 		options.GetClearValue()
 	);
 

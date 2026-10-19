@@ -25,6 +25,15 @@ class DepthStencilTexture final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// State enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class State : uint32_t {
+		Default = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
+		Write   = D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		Read    = D3D12_RESOURCE_STATE_DEPTH_READ | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// Options structure
 	////////////////////////////////////////////////////////////////////////////////////////////
 	struct Options {
@@ -58,6 +67,9 @@ public:
 
 	//! @brief リソースの状態を遷移する.
 	void Transition(const Graphics::GraphicsCommandContext& context, D3D12_RESOURCE_STATES state);
+
+	//! @brief リソースの状態を遷移する.
+	void Transition(const Graphics::GraphicsCommandContext& context, State state);
 
 	//* clear option *//
 

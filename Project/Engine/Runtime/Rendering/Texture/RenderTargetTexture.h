@@ -26,6 +26,15 @@ class RenderTargetTexture final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// State enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class State : uint32_t {
+		Default         = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
+		RenderTarget    = D3D12_RESOURCE_STATE_RENDER_TARGET,
+		UnorderedAccess = D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// Options structure
 	////////////////////////////////////////////////////////////////////////////////////////////
 	struct Options {
@@ -60,6 +69,9 @@ public:
 
 	//! @brief リソースの状態を遷移する.
 	void Transition(const Graphics::GraphicsCommandContext& context, D3D12_RESOURCE_STATES state);
+
+	//! @brief リソースの状態を遷移する.
+	void Transition(const Graphics::GraphicsCommandContext& context, State state);
 
 	//* clear option *//
 
