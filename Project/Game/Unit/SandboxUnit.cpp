@@ -28,6 +28,7 @@
 #include <Engine/Runtime/Rendering/Cache/Dynamic/CameraCache.h>
 #include <Engine/Runtime/Rendering/Cache/Dynamic/TransformCache.h>
 #include <Engine/Runtime/Rendering/Cache/Manager/CacheCollection.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 
 //* engine [unit]
 #include <Engine/Unit/WindowUnit.h>
@@ -42,8 +43,8 @@
 
 SandboxUnit::SandboxUnit() {
 #ifdef DEVELOPMENT
-	//Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
-	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
+	Sxx::Framework::Context::Push<Sxx::SlateEditorUnit>();
+	//Sxx::Framework::Context::Push<Sxx::WindowUnit>();
 #else
 	//!< windowの追加
 	Sxx::Framework::Context::Push<Sxx::WindowUnit>();
@@ -62,24 +63,6 @@ void SandboxUnit::Setup(Sxx::Framework::Pipeline& pipeline) {
 
 void SandboxUnit::InitSandbox() {
 
-	{ //!< Graphics Pipeline State 0 の作成
-		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.as.hlsl", Sxx::Graphics::CompileProfile::Amplification, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.ms.hlsl", Sxx::Graphics::CompileProfile::Mesh, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Sample/MS-PS/Simple.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
-		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
-		desc.SetDepthStencil(true);
-		desc.SetDepthStencilFormat(DXGI_FORMAT_D24_UNORM_S8_UINT);
-		desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
-		desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
-		desc.AppendRenderTargetFormat(DXGI_FORMAT_R16G16B16A16_FLOAT);
-
-		pipeline0_ = Sxx::Graphics::ReflectedGraphicsPipelineState::Create(
-			Sxx::Graphics::Core::GetDevice(),
-			desc
-		);
-	}
-
 	{ //!< Graphics Pipeline State 1 の作成
 		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
 		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/Present/Present.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
@@ -94,22 +77,6 @@ void SandboxUnit::InitSandbox() {
 			Sxx::Graphics::Core::GetDevice(),
 			desc
 		);
-	}
-
-	{ //!< Render Target Textureの作成
-		Sxx::Rendering::RenderTargetTexture::Options options = {};
-		options.format     = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		options.resolution = { 1280, 720 };
-
-		renderTarget_ = Sxx::Rendering::RenderTargetTexture::Create(options);
-	}
-
-	{ //!< Depth Stencil Textureの作成
-		Sxx::Rendering::DepthStencilTexture::Options options = {};
-		options.format     = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		options.resolution = { 1280, 720 };
-
-		depthStencil_ = Sxx::Rendering::DepthStencilTexture::Create(options);
 	}
 
 	{ //!< Cameraの作成
@@ -141,40 +108,18 @@ void SandboxUnit::InitSandbox() {
 		renderer->SetMesh(Sxx::Assets::StaticMeshImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }));
 		renderer->SetMaterial(Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }));
 	}
-	
+
+	{ //!< Passの初期化
+
+		pass_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
+
+	}
 }
 
 void SandboxUnit::TermSandbox() {
 }
 
 void SandboxUnit::UpdateSandbox() {
-
-	if (Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>()) {
-
-		RefPtr<Sxx::WindowUnit> unit
-			= Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>(); //!< windowを管理しているunitを取得.
-
-		auto& viewport = unit->GetViewport();
-		const Vector2u& client = viewport.GetClient();
-
-		{ //!< RenderTargetのリサイズ
-			if (Comparison::Any(renderTarget_.GetResolution() != client)) {
-				Sxx::Rendering::RenderTargetTexture::Options options = renderTarget_.GetOptions();
-				options.resolution = client;
-
-				renderTarget_ = Sxx::Rendering::RenderTargetTexture::Create(options);
-			}
-		}
-
-		{ //!< DepthStencilのリサイズ
-			if (Comparison::Any(depthStencil_.GetResolution() != client)) {
-				Sxx::Rendering::DepthStencilTexture::Options options = depthStencil_.GetOptions();
-				options.resolution = client;
-
-				depthStencil_ = Sxx::Rendering::DepthStencilTexture::Create(options);
-			}
-		}
-	}
 
 	{
 		const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
@@ -298,6 +243,7 @@ void SandboxUnit::RenderSandbox() {
 		scene_.Setup();
 	}
 
+#if 0
 	{ //!< RenderTargetへの書き込み(Passとして書き込む)
 
 		std::shared_ptr<const Sxx::Rendering::StaticMeshCache> meshCache
@@ -356,6 +302,20 @@ void SandboxUnit::RenderSandbox() {
 			depthStencil_.Transition(context, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		}
 	}
+#endif
+
+	{ //!< Passの実行
+
+		Sxx::Rendering::PassContext x = {};
+		x.buffer = &buffer_;
+		x.scene  = &scene_;
+		x.camera.camera    = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
+		x.camera.transform = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
+		x.resolution = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1280, 720);
+
+		pass_.Execute(context, x);
+
+	}
 
 	if (Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>()) {
 
@@ -366,6 +326,7 @@ void SandboxUnit::RenderSandbox() {
 
 		viewport.BeginRenderPass(context, ColorCode4(0x9BA8A8FF));
 
+#if 0
 		{ //!< Shaderでの書き込み
 
 			auto commandList = context.GetCommandList();
@@ -379,6 +340,7 @@ void SandboxUnit::RenderSandbox() {
 
 			commandList->DrawInstanced(3, 1, 0, 0);
 		}
+#endif
 
 		viewport.EndRenderPass(context);
 	}

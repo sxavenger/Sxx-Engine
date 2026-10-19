@@ -21,6 +21,8 @@
 #include <Engine/Runtime/Rendering/Texture/RenderTargetTexture.h>
 #include <Engine/Runtime/Rendering/Texture/DepthStencilTexture.h>
 #include <Engine/Runtime/Rendering/Scene/SceneProxy.h>
+#include <Engine/Runtime/Rendering/Buffer/BufferCollection.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassPipeline.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // SandboxUnit class
@@ -48,16 +50,14 @@ private:
 	// private variables
 	//=========================================================================================
 
-	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline0_;
 	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline1_;
-
-	Sxx::Rendering::RenderTargetTexture renderTarget_;
-	Sxx::Rendering::DepthStencilTexture depthStencil_;
 
 	Sxx::World::GameObject camera_;
 	Sxx::World::GameObject object_;
 
 	Sxx::Rendering::SceneProxy scene_;
+	Sxx::Rendering::BufferCollection buffer_;
+	Sxx::Rendering::RenderPassPipeline pass_;
 
 	//=========================================================================================
 	// private methods
