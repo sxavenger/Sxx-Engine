@@ -20,7 +20,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(World)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StaticMeshRenderer class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class StaticMeshRenderer
+class StaticMeshRenderer final
 	: public BaseComponent {
 public:
 
@@ -28,7 +28,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	StaticMeshRenderer(uint64_t handle, RefPtr<EntityBehaviour> entity) noexcept : BaseComponent(handle, entity) {}
+	StaticMeshRenderer(uint64_t handle, RefPtr<EntityBehaviour> owner) noexcept : BaseComponent(handle, owner) {}
 	~StaticMeshRenderer() override = default;
 
 	//* component option *//

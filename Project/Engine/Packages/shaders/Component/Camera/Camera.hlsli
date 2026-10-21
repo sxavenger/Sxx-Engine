@@ -29,6 +29,13 @@ namespace Component {
 			return projection;
 		}
 
+		//! @reference https://mynameismjp.wordpress.com/2010/09/05/position-from-depth-3/
+		float32_t LinearDepth(float32_t ndc_depth) {
+			float32_t projection_a = far / (far - near);
+			float32_t projection_b = (-far * near) / (far - near);
+			return projection_b / (ndc_depth - projection_a);
+		}
+
 		//* matrix methods *//
 
 		static float32_t4x4 MakePerspective(float32_t fov, float32_t aspect, float32_t near, float32_t far) {

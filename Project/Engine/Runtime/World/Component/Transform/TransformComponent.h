@@ -21,7 +21,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(World)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // TransformComponent class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class TransformComponent
+class TransformComponent final
 	: public BaseComponent {
 public:
 
@@ -31,7 +31,7 @@ public:
 
 	//* constructor / destructor *//
 
-	TransformComponent(uint64_t handle, RefPtr<EntityBehaviour> entity) noexcept : BaseComponent(handle, entity) {}
+	TransformComponent(uint64_t handle, RefPtr<EntityBehaviour> owner) noexcept : BaseComponent(handle, owner) {}
 	~TransformComponent() override = default;
 
 	//* transform option *//

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef NUMERIC_LIBRARY_HLSLI
+#define NUMERIC_LIBRARY_HLSLI
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Numeric namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,4 +17,8 @@ namespace Numeric {
 
 	static const float32_t kEpsilon = 1.192092896e-07f;
 
+	static const float32_t3 kForward = float32_t3(0.0f, 0.0f, 1.0f);
+
 }
+
+#endif

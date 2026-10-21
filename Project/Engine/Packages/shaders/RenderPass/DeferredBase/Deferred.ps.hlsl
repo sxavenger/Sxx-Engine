@@ -16,9 +16,9 @@ SamplerState gSampler : register(s0);
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
+[shader("pixel")]
+[earlydepthstencil]
 PixelOutputData main(PixelInputData input) {
-
-	PixelOutputData output = (PixelOutputData)0;
 
 	float32_t transparency = gMaterial[0].transparency.Get(gSampler, input.texcoord);
 	if (transparency < alpha_cutoff) {
@@ -29,6 +29,9 @@ PixelOutputData main(PixelInputData input) {
 	float32_t3 normal   = gMaterial[0].normal.Get(normalize(input.normal), normalize(input.tangent), normalize(input.bitangent), gSampler, input.texcoord);
 	float32_t roughness = gMaterial[0].roughness.Get(gSampler, input.texcoord);
 	float32_t metallic  = gMaterial[0].metallic.Get(gSampler, input.texcoord);
+
+	//!< GBufferに書き込み
+	PixelOutputData output = (PixelOutputData)0;
 
 	output.SetAlbedo(albedo);
 	output.SetNormal(normal);

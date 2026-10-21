@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef WEIGHTED_BLENDED_OIT_HLSLI
+#define WEIGHTED_BLENDED_OIT_HLSLI
+
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
@@ -44,3 +47,5 @@ namespace WeightedBlendedOIT {
 	}
 
 }
+
+#endif

@@ -11,8 +11,8 @@
 #include "../../Meshlet/Meshlet.hlsli"
 
 //* component
-#include "../../Component/Transform.hlsli"
-#include "../../Component/Camera.hlsli"
+#include "../../Component/Transform/Transform.hlsli"
+#include "../../Component/Camera/Camera.hlsli"
 
 //=========================================================================================
 // buffers

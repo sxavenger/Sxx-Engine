@@ -24,7 +24,7 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(World)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // CameraComponent class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class CameraComponent
+class CameraComponent final
 	: public BaseComponent {
 public:
 
@@ -87,7 +87,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	CameraComponent(uint64_t handle, RefPtr<EntityBehaviour> entity) noexcept : BaseComponent(handle, entity) {}
+	CameraComponent(uint64_t handle, RefPtr<EntityBehaviour> owner) noexcept : BaseComponent(handle, owner) {}
 	~CameraComponent() override = default;
 
 	//* projection option *//
