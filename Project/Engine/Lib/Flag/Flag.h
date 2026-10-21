@@ -43,9 +43,9 @@ public:
 	constexpr void Inverse(_Bit bit) { Inverse(static_cast<_Mask>(bit)); }
 	constexpr void Inverse(FlagMask other) { Inverse(other.value); }
 
-	constexpr void Set(_Mask mask) { value |= mask; }
-	constexpr void Set(_Bit bit) { Set(static_cast<_Mask>(bit)); }
-	constexpr void Set(FlagMask other) { Set(other.value); }
+	constexpr void Set(_Mask mask, bool val = true) { val ? value |= mask : value &= ~mask; }
+	constexpr void Set(_Bit bit, bool val = true) { Set(static_cast<_Mask>(bit), val); }
+	constexpr void Set(FlagMask other, bool val = true) { Set(other.value, val); }
 
 	constexpr void Reset(_Mask mask) { value &= ~mask; }
 	constexpr void Reset(_Bit bit) { Reset(static_cast<_Mask>(bit)); }
