@@ -41,7 +41,7 @@ public:
 
 	virtual void ClearTarget(Graphics::GraphicsCommandContext& command) = 0;
 
-private:
+protected:
 };
 
 //-----------------------------------------------------------------------------------------

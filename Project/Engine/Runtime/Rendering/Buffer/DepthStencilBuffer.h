@@ -54,6 +54,7 @@ public:
 	void ClearTarget(Graphics::GraphicsCommandContext& command) override;
 
 	DepthStencilTexture& GetBuffer(Layout layout) { return buffers_[layout]; }
+	const DepthStencilTexture& GetBuffer(Layout layout) const { return buffers_[layout]; }
 
 	//* format option *//
 

@@ -75,6 +75,11 @@ public:
 
 	void SetupInstanceDesc(const Device& device, const GraphicsCommandContext& context, ResourceAllocator& allocator);
 
+	//* acceleration structure option *//
+
+	//! @brief TopLevelAccelerationStructureのGPU仮想アドレスを取得する.
+	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return accelerationStructure_.GetGpuVirtualAddress(); }
+
 private:
 
 	//=========================================================================================
@@ -86,6 +91,7 @@ private:
 
 	DimensionBuffer<D3D12_RAYTRACING_INSTANCE_DESC> descs_;
 	AccelerationStructure accelerationStructure_;
+	// fixme: TLASの更新の際, CPU側に同期されているComputeQueueを使用するので, ダブルバッファリングする必要があるかも.
 
 	//=========================================================================================
 	// private methods

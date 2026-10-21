@@ -118,6 +118,11 @@ struct PixelOutputData { //!< [Rendering::GBuffer 参照]
 		buffer2.a = 1.0;
 	}
 
+	void SetAmbientOcclusion(float32_t ambient_occlusion) {
+		buffer2.r = ambient_occlusion;
+		buffer2.a = 1.0;
+	}
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////

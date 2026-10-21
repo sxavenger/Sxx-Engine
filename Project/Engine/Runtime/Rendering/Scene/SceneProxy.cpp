@@ -50,10 +50,20 @@ void SceneProxy::Setup() {
 
 void SceneProxy::Reset() {
 	staticMeshes.clear();
+	directionalLights.clear();
 	tlas.ResetInstance();
 	handle = nullptr;
 }
 
-void SceneProxy::AddInstance(const StaticMeshInstance& instance) {
+void SceneProxy::AddMeshInstance(const StaticMeshInstance& instance) {
 	staticMeshes.emplace_back(instance);
+}
+
+void SceneProxy::AddLightInstance(const DirectionalLightInstance& instance) {
+	directionalLights.emplace_back(instance);
+}
+
+const Graphics::TopLevelAccelerationStructure& SceneProxy::GetTopLevelAccelerationStructure() const {
+	handle.Wait(); //!< GPUの処理完了まで待機する.
+	return tlas;
 }

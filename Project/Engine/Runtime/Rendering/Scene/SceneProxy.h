@@ -7,6 +7,7 @@
 #include "../Cache/Static/StaticMeshCache.h"
 #include "../Cache/Static/SurfaceMaterialCache.h"
 #include "../Cache/Dynamic/TransformCache.h"
+#include "../Cache/Dynamic/DirectionalLightCache.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -44,6 +45,21 @@ public:
 	
 	};
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// DirectionalLightInstance structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct DirectionalLightInstance {
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		std::shared_ptr<const DirectionalLightCache> light;
+		std::shared_ptr<const TransformCache> transform;
+
+	};
+
 public:
 
 	//=========================================================================================
@@ -54,13 +70,19 @@ public:
 
 	void Reset();
 
-	void AddInstance(const StaticMeshInstance& instance);
+	void AddMeshInstance(const StaticMeshInstance& instance);
+
+	void AddLightInstance(const DirectionalLightInstance& instance);
+
+	const Graphics::TopLevelAccelerationStructure& GetTopLevelAccelerationStructure() const;
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
 	std::list<StaticMeshInstance> staticMeshes;
+
+	std::list<DirectionalLightInstance> directionalLights;
 
 	Graphics::TopLevelAccelerationStructure tlas;
 	Scheduler::TaskHandle handle;

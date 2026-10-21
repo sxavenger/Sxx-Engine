@@ -37,6 +37,7 @@ PixelOutputData main(PixelInputData input) {
 	output.SetNormal(normal);
 	output.SetRoughness(roughness);
 	output.SetMetallic(metallic);
+	output.SetAmbientOcclusion(1.0); //!< TODO: AmbientOcclusionの計算を追加する
 
 	return output;
 

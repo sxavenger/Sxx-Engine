@@ -153,6 +153,8 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 	//!< 共通parameterの設定
 	parameter.Set32bitConstants("Context", context.resolution);
 	parameter.Set32bitConstants("PassData", data_);
+
+	//!< camera情報の設定
 	parameter.SetAddress("gCameraProjection", context.camera.camera->GetProjectionBuffer().GetGpuVirtualAddress());
 	parameter.SetAddress("gCameraTransform",  context.camera.transform->GetTransformationBuffer().GetGpuVirtualAddress());
 
@@ -162,8 +164,6 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 		if (!instance.mesh->HasCache() || !instance.material->HasCache()) {
 			continue; //!< キャッシュがない場合は描画しない
 		}
-
-		//!< parameterの設定
 
 		//!< 頂点情報の設定
 		parameter.SetAddress("gPositions", instance.mesh->GetPositionVertexBuffer().positions.GetGpuVirtualAddress());

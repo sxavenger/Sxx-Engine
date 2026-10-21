@@ -54,6 +54,7 @@ private:
 
 	Sxx::World::GameObject camera_;
 	Sxx::World::GameObject object_;
+	Sxx::World::GameObject light_;
 
 	Sxx::Rendering::SceneProxy scene_;
 	Sxx::Rendering::BufferCollection buffer_;

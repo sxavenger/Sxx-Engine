@@ -55,6 +55,7 @@ public:
 	void ClearTarget(Graphics::GraphicsCommandContext& command) override;
 
 	RenderTargetTexture& GetBuffer(Layout layout) { return buffers_[layout]; }
+	const RenderTargetTexture& GetBuffer(Layout layout) const { return buffers_[layout]; }
 
 	//* format option *//
 
