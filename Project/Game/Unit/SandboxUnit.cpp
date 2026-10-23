@@ -33,6 +33,9 @@
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
 
+//* engine [editor]
+#include <Engine/Runtime/Editor/ViewportPanel.h>
+
 //* engine [unit]
 #include <Engine/Unit/WindowUnit.h>
 #include <Engine/Unit/SlateEditorUnit.h>
@@ -129,6 +132,12 @@ void SandboxUnit::InitSandbox() {
 		pass_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pass_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
 
+	}
+
+	// TODO: Engine側で行う
+	if (Sxx::Framework::Context::HasUnit<Sxx::SlateEditorUnit>()) {
+		auto viewport = Sxx::Framework::Context::GetUnit<Sxx::SlateEditorUnit>()->GetPanel<Sxx::Editor::ViewportPanel>();
+		viewport->SetBufferCollection(&buffer_);
 	}
 }
 
