@@ -49,16 +49,6 @@ protected:
 
 	void DrawStatusBar() override;
 
-private:
-
-	//=========================================================================================
-	// private variables
-	//=========================================================================================
-
-	//* constant *//
-
-	static constexpr float kListPaneRatio = 0.35f; //!< main windowの左右分割の既定比率. (35 : 65)
-
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

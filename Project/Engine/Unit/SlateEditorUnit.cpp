@@ -7,10 +7,11 @@ SXAVENGER_ENGINE_USING
 //* engine [editor/slate]
 #include <Runtime/Editor/Slate/Widgets/SlateDecl.h>
 #include <Runtime/Editor/Slate/Docking/SlateDockTabStack.h>
-#include <Runtime/Editor/Slate/Docking/SlateSplitter.h>
 
 //* engine [editor]
 #include <Runtime/Editor/CaptureMainMenu.h>
+#include <Runtime/Editor/ViewportPanel.h>
+
 #include <Runtime/Editor/EditorTestPanel.h>
 #include <Runtime/Editor/StyleEditorPanel.h>
 
@@ -42,7 +43,9 @@ namespace {
 SlateEditorUnit::SlateEditorUnit() {
 
 	//!< 既定のpanel. 生成はGPUにもImGuiにも依存しないため, Push時点で作っておく.
-	//!< note: layoutはBuildMainLayoutでこれらを並べるだけにする.
+	//!< note: BuildMainLayoutが登録された全panelを1つのtab stackへ自動で並べるため, panelを追加するときはここにpush_backするだけでよい.
+	panels_.push_back(std::make_shared<Editor::ViewportPanel>());
+	
 	panels_.push_back(std::make_shared<Editor::EditorTestPanel>());
 	panels_.push_back(std::make_shared<Editor::StyleEditorPanel>());
 }
@@ -55,33 +58,21 @@ void SlateEditorUnit::OnInitEditor() {
 
 Editor::Slate::WidgetPointer SlateEditorUnit::BuildMainLayout() {
 
-	//!< main windowのlayout. splitterで左右に分割し, それぞれにtab stackを置く.
+	//!< main windowのlayout. 登録された全panelを1つのtab stackへ登録順に並べる.
+	//!< note: panelを追加するときはconstructorで登録するだけでよい. ここを書き換える必要はない.
 	//!< note: アイコンは専用APIではなくtitleの文字列に埋め込む. 位置も個数も自由に決められる.
+	//!< note: layoutを組んでいる途中でdockRootがまだ無いためAddPanel()は使えず, ここでは直接tab stackへ入れる.
+	//!<       分割したい場合は起動後にtabをドラッグしてドッキングする.
 
-	Editor::Slate::Decl<Editor::Slate::DockTabStack> left;
-	{
-		//!< EditorPanelを継承したpanelの例. titleとtab色はpanel側のconstructorで決まる.
-		//!< note: panelはconstructorで生成済み. layoutを組んでいる途中でdockRootがまだ無いため
-		//!<       AddPanel()は使えず, ここでは直接tab stackへ入れる.
-		if (const std::shared_ptr<Editor::EditorTestPanel> test = GetPanel<Editor::EditorTestPanel>()) {
-			left->AddPanel(test->GetDockPanel());
+	Editor::Slate::Decl<Editor::Slate::DockTabStack> stack;
+
+	for (const Editor::Slate::EditorPanelPointer& panel : GetPanels()) {
+		if (panel != nullptr) {
+			stack->AddPanel(panel->GetDockPanel());
 		}
 	}
 
-	Editor::Slate::Decl<Editor::Slate::DockTabStack> right;
-	{
-		//!< Styleの調整タブ. EditorPanelを継承して作る例になっている.
-		//!< note: panelはconstructorで生成済み. layoutを組んでいる途中でdockRootがまだ無いため
-		//!<       AddPanel()は使えず, ここでは直接tab stackへ入れる.
-		if (const std::shared_ptr<Editor::StyleEditorPanel> style = GetPanel<Editor::StyleEditorPanel>()) {
-			right->AddPanel(style->GetDockPanel());
-		}
-	}
-
-	//!< 左35 : 右65のsplitterで分割する. (design.md §2.3)
-	return std::make_shared<Editor::Slate::Splitter>(
-		Editor::Slate::Splitter::Orientation::Horizontal, left.pointer, right.pointer, kListPaneRatio
-	);
+	return stack.pointer;
 }
 
 void SlateEditorUnit::DrawStatusBar() {

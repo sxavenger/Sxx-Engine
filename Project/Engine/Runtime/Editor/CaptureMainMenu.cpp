@@ -6,7 +6,7 @@ SXAVENGER_ENGINE_USING_(Editor)
 //-----------------------------------------------------------------------------------------
 //* editor
 #include "Slate/SlateIcon.h"
-#include "SxGui.h"
+#include "SxGui/SxGui.h"
 
 //* engine
 #include <Runtime/Platform/WinApp.h>
