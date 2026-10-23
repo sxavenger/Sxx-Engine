@@ -45,7 +45,7 @@ void TextureBuilder::Build(std::shared_ptr<Texture>& texture) {
 	//!< 画像ファイルの読み込み
 	const DirectX::ScratchImage& image = texture->image_ = TextureBuilder::LoadTextureFile(texture->GetDirectory(), reference);
 
-	if (reference.encoding != Graphics::GetColorEncoding(image.GetMetadata().format)) {
+	if (reference.encoding != Graphics::GetEncodingColorSpace(image.GetMetadata().format)) {
 		STREAM_LOG_WARNING("Assets::TextureBuilder | encoding is mismatched. filepath: {}", filepath.generic_string()); //!< 読み込み結果とencodingが異なる場合は警告を出す
 	}
 

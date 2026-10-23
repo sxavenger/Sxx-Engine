@@ -37,8 +37,8 @@ public:
 		// public variables
 		//=========================================================================================
 
-		Graphics::ColorEncoding encoding = Graphics::ColorEncoding::Lightness; //!< カラースペースの指定
-		bool isGenerateMipmap = true; //!< ミップマップを生成するかどうかの指定
+		Graphics::EncodingColorSpace encoding = Graphics::EncodingColorSpace::Lightness; //!< カラースペースの指定
+		bool isGenerateMipmap                 = true; //!< ミップマップを生成するかどうかの指定
 
 	};
 

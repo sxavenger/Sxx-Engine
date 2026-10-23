@@ -17,7 +17,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 DirectX::TEX_FILTER_FLAGS TextureMetadata::ReferenceData::GetFilterFlags() const {
 	DirectX::TEX_FILTER_FLAGS flags = DirectX::TEX_FILTER_DEFAULT;
 
-	if (encoding == Graphics::ColorEncoding::Lightness) {
+	if (encoding == Graphics::EncodingColorSpace::Lightness) {
 		flags |= DirectX::TEX_FILTER_SRGB;
 	}
 
@@ -29,11 +29,11 @@ DirectX::WIC_FLAGS TextureMetadata::ReferenceData::GetWICFlags() const {
 	DirectX::WIC_FLAGS flags = DirectX::WIC_FLAGS_NONE;
 
 	switch (encoding) {
-		case Graphics::ColorEncoding::Intensity:
+		case Graphics::EncodingColorSpace::Intensity:
 			flags |= DirectX::WIC_FLAGS_FORCE_RGB;
 			break;
 
-		case Graphics::ColorEncoding::Lightness:
+		case Graphics::EncodingColorSpace::Lightness:
 			flags |= DirectX::WIC_FLAGS_FORCE_SRGB | DirectX::WIC_FLAGS_DEFAULT_SRGB;
 			break;
 	}
@@ -44,7 +44,7 @@ DirectX::WIC_FLAGS TextureMetadata::ReferenceData::GetWICFlags() const {
 json::node TextureMetadata::ReferenceData::Serialize(const ReferenceData& data) {
 	json::node node = json::node::object();
 	node["filepath"]          = JsonWriter<std::filesystem::path>::Create(data.filepath);
-	node["encoding"]          = JsonWriter<Graphics::ColorEncoding>::Create(data.encoding);
+	node["encoding"]          = JsonWriter<Graphics::EncodingColorSpace>::Create(data.encoding);
 	node["isGenerateMipmaps"] = JsonWriter<bool>::Create(data.isGenerateMipmaps);
 
 	return node;
@@ -53,7 +53,7 @@ json::node TextureMetadata::ReferenceData::Serialize(const ReferenceData& data) 
 TextureMetadata::ReferenceData TextureMetadata::ReferenceData::Deserialize(const json::node& node) {
 	ReferenceData data = {};
 	data.filepath          = JsonReader<std::filesystem::path>::Get(node, "filepath");
-	data.encoding          = JsonReader<Graphics::ColorEncoding>::Get(node, "encoding");
+	data.encoding          = JsonReader<Graphics::EncodingColorSpace>::Get(node, "encoding");
 	data.isGenerateMipmaps = JsonReader<bool>::Get(node, "isGenerateMipmaps");
 
 	return data;

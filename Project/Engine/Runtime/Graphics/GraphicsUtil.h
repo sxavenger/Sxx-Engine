@@ -118,9 +118,18 @@ enum class CompileProfile : uint8_t {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// ColorEncoding enum class
+// DisplayColorSpace enum class
 ////////////////////////////////////////////////////////////////////////////////////////////
-enum class ColorEncoding : bool {
+enum class DisplayColorSpace : uint32_t {
+	Rec709,
+	// Rec2020_1000nit,
+	// Rec2020_2000nit,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// EncodingColorSpace enum class
+////////////////////////////////////////////////////////////////////////////////////////////
+enum class EncodingColorSpace : bool {
 	Intensity, //!< Linear Color Space (Normal Map etc...)
 	Lightness, //!< sRGB Color Space (Main Color etc...)
 };
@@ -225,7 +234,7 @@ constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE GetPrimitiveTopologyType(PrimitiveTopolo
 	}
 }
 
-constexpr ColorEncoding GetColorEncoding(DXGI_FORMAT format) {
+constexpr EncodingColorSpace GetEncodingColorSpace(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
 		case DXGI_FORMAT_BC1_UNORM_SRGB:
@@ -234,10 +243,10 @@ constexpr ColorEncoding GetColorEncoding(DXGI_FORMAT format) {
 		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
 		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
 		case DXGI_FORMAT_BC7_UNORM_SRGB:
-			return ColorEncoding::Lightness;
+			return EncodingColorSpace::Lightness;
 
 		default:
-			return ColorEncoding::Intensity;
+			return EncodingColorSpace::Intensity;
 	}
 }
 

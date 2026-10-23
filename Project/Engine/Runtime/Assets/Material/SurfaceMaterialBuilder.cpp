@@ -102,15 +102,15 @@ SurfaceMaterial::Description SurfaceMaterialBuilder::BuildReference(const std::f
 	return description;
 }
 
-Graphics::ColorEncoding SurfaceMaterialBuilder::GetTextureEncoding(AssimpTextureType type) {
+Graphics::EncodingColorSpace SurfaceMaterialBuilder::GetTextureEncoding(AssimpTextureType type) {
 	switch (type) {
 		case AssimpTextureType::Diffuse:
 		case AssimpTextureType::BaseColor:
 		case AssimpTextureType::Emissive:
-			return Graphics::ColorEncoding::Lightness; //!< sRGB Color Space
+			return Graphics::EncodingColorSpace::Lightness; //!< sRGB Color Space
 
 		default:
-			return Graphics::ColorEncoding::Intensity;
+			return Graphics::EncodingColorSpace::Intensity;
 	}
 }
 

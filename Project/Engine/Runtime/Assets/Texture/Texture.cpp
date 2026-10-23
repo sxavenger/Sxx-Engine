@@ -24,8 +24,8 @@ bool Texture::Description::IsArray() const {
 	return arraySize > (IsCubemap() ? 6 : 1); //!< cubemapの場合は6以上, それ以外は1以上でarray扱い
 }
 
-Graphics::ColorEncoding Texture::Description::GetColorEncoding() const {
-	return Graphics::GetColorEncoding(format);
+Graphics::EncodingColorSpace Texture::Description::GetEncodingColorSpace() const {
+	return Graphics::GetEncodingColorSpace(format);
 }
 
 D3D12_SRV_DIMENSION Texture::Description::GetSRVDimension() const {

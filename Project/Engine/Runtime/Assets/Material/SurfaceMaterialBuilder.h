@@ -51,7 +51,7 @@ private:
 
 	//* reference build methods *//
 
-	static Graphics::ColorEncoding GetTextureEncoding(AssimpTextureType type);
+	static Graphics::EncodingColorSpace GetTextureEncoding(AssimpTextureType type);
 
 	static std::optional<Uuid> GetTextureId(const AssimpMaterial& material, const std::filesystem::path& directory, AssimpTextureType type);
 

@@ -59,8 +59,8 @@ public:
 
 		std::filesystem::path filepath; //!< 参照されているTextureのファイルパス
 
-		Graphics::ColorEncoding encoding = Graphics::ColorEncoding::Lightness; //!< カラースペース
-		bool isGenerateMipmaps           = true;                               //!< Mipmapを生成するかどうか
+		Graphics::EncodingColorSpace encoding = Graphics::EncodingColorSpace::Lightness; //!< カラースペース
+		bool isGenerateMipmaps                = true;                                    //!< Mipmapを生成するかどうか
 
 	};
 

@@ -49,7 +49,7 @@ public:
 
 		bool IsArray() const;
 
-		Graphics::ColorEncoding GetColorEncoding() const;
+		Graphics::EncodingColorSpace GetEncodingColorSpace() const;
 
 		D3D12_SRV_DIMENSION GetSRVDimension() const;
 
