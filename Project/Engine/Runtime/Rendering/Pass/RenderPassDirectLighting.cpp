@@ -64,7 +64,7 @@ void RenderPassDirectLighting::Execute(Graphics::GraphicsCommandContext& command
 
 		BeginDirectLightingPass(command, *context.buffer);
 
-		LightingDirectionalLight(command, context);
+		LightingDirectionalLight(command, context, context.GetContextData());
 
 		EndDirectLightingPass(command, *context.buffer);
 	}
@@ -139,7 +139,7 @@ void RenderPassDirectLighting::EndDirectLightingPass(Graphics::GraphicsCommandCo
 
 }
 
-void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context) {
+void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
 
 	auto commandList = command.GetCommandList();
 	const auto& pipeline = pipelines_[Pipeline::DirectionalLight];
@@ -153,7 +153,7 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 	Graphics::ShaderParameter parameter;
 
 	//!< 共通parameterの設定
-	parameter.Set32bitConstants("Context", context.resolution);
+	parameter.Set32bitConstants("Context", data);
 	parameter.Set32bitConstants("PassData", data_);
 
 	//!< camera情報の設定

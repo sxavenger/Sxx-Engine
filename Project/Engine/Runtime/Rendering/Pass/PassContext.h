@@ -68,6 +68,22 @@ public:
 
 	};
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// ContextData structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	//! @brief GPU側で使用されるContextのデータを格納する構造体.
+	struct ContextData {
+	public:
+
+		//=========================================================================================
+		// public variables
+		//=========================================================================================
+
+		Vector2u resolution                             = {};
+		PassOption::WorkingColorSpace workingColorSpace = PassOption::WorkingColorSpace::Linear;
+
+	};
+
 public:
 
 	//=========================================================================================
@@ -77,6 +93,10 @@ public:
 	//* issue option *//
 
 	static FlagEnum<Issue> CheckIssue(const PassContext& context);
+
+	//* context data option *//
+
+	ContextData GetContextData() const;
 
 	//=========================================================================================
 	// public variables

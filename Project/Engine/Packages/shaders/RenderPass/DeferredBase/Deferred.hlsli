@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* pass
+#include "../PassContext.hlsli"
+
 //* system
 #include "../../System/Semantics.hlsli"
 
@@ -19,9 +22,7 @@
 //=========================================================================================
 
 //! @brief コンテキスト情報
-cbuffer Context : register(b0, space1) {
-	uint32_t2 resolution;
-}
+ConstantBuffer<PassContext> Context : register(b0, space1);
 
 //! @brief 描画パス情報
 cbuffer PassData : register(b1, space1) {

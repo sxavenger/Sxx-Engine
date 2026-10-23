@@ -21,9 +21,9 @@ PixelOutputData main(PixelRasterData input) {
 
 	//!< GBufferの情報を取得する
 	GBuffer::Reconstructor reconstructor
-		= GBuffer::Reconstructor::Create(uint32_t2(input.position.xy), resolution, gCameraProjection.projection_inverse, gCameraTransform.world);
+		= GBuffer::Reconstructor::Create(uint32_t2(input.position.xy), Context.resolution, gCameraProjection.projection_inverse, gCameraTransform.world);
 
-	GBuffer::Surface surface = reconstructor.RecnstructSurface(kTextures);
+	const GBuffer::Surface surface = reconstructor.RecnstructSurface(kTextures);
 
 	if (!surface.HasGeometry()) {
 		discard; //!< surfaceが存在しない場合は描画しない

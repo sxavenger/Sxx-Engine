@@ -62,7 +62,7 @@ void RenderPassDeferredBase::Execute(Graphics::GraphicsCommandContext& command, 
 
 		BeginOpaqueMeshRenderPass(command, *context.buffer);
 
-		RenderStaticMesh(command, context);
+		RenderStaticMesh(command, context, context.GetContextData());
 
 		EndOpaqueMeshRenderPass(command, *context.buffer);
 
@@ -142,7 +142,7 @@ void RenderPassDeferredBase::EndOpaqueMeshRenderPass(Graphics::GraphicsCommandCo
 
 }
 
-void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context) {
+void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
 
 	auto commandList = command.GetCommandList();
 
@@ -151,7 +151,7 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 	Graphics::ShaderParameter parameter;
 
 	//!< 共通parameterの設定
-	parameter.Set32bitConstants("Context", context.resolution);
+	parameter.Set32bitConstants("Context", data);
 	parameter.Set32bitConstants("PassData", data_);
 
 	//!< camera情報の設定

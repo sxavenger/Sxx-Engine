@@ -22,6 +22,14 @@ struct PassOption {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// WorkingColorSpace enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class WorkingColorSpace : uint32_t {
+		Linear = 0,
+		ACEScg = 1,
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// AmbientOcclusion enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class AmbientOcclusion : uint8_t {
@@ -51,7 +59,8 @@ public:
 	// public variables
 	//=========================================================================================
 
-	Graphics::SwapChain::ColorSpace colorSpace = Graphics::SwapChain::ColorSpace::Rec709;
+	WorkingColorSpace workingColorSpace = WorkingColorSpace::ACEScg;
+	Graphics::SwapChain::DisplayColorSpace displayColorSpace = Graphics::SwapChain::DisplayColorSpace::Rec709;
 
 	AmbientOcclusion ambientOcclusion = AmbientOcclusion::None; // TODO: XeGTAOに変更する.
 	AntiAliasing antiAliasing         = AntiAliasing::None; // TODO: FXAAに変更する.

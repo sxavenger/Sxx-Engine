@@ -23,3 +23,11 @@ FlagEnum<PassContext::Issue> PassContext::CheckIssue(const PassContext& context)
 
 	return flags;
 }
+
+PassContext::ContextData PassContext::GetContextData() const {
+	ContextData data;
+	data.resolution        = resolution;
+	data.workingColorSpace = option.workingColorSpace;
+
+	return data;
+}

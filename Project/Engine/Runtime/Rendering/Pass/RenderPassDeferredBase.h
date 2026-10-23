@@ -78,7 +78,7 @@ private:
 
 	void EndOpaqueMeshRenderPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
 
-	void RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context);
+	void RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
 };
 

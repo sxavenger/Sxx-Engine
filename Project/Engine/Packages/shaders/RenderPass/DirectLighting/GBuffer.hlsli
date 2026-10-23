@@ -156,7 +156,7 @@ namespace GBuffer {
 			surface.normal = textures.LoadNormal(pixel);
 
 			//!< Albedoの取得
-			surface.albedo = textures.LoadAlbedo(pixel); // TODO: ACEScgに変換する
+			surface.albedo = textures.LoadAlbedo(pixel);
 
 			//!< Materialの取得
 			float32_t3 material_arm = textures.LoadMaterialARM(pixel);

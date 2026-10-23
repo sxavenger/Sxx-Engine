@@ -32,6 +32,7 @@
 #include <Engine/Runtime/Rendering/Cache/Manager/CacheCollection.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
+#include <Engine/Runtime/Rendering/Buffer/LightingBuffer.h>
 
 //* engine [editor]
 #include <Engine/Runtime/Editor/ViewportPanel.h>
@@ -129,8 +130,8 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Passの初期化
 
-		pass_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
-		pass_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
+		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
+		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
 
 	}
 
@@ -146,8 +147,9 @@ void SandboxUnit::TermSandbox() {
 
 void SandboxUnit::UpdateSandbox() {
 
+	const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
+
 	{
-		const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
 
 		auto transform = camera_->GetComponent<Sxx::World::TransformComponent>();
 
@@ -186,6 +188,24 @@ void SandboxUnit::UpdateSandbox() {
 
 		static const float rotationSpeed = 0.01f;
 		transform->SetRotation(transform->GetRotation() * Quaternionf::AxisAngle(Vector3f::Up(), rotationSpeed));
+	}
+
+	{
+		static uint32_t frameCount = 0;
+
+		if (frameCount++ % 300 == 0) { //!< 5秒ごとにWorkingColorSpaceを切り替える
+			switch (option_.workingColorSpace) {
+				case Sxx::Rendering::PassOption::WorkingColorSpace::Linear:
+					option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
+					STREAM_LOG_DEBUG("WorkingColorSpace changed to ACEScg");
+					break;
+
+				case Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg:
+					option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::Linear;
+					STREAM_LOG_DEBUG("WorkingColorSpace changed to Linear");
+					break;
+			}
+		}
 	}
 
 	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {
@@ -306,9 +326,10 @@ void SandboxUnit::RenderSandbox() {
 		x.scene  = &scene_;
 		x.camera.camera    = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
 		x.camera.transform = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
-		x.resolution = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1280, 720);
+		x.resolution       = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1280, 720);
+		x.option           = option_;
 
-		pass_.Execute(context, x);
+		pipeline_.Execute(context, x);
 
 	}
 
@@ -329,7 +350,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline1_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetHandle("gTexture", renderTarget_.GetDescriptorSRV().GetGPUHandle());
+			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::LightingBuffer>().GetBuffer(Sxx::Rendering::LightingBuffer::Layout::Direct).GetDescriptorSRV().GetGPUHandle());
 
 			pipeline1_.BindShaderParameter(context, parameter);
 

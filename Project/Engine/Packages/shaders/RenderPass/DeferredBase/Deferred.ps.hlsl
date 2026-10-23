@@ -30,6 +30,8 @@ PixelOutputData main(PixelInputData input) {
 	float32_t roughness = gMaterial[0].roughness.Get(gSampler, input.texcoord);
 	float32_t metallic  = gMaterial[0].metallic.Get(gSampler, input.texcoord);
 
+	albedo = Context.InputColorSpace(albedo); //!< albedoを入力色空間に変換する
+
 	//!< GBufferに書き込み
 	PixelOutputData output = (PixelOutputData)0;
 

@@ -95,7 +95,7 @@ private:
 
 	void EndDirectLightingPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
 
-	void LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context);
+	void LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
 };
 
