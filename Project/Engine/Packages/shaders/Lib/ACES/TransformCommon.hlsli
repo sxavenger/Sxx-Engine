@@ -49,9 +49,9 @@ namespace ACES {
 
 		const float32_t TINY = 1e-10;
 
-		float32_t3 min_rgb = min(min(rgb.x, rgb.y), rgb.z);
-		float32_t3 max_rgb = max(max(rgb.x, rgb.y), rgb.z);
-		return (max(max_rgb, TINY.xxx) - max(min_rgb, TINY.xxx)) / max(max_rgb, 1e-2.xxx);
+		float32_t min_rgb = min(min(rgb.x, rgb.y), rgb.z);
+		float32_t max_rgb = max(max(rgb.x, rgb.y), rgb.z);
+		return (max(max_rgb, TINY) - max(min_rgb, TINY)) / max(max_rgb, 1e-2);
 	}
 
 }
