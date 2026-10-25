@@ -1,4 +1,4 @@
-#include "SceneBuffer.h"
+#include "MainBuffer.h"
 SXAVENGER_ENGINE_USING_(Rendering)
 
 //-----------------------------------------------------------------------------------------
@@ -9,15 +9,15 @@ SXAVENGER_ENGINE_USING_(Rendering)
 // constant variables
 //=========================================================================================
 
-const ArrayEnum<DXGI_FORMAT, EnumUtil<SceneBuffer::Layout>::GetCount(), SceneBuffer::Layout> SceneBuffer::kFormats = {
+const ArrayEnum<DXGI_FORMAT, EnumUtil<MainBuffer::Layout>::GetCount(), MainBuffer::Layout> MainBuffer::kFormats = {
 	DXGI_FORMAT_R16G16B16A16_FLOAT, //!< Scene
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SceneBuffer class methods
+// MainBuffer class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void SceneBuffer::Create(const Vector2u& resolution) {
+void MainBuffer::Create(const Vector2u& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 
 		//!< optionsの設定
@@ -31,13 +31,13 @@ void SceneBuffer::Create(const Vector2u& resolution) {
 	}
 }
 
-void SceneBuffer::Resize(const Vector2u& resolution) {
+void MainBuffer::Resize(const Vector2u& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 		buffers_[i].Resize(resolution);
 	}
 }
 
-void SceneBuffer::ClearTarget(Graphics::GraphicsCommandContext& command) {
+void MainBuffer::ClearTarget(Graphics::GraphicsCommandContext& command) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 		buffers_[i].ClearRenderTarget(command);
 	}

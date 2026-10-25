@@ -81,6 +81,8 @@ public:
 
 		Vector2u resolution                             = {};
 		PassOption::WorkingColorSpace workingColorSpace = PassOption::WorkingColorSpace::Linear;
+		Graphics::DisplayColorSpace displayColorSpace   = Graphics::DisplayColorSpace::Rec709;
+		PassOption::DisplayEncoder displayEncoder       = PassOption::DisplayEncoder::Hardware;
 
 	};
 

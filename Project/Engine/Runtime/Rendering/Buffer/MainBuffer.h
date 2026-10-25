@@ -20,9 +20,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SceneBuffer class
+// MainBuffer class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class SceneBuffer final
+class MainBuffer final
 	: public BaseBuffer {
 public:
 
@@ -41,8 +41,8 @@ public:
 
 	//* constructor / destructor *//
 
-	SceneBuffer() noexcept           = default;
-	~SceneBuffer() noexcept override = default;
+	MainBuffer() noexcept           = default;
+	~MainBuffer() noexcept override = default;
 
 	//* buffer option *//
 

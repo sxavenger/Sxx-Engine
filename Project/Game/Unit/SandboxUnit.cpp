@@ -32,6 +32,7 @@
 #include <Engine/Runtime/Rendering/Cache/Manager/CacheCollection.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassTonemap.h>
 #include <Engine/Runtime/Rendering/Buffer/LightingBuffer.h>
 
 //* engine [editor]
@@ -125,13 +126,14 @@ void SandboxUnit::InitSandbox() {
 
 		auto light = light_->GetComponent<Sxx::World::DirectionalLightComponent>();
 		light->SetColor({ 1.0f, 1.0f, 1.0f });
-		light->SetIntensity(1.0f);
+		light->SetIntensity(3.14f);
 	}
 
 	{ //!< Passの初期化
 
 		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
+		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
 
 	}
 
@@ -148,6 +150,7 @@ void SandboxUnit::TermSandbox() {
 void SandboxUnit::UpdateSandbox() {
 
 	const auto& keyboard = Sxx::Platform::Input::GetKeyboard();
+	const auto& mouse    = Sxx::Platform::Input::GetMouse();
 
 	{
 
@@ -205,6 +208,16 @@ void SandboxUnit::UpdateSandbox() {
 					STREAM_LOG_DEBUG("WorkingColorSpace changed to Linear");
 					break;
 			}
+		}
+	}
+
+	{
+
+		if (mouse.IsWheel()) {
+			auto light = light_->GetComponent<Sxx::World::DirectionalLightComponent>();
+			float intensity = light->GetIntensity();
+			intensity = std::max(0.0f, intensity + mouse.GetDeltaWheelNormalized() * 0.1f);
+			light->SetIntensity(intensity);
 		}
 	}
 
@@ -342,7 +355,8 @@ void SandboxUnit::RenderSandbox() {
 
 		viewport.BeginRenderPass(context, ColorCode4(0x9BA8A8FF));
 
-#if 0
+#if 1
+
 		{ //!< Shaderでの書き込み
 
 			auto commandList = context.GetCommandList();

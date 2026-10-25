@@ -30,6 +30,14 @@ public:
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// DisplayEncoder enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class DisplayEncoder : uint32_t {
+		Software = 0,
+		Hardware = 1,
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// AmbientOcclusion enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class AmbientOcclusion : uint8_t {
@@ -59,8 +67,9 @@ public:
 	// public variables
 	//=========================================================================================
 
-	WorkingColorSpace workingColorSpace = WorkingColorSpace::ACEScg;
-	Graphics::SwapChain::DisplayColorSpace displayColorSpace = Graphics::SwapChain::DisplayColorSpace::Rec709;
+	WorkingColorSpace workingColorSpace           = WorkingColorSpace::ACEScg;
+	Graphics::DisplayColorSpace displayColorSpace = Graphics::DisplayColorSpace::Rec709;
+	DisplayEncoder displayEncoder                 = DisplayEncoder::Hardware;
 
 	AmbientOcclusion ambientOcclusion = AmbientOcclusion::None; // TODO: XeGTAOに変更する.
 	AntiAliasing antiAliasing         = AntiAliasing::None; // TODO: FXAAに変更する.

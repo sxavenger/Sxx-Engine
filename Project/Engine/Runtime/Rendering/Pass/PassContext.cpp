@@ -28,6 +28,8 @@ PassContext::ContextData PassContext::GetContextData() const {
 	ContextData data;
 	data.resolution        = resolution;
 	data.workingColorSpace = option.workingColorSpace;
+	data.displayColorSpace = option.displayColorSpace;
+	data.displayEncoder    = option.displayEncoder;
 
 	return data;
 }
