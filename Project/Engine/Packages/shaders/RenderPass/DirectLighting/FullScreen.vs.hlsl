@@ -20,7 +20,7 @@ static const float32_t kFarDepth = 1.0;
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
 [shader("vertex")]
-PixelRasterData main(VertexSemantics semantics) {
+PixelRasterData main(Semantics::Vertex semantics) {
 
 	PixelRasterData output = (PixelRasterData)0;
 

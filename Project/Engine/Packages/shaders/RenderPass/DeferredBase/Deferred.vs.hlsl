@@ -7,7 +7,7 @@
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
 [shader("vertex")]
-PixelInputData main(VertexSemantics semantics) {
+PixelInputData main(Semantics::Vertex semantics) {
 
 	//!< 頂点情報の取得
 	float32_t3 local_position = gPositions[semantics.vertex_id];

@@ -10,7 +10,7 @@
 [numthreads(MESHLET_MAX_TRIANGLE_COUNT, 1, 1)]
 [outputtopology("triangle")]
 void main(
-	ComputeSemantics semantics,
+	Semantics::Compute semantics,
 	in payload Meshlet::Payload payload,
 	out vertices PixelInputData vertices[MESHLET_MAX_VERTEX_COUNT],
 	out indices uint32_t3 triangles[MESHLET_MAX_TRIANGLE_COUNT],

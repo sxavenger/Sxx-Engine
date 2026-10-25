@@ -14,7 +14,7 @@ groupshared Meshlet::Payload payload;
 ////////////////////////////////////////////////////////////////////////////////////////////
 [shader("amplification")]
 [numthreads(MESHLET_AMPLIFICATION_NUMTHREAD, 1, 1)]
-void main(ComputeSemantics semantics) {
+void main(Semantics::Compute semantics) {
 	//!< dispatch_thread_id.xはmeshlet_index
 
 	bool visible = false;

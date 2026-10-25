@@ -9,6 +9,8 @@
 #include "UtilitiesColor.hlsli"
 #include "TransformCommon.hlsli"
 #include "RRT.hlsli"
+#include "ODT.hlsli"
+#include "OutputTransforms.hlsli"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ACES namespace
@@ -43,7 +45,7 @@ namespace ACES {
 	// - Output SRGB Linear | Rec709 Linear
 	//  ACEScg<AP1> -[AP1ToAP0(...)]-> ACES2065-1<AP0> -[RRTMain(...)]-> OCES -[ODTFwd(...)]-> linearCV
 	// - Output SRGB | Rec709
-	//  ACEScg<AP1> -[AP1ToAP0(...)]-> ACES2065-1<AP0> -[RRTMain(...)]-> OCES -[ODTFwd(...)]-> linearCV -[EOTFFwd(...)]-> Rec709
+	//  ACEScg<AP1> -[AP1ToAP0(...)]-> ACES2065-1<AP0> -[RRTMain(...)]-> OCES -[ODTFwd(...)]-> linearCV -[EOTFInv(...)]-> Rec709
 }
 
 #endif
