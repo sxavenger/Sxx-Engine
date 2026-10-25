@@ -24,3 +24,10 @@ D3D12_SHADER_INPUT_BIND_DESC ShaderReflection::GetResourceBindingDesc(UINT index
 ID3D12ShaderReflectionConstantBuffer* ShaderReflection::GetConstantBufferByName(const std::string_view& name) const {
 	return reflection_->GetConstantBufferByName(name.data());
 }
+
+Vector3u ShaderReflection::GetThreadGroupSize() const {
+	Vector3u numthreads = {};
+	reflection_->GetThreadGroupSize(&numthreads.x, &numthreads.y, &numthreads.z);
+
+	return numthreads;
+}

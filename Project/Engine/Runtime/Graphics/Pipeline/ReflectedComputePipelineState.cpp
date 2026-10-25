@@ -16,6 +16,9 @@ ReflectedComputePipelineState ReflectedComputePipelineState::Create(const Device
 	//!< layoutの作成
 	pipeline.layout_ = ReflectedComputePipelineState::CreateLayout(desc);
 
+	//!< thread group sizeの取得
+	pipeline.threadGroupSize_ = desc.GetShaderBlob().Reflect().GetThreadGroupSize();
+
 	//!< pipelineの作成
 	ComputePipelineState::CreatePipelineState(pipeline, device, pipeline.layout_.CreateComputeRootSignature(device, flags), desc);
 
@@ -27,6 +30,9 @@ ReflectedComputePipelineState ReflectedComputePipelineState::Create(const Device
 
 	//!< layoutの作成
 	pipeline.layout_ = ReflectedComputePipelineState::CreateLayout(desc);
+
+	//!< thread group sizeの取得
+	pipeline.threadGroupSize_ = desc.GetShaderBlob().Reflect().GetThreadGroupSize();
 
 	//!< pipelineの作成
 	ComputePipelineState::CreatePipelineState(pipeline, device, pipeline.layout_.CreateComputeRootSignature(device, samplers, flags), desc);

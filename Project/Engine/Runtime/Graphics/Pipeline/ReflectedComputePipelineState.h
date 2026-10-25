@@ -10,6 +10,9 @@
 #include "StaticSamplerSet.h"
 #include "ShaderParameter.h"
 
+//* lib
+#include <Lib/Math/Vector3.h>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +32,8 @@ public:
 	//* layout option *//
 
 	void BindShaderParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const;
+
+	const Vector3u& GetThreadGroupSize() const { return threadGroupSize_; }
 
 	//* static methods *//
 
@@ -54,6 +59,8 @@ private:
 	//* parameter *//
 
 	ShaderBindingLayout layout_;
+
+	Vector3u threadGroupSize_ = {};
 
 	//=========================================================================================
 	// private methods

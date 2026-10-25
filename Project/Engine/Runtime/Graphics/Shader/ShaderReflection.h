@@ -9,6 +9,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <Lib/Math/Vector3.h>
+
 //* c++
 #include <string_view>
 
@@ -39,6 +42,8 @@ public:
 	D3D12_SHADER_INPUT_BIND_DESC GetResourceBindingDesc(UINT index) const;
 
 	ID3D12ShaderReflectionConstantBuffer* GetConstantBufferByName(const std::string_view& name) const;
+
+	Vector3u GetThreadGroupSize() const;
 
 	//* operator [copy / move] <ShaderBlob> *//
 
