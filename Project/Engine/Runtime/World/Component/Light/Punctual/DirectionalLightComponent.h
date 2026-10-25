@@ -72,7 +72,11 @@ public:
 
 	void SetColor(const Color3f& color) { lightParameter_.color = color; }
 
+	const Color3f& GetColor() const { return lightParameter_.color; }
+
 	void SetIntensity(float intensity) { lightParameter_.intensity = intensity; }
+
+	float GetIntensity() const { return lightParameter_.intensity; }
 
 	void SetLightParameter(const LightParameter& parameter) { lightParameter_ = parameter; }
 
