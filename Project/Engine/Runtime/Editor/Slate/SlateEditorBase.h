@@ -19,6 +19,9 @@
 //* engine
 #include <Runtime/Util/Configuration/Configuration.h>
 
+//* engine [graphics]
+#include <Runtime/Graphics/GraphicsUtil.h>
+
 //* engine [platform]
 #include <Runtime/Platform/Window.h>
 
@@ -219,6 +222,16 @@ namespace Slate {
 
 		RefPtr<EditorWindow> GetMainEditorWindow() const;
 
+		//* format option *//
+
+		//! @brief editor windowのswap chainのformat. (linear)
+		//! @note 全windowで共通. window生成前(他Unitの Initialize)でも取得できる.
+		static constexpr DXGI_FORMAT GetBackBufferFormat() { return kBackBufferFormat; }
+
+		//! @brief back bufferへ描画するときのRTVのformat. (sRGB)
+		//! @note SwapChainはRTVを ConvertSRGBFormat() で作るため, PSOのRTV formatにはこちらを使う.
+		static constexpr DXGI_FORMAT GetRenderTargetFormat() { return Graphics::ConvertSRGBFormat(kBackBufferFormat); }
+
 		//* panel option *//
 
 		//! @brief EditorPanelを継承したpanelをtabとして追加する.
@@ -302,6 +315,11 @@ namespace Slate {
 		//=========================================================================================
 
 		//* constant *//
+
+		//!< back bufferのformat.
+		//!< note: SwapChainがRTVを ConvertToSRGBFormat() で作るため, ImGuiRendererのPSOも同じ変換を通している.
+		//!< TODO: Configurationから取得できるようにする.
+		static constexpr DXGI_FORMAT kBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		static constexpr size_t kMouseButtonCount = 3; //!< pollingするマウスボタンの数.
 
