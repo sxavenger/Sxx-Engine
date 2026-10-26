@@ -37,7 +37,7 @@ void NGXContext::Install(const Device& device) {
 		device.GetDevice(),
 		&info
 	);
-	// note: NGXはDriver側のDLLをロードして初期化するため、初期化に失敗のログを出力する場合がある.
+	// note: Driver側のDLLをロードして初期化するため、初期化に失敗のログを出力する場合がある.
 
 	if (NVSDK_NGX_FAILED(result)) {
 		STREAM_LOG_ERROR("Graphics::NGXContext | NGX initialization failed.");

@@ -38,7 +38,7 @@ private:
 	//=========================================================================================
 
 	static const inline Uuid kProjectId = { 0x09AF5C67, 0xDFE6, 0x4B3E, 0xA54E, 0x36457ff48CFA }; //!< NGXの初期化に使用するProjectのid.
-	//!< Sxx-Engine の　id を "09af5c67-dfe6-4b3e-a54e-36457ff48cfa"
+	//!< Sxx-Engine の id を "09af5c67-dfe6-4b3e-a54e-36457ff48cfa"
 
 
 };
