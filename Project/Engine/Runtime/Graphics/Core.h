@@ -93,8 +93,6 @@ public:
 
 	static void FreeResource();
 
-	static void IncrementFrame();
-
 	static ResourceAllocator& GetResourceAllocator();
 
 	//* shader compiler option *//

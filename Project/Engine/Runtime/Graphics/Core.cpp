@@ -114,10 +114,6 @@ void Core::FreeResource() {
 	resourceAllocator_.Free();
 }
 
-void Core::IncrementFrame() {
-	resourceAllocator_.IncrementFrame();
-}
-
 ResourceAllocator& Core::GetResourceAllocator() {
 	return resourceAllocator_;
 }

@@ -58,8 +58,6 @@ public:
 
 	void Free();
 
-	void IncrementFrame() { currentFrame_++; }
-
 	Buffer& GetBuffer(const ResourceHandle::Handle& handle);
 	const Buffer& GetBuffer(const ResourceHandle::Handle& handle) const;
 
@@ -80,10 +78,6 @@ private:
 
 	IndexAllocator<ResourceHandle::Type> allocator_ = IndexAllocator<ResourceHandle::Type>(std::numeric_limits<ResourceHandle::Type>::max()); //!< indexの最大数を設定.
 	std::queue<ResourceHandle::Type> freeQueue_; //!< 解放されたindexのキュー.
-
-	//* runtime *//
-
-	uint64_t currentFrame_ = 0;
 
 };
 

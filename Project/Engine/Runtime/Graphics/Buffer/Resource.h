@@ -74,7 +74,7 @@ public:
 	Resource(Resource&& other) noexcept : resource_(std::move(other.resource_)), current_(other.current_) { other.Reset(); }
 	Resource& operator=(Resource&& other) noexcept { resource_ = std::move(other.resource_); current_ = other.current_; other.Reset(); return *this; }
 
-	//* operator [assign] <std::nullptr_t> *//
+	//* operator [assignment] <std::nullptr_t> *//
 
 	Resource(std::nullptr_t) noexcept { Reset(); }
 	Resource& operator=(std::nullptr_t) noexcept { Reset(); return *this; }

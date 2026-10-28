@@ -5,6 +5,7 @@ SXAVENGER_ENGINE_USING
 // include
 //-----------------------------------------------------------------------------------------
 //* engine [platform]
+#include <Runtime/Platform/FrameCounter.h>
 #include <Runtime/Platform/WinApp.h>
 #include <Runtime/Platform/Input/Input.h>
 
@@ -42,13 +43,15 @@ EngineUnit::~EngineUnit() {
 void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 
 	pipeline.SetProcess(Framework::Phase::BeginFrame, Framework::Priority::Highest, [this]() {
+
 		//!< フレームクロックの更新処理
 		frameClock_.BeginFrame();
 
+		Platform::FrameCounter::Increment();  //!< frameを更新する.
+
 		Platform::Input::Update(); //!< 入力の更新処理
-		
+
 		Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
-		Graphics::Core::IncrementFrame(); //!< frameを更新する.
 	});
 
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {

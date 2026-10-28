@@ -4,6 +4,9 @@ SXAVENGER_ENGINE_USING_(Graphics)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* engine
+#include <Runtime/Platform/FrameCounter.h>
+
 //* lib
 #include <Lib/Logger/StreamLogger.h>
 
@@ -81,19 +84,19 @@ const ResourceAllocator::Buffer& ResourceAllocator::GetBuffer(const ResourceHand
 
 uint64_t ResourceAllocator::GetCurrentIndex(const ResourceHandle::Handle& handle) const {
 	const Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
-	return currentFrame_ % buffer.size();
+	return Platform::FrameCounter::GetCurrentFrame() % buffer.size();
 }
 
 Resource& ResourceAllocator::GetResource(const ResourceHandle::Handle& handle) {
 	Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
 
-	uint64_t frameIndex = currentFrame_ % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
+	uint64_t frameIndex = Platform::FrameCounter::GetCurrentFrame() % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
 	return buffer[frameIndex];
 }
 
 const Resource& ResourceAllocator::GetResource(const ResourceHandle::Handle& handle) const {
 	const Buffer& buffer = GetBuffer(handle); //!< handleに対応するBufferを取得.
 
-	uint64_t frameIndex = currentFrame_ % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
+	uint64_t frameIndex = Platform::FrameCounter::GetCurrentFrame() % buffer.size(); //!< 現在のフレームに対応するリソースを取得.
 	return buffer[frameIndex];
 }
