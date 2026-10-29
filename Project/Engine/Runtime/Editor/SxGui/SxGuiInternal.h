@@ -9,83 +9,44 @@
 //* imgui
 #include <imgui.h>
 
-//* c++
-#include <concepts>
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Editor)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SxGui namespace
+// SxGui [Internal] namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
-namespace SxGui {
-
-	//-----------------------------------------------------------------------------------------
-	// internal concepts
-	//-----------------------------------------------------------------------------------------
-
-	template <typename T>
-	concept ScalarConcept
-		= std::is_same_v<T, int8_t>
-		|| std::is_same_v<T, uint8_t>
-		|| std::is_same_v<T, int16_t>
-		|| std::is_same_v<T, uint16_t>
-		|| std::is_same_v<T, int32_t>
-		|| std::is_same_v<T, uint32_t>
-		|| std::is_same_v<T, int64_t>
-		|| std::is_same_v<T, uint64_t>
-		|| std::is_same_v<T, float>
-		|| std::is_same_v<T, double>;
-	//!< ImGuiで扱えるスカラー型
-
-	template <ScalarConcept T>
-	constexpr ImGuiDataType GetImGuiDataType();
+namespace SxGui::Internal {
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// widget internal methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	//* DragScalarN [Impl]
+	//* DragScalarX *//
 
-	bool DragScalarNImpl(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags);
+	bool DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags);
 
-	//* SliderScalarN [Impl]
+	bool DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags);
 
-	bool SliderScalarNImpl(const char* label, ImGuiDataType data_type, void* v, int components, const void* v_min, const void* v_max, const char* format, ImGuiSliderFlags flags);
+	//* SliderScalarX *//
 
-	//* InputScalarN [Impl]
+	bool SliderScalar(const char* label, ImGuiDataType data_type, void* v, const void* v_min, const void* v_max, const char* format, ImGuiSliderFlags flags);
 
-	bool InputScalarNImpl(const char* label, ImGuiDataType data_type, void* p_data, int components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags);
+	bool SliderScalarN(const char* label, ImGuiDataType data_type, void* v, int components, const void* v_min, const void* v_max, const char* format, ImGuiSliderFlags flags);
 
-	//* ColorEdit [Impl]
+	//* InputScalarN *//
 
-	bool ColorEdit3Impl(const char* label, float col[3], ImGuiColorEditFlags flags);
-	bool ColorEdit4Impl(const char* label, float col[4], ImGuiColorEditFlags flags);
+	bool InputScalar(const char* label, ImGuiDataType data_type, void* p_data, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags);
 
-	//* InputText [Impl]
+	bool InputScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags);
 
-	bool InputTextImpl(const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data);
-}
+	//* ColorEditX *//
 
-////////////////////////////////////////////////////////////////////////////////////////////
-// SxGui [internal] namespace methods
-////////////////////////////////////////////////////////////////////////////////////////////
+	bool ColorEdit3(const char* label, float col[3], ImGuiColorEditFlags flags);
 
-template <SxGui::ScalarConcept T>
-constexpr ImGuiDataType SxGui::GetImGuiDataType() {
-	if constexpr (std::is_same_v<T, int8_t>)        return ImGuiDataType_S8;
-	else if constexpr (std::is_same_v<T, uint8_t>)  return ImGuiDataType_U8;
-	else if constexpr (std::is_same_v<T, int16_t>)  return ImGuiDataType_S16;
-	else if constexpr (std::is_same_v<T, uint16_t>) return ImGuiDataType_U16;
-	else if constexpr (std::is_same_v<T, int32_t>)  return ImGuiDataType_S32;
-	else if constexpr (std::is_same_v<T, uint32_t>) return ImGuiDataType_U32;
-	else if constexpr (std::is_same_v<T, int64_t>)  return ImGuiDataType_S64;
-	else if constexpr (std::is_same_v<T, uint64_t>) return ImGuiDataType_U64;
-	else if constexpr (std::is_same_v<T, float>)    return ImGuiDataType_Float;
-	else if constexpr (std::is_same_v<T, double>)   return ImGuiDataType_Double;
-	else static_assert(false, "unsupported type for ImGuiDataType");
+	bool ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flags);
+	
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

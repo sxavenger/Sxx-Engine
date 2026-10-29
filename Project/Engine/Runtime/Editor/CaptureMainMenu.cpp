@@ -29,7 +29,7 @@ void CaptureMainMenu::OnDraw() {
 			captureFrameCount_ = std::clamp<uint8_t>(captureFrameCount_, 1, 10); //!< pixでの上限が10frameまでのため.
 		}
 
-		if (SxGui::ButtonStretch(std::format("{} Capture Next Frames", Slate::Icon::ControlCamera))) {
+		if (SxGui::ButtonStretchWidth(std::format("{} Capture Next Frames", Slate::Icon::ControlCamera))) {
 
 			auto filepath = Platform::WinApp::GetSaveFilepath(
 				L"PIXの保存先",
