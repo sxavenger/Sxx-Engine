@@ -11,9 +11,10 @@
 
 //* lib
 #include <Lib/Reflection/EnumUtil.h>
+#include <Lib/Container/ArrayEnum.h>
 
 //* c++
-#include <array>
+#include <variant>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -64,13 +65,28 @@ public:
 
 	};
 
+	//-----------------------------------------------------------------------------------------
+	// using
+	//-----------------------------------------------------------------------------------------
+
+	using BlendColor       = std::variant<BlendModeColor, BlendDesc>;
+	using BlendTransparent = std::variant<BlendModeTransparent, BlendDesc>;
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Index enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class Index : uint8_t {
+		Mode, //!< BlendMode
+		Desc, //!< BlendDesc
+	};
+
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	static D3D12_RENDER_TARGET_BLEND_DESC CreateBlendDesc(BlendModeColor color, BlendModeTransparent transparent, D3D12_COLOR_WRITE_ENABLE writeMask = D3D12_COLOR_WRITE_ENABLE_ALL);
+	static D3D12_RENDER_TARGET_BLEND_DESC CreateBlendDesc(const BlendColor& color, const BlendTransparent& transparent, D3D12_COLOR_WRITE_ENABLE writeMask = D3D12_COLOR_WRITE_ENABLE_ALL);
 
 private:
 
@@ -78,8 +94,16 @@ private:
 	// private variables
 	//=========================================================================================
 
-	static const std::array<BlendDesc, EnumUtil<BlendModeColor>::GetCount()> kBlendDescColor;
-	static const std::array<BlendDesc, EnumUtil<BlendModeTransparent>::GetCount()> kBlendDescTransparent;
+	static const ArrayEnum<BlendDesc, EnumUtil<BlendModeColor>::GetCount(), BlendModeColor> kBlendDescColor;
+	static const ArrayEnum<BlendDesc, EnumUtil<BlendModeTransparent>::GetCount(), BlendModeTransparent> kBlendDescTransparent;
+
+	//=========================================================================================
+	// private methods
+	//=========================================================================================
+
+	static BlendDesc GetBlendDesc(const BlendColor& color);
+
+	static BlendDesc GetBlendDesc(const BlendTransparent& transparent);
 
 };
 

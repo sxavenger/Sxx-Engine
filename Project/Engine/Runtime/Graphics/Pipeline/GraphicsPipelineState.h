@@ -85,7 +85,7 @@ public:
 
 		void SetBlendState(uint8_t index, const D3D12_RENDER_TARGET_BLEND_DESC& desc);
 
-		void SetBlendMode(uint8_t index, BlendModeColor color, BlendModeTransparent transparent);
+		void SetBlendMode(uint8_t index, BlendState::BlendColor color, BlendState::BlendTransparent transparent);
 
 		void SetIndependentBlendEnable(bool enable);
 

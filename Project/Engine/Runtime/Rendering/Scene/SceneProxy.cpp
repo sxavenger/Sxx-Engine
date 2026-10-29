@@ -51,6 +51,7 @@ void SceneProxy::Setup() {
 void SceneProxy::Reset() {
 	staticMeshes.clear();
 	directionalLights.clear();
+	pointLights.clear();
 	tlas.ResetInstance();
 	handle = nullptr;
 }
@@ -61,6 +62,10 @@ void SceneProxy::AddMeshInstance(const StaticMeshInstance& instance) {
 
 void SceneProxy::AddLightInstance(const DirectionalLightInstance& instance) {
 	directionalLights.emplace_back(instance);
+}
+
+void SceneProxy::AddLightInstance(const PointLightInstance& instance) {
+	pointLights.emplace_back(instance);
 }
 
 const Graphics::TopLevelAccelerationStructure& SceneProxy::GetTopLevelAccelerationStructure() const {

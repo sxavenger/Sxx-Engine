@@ -30,7 +30,7 @@ PixelOutputData main(PixelRasterData input) {
 	}
 
 	//!< light情報の取得
-	float32_t3 l = gDirectionalLight.GetDirectionFromSurface(gLightTransform.GetForward()); //!< surfaceからlightへの方向ベクトル
+	float32_t3 l = Component::DirectionalLight::GetDirectionFromSurface(gLightTransform.GetForward()); //!< surfaceからlightへの方向ベクトル
 
 	//!< camera情報の取得
 	float32_t3 v = normalize(gCameraTransform.GetPosition() - surface.position); //!< surfaceからcameraへの方向ベクトルを取得

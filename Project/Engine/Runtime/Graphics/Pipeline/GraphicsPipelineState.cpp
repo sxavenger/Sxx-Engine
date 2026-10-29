@@ -134,7 +134,7 @@ void GraphicsPipelineState::Desc::SetBlendState(uint8_t index, const D3D12_RENDE
 	blends[index] = desc;
 }
 
-void GraphicsPipelineState::Desc::SetBlendMode(uint8_t index, BlendModeColor color, BlendModeTransparent transparent) {
+void GraphicsPipelineState::Desc::SetBlendMode(uint8_t index, BlendState::BlendColor color, BlendState::BlendTransparent transparent) {
 	STREAM_ASSERT(index < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "BlendState index must be within D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT"); //!< indexの範囲チェック
 	blends[index] = BlendState::CreateBlendDesc(color, transparent);
 }

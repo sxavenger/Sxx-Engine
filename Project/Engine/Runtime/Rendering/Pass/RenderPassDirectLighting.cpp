@@ -20,10 +20,12 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 	{ //!< Forward Descの作成
 
-		Sxx::Graphics::GraphicsPipelineState::Desc& desc = descs_[Desc::Forward];
+		Graphics::BlendState::BlendDesc colorDesc = Graphics::BlendState::BlendDesc{ true, D3D12_BLEND_ONE, D3D12_BLEND_ONE, D3D12_BLEND_OP_ADD };
+
+		Graphics::GraphicsPipelineState::Desc& desc = descs_[Desc::Forward];
 		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
-		desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::Additive, Sxx::Graphics::BlendModeTransparent::Max);
-		desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
+		desc.SetBlendMode(0, colorDesc, Graphics::BlendModeTransparent::Max);
+		desc.SetPrimitive(Graphics::PrimitiveTopology::TriangleList);
 		desc.SetDepthStencil(true, D3D12_DEPTH_WRITE_MASK_ZERO, D3D12_COMPARISON_FUNC_GREATER);
 		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::Scene));
 		desc.AppendRenderTargetFormat(LightingBuffer::GetFormat(LightingBuffer::Layout::Direct));
@@ -31,11 +33,22 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 	{ //!< Directional Light Pipelineの作成
 
-		Sxx::Graphics::GraphicsPipelineState::Desc desc = descs_[Desc::Forward];
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/Fullscreen.vs.hlsl", Sxx::Graphics::CompileProfile::Vertex, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/DirectionalLight.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+		Graphics::GraphicsPipelineState::Desc desc = descs_[Desc::Forward];
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/Fullscreen.vs.hlsl", Graphics::CompileProfile::Vertex, L"main"));
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/DirectionalLight.ps.hlsl", Graphics::CompileProfile::Pixel, L"main"));
 
 		pipelines_[Pipeline::DirectionalLight] = Graphics::ReflectedGraphicsPipelineState::Create(
+			Graphics::Core::GetDevice(),
+			desc
+		);
+	}
+
+	{ //!< Point Light Pipelineの作成
+		Graphics::GraphicsPipelineState::Desc desc = descs_[Desc::Forward];
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/Fullscreen.vs.hlsl", Graphics::CompileProfile::Vertex, L"main"));
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DirectLighting/PointLight.ps.hlsl", Graphics::CompileProfile::Pixel, L"main"));
+
+		pipelines_[Pipeline::PointLight] = Graphics::ReflectedGraphicsPipelineState::Create(
 			Graphics::Core::GetDevice(),
 			desc
 		);
@@ -65,6 +78,8 @@ void RenderPassDirectLighting::Execute(Graphics::GraphicsCommandContext& command
 		BeginDirectLightingPass(command, *context.buffer);
 
 		LightingDirectionalLight(command, context, context.GetContextData());
+
+		LightingPointLight(command, context, context.GetContextData());
 
 		EndDirectLightingPass(command, *context.buffer);
 	}
@@ -172,7 +187,7 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 	for (const auto& instance : context.scene->directionalLights) {
 
 		//!< light情報の設定
-		parameter.SetAddress("gDirectionalLight", instance.light->GetDirectionalLightBuffer().GetGpuVirtualAddress());
+		parameter.SetAddress("gDirectionalLight", instance.light->GetLightBuffer().GetGpuVirtualAddress());
 		parameter.SetAddress("gLightTransform",   instance.transform->GetTransformationBuffer().GetGpuVirtualAddress());
 
 		pipeline.BindShaderParameter(command, parameter);
@@ -180,4 +195,48 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 		commandList->DrawInstanced(3, 1, 0, 0); //!< フルスクリーンパスの描画
 		
 	}
+}
+
+void RenderPassDirectLighting::LightingPointLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
+
+	auto commandList = command.GetCommandList();
+	const auto& pipeline = pipelines_[Pipeline::PointLight];
+
+	//!< bufferの取得
+	const GBuffer& gbuffer                 = context.buffer->GetInstance<GBuffer>();
+	const DepthStencilBuffer& depthStencil = context.buffer->GetInstance<DepthStencilBuffer>();
+
+	pipeline.BindPipeline(command, context.resolution);
+
+	Graphics::ShaderParameter parameter;
+
+	//!< 共通parameterの設定
+	parameter.Set32bitConstants("Context", data);
+	parameter.Set32bitConstants("PassData", data_);
+
+	//!< camera情報の設定
+	parameter.SetAddress("gCameraProjection", context.camera.camera->GetProjectionBuffer().GetGpuVirtualAddress());
+	parameter.SetAddress("gCameraTransform",  context.camera.transform->GetTransformationBuffer().GetGpuVirtualAddress());
+
+	//!< scene情報の設定
+	parameter.SetAddress("gScene", context.scene->GetTopLevelAccelerationStructure().GetGpuVirtualAddress());
+
+	//!< GBuffer情報の設定
+	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gBufferA", gbuffer.GetBuffer(GBuffer::Layout::GBufferA).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gBufferB", gbuffer.GetBuffer(GBuffer::Layout::GBufferB).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gBufferC", gbuffer.GetBuffer(GBuffer::Layout::GBufferC).GetDescriptorSRV().GetGPUHandle());
+
+	for (const auto& instance : context.scene->pointLights) {
+
+		//!< light情報の設定
+		parameter.SetAddress("gPointLight",     instance.light->GetLightBuffer().GetGpuVirtualAddress());
+		parameter.SetAddress("gLightTransform", instance.transform->GetTransformationBuffer().GetGpuVirtualAddress());
+
+		pipeline.BindShaderParameter(command, parameter);
+
+		commandList->DrawInstanced(3, 1, 0, 0); //!< フルスクリーンパスの描画
+		
+	}
+
 }

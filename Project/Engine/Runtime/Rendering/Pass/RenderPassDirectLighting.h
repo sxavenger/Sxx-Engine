@@ -39,6 +39,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Pipeline : uint8_t {
 		DirectionalLight,
+		PointLight,
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +79,7 @@ private:
 
 	//* pipeline *//
 
-	ArrayEnum<Graphics::ReflectedGraphicsPipelineState::Desc, EnumUtil<Pipeline>::GetCount(), Desc> descs_;
+	ArrayEnum<Graphics::ReflectedGraphicsPipelineState::Desc, EnumUtil<Desc>::GetCount(), Desc> descs_;
 	ArrayEnum<Graphics::ReflectedGraphicsPipelineState, EnumUtil<Pipeline>::GetCount(), Pipeline> pipelines_;
 
 	//* pass data *//
@@ -96,6 +97,8 @@ private:
 	void EndDirectLightingPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
 
 	void LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
+
+	void LightingPointLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
 };
 

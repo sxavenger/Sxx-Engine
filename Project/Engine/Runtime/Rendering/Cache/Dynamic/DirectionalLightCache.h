@@ -28,16 +28,16 @@ class DirectionalLightCache final
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// DirectionalLightData structure
+	// LightData structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct DirectionalLightData {
+	struct LightData {
 	public:
 
 		//=========================================================================================
 		// public methods
 		//=========================================================================================
 
-		static DirectionalLightData Transfer(
+		static LightData Transfer(
 			const World::DirectionalLightComponent::LightParameter& light,
 			const World::DirectionalLightComponent::ShadowParameter& shadow
 		);
@@ -47,7 +47,7 @@ public:
 		//=========================================================================================
 
 		Color3f lightColor;
-		float lightIntensity;
+		float lightIntensity; //!< [lux]
 
 		FlagEnum<World::ShadowFlags> shadowFlag;
 		float shadowStrength;
@@ -69,7 +69,7 @@ public:
 
 	void Cache(const World::DirectionalLightComponent& light);
 
-	const Graphics::ConstantBuffer<DirectionalLightData>& GetDirectionalLightBuffer() const { return directionalLightBuffer_; }
+	const Graphics::ConstantBuffer<LightData>& GetLightBuffer() const { return lightBuffer_; }
 
 private:
 
@@ -79,7 +79,7 @@ private:
 
 	//* projection *//
 
-	Graphics::ConstantBuffer<DirectionalLightData> directionalLightBuffer_ = {};
+	Graphics::ConstantBuffer<LightData> lightBuffer_ = {};
 
 };
 

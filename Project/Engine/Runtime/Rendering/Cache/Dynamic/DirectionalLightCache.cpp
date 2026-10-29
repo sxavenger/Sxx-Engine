@@ -8,14 +8,14 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Runtime/Graphics/Core.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// [DirectionalLightCache] DirectionalLightData structure
+// [DirectionalLightCache] LightData structure
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-DirectionalLightCache::DirectionalLightData DirectionalLightCache::DirectionalLightData::Transfer(
+DirectionalLightCache::LightData DirectionalLightCache::LightData::Transfer(
 	const World::DirectionalLightComponent::LightParameter& light,
 	const World::DirectionalLightComponent::ShadowParameter& shadow) {
 
-	DirectionalLightData data = {};
+	LightData data = {};
 	data.lightColor     = light.color;
 	data.lightIntensity = std::max(0.0f, light.intensity);
 	data.shadowFlag     = shadow.flag;
@@ -30,16 +30,16 @@ DirectionalLightCache::DirectionalLightData DirectionalLightCache::DirectionalLi
 
 void DirectionalLightCache::Cache(const World::DirectionalLightComponent& light) {
 
-	if (!directionalLightBuffer_.HasHandle()) { //!< directionalLightBufferが作成されていない場合
-		//!< directionalLightの作成
-		directionalLightBuffer_ = Graphics::Core::CreateConstantBuffer<DirectionalLightData>(
+	if (!lightBuffer_.HasHandle()) { //!< lightBufferが作成されていない場合
+		//!< lightの作成
+		lightBuffer_ = Graphics::Core::CreateConstantBuffer<LightData>(
 			Graphics::kFrameCount
 		);
 
-		directionalLightBuffer_.SetName(L"DirectionalLightCache");
+		lightBuffer_.SetName(L"DirectionalLightCache | LightData");
 	}
 
 	//!< directionalLightの転送
-	directionalLightBuffer_.At() = DirectionalLightData::Transfer(light.GetLightParameter(), light.GetShadowParameter());
+	lightBuffer_.At() = LightData::Transfer(light.GetLightParameter(), light.GetShadowParameter());
 
 }

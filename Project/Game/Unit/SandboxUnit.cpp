@@ -22,6 +22,7 @@
 #include <Engine/Runtime/World/Component/Camera/CameraComponent.h>
 #include <Engine/Runtime/World/Component/Renderer/StaticMeshRenderer.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
+#include <Engine/Runtime/World/Component/Light/Punctual/PointLightComponent.h>
 
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Cache/Static/StaticMeshCache.h>
@@ -119,14 +120,15 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Lightの作成
 		light_->AddComponent<Sxx::World::TransformComponent>();
-		light_->AddComponent<Sxx::World::DirectionalLightComponent>();
+		light_->AddComponent<Sxx::World::PointLightComponent>();
 
 		auto transform = light_->GetComponent<Sxx::World::TransformComponent>();
-		//transform->SetRotation();
+		transform->SetPosition({ 0.0f, 4.0f, -2.0f });
 
-		auto light = light_->GetComponent<Sxx::World::DirectionalLightComponent>();
+		auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
 		light->SetColor({ 1.0f, 1.0f, 1.0f });
 		light->SetIntensity(3.14f);
+		light->SetRadius(10.0f);
 	}
 
 	{ //!< Passの初期化
@@ -284,6 +286,20 @@ void SandboxUnit::RenderSandbox() {
 			//!< transformのcacheの更新
 			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
 		});
+
+		//!< PointLightComponentのcacheの更新
+		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::PointLightComponent>([this](Sxx::World::PointLightComponent* light) {
+
+			//!< lightのcacheの更新
+			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::PointLightCache>(light->GetAddress(), *light);
+
+			RefPtr<Sxx::World::EntityBehaviour> owner = light->GetOwner();
+
+			auto transform = owner->GetComponent<Sxx::World::TransformComponent>();
+
+			//!< transformのcacheの更新
+			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
+		});
 	}
 
 	{ //!< Sceneの更新(Engine側での実行)
@@ -316,6 +332,7 @@ void SandboxUnit::RenderSandbox() {
 
 		//!< DirectionalLightComponentのsceneへの追加
 		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::DirectionalLightComponent>([this](Sxx::World::DirectionalLightComponent* light) {
+
 			std::shared_ptr<const Sxx::Rendering::DirectionalLightCache> lightCache
 				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::DirectionalLightCache>(light->GetAddress());
 
@@ -325,6 +342,24 @@ void SandboxUnit::RenderSandbox() {
 				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(owner->GetComponent<Sxx::World::TransformComponent>()->GetAddress());
 
 			Sxx::Rendering::SceneProxy::DirectionalLightInstance instance = {};
+			instance.light     = lightCache;
+			instance.transform = transform;
+
+			scene_.AddLightInstance(instance);
+		});
+
+		//!< PointLightComponentのsceneへの追加
+		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::PointLightComponent>([this](Sxx::World::PointLightComponent* light) {
+
+			std::shared_ptr<const Sxx::Rendering::PointLightCache> lightCache
+				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::PointLightCache>(light->GetAddress());
+
+			RefPtr<Sxx::World::EntityBehaviour> owner = light->GetOwner();
+
+			std::shared_ptr<const Sxx::Rendering::TransformCache> transform
+				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(owner->GetComponent<Sxx::World::TransformComponent>()->GetAddress());
+
+			Sxx::Rendering::SceneProxy::PointLightInstance instance = {};
 			instance.light     = lightCache;
 			instance.transform = transform;
 

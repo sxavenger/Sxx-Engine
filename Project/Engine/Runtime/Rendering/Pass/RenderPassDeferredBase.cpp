@@ -19,13 +19,13 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 
 	{ //!< Opaque Mesh Render Pipeline
 
-		Sxx::Graphics::GraphicsPipelineState::Desc desc = {};
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.as.hlsl", Sxx::Graphics::CompileProfile::Amplification, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.ms.hlsl", Sxx::Graphics::CompileProfile::Mesh, L"main"));
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.ps.hlsl", Sxx::Graphics::CompileProfile::Pixel, L"main"));
+		Graphics::GraphicsPipelineState::Desc desc = {};
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.as.hlsl", Graphics::CompileProfile::Amplification, L"main"));
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.ms.hlsl", Graphics::CompileProfile::Mesh, L"main"));
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.ps.hlsl", Graphics::CompileProfile::Pixel, L"main"));
 		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
-		desc.SetBlendMode(0, Sxx::Graphics::BlendModeColor::None, Sxx::Graphics::BlendModeTransparent::None);
-		desc.SetPrimitive(Sxx::Graphics::PrimitiveTopology::TriangleList);
+		desc.SetBlendMode(0, Graphics::BlendModeColor::None, Graphics::BlendModeTransparent::None);
+		desc.SetPrimitive(Graphics::PrimitiveTopology::TriangleList);
 		desc.SetDepthStencil(true);
 		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::Scene));
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferA));

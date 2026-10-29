@@ -19,8 +19,8 @@ SXAVENGER_ENGINE_USING_(Rendering)
 RenderPassTonemap::RenderPassTonemap() {
 
 	{ //!< Tonemap Compute Pipeline
-		Sxx::Graphics::ComputePipelineState::Desc desc = {};
-		desc.SetShaderBlob(Sxx::Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/Tonemap/Tonemap.cs.hlsl", Sxx::Graphics::CompileProfile::Compute, L"main"));
+		Graphics::ComputePipelineState::Desc desc = {};
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/Tonemap/Tonemap.cs.hlsl", Graphics::CompileProfile::Compute, L"main"));
 
 		pipeline_ = Graphics::ReflectedComputePipelineState::Create(
 			Graphics::Core::GetDevice(),

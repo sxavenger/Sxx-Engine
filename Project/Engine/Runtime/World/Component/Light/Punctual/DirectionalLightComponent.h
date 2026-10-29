@@ -55,6 +55,8 @@ public:
 		FlagEnum<ShadowFlags> flag = ShadowFlags::Default;
 		float strength             = 1.0f; //!< [0.0 - 1.0]
 
+		// TODO: SourceAngleやカスケードの数などのパラメータを追加する
+
 	};
 
 public:
