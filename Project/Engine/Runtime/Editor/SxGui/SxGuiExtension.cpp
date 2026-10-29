@@ -33,13 +33,24 @@ bool SxGui::ButtonStretchWidth(const std::string_view& label, float height) {
 	return SxGui::Button(label, { width, height });
 }
 
+void SxGui::ImageContentRect(const Graphics::Descriptor::Handle& handle, const ContentRect& rect) {
+	//!< 表示領域の中央に配置
+	SxGui::SetCursorPos(SxGui::GetCursorPos() + rect.cursol);
+	SxGui::Image(handle, rect.size);
+}
+
+void SxGui::ImageContentRect(const Graphics::Descriptor::Handle& handle, const ContentRect& rect, const Color4f& bg_color, const Color4f& tint_col) {
+	//!< 表示領域の中央に配置
+	SxGui::SetCursorPos(SxGui::GetCursorPos() + rect.cursol);
+	SxGui::Image(handle, rect.size, bg_color, tint_col);
+}
+
 void SxGui::ImageAspectFit(const Graphics::Descriptor::Handle& handle, const Vector2f& image_size, const Vector2f& display_size) {
 	//!< 出力する画像サイズの設定
 	ContentRect rect = CalcAspectFitRect(image_size, display_size);
 
 	//!< 表示領域の中央に配置
-	SxGui::SetCursorPos(SxGui::GetCursorPos() + rect.cursol);
-	SxGui::Image(handle, rect.size);
+	SxGui::ImageContentRect(handle, rect);
 }
 
 void SxGui::ImageAspectFit(const Graphics::Descriptor::Handle& handle, const Vector2f& image_size, const Vector2f& display_size, const Color4f& bg_color, const Color4f& tint_col) {
@@ -47,6 +58,5 @@ void SxGui::ImageAspectFit(const Graphics::Descriptor::Handle& handle, const Vec
 	ContentRect rect = CalcAspectFitRect(image_size, display_size);
 
 	//!< 表示領域の中央に配置
-	SxGui::SetCursorPos(SxGui::GetCursorPos() + rect.cursol);
-	SxGui::Image(handle, rect.size, bg_color, tint_col);
+	SxGui::ImageContentRect(handle, rect, bg_color, tint_col);
 }

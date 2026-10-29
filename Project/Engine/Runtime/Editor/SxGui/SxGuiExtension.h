@@ -57,6 +57,12 @@ namespace SxGui {
 	//! @brief 利用可能なコンテンツ領域の幅いっぱいにボタンを表示する
 	bool ButtonStretchWidth(const std::string_view& label, float height = 0.0f);
 
+	//! @brief 画像を表示領域の中央に表示する
+	void ImageContentRect(const Graphics::Descriptor::Handle& handle, const ContentRect& rect);
+
+	//! @brief 画像を表示領域の中央に表示する
+	void ImageContentRect(const Graphics::Descriptor::Handle& handle, const ContentRect& rect, const Color4f& bg_color, const Color4f& tint_col = Color4f(0xFFFFFFFF));
+
 	//! @brief 画像をアスペクト比を保ったまま表示領域の中央に表示する
 	void ImageAspectFit(const Graphics::Descriptor::Handle& handle, const Vector2f& image_size, const Vector2f& display_size);
 
