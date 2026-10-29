@@ -17,6 +17,8 @@ ConstantBuffer<Component::Transform> gLightTransform          : register(b1);
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
 ////////////////////////////////////////////////////////////////////////////////////////////
+[shader("pixel")]
+[earlydepthstencil]
 PixelOutputData main(PixelRasterData input) {
 
 	//!< GBufferの情報を取得する
@@ -52,7 +54,7 @@ PixelOutputData main(PixelRasterData input) {
 
 	PixelOutputData output = (PixelOutputData)0;
 	output.buffer0.rgb = lo;
-	output.buffer0.a   = 1.0f;
+	output.buffer0.a   = 1.0;
 
 	return output;
 

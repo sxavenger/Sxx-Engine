@@ -38,6 +38,7 @@ public:
 	// Pipeline enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Pipeline : uint8_t {
+		Unlit,
 		DirectionalLight,
 		PointLight,
 	};
@@ -95,6 +96,8 @@ private:
 	void BeginDirectLightingPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
 
 	void EndDirectLightingPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
+
+	void PassUnlit(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
 	void LightingDirectionalLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
