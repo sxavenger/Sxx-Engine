@@ -99,6 +99,10 @@ const Graphics::Descriptor::Handle& DepthStencilTexture::GetDescriptorSRV() cons
 	return descriptorSRV_.GetHandle();
 }
 
+D3D12_RESOURCE_STATES DepthStencilTexture::GetCurrentState() const {
+	return resource_.GetResource().GetCurrentState();
+}
+
 DepthStencilTexture DepthStencilTexture::Create(const Options& options) {
 
 	DepthStencilTexture texture;

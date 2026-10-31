@@ -108,6 +108,10 @@ const Graphics::Descriptor::Handle& RenderTargetTexture::GetDescriptorUAV() cons
 	return descriptorUAV_.GetHandle();
 }
 
+D3D12_RESOURCE_STATES RenderTargetTexture::GetCurrentState() const {
+	return resource_.GetResource().GetCurrentState();
+}
+
 RenderTargetTexture RenderTargetTexture::Create(const Options& options) {
 
 	RenderTargetTexture texture;

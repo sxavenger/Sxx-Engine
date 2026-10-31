@@ -90,6 +90,10 @@ public:
 
 	const Graphics::Descriptor::Handle& GetDescriptorSRV() const;
 
+	//* state option *//
+
+	D3D12_RESOURCE_STATES GetCurrentState() const;
+
 	//* options *//
 
 	//! @brief 解像度を取得する.
