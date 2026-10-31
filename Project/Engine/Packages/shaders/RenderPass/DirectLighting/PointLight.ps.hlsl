@@ -49,7 +49,7 @@ PixelOutputData main(PixelRasterData input) {
 
 	//!< 光源の影響範囲を取得する
 	float32_t3 color_mask = gPointLight.GetColorMask();
-	float32_t light_mask  = gPointLight.GetLightMask(gScene, l, surface.position);
+	float32_t light_mask  = gPointLight.GetLightMask(gScene, gLightTransform.GetPosition(), surface.position);
 
 	//!< BRDFの評価
 	float32_t3 lo = BRDF::Evaluate(context, reflectance, surface.roughness) * context.NdotL * color_mask * light_mask * surface.ambient_occlusion;
