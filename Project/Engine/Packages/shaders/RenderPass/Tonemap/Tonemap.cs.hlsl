@@ -21,7 +21,7 @@ ConstantBuffer<PassContext> Context : register(b0);
 cbuffer PassData : register(b1) {
 }
 
-//! @btief Color情報
+//! @brief Color情報
 RWTexture2D<float32_t4> gSceneColor : register(u0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
