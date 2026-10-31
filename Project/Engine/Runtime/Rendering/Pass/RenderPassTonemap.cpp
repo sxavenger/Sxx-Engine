@@ -1,16 +1,17 @@
 #include "RenderPassTonemap.h"
 SXAVENGER_ENGINE_USING_(Rendering)
 
-#define DEBUG_TONEMAP 1
-
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
 //* rendering
-#include "../Buffer/LightingBuffer.h" //!< todo: main bufferに変更する.
+#include "../Buffer/MainBuffer.h"
 
 //* engine
 #include <Runtime/Graphics/Core.h>
+
+//* lib
+#include <Lib/Logger/StackLogger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // RenderPassTonemap class methods
@@ -30,12 +31,15 @@ RenderPassTonemap::RenderPassTonemap() {
 
 }
 
-void RenderPassTonemap::Setup(const PassContext& context) {
-	//!< bufferの確保
-	context.buffer->EnsureInstance<LightingBuffer>(context.resolution);
+void RenderPassTonemap::Setup(MAYBE_UNUSED const PassContext& context) {
 }
 
 void RenderPassTonemap::Execute(Graphics::GraphicsCommandContext& command, const PassContext& context) {
+
+	if (!context.buffer->HasInstance<MainBuffer>()) {
+		STACK_LOG_WARNING("Rendering::RenderPassTonemap | <MainBuffer> is not found.");
+		return; //!< Bufferが存在しない場合, 実行しない.
+	}
 
 	BaseRenderPass::BeginEvent(command, "Tonemap");
 
@@ -57,21 +61,21 @@ void RenderPassTonemap::Execute(Graphics::GraphicsCommandContext& command, const
 
 void RenderPassTonemap::BeginTonemapPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer) {
 
-
 	auto commandList = command.GetCommandList();
 
 	//!< bufferの取得
-	LightingBuffer& lighting = buffer.GetInstance<LightingBuffer>();
+	MainBuffer& main = buffer.GetInstance<MainBuffer>();
 
 	static const size_t kBufferCount = 1;
-	ArrayEnum<RenderTargetTexture*, kBufferCount, LightingBuffer::Layout> buffers = {
-		&lighting.GetBuffer(LightingBuffer::Layout::Direct),
+	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
+		&main.GetBuffer(MainBuffer::Layout::Scene),
 	};
 
 	{ //!< barrierの設定
 
-		//!< LightingBufferをUnorderedAccessに遷移
-		for (EnumUtil<LightingBuffer::Layout>::Underlying i = 0; i < kBufferCount; ++i) {
+
+		//!< MainBufferをUnorderedAccessに遷移
+		for (EnumUtil<MainBuffer::Layout>::Underlying i = 0; i < kBufferCount; ++i) {
 			buffers[i]->Transition(command, RenderTargetTexture::State::UnorderedAccess);
 		}
 	}
@@ -83,17 +87,17 @@ void RenderPassTonemap::EndTonemapPass(Graphics::GraphicsCommandContext& command
 	auto commandList = command.GetCommandList();
 
 	//!< bufferの取得
-	LightingBuffer& lighting = buffer.GetInstance<LightingBuffer>();
+	MainBuffer& main = buffer.GetInstance<MainBuffer>();
 
 	static const size_t kBufferCount = 1;
-	ArrayEnum<RenderTargetTexture*, kBufferCount, LightingBuffer::Layout> buffers = {
-		&lighting.GetBuffer(LightingBuffer::Layout::Direct),
+	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
+		&main.GetBuffer(MainBuffer::Layout::Scene),
 	};
 
 	{ //!< barrierの設定
 
-		//!< LightingBufferを通常状態に遷移
-		for (EnumUtil<LightingBuffer::Layout>::Underlying i = 0; i < kBufferCount; ++i) {
+		//!< MainBufferを通常状態に遷移
+		for (EnumUtil<MainBuffer::Layout>::Underlying i = 0; i < kBufferCount; ++i) {
 			buffers[i]->Transition(command, RenderTargetTexture::State::Default);
 		}
 	}
@@ -112,7 +116,7 @@ void RenderPassTonemap::Tonemap(Graphics::GraphicsCommandContext& command, const
 	parameter.Set32bitConstants("PassData", data_);
 
 	//!< Color情報の設定
-	parameter.SetHandle("gSceneColor", context.buffer->GetInstance<LightingBuffer>().GetBuffer(LightingBuffer::Layout::Direct).GetDescriptorUAV().GetGPUHandle());
+	parameter.SetHandle("gSceneColor", context.buffer->GetInstance<MainBuffer>().GetBuffer(MainBuffer::Layout::Scene).GetDescriptorUAV().GetGPUHandle());
 
 	pipeline_.BindShaderParameter(command, parameter);
 

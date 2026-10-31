@@ -52,7 +52,7 @@ public:
 
 	//* pass option *//
 
-	void Setup(const PassContext& context) override;
+	void Setup(MAYBE_UNUSED const PassContext& context) override;
 
 	void Execute(Graphics::GraphicsCommandContext& command, const PassContext& context) override;
 

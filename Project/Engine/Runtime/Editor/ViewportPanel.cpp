@@ -8,7 +8,7 @@ SXAVENGER_ENGINE_USING_(Editor)
 #include "SxGui/SxGui.h"
 
 //* engine
-#include <Runtime/Rendering/Buffer/LightingBuffer.h>
+#include <Runtime/Rendering/Buffer/MainBuffer.h>
 
 //* imgui
 #include <imgui.h>
@@ -39,8 +39,8 @@ void ViewportPanel::OnDraw() {
 		return; //!< バッファが無いので描画しない.
 	}
 
-	const Rendering::LightingBuffer& buffer = pointer_->GetInstance<Rendering::LightingBuffer>();
-	const Rendering::RenderTargetTexture& texture = buffer.GetBuffer(Rendering::LightingBuffer::Layout::Direct);
+	const Rendering::MainBuffer& buffer = pointer_->GetInstance<Rendering::MainBuffer>();
+	const Rendering::RenderTargetTexture& texture = buffer.GetBuffer(Rendering::MainBuffer::Layout::Scene);
 	// TODO: 表示変更できるように設計
 
 	SxGui::ImageAspectFit(texture.GetDescriptorSRV(), static_cast<Vector2f>(texture.GetResolution()), region);

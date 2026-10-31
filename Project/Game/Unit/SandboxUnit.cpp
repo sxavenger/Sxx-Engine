@@ -33,8 +33,9 @@
 #include <Engine/Runtime/Rendering/Cache/Manager/CacheCollection.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassCombineLighting.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassTonemap.h>
-#include <Engine/Runtime/Rendering/Buffer/LightingBuffer.h>
+#include <Engine/Runtime/Rendering/Buffer/MainBuffer.h>
 
 //* engine [editor]
 #include <Engine/Runtime/Editor/ViewportPanel.h>
@@ -135,6 +136,7 @@ void SandboxUnit::InitSandbox() {
 
 		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
+		pipeline_.Insert<Sxx::Rendering::RenderPassCombineLighting>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
 
 	}
@@ -193,24 +195,6 @@ void SandboxUnit::UpdateSandbox() {
 
 		static const float rotationSpeed = 0.01f;
 		transform->SetRotation(transform->GetRotation() * Quaternionf::AxisAngle(Vector3f::Up(), rotationSpeed));
-	}
-
-	{
-		static uint32_t frameCount = 0;
-
-		if (frameCount++ % 300 == 0) { //!< 5秒ごとにWorkingColorSpaceを切り替える
-			switch (option_.workingColorSpace) {
-				case Sxx::Rendering::PassOption::WorkingColorSpace::Linear:
-					option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
-					STREAM_LOG_DEBUG("WorkingColorSpace changed to ACEScg");
-					break;
-
-				case Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg:
-					option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::Linear;
-					STREAM_LOG_DEBUG("WorkingColorSpace changed to Linear");
-					break;
-			}
-		}
 	}
 
 	{
@@ -399,7 +383,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline1_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::LightingBuffer>().GetBuffer(Sxx::Rendering::LightingBuffer::Layout::Direct).GetDescriptorSRV().GetGPUHandle());
+			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::MainBuffer>().GetBuffer(Sxx::Rendering::MainBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
 
 			pipeline1_.BindShaderParameter(context, parameter);
 

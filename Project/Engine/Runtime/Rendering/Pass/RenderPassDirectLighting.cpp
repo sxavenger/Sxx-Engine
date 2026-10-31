@@ -5,6 +5,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 // include
 //-----------------------------------------------------------------------------------------
 //* rendering
+#include "../Buffer/MainBuffer.h"
 #include "../Buffer/LightingBuffer.h"
 #include "../Buffer/GBuffer.h"
 #include "../Buffer/DepthStencilBuffer.h"
@@ -69,6 +70,7 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 void RenderPassDirectLighting::Setup(const PassContext& context) {
 	//!< bufferの確保
+	context.buffer->EnsureInstance<MainBuffer>(context.resolution); //!< ここでは使用されないが, 最終結果の描画先として確保しておく.
 	context.buffer->EnsureInstance<LightingBuffer>(context.resolution);
 	context.buffer->EnsureInstance<GBuffer>(context.resolution);
 	context.buffer->EnsureInstance<DepthStencilBuffer>(context.resolution);
@@ -169,7 +171,7 @@ void RenderPassDirectLighting::EndDirectLightingPass(Graphics::GraphicsCommandCo
 
 void RenderPassDirectLighting::PassUnlit(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
 
-	auto commandList = command.GetCommandList();
+	auto commandList     = command.GetCommandList();
 	const auto& pipeline = pipelines_[Pipeline::Unlit];
 
 	//!< bufferの取得
@@ -247,7 +249,7 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 
 void RenderPassDirectLighting::LightingPointLight(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
 
-	auto commandList = command.GetCommandList();
+	auto commandList     = command.GetCommandList();
 	const auto& pipeline = pipelines_[Pipeline::PointLight];
 
 	//!< bufferの取得

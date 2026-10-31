@@ -40,6 +40,8 @@ void LightingBuffer::Resize(const Vector2u& resolution) {
 
 void LightingBuffer::ClearTarget(Graphics::GraphicsCommandContext& command) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
+		D3D12_RESOURCE_STATES state = buffers_[i].GetCurrentState();
 		buffers_[i].ClearRenderTarget(command);
+		buffers_[i].Transition(command, state);
 	}
 }

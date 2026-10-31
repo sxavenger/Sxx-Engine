@@ -32,7 +32,7 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferB));
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferC));
 
-		pipeline_ = Graphics::ReflectedGraphicsPipelineState::Create(
+		pipelines_[Pipeline::StaticMesh] = Graphics::ReflectedGraphicsPipelineState::Create(
 			Graphics::Core::GetDevice(),
 			desc
 		);
@@ -144,9 +144,10 @@ void RenderPassDeferredBase::EndOpaqueMeshRenderPass(Graphics::GraphicsCommandCo
 
 void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
 
-	auto commandList = command.GetCommandList();
+	auto commandList     = command.GetCommandList();
+	const auto& pipeline = pipelines_[Pipeline::StaticMesh];
 
-	pipeline_.BindPipeline(command, context.resolution);
+	pipeline.BindPipeline(command, context.resolution);
 
 	Graphics::ShaderParameter parameter;
 
@@ -179,7 +180,7 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 		parameter.SetAddress("gTransform", instance.transform->GetTransformationBuffer().GetGpuVirtualAddress());
 		parameter.SetAddress("gMaterial",  instance.material->GetMaterialBuffer().material.GetGpuVirtualAddress());
 
-		pipeline_.BindShaderParameter(command, parameter);
+		pipeline.BindShaderParameter(command, parameter);
 
 		commandList->DispatchMesh(Sxx::Graphics::RoundUp(instance.mesh->GetMeshletBuffer().meshletCount, Meshlet::kAmplificationThreadCount), 1, 1);
 	}
