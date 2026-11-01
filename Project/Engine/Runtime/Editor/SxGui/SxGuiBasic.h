@@ -46,6 +46,8 @@ namespace SxGui {
 
 	Vector2f GetCursorPos();
 
+	Vector2f GetCursorScreenPos();
+
 	void SetCursorPos(const Vector2f& pos);
 
 	//-----------------------------------------------------------------------------------------

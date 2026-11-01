@@ -15,6 +15,11 @@ Vector2f SxGui::GetCursorPos() {
 	return { pos.x, pos.y };
 }
 
+Vector2f SxGui::GetCursorScreenPos() {
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	return { pos.x, pos.y };
+}
+
 void SxGui::SetCursorPos(const Vector2f& pos) {
 	ImGui::SetCursorPos({ pos.x, pos.y });
 }
