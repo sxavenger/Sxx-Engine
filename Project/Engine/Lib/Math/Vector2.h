@@ -225,6 +225,11 @@ namespace Math {
 	}
 
 	template <typename T> requires std::floating_point<T>
+	Vector2<T> Round(const Vector2<T>& v) noexcept {
+		return { std::round(v.x), std::round(v.y) };
+	}
+
+	template <typename T> requires std::floating_point<T>
 	T Length(const Vector2<T>& v) noexcept {
 		return std::sqrt(v.x * v.x + v.y * v.y);
 	}
