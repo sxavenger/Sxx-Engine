@@ -4,5 +4,6 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* SxGui
+#include "SxGuiDrawList.h"
 #include "SxGuiBasic.h"
 #include "SxGuiExtension.h"
