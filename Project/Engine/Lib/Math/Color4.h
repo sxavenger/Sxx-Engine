@@ -351,8 +351,21 @@ public:
 
 //* Color4 integral *//
 
-using Color4i = Color4Integral<std::int32_t>;
-using Color4u = Color4Integral<std::uint32_t>;
+//!< 8bit signed / unsigned
+using Color4i8 = Color4Integral<std::int8_t>;
+using Color4u8 = Color4Integral<std::uint8_t>;
+
+//!< 16bit signed / unsigned
+using Color4i16 = Color4Integral<std::int16_t>;
+using Color4u16 = Color4Integral<std::uint16_t>;
+
+//!< 32bit signed / unsigned
+using Color4i32 = Color4Integral<std::int32_t>;
+using Color4u32 = Color4Integral<std::uint32_t>;
+
+//!< default integral color type (32bit)
+using Color4i = Color4i32;
+using Color4u = Color4u32;
 
 //* Color4 floating-point *//
 

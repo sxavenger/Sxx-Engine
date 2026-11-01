@@ -335,8 +335,21 @@ public:
 
 //* Color3 integral *//
 
-using Color3i = Color3Integral<std::int32_t>;
-using Color3u = Color3Integral<std::uint32_t>;
+//!< 8bit signed / unsigned
+using Color3i8 = Color3Integral<std::int8_t>;
+using Color3u8 = Color3Integral<std::uint8_t>;
+
+//!< 16bit signed / unsigned
+using Color3i16 = Color3Integral<std::int16_t>;
+using Color3u16 = Color3Integral<std::uint16_t>;
+
+//!< 32bit signed / unsigned
+using Color3i32 = Color3Integral<std::int32_t>;
+using Color3u32 = Color3Integral<std::uint32_t>;
+
+//!< default integral color type (32bit)
+using Color3i = Color3i32;
+using Color3u = Color3u32;
 
 //* Color3 floating-point *//
 
