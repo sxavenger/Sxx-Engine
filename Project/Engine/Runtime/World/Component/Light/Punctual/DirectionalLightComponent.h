@@ -34,11 +34,20 @@ public:
 	public:
 
 		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		float ConvertScale(float value, LightingScale _scale) const;
+
+		float GetIntensity(LightingScale _scale) const;
+
+		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		Color3f color   = Color3f::White();
-		float intensity = 1.0f; //!< [lux]
+		Color3f color       = Color3f::White();
+		float intensity     = 1.0f; //!< [lux]
+		LightingScale scale = LightingScale::Physical;
 
 	};
 
@@ -76,9 +85,9 @@ public:
 
 	const Color3f& GetColor() const { return lightParameter_.color; }
 
-	void SetIntensity(float intensity) { lightParameter_.intensity = intensity; }
+	void SetIntensity(float intensity, LightingScale scale = LightingScale::Physical);
 
-	float GetIntensity() const { return lightParameter_.intensity; }
+	float GetIntensity(LightingScale scale = LightingScale::Physical) const;
 
 	void SetLightParameter(const LightParameter& parameter) { lightParameter_ = parameter; }
 

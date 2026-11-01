@@ -37,16 +37,21 @@ public:
 		// public methods
 		//=========================================================================================
 
-		float GetIntensity(LightUnit _unit) const;
+		float ConvertScale(float value, LightingScale _scale) const;
+
+		float ConvertUnit(float value, LightUnit _unit) const;
+
+		float GetIntensity(LightUnit _unit, LightingScale _scale) const;
 
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
 
-		Color3f color   = Color3f::White();
-		LightUnit unit  = LightUnit::Candela;
-		float intensity = 1.0f;
-		float radius    = 10.0f;
+		Color3f color       = Color3f::White();
+		float intensity     = 1.0f;
+		LightingScale scale = LightingScale::Physical;
+		LightUnit unit      = LightUnit::Candela;
+		float radius        = 10.0f;
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,9 +88,9 @@ public:
 
 	const Color3f& GetColor() const { return lightParameter_.color; }
 
-	void SetIntensity(float intensity, LightUnit unit = LightUnit::Candela);
+	void SetIntensity(float intensity, LightUnit unit = LightUnit::Candela, LightingScale scale = LightingScale::Physical);
 
-	float GetIntensity(LightUnit unit = LightUnit::Candela) const;
+	float GetIntensity(LightUnit unit = LightUnit::Candela, LightingScale scale = LightingScale::Physical) const;
 
 	void SetRadius(float radius) { lightParameter_.radius = radius; }
 

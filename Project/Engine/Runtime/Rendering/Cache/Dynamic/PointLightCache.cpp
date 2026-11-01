@@ -17,7 +17,7 @@ PointLightCache::LightData PointLightCache::LightData::Transfer(
 
 	LightData data = {};
 	data.lightColor     = light.color;
-	data.lightIntensity = std::max(0.0f, light.GetIntensity(World::LightUnit::Candela)); //!< [cd/m^2]に変換して格納
+	data.lightIntensity = std::max(0.0f, light.GetIntensity(World::LightUnit::Candela, World::LightingScale::Physical)); //!< [cd]に変換して格納
 	data.lightRadius    = std::max(0.0f, light.radius);
 	data.shadowFlag     = shadow.flag;
 	data.shadowStrength = std::clamp(shadow.strength, 0.0f, 1.0f);

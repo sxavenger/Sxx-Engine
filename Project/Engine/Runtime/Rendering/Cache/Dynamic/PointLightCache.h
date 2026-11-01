@@ -47,7 +47,7 @@ public:
 		//=========================================================================================
 
 		Color3f lightColor;
-		float lightIntensity; //!< [cd/m^2]
+		float lightIntensity; //!< [cd]
 		float lightRadius;
 
 		FlagEnum<World::ShadowFlags> shadowFlag;

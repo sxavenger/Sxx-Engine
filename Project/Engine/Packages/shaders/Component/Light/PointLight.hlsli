@@ -24,7 +24,7 @@ namespace Component {
 		//=========================================================================================
 
 		float32_t3 light_color;
-		float32_t light_intensity; //!< [cd/m^2]
+		float32_t light_intensity; //!< [cd]
 		float32_t light_radius;
 
 		uint32_t shadow_flags;

@@ -124,12 +124,12 @@ void SandboxUnit::InitSandbox() {
 		light_->AddComponent<Sxx::World::PointLightComponent>();
 
 		auto transform = light_->GetComponent<Sxx::World::TransformComponent>();
-		transform->SetPosition({ 0.0f, 4.0f, -2.0f });
+		transform->SetPosition({ 0.0f, 1.0f, -2.0f });
 
 		auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
 		light->SetColor({ 1.0f, 1.0f, 1.0f });
-		light->SetIntensity(3.14f);
-		light->SetRadius(10.0f);
+		light->SetIntensity(2.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
+		light->SetRadius(200.0f);
 	}
 
 	{ //!< Passの初期化
@@ -195,16 +195,6 @@ void SandboxUnit::UpdateSandbox() {
 
 		static const float rotationSpeed = 0.01f;
 		transform->SetRotation(transform->GetRotation() * Quaternionf::AxisAngle(Vector3f::Up(), rotationSpeed));
-	}
-
-	{
-
-		if (mouse.IsWheel()) {
-			auto light = light_->GetComponent<Sxx::World::DirectionalLightComponent>();
-			float intensity = light->GetIntensity();
-			intensity = std::max(0.0f, intensity + mouse.GetDeltaWheelNormalized() * 0.1f);
-			light->SetIntensity(intensity);
-		}
 	}
 
 	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {

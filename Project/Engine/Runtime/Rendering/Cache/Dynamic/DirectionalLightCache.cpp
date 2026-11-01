@@ -17,7 +17,7 @@ DirectionalLightCache::LightData DirectionalLightCache::LightData::Transfer(
 
 	LightData data = {};
 	data.lightColor     = light.color;
-	data.lightIntensity = std::max(0.0f, light.intensity);
+	data.lightIntensity = std::max(0.0f, light.GetIntensity(World::LightingScale::Physical));
 	data.shadowFlag     = shadow.flag;
 	data.shadowStrength = std::clamp(shadow.strength, 0.0f, 1.0f);
 	
