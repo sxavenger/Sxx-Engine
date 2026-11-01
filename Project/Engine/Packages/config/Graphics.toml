@@ -33,8 +33,8 @@ filterId       = []
 	breakSeverity = [ "D3D12_MESSAGE_SEVERITY_CORRUPTION", "D3D12_MESSAGE_SEVERITY_ERROR", "D3D12_MESSAGE_SEVERITY_WARNING" ]
 
 [Graphics.DescriptorHeaps] # デスクリプタヒープの設定
-descriptorCapacityRTV         = 12
-descriptorCapacityDSV         = 12
+descriptorCapacityRTV         = 32
+descriptorCapacityDSV         = 16
 descriptorCapacityCBV_SRV_UAV = 128
 
 [Graphics.GraphicsCommandContext] # コマンドの設定
