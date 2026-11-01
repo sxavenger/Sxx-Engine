@@ -11,6 +11,7 @@ SXAVENGER_ENGINE_USING
 //* engine [editor]
 #include <Runtime/Editor/CaptureMainMenu.h>
 #include <Runtime/Editor/ViewportPanel.h>
+#include <Runtime/Editor/HierarchyPanel.h>
 
 #include <Runtime/Editor/EditorTestPanel.h>
 #include <Runtime/Editor/StyleEditorPanel.h>
@@ -45,6 +46,7 @@ SlateEditorUnit::SlateEditorUnit() {
 	//!< 既定のpanel. 生成はGPUにもImGuiにも依存しないため, Push時点で作っておく.
 	//!< note: BuildMainLayoutが登録された全panelを1つのtab stackへ自動で並べるため, panelを追加するときはここにpush_backするだけでよい.
 	panels_.push_back(std::make_shared<Editor::ViewportPanel>());
+	panels_.push_back(std::make_shared<Editor::HierarchyPanel>());
 	
 	panels_.push_back(std::make_shared<Editor::EditorTestPanel>());
 	panels_.push_back(std::make_shared<Editor::StyleEditorPanel>());

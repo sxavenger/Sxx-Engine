@@ -62,7 +62,8 @@ public:
 
 	//* constructor / destructor *//
 
-	GameObject();
+	GameObject() : instance_(std::make_unique<Instance>()) {}
+	GameObject(const std::string_view& name) : instance_(std::make_unique<Instance>(name)) {}
 	~GameObject();
 
 	//* entity option *//
@@ -73,6 +74,17 @@ public:
 
 	EntityBehaviour* operator->() { return GetEntity(); }
 	const EntityBehaviour* operator->() const { return GetEntity(); }
+
+	//* operator [copy] <delete> *//
+
+	GameObject(const GameObject&)            = delete;
+	GameObject& operator=(const GameObject&) = delete;
+
+	//* operator [move] *//
+
+	GameObject(GameObject&& other) noexcept;
+	GameObject& operator=(GameObject&& other) noexcept;
+
 
 private:
 

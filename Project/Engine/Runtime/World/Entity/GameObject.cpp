@@ -1,5 +1,7 @@
 #include "GameObject.h"
 #include "GameObject.h"
+#include "GameObject.h"
+#include "GameObject.h"
 SXAVENGER_ENGINE_USING_(World)
 
 //-----------------------------------------------------------------------------------------
@@ -44,10 +46,6 @@ RefPtr<EntityBehaviour> GameObject::Instance::GetEntity() const {
 // GameObject class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-GameObject::GameObject() {
-	instance_ = std::make_unique<Instance>();
-}
-
 GameObject::~GameObject() {
 	instance_.reset();
 }
@@ -55,4 +53,15 @@ GameObject::~GameObject() {
 RefPtr<EntityBehaviour> GameObject::GetEntity() const {
 	STREAM_ASSERT(instance_ != nullptr, "GameObject instance is null.");
 	return instance_->GetEntity();
+}
+
+GameObject::GameObject(GameObject&& other) noexcept {
+	instance_       = std::move(other.instance_);
+	other.instance_ = nullptr;
+}
+
+GameObject& GameObject::operator=(GameObject&& other) noexcept {
+	instance_       = std::move(other.instance_);
+	other.instance_ = nullptr;
+	return *this;
 }

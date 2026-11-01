@@ -52,9 +52,9 @@ private:
 
 	Sxx::Graphics::ReflectedGraphicsPipelineState pipeline1_;
 
-	Sxx::World::GameObject camera_;
+	Sxx::World::GameObject camera_ = Sxx::World::GameObject("Camera");
 	Sxx::World::GameObject object_;
-	Sxx::World::GameObject light_;
+	Sxx::World::GameObject light_ = Sxx::World::GameObject("Light");
 
 	Sxx::Rendering::SceneProxy scene_;
 	Sxx::Rendering::BufferCollection buffer_;

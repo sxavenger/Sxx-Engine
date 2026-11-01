@@ -62,7 +62,7 @@ public:
 
 	void SetName(const std::string_view& name) { name_ = name; }
 
-	const std::string_view& GetName() const noexcept { return name_; }
+	const std::string_view GetName() const noexcept { return name_; }
 
 	bool IsActive() const noexcept { return isActive_; }
 
@@ -104,7 +104,7 @@ private:
 
 	//* entity *//
 
-	std::string name_;
+	std::string name_ = "Unnamed Entity";
 
 	Mobility mobility_ = Mobility::Movable;
 
