@@ -44,7 +44,7 @@ void ViewportPanel::OnDraw() {
 	}
 
 	const Rendering::MainBuffer& buffer = pointer_->GetInstance<Rendering::MainBuffer>();
-	const Rendering::RenderTargetTexture& texture = buffer.GetBuffer(Rendering::MainBuffer::Layout::Scene);
+	const Rendering::RenderTargetTexture& texture = buffer.GetBuffer(Rendering::MainBuffer::Layout::SceneRender);
 	// TODO: 表示変更できるように設計
 
 	//!< アスペクト比を維持した表示領域を計算する

@@ -11,6 +11,7 @@
 #include <Runtime/Rendering/Cache/Dynamic/CameraCache.h>
 #include <Runtime/Rendering/Cache/Dynamic/TransformCache.h>
 #include <Runtime/Rendering/Scene/SceneProxy.h>
+#include <Runtime/Rendering/Buffer/BaseBuffer.h>
 #include <Runtime/Rendering/Buffer/BufferCollection.h>
 
 //* lib
@@ -79,7 +80,8 @@ public:
 		// public variables
 		//=========================================================================================
 
-		Vector2u resolution                             = {};
+		Vector2u ouptutResolution                       = {};
+		Vector2u renderResolution                       = {};
 		PassOption::WorkingColorSpace workingColorSpace = PassOption::WorkingColorSpace::Linear;
 		Graphics::DisplayColorSpace displayColorSpace   = Graphics::DisplayColorSpace::Rec709;
 		PassOption::DisplayEncoder displayEncoder       = PassOption::DisplayEncoder::Hardware;
@@ -96,6 +98,12 @@ public:
 
 	static FlagEnum<Issue> CheckIssue(const PassContext& context);
 
+	//* resolution option *//
+
+	Vector2u GetRenderResolution() const;
+
+	BaseBuffer::Resolution GetBufferResolution() const;
+
 	//* context data option *//
 
 	ContextData GetContextData() const;
@@ -104,16 +112,15 @@ public:
 	// public variables
 	//=========================================================================================
 
-	std::string name = "---";
+	std::string name = "unnamed pass context";
 
-	const SceneProxy* scene = nullptr;
-
-	BufferCollection* buffer = nullptr;
 	Vector2u resolution = {};
+	PassOption option   = {};
+
+	const SceneProxy* scene  = nullptr;
+	BufferCollection* buffer = nullptr;
 
 	Camera camera = {};
-
-	PassOption option = {};
 
 };
 

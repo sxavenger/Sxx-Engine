@@ -31,12 +31,14 @@ RWTexture2D<float32_t4> gSceneColor : register(u0);
 [numthreads(8, 8, 1)]
 void main(Semantics::Compute semantics) {
 
-	if (!Context.IsWithinResolution(semantics.dispatch_thread_id.xy)) {
+	uint32_t2 pixel = semantics.dispatch_thread_id.xy;
+
+	if (!Context.IsWithinRenderResolution(pixel)) {
 		return; //!< 画面外のpixelは処理しない
 	}
 
-	float32_t3 color       = gSceneColor[semantics.dispatch_thread_id.xy].rgb;
-	float32_t transparency = gSceneColor[semantics.dispatch_thread_id.xy].a;
+	float32_t3 color       = gSceneColor[pixel].rgb;
+	float32_t transparency = gSceneColor[pixel].a;
 
 	[branch]
 	switch (Context.working_color_space) {
@@ -64,6 +66,6 @@ void main(Semantics::Compute semantics) {
 			return; //!< Linearの場合は何もしない
 	}
 
-	gSceneColor[semantics.dispatch_thread_id.xy] = float32_t4(color, transparency);
+	gSceneColor[pixel] = float32_t4(color, transparency);
 
 }

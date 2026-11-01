@@ -11,7 +11,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 // BufferCollection class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void BufferCollection::Resize(const Vector2u& resolution) {
+void BufferCollection::Resize(const BaseBuffer::Resolution& resolution) {
 	for (const auto& instance : instances_.GetContainer() | std::views::values) {
 		instance->Resize(resolution);
 	}

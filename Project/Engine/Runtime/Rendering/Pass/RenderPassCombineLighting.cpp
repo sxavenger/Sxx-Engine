@@ -69,7 +69,7 @@ void RenderPassCombineLighting::BeginCombineLightingPass(Graphics::GraphicsComma
 
 	static const size_t kBufferCount = 1;
 	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
-		&main.GetBuffer(MainBuffer::Layout::Scene),
+		&main.GetBuffer(MainBuffer::Layout::SceneRender),
 	};
 
 	{ //!< barrierの設定
@@ -91,7 +91,7 @@ void RenderPassCombineLighting::EndCombineLightingPass(Graphics::GraphicsCommand
 
 	static const size_t kBufferCount = 1;
 	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
-		&main.GetBuffer(MainBuffer::Layout::Scene),
+		&main.GetBuffer(MainBuffer::Layout::SceneRender),
 	};
 
 	{ //!< barrierの設定
@@ -122,7 +122,7 @@ void RenderPassCombineLighting::Combine(Graphics::GraphicsCommandContext& comman
 	parameter.SetHandle("gIndirect", context.buffer->GetInstance<LightingBuffer>().GetBuffer(LightingBuffer::Layout::Indirect).GetDescriptorSRV().GetGPUHandle());
 
 	//!< Scene情報の設定
-	parameter.SetHandle("gScene", context.buffer->GetInstance<MainBuffer>().GetBuffer(MainBuffer::Layout::Scene).GetDescriptorUAV().GetGPUHandle());
+	parameter.SetHandle("gScene", context.buffer->GetInstance<MainBuffer>().GetBuffer(MainBuffer::Layout::SceneRender).GetDescriptorUAV().GetGPUHandle());
 
 	pipeline.BindShaderParameter(command, parameter);
 

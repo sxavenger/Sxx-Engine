@@ -128,8 +128,18 @@ void SandboxUnit::InitSandbox() {
 
 		auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
 		light->SetColor({ 1.0f, 1.0f, 1.0f });
-		light->SetIntensity(2.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
+		light->SetIntensity(4.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
 		light->SetRadius(200.0f);
+	}
+
+	{ //!< Optionの初期化
+
+		option_ = {};
+		option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
+		option_.displayEncoder    = Sxx::Rendering::PassOption::DisplayEncoder::Hardware;
+		option_.upscaler          = Sxx::Rendering::PassOption::Upscaler::Bilinear;
+		option_.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance;
+
 	}
 
 	{ //!< Passの初期化
@@ -137,6 +147,7 @@ void SandboxUnit::InitSandbox() {
 		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassCombineLighting>();
+		// TODO: UpscalePassの追加
 		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
 
 	}
@@ -200,6 +211,45 @@ void SandboxUnit::UpdateSandbox() {
 	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {
 		transform->Update();
 	});
+
+	{
+		static uint32_t frameCount = 0;
+		frameCount++;
+
+		if (frameCount % (60 * 5) == 0) {
+			switch (option_.upscalerMode) {
+				case Sxx::Rendering::PassOption::UpscalerMode::Native:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::UltraQuality;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <UltraQuality>.");
+					break;
+
+				case Sxx::Rendering::PassOption::UpscalerMode::UltraQuality:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Quality;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Quality>.");
+					break;
+
+				case Sxx::Rendering::PassOption::UpscalerMode::Quality:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Balanced>.");
+					break;
+
+				case Sxx::Rendering::PassOption::UpscalerMode::Balanced:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Performance;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Performance>.");
+					break;
+
+				case Sxx::Rendering::PassOption::UpscalerMode::Performance:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <UltraPerformance>.");
+					break;
+
+				case Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance:
+					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Native;
+					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Native>.");
+					break;
+			}
+		}
+	}
 }
 
 void SandboxUnit::RenderSandbox() {
@@ -373,7 +423,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline1_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::MainBuffer>().GetBuffer(Sxx::Rendering::MainBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::MainBuffer>().GetBuffer(Sxx::Rendering::MainBuffer::Layout::SceneRender).GetDescriptorSRV().GetGPUHandle());
 
 			pipeline1_.BindShaderParameter(context, parameter);
 

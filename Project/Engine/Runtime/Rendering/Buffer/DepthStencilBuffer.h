@@ -31,7 +31,7 @@ public:
 	// Layout enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Layout : uint8_t {
-		Scene,
+		SceneRender,
 	};
 
 public:
@@ -47,9 +47,9 @@ public:
 
 	//* buffer option *//
 
-	void Create(const Vector2u& resolution) override;
+	void Create(const Resolution& resolution) override;
 
-	void Resize(const Vector2u& resolution) override;
+	void Resize(const Resolution& resolution) override;
 
 	void ClearTarget(Graphics::GraphicsCommandContext& command) override;
 

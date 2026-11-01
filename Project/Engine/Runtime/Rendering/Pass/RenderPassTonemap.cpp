@@ -68,7 +68,7 @@ void RenderPassTonemap::BeginTonemapPass(Graphics::GraphicsCommandContext& comma
 
 	static const size_t kBufferCount = 1;
 	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
-		&main.GetBuffer(MainBuffer::Layout::Scene),
+		&main.GetBuffer(MainBuffer::Layout::SceneRender), // TODO: Output側のbufferを使用する.
 	};
 
 	{ //!< barrierの設定
@@ -91,7 +91,7 @@ void RenderPassTonemap::EndTonemapPass(Graphics::GraphicsCommandContext& command
 
 	static const size_t kBufferCount = 1;
 	ArrayEnum<RenderTargetTexture*, kBufferCount, MainBuffer::Layout> buffers = {
-		&main.GetBuffer(MainBuffer::Layout::Scene),
+		&main.GetBuffer(MainBuffer::Layout::SceneRender), // TODO: Output側のbufferを使用する.
 	};
 
 	{ //!< barrierの設定
@@ -116,14 +116,14 @@ void RenderPassTonemap::Tonemap(Graphics::GraphicsCommandContext& command, const
 	parameter.Set32bitConstants("PassData", data_);
 
 	//!< Color情報の設定
-	parameter.SetHandle("gSceneColor", context.buffer->GetInstance<MainBuffer>().GetBuffer(MainBuffer::Layout::Scene).GetDescriptorUAV().GetGPUHandle());
+	parameter.SetHandle("gSceneColor", context.buffer->GetInstance<MainBuffer>().GetBuffer(MainBuffer::Layout::SceneRender).GetDescriptorUAV().GetGPUHandle()); // TODO: Output側のbufferを使用する.
 
 	pipeline_.BindShaderParameter(command, parameter);
 
 	const Vector3u& threadGroupSize = pipeline_.GetThreadGroupSize();
 	commandList->Dispatch(
-		Graphics::RoundUp(context.resolution.x, threadGroupSize.x),
-		Graphics::RoundUp(context.resolution.y, threadGroupSize.y),
+		Graphics::RoundUp(data.renderResolution.x, threadGroupSize.x),
+		Graphics::RoundUp(data.renderResolution.y, threadGroupSize.y),
 		1
 	);
 }

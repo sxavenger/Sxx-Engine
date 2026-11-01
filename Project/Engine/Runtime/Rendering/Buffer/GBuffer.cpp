@@ -19,12 +19,12 @@ const ArrayEnum<DXGI_FORMAT, EnumUtil<GBuffer::Layout>::GetCount(), GBuffer::Lay
 // GBuffer class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void GBuffer::Create(const Vector2u& resolution) {
+void GBuffer::Create(const Resolution& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 
 		//!< optionsの設定
 		RenderTargetTexture::Options options = {};
-		options.resolution = resolution;
+		options.resolution = resolution.render;
 		options.format     = kFormats[i];
 
 		//!< textureの生成
@@ -33,9 +33,9 @@ void GBuffer::Create(const Vector2u& resolution) {
 	}
 }
 
-void GBuffer::Resize(const Vector2u& resolution) {
+void GBuffer::Resize(const Resolution& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
-		buffers_[i].Resize(resolution);
+		buffers_[i].Resize(resolution.render);
 	}
 }
 

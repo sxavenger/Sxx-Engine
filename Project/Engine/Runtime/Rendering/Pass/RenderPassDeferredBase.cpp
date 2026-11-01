@@ -27,7 +27,7 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 		desc.SetBlendMode(0, Graphics::BlendModeColor::None, Graphics::BlendModeTransparent::None);
 		desc.SetPrimitive(Graphics::PrimitiveTopology::TriangleList);
 		desc.SetDepthStencil(true);
-		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::Scene));
+		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::SceneRender));
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferA));
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferB));
 		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferC));
@@ -43,8 +43,8 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 
 void RenderPassDeferredBase::Setup(const PassContext& context) {
 	//!< bufferの確保
-	context.buffer->EnsureInstance<GBuffer>(context.resolution);
-	context.buffer->EnsureInstance<DepthStencilBuffer>(context.resolution);
+	context.buffer->EnsureInstance<GBuffer>(context.GetBufferResolution());
+	context.buffer->EnsureInstance<DepthStencilBuffer>(context.GetBufferResolution());
 }
 
 void RenderPassDeferredBase::Execute(Graphics::GraphicsCommandContext& command, const PassContext& context) {
@@ -95,7 +95,7 @@ void RenderPassDeferredBase::BeginOpaqueMeshRenderPass(Graphics::GraphicsCommand
 		}
 
 		//!< DepthStencilをDepthWriteに遷移
-		depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).Transition(command, DepthStencilTexture::State::Write);
+		depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).Transition(command, DepthStencilTexture::State::Write);
 	}
 
 	{ //!< Render Targetの設定
@@ -107,7 +107,7 @@ void RenderPassDeferredBase::BeginOpaqueMeshRenderPass(Graphics::GraphicsCommand
 
 		commandList->OMSetRenderTargets(
 			static_cast<UINT>(handles.size()), handles.data(), false,
-			&depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorDSV().GetCPUHandle()
+			&depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).GetDescriptorDSV().GetCPUHandle()
 		);
 
 	}
@@ -137,7 +137,7 @@ void RenderPassDeferredBase::EndOpaqueMeshRenderPass(Graphics::GraphicsCommandCo
 		}
 
 		//!< DepthStencilを通常状態に遷移
-		depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).Transition(command, DepthStencilTexture::State::Default);
+		depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).Transition(command, DepthStencilTexture::State::Default);
 	}
 
 }
@@ -147,7 +147,7 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 	auto commandList     = command.GetCommandList();
 	const auto& pipeline = pipelines_[Pipeline::StaticMesh];
 
-	pipeline.BindPipeline(command, context.resolution);
+	pipeline.BindPipeline(command, data.renderResolution);
 
 	Graphics::ShaderParameter parameter;
 

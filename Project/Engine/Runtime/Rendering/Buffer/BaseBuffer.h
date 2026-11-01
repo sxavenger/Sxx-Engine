@@ -24,6 +24,23 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 class BaseBuffer {
 public:
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Resolution structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct Resolution {
+	public:
+
+		//=========================================================================================
+		// public variables
+		//=========================================================================================
+
+		Vector2u render = {}; //!< upscale前の解像度.
+		Vector2u output = {}; //!< upscale後の解像度.
+
+	};
+
+public:
+
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -35,9 +52,9 @@ public:
 
 	//* buffer option *//
 
-	virtual void Create(const Vector2u& resolution) = 0;
+	virtual void Create(const Resolution& resolution) = 0;
 
-	virtual void Resize(const Vector2u& resolution) = 0;
+	virtual void Resize(const Resolution& resolution) = 0;
 
 	virtual void ClearTarget(Graphics::GraphicsCommandContext& command) = 0;
 

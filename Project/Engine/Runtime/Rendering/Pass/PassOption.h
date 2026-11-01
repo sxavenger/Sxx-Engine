@@ -38,6 +38,27 @@ public:
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+	// Upscaler enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class Upscaler : uint8_t {
+		Bilinear, //!< Bilinear
+		NIS,      //!< NVIDIA Image Scaling (NIS)
+		FSR1,     //!< AMD FidelityFX Super Resolution 1.0 (FSR1)
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// UpscalerMode enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class UpscalerMode : uint8_t {
+		Native,
+		UltraQuality,
+		Quality,
+		Balanced,
+		Performance,
+		UltraPerformance,
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
 	// AmbientOcclusion enum class
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class AmbientOcclusion : uint8_t {
@@ -54,14 +75,19 @@ public:
 		SMAA_1x
 	};
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Upscaler enum class
-	////////////////////////////////////////////////////////////////////////////////////////////
-	enum class Upscaler : uint8_t {
-		None,
-	};
-
 public:
+
+	//=========================================================================================
+	// public methods
+	//=========================================================================================
+
+	//* upscaler option *//
+
+	static float GetUpscaleScaleFactor(UpscalerMode mode);
+
+	static float GetLimitUpscaleScaleFactor(Upscaler upscaler);
+
+	float GetUpscaleRaito() const;
 
 	//=========================================================================================
 	// public variables
@@ -71,9 +97,11 @@ public:
 	Graphics::DisplayColorSpace displayColorSpace = Graphics::DisplayColorSpace::Rec709;
 	DisplayEncoder displayEncoder                 = DisplayEncoder::Hardware;
 
-	AmbientOcclusion ambientOcclusion = AmbientOcclusion::None; // TODO: XeGTAOに変更する.
-	AntiAliasing antiAliasing         = AntiAliasing::None; // TODO: FXAAに変更する.
-	Upscaler upscaler                 = Upscaler::None;
+	Upscaler upscaler         = Upscaler::Bilinear;
+	UpscalerMode upscalerMode = UpscalerMode::Native;
+
+	AmbientOcclusion ambientOcclusion = AmbientOcclusion::None;
+	AntiAliasing antiAliasing = AntiAliasing::None; // TODO: FXAAに変更する.
 
 };
 
