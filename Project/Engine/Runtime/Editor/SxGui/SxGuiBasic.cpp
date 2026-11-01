@@ -24,6 +24,14 @@ Vector2f SxGui::CalcTextSize(const std::string_view& text, bool hide_text_after_
 	return { size.x, size.y };
 }
 
+bool SxGui::BeginMenu(const std::string_view& label, bool enabled) {
+	return ImGui::BeginMenu(label.data(), enabled);
+}
+
+void SxGui::EndMenu() {
+	ImGui::EndMenu();
+}
+
 bool SxGui::ColorEdit3(const std::string_view& label, float col[3], ImGuiColorEditFlags flags) {
 	return Internal::ColorEdit3(label.data(), col, flags);
 }

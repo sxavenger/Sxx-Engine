@@ -23,7 +23,7 @@ SXAVENGER_ENGINE_USING_(Editor)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void CaptureMainMenu::OnDraw() {
-	if (ImGui::BeginMenu("Capture")) {
+	if (SxGui::BeginMenu("Capture")) {
 
 		if (SxGui::InputScalar<uint8_t>(std::format("{} Capture Frames", Slate::Icon::Stack), &captureFrameCount_, 1)) {
 			captureFrameCount_ = std::clamp<uint8_t>(captureFrameCount_, 1, 10); //!< pixでの上限が10frameまでのため.
@@ -43,6 +43,6 @@ void CaptureMainMenu::OnDraw() {
 			}
 		}
 		
-		ImGui::EndMenu();
+		SxGui::EndMenu();
 	}
 }

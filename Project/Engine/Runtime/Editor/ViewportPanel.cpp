@@ -18,8 +18,8 @@ SXAVENGER_ENGINE_USING_(Editor)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 ViewportPanel::ViewportPanel() {
-	SetTitle(std::format("{} Viewport", Slate::Icon::Window));
-	SetTabColor(Color4f::Blue());
+	Slate::EditorPanel::SetTitle(std::format("{} Viewport", Slate::Icon::Window));
+	Slate::EditorPanel::SetTabColor(Color4f::Blue());
 }
 
 void ViewportPanel::OnDraw() {
