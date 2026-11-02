@@ -93,7 +93,11 @@ void ShaderCompiler::Init(const Configuration& config, const Device& device) {
 	//!< 共通defineの設定
 	arguments_.Append(L"-Zpr"); //!< メモリレイアウトは行優先
 
-	device; //!< todo: deviceの情報を元にサポート関係のdefineを追加する.
+	//!< 16bit型のサポートの確認
+	if (device.GetSupport().native16BitShaderOps) {
+		arguments_.Append(L"-enable-16bit-types");           //!< float16_t等の16bit型を有効化
+		arguments_.AppendDefine(L"NATIVE_16BIT_SHADER_OPS"); //!< shader側で分岐するためのdefine
+	}
 
 	STREAM_LOG_INFO("Graphics::ShaderCompiler | complete initialize.");
 }

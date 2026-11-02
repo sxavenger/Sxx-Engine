@@ -51,18 +51,18 @@ void Device::Settings::Log(const Settings& settings) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Device::Support::CheckAllowTearing(RefPtr<IDXGIFactory7> factory) {
-	BOOL isSupport = false;
-	auto hr = factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &isSupport, sizeof(BOOL));
+	BOOL support = false;
+	auto hr = factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &support, sizeof(BOOL));
 	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature tearing support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
-	if (isSupport) {
+	if (support) {
 		STREAM_LOG_INFO("Graphics::Device::Support | tearing is allowed.");
 
 	} else {
 		STREAM_LOG_WARNING("Graphics::Device::Support | tearing is not supported, so tearing is not allowed.");
 	}
 
-	return isSupport;
+	return support;
 }
 
 D3D_SHADER_MODEL Device::Support::CheckShaderModel(RefPtr<ID3D12Device8> device) {
@@ -77,22 +77,20 @@ D3D_SHADER_MODEL Device::Support::CheckShaderModel(RefPtr<ID3D12Device8> device)
 
 bool Device::Support::CheckMeshShader(RefPtr<ID3D12Device8> device) {
 
-	bool isSupport = false;
-
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 features = {};
 	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &features, sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS7));
 	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature mesh shader support error.", L"_com_error_: {}", GetComErrorMessage(hr));
 
-	isSupport = (features.MeshShaderTier != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED);
+	bool support = (features.MeshShaderTier != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED);
 
-	if (isSupport) {
+	if (support) {
 		STREAM_LOG_INFO("Graphics::Device::Support | mesh shader is supported.");
 
 	} else {
 		STREAM_LOG_WARNING("Graphics::Device::Support | mesh shader is not supported.");
 	}
 
-	return isSupport;
+	return support;
 }
 
 D3D12_RAYTRACING_TIER Device::Support::CheckRaytracing(RefPtr<ID3D12Device8> device) {
@@ -124,6 +122,24 @@ std::optional<D3D12_RENDER_PASS_TIER> Device::Support::CheckRenderPass(RefPtr<ID
 		STREAM_LOG_INFO("Graphics::Device::Support | supported render passes tier: {}", option.RenderPassesTier);
 		return option.RenderPassesTier;
 	}
+}
+
+bool Device::Support::CheckNative16BitShaderOps(RefPtr<ID3D12Device8> device) {
+
+	D3D12_FEATURE_DATA_D3D12_OPTIONS4 option = {};
+	auto hr = device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS4, &option, sizeof(option));
+	STREAM_ASSERT_SUMMARY(SUCCEEDED(hr), L"check feature native 16bit shader ops support error.", L"_com_error_: {}", GetComErrorMessage(hr));
+
+	bool support = option.Native16BitShaderOpsSupported;
+
+	if (support) {
+		STREAM_LOG_INFO("Graphics::Device::Support | native 16bit shader ops is supported.");
+
+	} else {
+		STREAM_LOG_WARNING("Graphics::Device::Support | native 16bit shader ops is not supported.");
+	}
+
+	return support;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,5 +293,12 @@ void Device::CheckSupport() {
 	STREAM_ASSERT(
 		support_.renderPassesTier.has_value(),
 		"render pass is not supported."
+	);
+
+	//!< Native 16bit Shader Opsのサポートの確認.
+	support_.native16BitShaderOps = Support::CheckNative16BitShaderOps(device_.Get());
+	STREAM_ASSERT(
+		support_.native16BitShaderOps,
+		"native 16bit shader ops is not supported."
 	);
 }

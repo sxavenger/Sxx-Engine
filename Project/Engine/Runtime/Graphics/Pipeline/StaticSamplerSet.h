@@ -30,7 +30,7 @@ public:
 
 	//* sampler option *//
 
-	void SetSamplerFilter(const std::string& name, SampleFilter filter, SampleMode mode, UINT anisotropic);
+	void SetSamplerFilter(const std::string& name, SampleFilter filter, SampleMode mode, UINT anisotropic = 0);
 
 	void SetSamplerLinear(const std::string& name, SampleMode mode);
 
