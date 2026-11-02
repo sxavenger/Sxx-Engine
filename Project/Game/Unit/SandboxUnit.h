@@ -58,8 +58,6 @@ private:
 
 	Sxx::Rendering::SceneProxy scene_;
 	Sxx::Rendering::BufferCollection buffer_;
-	Sxx::Rendering::RenderPassPipeline pipeline_;
-	Sxx::Rendering::PassOption option_;
 
 	//=========================================================================================
 	// private methods

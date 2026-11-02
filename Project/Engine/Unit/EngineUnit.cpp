@@ -22,6 +22,9 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/World/Entity/EntityStorage.h>
 #include <Runtime/World/Component/ComponentStorage.h>
 
+//* engine [rendering]
+#include <Runtime/Rendering/Renderer.h>
+
 //* lib
 #include <Lib/Logger/CrashHandler.h>
 #include <Lib/Logger/ConsoleLogger.h>
@@ -101,6 +104,8 @@ void EngineUnit::InitEngine() {
 	frameClock_.Init(configuration_);
 
 	Scheduler::System::Init();
+
+	Rendering::Renderer::Init();
 }
 
 void EngineUnit::TermEngine() {

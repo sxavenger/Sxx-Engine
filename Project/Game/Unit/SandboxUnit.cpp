@@ -31,12 +31,8 @@
 #include <Engine/Runtime/Rendering/Cache/Dynamic/TransformCache.h>
 #include <Engine/Runtime/Rendering/Cache/Dynamic/DirectionalLightCache.h>
 #include <Engine/Runtime/Rendering/Cache/Manager/CacheCollection.h>
-#include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
-#include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
-#include <Engine/Runtime/Rendering/Pass/RenderPassCombineLighting.h>
-#include <Engine/Runtime/Rendering/Pass/RenderPassUpscaling.h>
-#include <Engine/Runtime/Rendering/Pass/RenderPassTonemap.h>
 #include <Engine/Runtime/Rendering/Buffer/MainBuffer.h>
+#include <Engine/Runtime/Rendering/Renderer.h>
 
 //* engine [editor]
 #include <Engine/Runtime/Editor/ViewportPanel.h>
@@ -135,20 +131,11 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Optionの初期化
 
-		option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
-		option_.displayEncoder    = Sxx::Rendering::PassOption::DisplayEncoder::Hardware;
-		option_.upscaler          = Sxx::Rendering::PassOption::Upscaler::NIS;
-		option_.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
-
-	}
-
-	{ //!< Passの初期化
-
-		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
-		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
-		pipeline_.Insert<Sxx::Rendering::RenderPassCombineLighting>();
-		pipeline_.Insert<Sxx::Rendering::RenderPassUpscaling>();
-		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
+		Sxx::Rendering::PassOption& option = Sxx::Rendering::Renderer::GetOption();
+		option.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
+		option.displayEncoder    = Sxx::Rendering::PassOption::DisplayEncoder::Hardware;
+		option.upscaler          = Sxx::Rendering::PassOption::Upscaler::NIS;
+		option.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
 
 	}
 
@@ -217,75 +204,8 @@ void SandboxUnit::RenderSandbox() {
 
 	auto& context = Sxx::Graphics::Core::GetCommandContextDirect();
 
-	{ //!< cacheの更新(Engine側での実行)
-		// TODO: 別threadでcacheの更新を行うようにする.
-
-		//!< CameraComponentのcacheの更新
-		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::CameraComponent>([this](Sxx::World::CameraComponent* camera) {
-
-			//!< cameraのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::CameraCache>(camera->GetAddress(), *camera);
-
-			RefPtr<Sxx::World::EntityBehaviour> owner = camera->GetOwner();
-
-			auto transform = owner->GetComponent<Sxx::World::TransformComponent>();
-
-			//!< transformのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
-			
-		});
-
-		//!< RendererComponentのcacheの更新
-		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::StaticMeshRenderer>([this](Sxx::World::StaticMeshRenderer* renderer) {
-
-			const Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh>& mesh          = renderer->GetMesh();
-			const Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial>& material = renderer->GetMaterial();
-
-			//!< renderer側cacheの更新
-			if (mesh.HasUuid()) {
-				Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::StaticMeshCache>(mesh.GetUuid(), mesh.GetAddress(), mesh.Get());
-			}
-
-			if (material.HasUuid()) {
-				Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::SurfaceMaterialCache>(material.GetUuid(), material.GetAddress(), material.Get());
-			}
-
-			RefPtr<Sxx::World::EntityBehaviour> owner = renderer->GetOwner();
-
-			auto transform = owner->GetComponent<Sxx::World::TransformComponent>();
-
-			//!< transformのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
-		});
-
-		//!< DirectionalLightComponentのcacheの更新
-		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::DirectionalLightComponent>([this](Sxx::World::DirectionalLightComponent* light) {
-
-			//!< lightのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::DirectionalLightCache>(light->GetAddress(), *light);
-
-			RefPtr<Sxx::World::EntityBehaviour> owner = light->GetOwner();
-
-			auto transform = owner->GetComponent<Sxx::World::TransformComponent>();
-
-			//!< transformのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
-		});
-
-		//!< PointLightComponentのcacheの更新
-		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::PointLightComponent>([this](Sxx::World::PointLightComponent* light) {
-
-			//!< lightのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::PointLightCache>(light->GetAddress(), *light);
-
-			RefPtr<Sxx::World::EntityBehaviour> owner = light->GetOwner();
-
-			auto transform = owner->GetComponent<Sxx::World::TransformComponent>();
-
-			//!< transformのcacheの更新
-			Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
-		});
-	}
+	//!< cacheの更新
+	Sxx::Rendering::Renderer::Cache();
 
 	{ //!< Sceneの更新(Engine側での実行)
 
@@ -360,9 +280,9 @@ void SandboxUnit::RenderSandbox() {
 		x.camera.camera    = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
 		x.camera.transform = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
 		x.resolution       = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1280, 720);
-		x.option           = option_;
+		x.option           = Sxx::Rendering::Renderer::GetOption();
 
-		pipeline_.Execute(context, x);
+		Sxx::Rendering::Renderer::Render(context, x);
 
 	}
 

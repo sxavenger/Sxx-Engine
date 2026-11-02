@@ -40,6 +40,8 @@ public:
 
 	static TaskHandle PushCpuTask(const std::string_view& name, const CpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default, TaskState::Pointer state = nullptr);
 
+	static TaskHandle PushCpuTask(const std::string_view& name, TaskPriority priority, const CpuTask::Function& function, TaskState::Pointer state = nullptr);
+
 	//* gpu scheduler option *//
 
 	static TaskHandle PushTask(const std::shared_ptr<GpuTask>& task);

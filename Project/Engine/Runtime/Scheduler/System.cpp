@@ -27,6 +27,10 @@ TaskHandle System::PushCpuTask(const std::string_view& name, const CpuTask::Func
 	return cpu_.PushTask(std::make_shared<CpuTask>(CpuTask::CreateTask(name, function, priority, state)));
 }
 
+TaskHandle System::PushCpuTask(const std::string_view& name, TaskPriority priority, const CpuTask::Function& function, TaskState::Pointer state) {
+	return cpu_.PushTask(std::make_shared<CpuTask>(CpuTask::CreateTask(name, function, priority, state)));
+}
+
 TaskHandle System::PushTask(const std::shared_ptr<GpuTask>& task) {
 	return gpu_.PushTask(task);
 }
