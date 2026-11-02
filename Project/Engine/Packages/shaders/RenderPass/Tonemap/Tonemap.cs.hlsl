@@ -22,7 +22,7 @@ cbuffer PassData : register(b1) {
 }
 
 //! @brief Color情報
-RWTexture2D<float32_t4> gSceneColor : register(u0);
+RWTexture2D<float32_t4> gSceneOutput : register(u0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // main
@@ -33,12 +33,12 @@ void main(Semantics::Compute semantics) {
 
 	uint32_t2 pixel = semantics.dispatch_thread_id.xy;
 
-	if (!Context.IsWithinRenderResolution(pixel)) {
+	if (!Context.IsWithinOutputResolution(pixel)) {
 		return; //!< 画面外のpixelは処理しない
 	}
 
-	float32_t3 color       = gSceneColor[pixel].rgb;
-	float32_t transparency = gSceneColor[pixel].a;
+	float32_t3 color       = gSceneOutput[pixel].rgb;
+	float32_t transparency = gSceneOutput[pixel].a;
 
 	[branch]
 	switch (Context.working_color_space) {
@@ -67,6 +67,6 @@ void main(Semantics::Compute semantics) {
 	}
 	// TODO: color_spaceごとにファイルを分ける.
 
-	gSceneColor[pixel] = float32_t4(color, transparency);
+	gSceneOutput[pixel] = float32_t4(color, transparency);
 
 }

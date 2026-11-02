@@ -41,7 +41,7 @@ BaseBuffer::Resolution PassContext::GetBufferResolution() const {
 
 PassContext::ContextData PassContext::GetContextData() const {
 	ContextData data;
-	data.ouptutResolution  = resolution;
+	data.outputResolution  = resolution;
 	data.renderResolution  = GetRenderResolution();
 	data.workingColorSpace = option.workingColorSpace;
 	data.displayColorSpace = option.displayColorSpace;

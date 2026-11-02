@@ -34,6 +34,7 @@
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassCombineLighting.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassUpscaling.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassTonemap.h>
 #include <Engine/Runtime/Rendering/Buffer/MainBuffer.h>
 
@@ -134,11 +135,10 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Optionの初期化
 
-		option_ = {};
 		option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
 		option_.displayEncoder    = Sxx::Rendering::PassOption::DisplayEncoder::Hardware;
-		option_.upscaler          = Sxx::Rendering::PassOption::Upscaler::Bilinear;
-		option_.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance;
+		option_.upscaler          = Sxx::Rendering::PassOption::Upscaler::NIS;
+		option_.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
 
 	}
 
@@ -147,7 +147,7 @@ void SandboxUnit::InitSandbox() {
 		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassCombineLighting>();
-		// TODO: UpscalePassの追加
+		pipeline_.Insert<Sxx::Rendering::RenderPassUpscaling>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
 
 	}
@@ -211,45 +211,6 @@ void SandboxUnit::UpdateSandbox() {
 	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {
 		transform->Update();
 	});
-
-	{
-		static uint32_t frameCount = 0;
-		frameCount++;
-
-		if (frameCount % (60 * 5) == 0) {
-			switch (option_.upscalerMode) {
-				case Sxx::Rendering::PassOption::UpscalerMode::Native:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::UltraQuality;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <UltraQuality>.");
-					break;
-
-				case Sxx::Rendering::PassOption::UpscalerMode::UltraQuality:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Quality;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Quality>.");
-					break;
-
-				case Sxx::Rendering::PassOption::UpscalerMode::Quality:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Balanced>.");
-					break;
-
-				case Sxx::Rendering::PassOption::UpscalerMode::Balanced:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Performance;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Performance>.");
-					break;
-
-				case Sxx::Rendering::PassOption::UpscalerMode::Performance:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <UltraPerformance>.");
-					break;
-
-				case Sxx::Rendering::PassOption::UpscalerMode::UltraPerformance:
-					option_.upscalerMode = Sxx::Rendering::PassOption::UpscalerMode::Native;
-					STREAM_LOG_DEBUG("Rendering::PassOption | UpscalerMode is changed to <Native>.");
-					break;
-			}
-		}
-	}
 }
 
 void SandboxUnit::RenderSandbox() {

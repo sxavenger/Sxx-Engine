@@ -33,12 +33,14 @@ RenderPassCombineLighting::RenderPassCombineLighting() {
 }
 
 void RenderPassCombineLighting::Setup(MAYBE_UNUSED const PassContext& context) {
+	//!< bufferの取得
+	context.buffer->EnsureInstance<MainBuffer>(context.GetBufferResolution());
 }
 
 void RenderPassCombineLighting::Execute(Graphics::GraphicsCommandContext& command, const PassContext& context) {
 		
-	if (!context.buffer->HasInstance<LightingBuffer>() || !context.buffer->HasInstance<MainBuffer>()) {
-		STACK_LOG_WARNING("Rendering::RenderPassCombineLighting | <LightingBuffer> or <MainBuffer> is not found.");
+	if (!context.buffer->HasInstance<LightingBuffer>()) {
+		STACK_LOG_WARNING("Rendering::RenderPassCombineLighting | <LightingBuffer> is not found.");
 		return; //!< Bufferが存在しない場合, 実行しない.
 	}
 

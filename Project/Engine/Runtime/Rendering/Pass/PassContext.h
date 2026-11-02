@@ -80,7 +80,7 @@ public:
 		// public variables
 		//=========================================================================================
 
-		Vector2u ouptutResolution                       = {};
+		Vector2u outputResolution                       = {};
 		Vector2u renderResolution                       = {};
 		PassOption::WorkingColorSpace workingColorSpace = PassOption::WorkingColorSpace::Linear;
 		Graphics::DisplayColorSpace displayColorSpace   = Graphics::DisplayColorSpace::Rec709;
