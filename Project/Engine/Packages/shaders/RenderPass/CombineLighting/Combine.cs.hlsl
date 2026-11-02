@@ -34,7 +34,7 @@ void main(Semantics::Compute semantics) {
 
 	uint32_t2 pixel = semantics.dispatch_thread_id.xy;
 
-	if (!Context.IsWithinResolution(pixel)) {
+	if (!Context.IsWithinRenderResolution(pixel)) {
 		return; //!< 画面外のpixelは処理しない
 	}
 

@@ -30,7 +30,7 @@ public:
 	//* instance option *//
 
 	template <Buffer T>
-	T* EnsureInstance(const Vector2u& resolution);
+	T* EnsureInstance(const BaseBuffer::Resolution& resolution);
 
 	template <Buffer T>
 	bool HasInstance() const;
@@ -40,7 +40,7 @@ public:
 
 	//* buffer option *//
 
-	void Resize(const Vector2u& resolution);
+	void Resize(const BaseBuffer::Resolution& resolution);
 
 	void ClearTarget(Graphics::GraphicsCommandContext& command);
 
@@ -59,7 +59,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <Buffer T>
-T* BufferCollection::EnsureInstance(const Vector2u& resolution) {
+T* BufferCollection::EnsureInstance(const BaseBuffer::Resolution& resolution) {
 	if (!instances_.Contains<T>()) {
 		instances_.Insert<T>(); //!< instanceが存在しない場合は生成する.
 

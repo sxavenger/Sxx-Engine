@@ -38,7 +38,8 @@ struct PassContext {
 	// public variables
 	//=========================================================================================
 
-	uint32_t2 resolution;
+	uint32_t2 output_resolution;
+	uint32_t2 render_resolution;
 	WorkingColorSpace working_color_space;
 	DisplayColorSpace display_color_space;
 	DisplayEncoder display_encoder;
@@ -47,9 +48,14 @@ struct PassContext {
 	// public methods
 	//=========================================================================================
 
-	//! @brief インデックスが解像度内に収まっているかを判定
-	bool IsWithinResolution(uint32_t2 index) {
-		return all(index < resolution);
+	//! @brief インデックスが出力解像度内に収まっているかを判定
+	bool IsWithinOutputResolution(uint32_t2 index) {
+		return all(index < output_resolution);
+	}
+
+	//! @brief インデックスがレンダリング解像度内に収まっているかを判定
+	bool IsWithinRenderResolution(uint32_t2 index) {
+		return all(index < render_resolution);
 	}
 
 	//! @brief 入力色をWorkingColorSpaceに変換

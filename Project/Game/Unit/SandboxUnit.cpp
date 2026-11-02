@@ -34,6 +34,7 @@
 #include <Engine/Runtime/Rendering/Pass/RenderPassDeferredBase.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassDirectLighting.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassCombineLighting.h>
+#include <Engine/Runtime/Rendering/Pass/RenderPassUpscaling.h>
 #include <Engine/Runtime/Rendering/Pass/RenderPassTonemap.h>
 #include <Engine/Runtime/Rendering/Buffer/MainBuffer.h>
 
@@ -128,8 +129,17 @@ void SandboxUnit::InitSandbox() {
 
 		auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
 		light->SetColor({ 1.0f, 1.0f, 1.0f });
-		light->SetIntensity(2.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
+		light->SetIntensity(4.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
 		light->SetRadius(200.0f);
+	}
+
+	{ //!< Optionの初期化
+
+		option_.workingColorSpace = Sxx::Rendering::PassOption::WorkingColorSpace::ACEScg;
+		option_.displayEncoder    = Sxx::Rendering::PassOption::DisplayEncoder::Hardware;
+		option_.upscaler          = Sxx::Rendering::PassOption::Upscaler::NIS;
+		option_.upscalerMode      = Sxx::Rendering::PassOption::UpscalerMode::Balanced;
+
 	}
 
 	{ //!< Passの初期化
@@ -137,6 +147,7 @@ void SandboxUnit::InitSandbox() {
 		pipeline_.Insert<Sxx::Rendering::RenderPassDeferredBase>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassDirectLighting>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassCombineLighting>();
+		pipeline_.Insert<Sxx::Rendering::RenderPassUpscaling>();
 		pipeline_.Insert<Sxx::Rendering::RenderPassTonemap>();
 
 	}
@@ -373,7 +384,7 @@ void SandboxUnit::RenderSandbox() {
 			pipeline1_.BindPipeline(context, viewport.GetClient());
 
 			Sxx::Graphics::ShaderParameter parameter;
-			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::MainBuffer>().GetBuffer(Sxx::Rendering::MainBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+			parameter.SetHandle("gTexture", buffer_.GetInstance<Sxx::Rendering::MainBuffer>().GetBuffer(Sxx::Rendering::MainBuffer::Layout::SceneRender).GetDescriptorSRV().GetGPUHandle());
 
 			pipeline1_.BindShaderParameter(context, parameter);
 

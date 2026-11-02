@@ -18,12 +18,12 @@ const ArrayEnum<DXGI_FORMAT, EnumUtil<LightingBuffer::Layout>::GetCount(), Light
 // LightingBuffer class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void LightingBuffer::Create(const Vector2u& resolution) {
+void LightingBuffer::Create(const Resolution& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 
 		//!< optionsの設定
 		RenderTargetTexture::Options options = {};
-		options.resolution = resolution;
+		options.resolution = resolution.render;
 		options.format = kFormats[i];
 
 		//!< textureの生成
@@ -32,9 +32,9 @@ void LightingBuffer::Create(const Vector2u& resolution) {
 	}
 }
 
-void LightingBuffer::Resize(const Vector2u& resolution) {
+void LightingBuffer::Resize(const Resolution& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
-		buffers_[i].Resize(resolution);
+		buffers_[i].Resize(resolution.render);
 	}
 }
 

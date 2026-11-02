@@ -24,9 +24,25 @@ FlagEnum<PassContext::Issue> PassContext::CheckIssue(const PassContext& context)
 	return flags;
 }
 
+Vector2u PassContext::GetRenderResolution() const {
+	const float raito = option.GetUpscaleRaito(); //!< アップスケーリング倍率を取得する.
+	return Math::Max(static_cast<Vector2u>(Math::Round(static_cast<Vector2f>(resolution) / raito)), Vector2u(1, 1)); //!< アップスケーリング前の解像度は、最小値を1x1に制限する.
+	// TODO: DLSS実行時はNGX_DLSS_GET_OPTIMAL_SETTINGSから取得する.
+}
+
+BaseBuffer::Resolution PassContext::GetBufferResolution() const {
+
+	BaseBuffer::Resolution result;
+	result.output = resolution; //!< フル出力解像度を設定.
+	result.render = GetRenderResolution(); //!< アップスケーリング前の解像度を設定.
+
+	return result;
+}
+
 PassContext::ContextData PassContext::GetContextData() const {
 	ContextData data;
-	data.resolution        = resolution;
+	data.outputResolution  = resolution;
+	data.renderResolution  = GetRenderResolution();
 	data.workingColorSpace = option.workingColorSpace;
 	data.displayColorSpace = option.displayColorSpace;
 	data.displayEncoder    = option.displayEncoder;

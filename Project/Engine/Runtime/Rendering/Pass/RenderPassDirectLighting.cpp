@@ -28,7 +28,7 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 		desc.SetBlendMode(0, colorDesc, Graphics::BlendModeTransparent::Max);
 		desc.SetPrimitive(Graphics::PrimitiveTopology::TriangleList);
 		desc.SetDepthStencil(true, D3D12_DEPTH_WRITE_MASK_ZERO, D3D12_COMPARISON_FUNC_GREATER);
-		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::Scene));
+		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::SceneRender));
 		desc.AppendRenderTargetFormat(LightingBuffer::GetFormat(LightingBuffer::Layout::Direct));
 	}
 
@@ -70,10 +70,10 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 void RenderPassDirectLighting::Setup(const PassContext& context) {
 	//!< bufferの確保
-	context.buffer->EnsureInstance<MainBuffer>(context.resolution); //!< ここでは使用されないが, 最終結果の描画先として確保しておく.
-	context.buffer->EnsureInstance<LightingBuffer>(context.resolution);
-	context.buffer->EnsureInstance<GBuffer>(context.resolution);
-	context.buffer->EnsureInstance<DepthStencilBuffer>(context.resolution);
+	context.buffer->EnsureInstance<MainBuffer>(context.GetBufferResolution()); //!< ここでは使用されないが, 最終結果の描画先として確保しておく.
+	context.buffer->EnsureInstance<LightingBuffer>(context.GetBufferResolution());
+	context.buffer->EnsureInstance<GBuffer>(context.GetBufferResolution());
+	context.buffer->EnsureInstance<DepthStencilBuffer>(context.GetBufferResolution());
 }
 
 void RenderPassDirectLighting::Execute(Graphics::GraphicsCommandContext& command, const PassContext& context) {
@@ -124,7 +124,7 @@ void RenderPassDirectLighting::BeginDirectLightingPass(Graphics::GraphicsCommand
 		}
 
 		//!< DepthStencilをDepthWriteに遷移
-		depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).Transition(command, DepthStencilTexture::State::Read);
+		depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).Transition(command, DepthStencilTexture::State::Read);
 	}
 
 	{ //!< Render Targetの設定
@@ -136,7 +136,7 @@ void RenderPassDirectLighting::BeginDirectLightingPass(Graphics::GraphicsCommand
 
 		commandList->OMSetRenderTargets(
 			static_cast<UINT>(handles.size()), handles.data(), false,
-			&depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorDSV().GetCPUHandle()
+			&depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).GetDescriptorDSV().GetCPUHandle()
 		);
 
 	}
@@ -164,7 +164,7 @@ void RenderPassDirectLighting::EndDirectLightingPass(Graphics::GraphicsCommandCo
 		}
 
 		//!< DepthStencilを通常状態に遷移
-		depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).Transition(command, DepthStencilTexture::State::Default);
+		depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).Transition(command, DepthStencilTexture::State::Default);
 	}
 
 }
@@ -178,7 +178,7 @@ void RenderPassDirectLighting::PassUnlit(Graphics::GraphicsCommandContext& comma
 	const GBuffer& gbuffer                 = context.buffer->GetInstance<GBuffer>();
 	const DepthStencilBuffer& depthStencil = context.buffer->GetInstance<DepthStencilBuffer>();
 
-	pipeline.BindPipeline(command, context.resolution);
+	pipeline.BindPipeline(command, data.renderResolution);
 
 	Graphics::ShaderParameter parameter;
 
@@ -194,7 +194,7 @@ void RenderPassDirectLighting::PassUnlit(Graphics::GraphicsCommandContext& comma
 	parameter.SetAddress("gScene", context.scene->GetTopLevelAccelerationStructure().GetGpuVirtualAddress());
 
 	//!< GBuffer情報の設定
-	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferA", gbuffer.GetBuffer(GBuffer::Layout::GBufferA).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferB", gbuffer.GetBuffer(GBuffer::Layout::GBufferB).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferC", gbuffer.GetBuffer(GBuffer::Layout::GBufferC).GetDescriptorSRV().GetGPUHandle());
@@ -213,7 +213,7 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 	const GBuffer& gbuffer                 = context.buffer->GetInstance<GBuffer>();
 	const DepthStencilBuffer& depthStencil = context.buffer->GetInstance<DepthStencilBuffer>();
 
-	pipeline.BindPipeline(command, context.resolution);
+	pipeline.BindPipeline(command, data.renderResolution);
 
 	Graphics::ShaderParameter parameter;
 
@@ -229,7 +229,7 @@ void RenderPassDirectLighting::LightingDirectionalLight(Graphics::GraphicsComman
 	parameter.SetAddress("gScene", context.scene->GetTopLevelAccelerationStructure().GetGpuVirtualAddress());
 
 	//!< GBuffer情報の設定
-	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferA", gbuffer.GetBuffer(GBuffer::Layout::GBufferA).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferB", gbuffer.GetBuffer(GBuffer::Layout::GBufferB).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferC", gbuffer.GetBuffer(GBuffer::Layout::GBufferC).GetDescriptorSRV().GetGPUHandle());
@@ -256,7 +256,7 @@ void RenderPassDirectLighting::LightingPointLight(Graphics::GraphicsCommandConte
 	const GBuffer& gbuffer                 = context.buffer->GetInstance<GBuffer>();
 	const DepthStencilBuffer& depthStencil = context.buffer->GetInstance<DepthStencilBuffer>();
 
-	pipeline.BindPipeline(command, context.resolution);
+	pipeline.BindPipeline(command, data.renderResolution);
 
 	Graphics::ShaderParameter parameter;
 
@@ -272,7 +272,7 @@ void RenderPassDirectLighting::LightingPointLight(Graphics::GraphicsCommandConte
 	parameter.SetAddress("gScene", context.scene->GetTopLevelAccelerationStructure().GetGpuVirtualAddress());
 
 	//!< GBuffer情報の設定
-	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::Scene).GetDescriptorSRV().GetGPUHandle());
+	parameter.SetHandle("gDepth",   depthStencil.GetBuffer(DepthStencilBuffer::Layout::SceneRender).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferA", gbuffer.GetBuffer(GBuffer::Layout::GBufferA).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferB", gbuffer.GetBuffer(GBuffer::Layout::GBufferB).GetDescriptorSRV().GetGPUHandle());
 	parameter.SetHandle("gBufferC", gbuffer.GetBuffer(GBuffer::Layout::GBufferC).GetDescriptorSRV().GetGPUHandle());

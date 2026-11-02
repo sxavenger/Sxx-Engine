@@ -73,6 +73,8 @@ public:
 
 		static std::optional<D3D12_RENDER_PASS_TIER> CheckRenderPass(RefPtr<ID3D12Device8> device);
 
+		static bool CheckNative16BitShaderOps(RefPtr<ID3D12Device8> device);
+
 		//=========================================================================================
 		// public variables
 		//=========================================================================================
@@ -82,6 +84,7 @@ public:
 		bool meshShader                                        = false; //!< Mesh Shaderがサポートされているか.
 		D3D12_RAYTRACING_TIER raytracingTier                   = D3D12_RAYTRACING_TIER_NOT_SUPPORTED; //!< サポートされているRaytracingの機能レベル.
 		std::optional<D3D12_RENDER_PASS_TIER> renderPassesTier = std::nullopt; //!< サポートされているRender Passの機能レベル. (std::nulloptの場合はRender Passはサポートされていない)
+		bool native16BitShaderOps                              = false; //!< Native 16bit Shader Opsがサポートされているか.
 
 	};
 
