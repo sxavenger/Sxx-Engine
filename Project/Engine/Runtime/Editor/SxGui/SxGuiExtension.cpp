@@ -28,6 +28,10 @@ SxGui::ContentRect SxGui::CalcAspectFitRect(const Vector2f& image_size, const Ve
 	return rect;
 }
 
+bool SxGui::TreeNodeHeader(const std::string_view& label, ImGuiTreeNodeFlags flags) {
+	return ImGui::TreeNodeEx(label.data(), flags | ImGuiTreeNodeFlags_Framed); //!< CollapsingHeaderを有効にする
+}
+
 bool SxGui::ButtonStretchWidth(const std::string_view& label, float height) {
 	float width = SxGui::GetContentRegionAvail().x;
 	return SxGui::Button(label, { width, height });

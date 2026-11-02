@@ -56,6 +56,14 @@ namespace SxGui {
 
 	Vector2f CalcTextSize(const std::string_view& text, bool hide_text_after_double_hash = true, float wrap_width = -1.0f);
 
+	//-----------------------------------------------------------------------------------------
+	// [Indent]
+	//-----------------------------------------------------------------------------------------
+
+	void Indent(float indent_width = 0.0f);
+
+	void Unindent(float unindent_width = 0.0f);
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// menu methods
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +71,14 @@ namespace SxGui {
 	bool BeginMenu(const std::string_view& label, bool enabled = true);
 
 	void EndMenu();
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// tree node methods
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	bool TreeNodeEx(const std::string_view& label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None);
+
+	void TreePop();
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// widget methods
@@ -130,6 +146,20 @@ namespace SxGui {
 	//-----------------------------------------------------------------------------------------
 
 	void Text(const std::string_view& text);
+
+	//-----------------------------------------------------------------------------------------
+	// [Selectable]
+	//-----------------------------------------------------------------------------------------
+
+	bool Selectable(const std::string_view& label, bool* p_selected, ImGuiSelectableFlags flags = ImGuiSelectableFlags_None, const Vector2f& size = { 0, 0 });
+
+	//-----------------------------------------------------------------------------------------
+	// [Combo]
+	//-----------------------------------------------------------------------------------------
+
+	bool BeginCombo(const std::string_view& label, const std::string_view& preview_value, ImGuiComboFlags flags = ImGuiComboFlags_None);
+
+	void EndCombo();
 
 }
 

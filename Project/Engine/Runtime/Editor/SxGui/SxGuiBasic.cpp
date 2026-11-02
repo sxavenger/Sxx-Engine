@@ -29,12 +29,28 @@ Vector2f SxGui::CalcTextSize(const std::string_view& text, bool hide_text_after_
 	return { size.x, size.y };
 }
 
+void SxGui::Indent(float indent_width) {
+	ImGui::Indent(indent_width);
+}
+
+void SxGui::Unindent(float unindent_width) {
+	ImGui::Unindent(unindent_width);
+}
+
 bool SxGui::BeginMenu(const std::string_view& label, bool enabled) {
 	return ImGui::BeginMenu(label.data(), enabled);
 }
 
 void SxGui::EndMenu() {
 	ImGui::EndMenu();
+}
+
+bool SxGui::TreeNodeEx(const std::string_view& label, ImGuiTreeNodeFlags flags) {
+	return ImGui::TreeNodeEx(label.data(), flags);
+}
+
+void SxGui::TreePop() {
+	ImGui::TreePop();
 }
 
 bool SxGui::ColorEdit3(const std::string_view& label, float col[3], ImGuiColorEditFlags flags) {
@@ -67,4 +83,16 @@ void SxGui::Image(const Graphics::Descriptor::Handle& handle, const Vector2f& im
 
 void SxGui::Text(const std::string_view& text) {
 	ImGui::Text(text.data());
+}
+
+bool SxGui::Selectable(const std::string_view& label, bool* p_selected, ImGuiSelectableFlags flags, const Vector2f& size) {
+	return ImGui::Selectable(label.data(), p_selected, flags, { size.x, size.y });
+}
+
+bool SxGui::BeginCombo(const std::string_view& label, const std::string_view& preview_value, ImGuiComboFlags flags) {
+	return ImGui::BeginCombo(label.data(), preview_value.data(), flags);
+}
+
+void SxGui::EndCombo() {
+	ImGui::EndCombo();
 }
