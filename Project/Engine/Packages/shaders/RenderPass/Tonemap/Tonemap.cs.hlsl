@@ -65,6 +65,7 @@ void main(Semantics::Compute semantics) {
 		default:
 			return; //!< Linearの場合は何もしない
 	}
+	// TODO: color_spaceごとにファイルを分ける.
 
 	gSceneColor[pixel] = float32_t4(color, transparency);
 
