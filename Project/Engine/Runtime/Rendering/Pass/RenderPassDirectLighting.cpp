@@ -68,7 +68,7 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 }
 
-void RenderPassDirectLighting::Setup(const PassContext& context) {
+void RenderPassDirectLighting::Setup(MAYBE_UNUSED const PassContext& context) {
 	//!< bufferの確保
 	context.buffer->EnsureInstance<MainBuffer>(context.GetBufferResolution()); //!< ここでは使用されないが, 最終結果の描画先として確保しておく.
 	context.buffer->EnsureInstance<LightingBuffer>(context.GetBufferResolution());

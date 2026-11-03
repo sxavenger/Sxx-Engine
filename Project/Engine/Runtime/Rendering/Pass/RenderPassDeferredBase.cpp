@@ -41,7 +41,7 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 
 }
 
-void RenderPassDeferredBase::Setup(const PassContext& context) {
+void RenderPassDeferredBase::Setup(MAYBE_UNUSED const PassContext& context) {
 	//!< bufferの確保
 	context.buffer->EnsureInstance<GBuffer>(context.GetBufferResolution());
 	context.buffer->EnsureInstance<DepthStencilBuffer>(context.GetBufferResolution());
