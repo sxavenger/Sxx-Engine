@@ -9,6 +9,7 @@ SXAVENGER_ENGINE_USING_(Graphics)
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ResourceHandle class methods
@@ -38,7 +39,7 @@ ResourceHandle ResourceAllocator::Allocate(const Device& device, const ResourceD
 		buffer[i] = Resource::CreateCommitted(device, desc);
 	}
 
-	STREAM_LOG_DEBUG(
+	STACK_LOG_DEBUG(
 		"Graphics::ResourceAllocator | allocate resource handle. index: {}, buffer count: {}", handle.GetIndex(), count
 	);
 
@@ -51,7 +52,7 @@ void ResourceAllocator::Release(ResourceHandle::Handle&& handle) {
 		return; //!< handleが無効な場合は警告を出して終了.
 	}
 
-	STREAM_LOG_DEBUG(
+	STACK_LOG_DEBUG(
 		"Graphics::ResourceAllocator | release resource handle. index: {}", handle.GetIndex()
 	);
 
@@ -64,7 +65,7 @@ void ResourceAllocator::Free() {
 		ResourceHandle::Type index = freeQueue_.front();
 		freeQueue_.pop();
 
-		STREAM_LOG_DEBUG(
+		STACK_LOG_DEBUG(
 			"Graphics::ResourceAllocator | free resource handle. index: {}", index
 		);
 
