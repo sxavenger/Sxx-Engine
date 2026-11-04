@@ -35,6 +35,7 @@ void LightingBuffer::Create(const Resolution& resolution) {
 void LightingBuffer::Resize(const Resolution& resolution) {
 	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
 		buffers_[i].Resize(resolution.render);
+		buffers_[i].SetName(EnumUtil<Layout>::GetName(i));
 	}
 }
 
