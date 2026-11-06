@@ -28,7 +28,7 @@ namespace {
 		//!< descriptionを設定
 		Bone::Description description = {};
 		description.name           = node.GetName();
-		description.transformation = node.GetTransformation();
+		description.transform      = node.GetTransform();
 
 		for (uint32_t i = 0; i < node.GetChildCount(); ++i) {
 			description.children.emplace_back(ReadNode(path, node.GetChild(i)));

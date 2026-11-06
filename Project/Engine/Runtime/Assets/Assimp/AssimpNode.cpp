@@ -25,7 +25,7 @@ uint32_t AssimpNode::GetMeshIndex(uint32_t index) const {
 	return node_->mMeshes[index];
 }
 
-Transformation3d AssimpNode::GetTransformation() const {
+Transform3d AssimpNode::GetTransform() const {
 	const aiMatrix4x4& t = node_->mTransformation;
 
 	//!< aiMatrix4x4 (列ベクトル規約) → Basis (行ベクトル規約) : 3x3 を転置する.
@@ -37,6 +37,7 @@ Transformation3d AssimpNode::GetTransformation() const {
 	};
 	transformation.translation = { t.a4, t.b4, t.c4 };
 
-	return transformation;
+	//!< Transform3dに変換する.
+	return Transform3d::Decompose(transformation);
 }
 

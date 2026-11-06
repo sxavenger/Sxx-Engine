@@ -8,7 +8,7 @@
 
 //* lib
 #include <Lib/Pointer/ReferencePointer.h>
-#include <Lib/Math/Transform/Transformation3d.h>
+#include <Lib/Math/Transform/Transform3d.h>
 
 //* assimp
 #include <assimp/scene.h>
@@ -48,7 +48,7 @@ public:
 
 	uint32_t GetMeshIndex(uint32_t index) const;
 
-	Transformation3d GetTransformation() const;
+	Transform3d GetTransform() const;
 
 private:
 

@@ -39,14 +39,12 @@ public:
 		// public methods
 		//=========================================================================================
 
-		Transform3d GetTransform() const;
-
 		//=========================================================================================
 		// private variables
 		//=========================================================================================
 
 		std::string name;
-		Transformation3d transformation;
+		Transform3d transform;
 		std::vector<Description> children;
 		std::vector<Uuid> meshIds;
 

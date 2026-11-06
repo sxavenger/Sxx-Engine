@@ -16,6 +16,7 @@
 #include <Engine/Runtime/Assets/Importer/TextureImporter.h>
 #include <Engine/Runtime/Assets/Importer/SurfaceMaterialImporter.h>
 #include <Engine/Runtime/Assets/Importer/StaticMeshImporter.h>
+#include <Engine/Runtime/Assets/Importer/ModelImporter.h>
 
 //* world [world]
 #include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
@@ -144,6 +145,8 @@ void SandboxUnit::InitSandbox() {
 		auto viewport = Sxx::Framework::Context::GetUnit<Sxx::SlateEditorUnit>()->GetPanel<Sxx::Editor::ViewportPanel>();
 		viewport->SetBufferCollection(&buffer_);
 	}
+
+	Sxx::Assets::ModelImporter::Contents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
 }
 
 void SandboxUnit::TermSandbox() {
