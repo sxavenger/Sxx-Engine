@@ -279,7 +279,7 @@ void SandboxUnit::RenderSandbox() {
 		x.scene  = &scene_;
 		x.camera.camera    = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::CameraCache>(camera_->GetComponent<Sxx::World::CameraComponent>().GetAddress());
 		x.camera.transform = Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::TransformCache>(camera_->GetComponent<Sxx::World::TransformComponent>().GetAddress());
-		x.resolution       = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1280, 720);
+		x.resolution       = Sxx::Framework::Context::HasUnit<Sxx::WindowUnit>() ? Sxx::Framework::Context::GetUnit<Sxx::WindowUnit>()->GetViewport().GetClient() : Vector2u(1920, 1080);
 		x.option           = Sxx::Rendering::Renderer::GetOption();
 
 		Sxx::Rendering::Renderer::Render(context, x);
