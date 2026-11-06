@@ -30,23 +30,19 @@ void SettingsPanel::OnDraw() {
 
 		{
 			SxGui::Text("Color Space");
-			SxGui::Indent();
-
 			SxGui::ComboEnum("Working Color Space", &option.workingColorSpace); //!< Working Color Spaceの設定
-
-			SxGui::Unindent();
 		}
 		
 		{
 			SxGui::Text("Upscaler");
-			SxGui::Indent();
-
 			SxGui::ComboEnum("Upscaler", &option.upscaler);          //!< Upscalerの設定
 			SxGui::ComboEnum("Upscaler Mode", &option.upscalerMode); //!< Upscaler Modeの設定
-
-			SxGui::Unindent();
 		}
-		
+
+		{
+			SxGui::Text("Anti-Aliasing");
+			SxGui::ComboEnum("Anti-Aliasing", &option.antiAliasing); //!< Anti-Aliasingの設定
+		}
 
 		SxGui::TreePop();
 	}

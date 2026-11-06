@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
-#include "../UpscalingCommon.hlsli"
+#include "../Upscaling.hlsli"
 
 #define NIS_SCALER 1
 #define NIS_HDR_MODE 1 //!< (NIS_HDR_MODE_LINEAR)

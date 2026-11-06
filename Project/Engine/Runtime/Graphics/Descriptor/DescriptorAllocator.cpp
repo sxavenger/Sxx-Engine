@@ -5,8 +5,9 @@ SXAVENGER_ENGINE_USING_(Graphics)
 // include
 //-----------------------------------------------------------------------------------------
 //* lib
-#include <Lib/Logger/StreamLogger.h>
 #include <Lib/String/UnicodeConverter.h>
+#include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DescriptorAllocator class methods
@@ -62,7 +63,7 @@ Descriptor DescriptorAllocator::Allocate() {
 		handle.gpu = GetGPUDescriptorHandle(handle.index);
 	}
 
-	STREAM_LOG_DEBUG(
+	STACK_LOG_DEBUG(
 		"Graphics::DescriptorAllocator<{}> | allocate descriptor handle. index: {},", category_, handle.index
 	);
 
@@ -77,7 +78,7 @@ void DescriptorAllocator::Release(Descriptor::Handle&& handle) {
 		return;
 	}
 
-	STREAM_LOG_DEBUG(
+	STACK_LOG_DEBUG(
 		"Graphics::DescriptorAllocator<{}> | release descriptor handle. index: {},", category_, handle.GetIndex()
 	);
 
@@ -90,7 +91,7 @@ void DescriptorAllocator::Free() {
 		UINT index = freeQueue_.front();
 		freeQueue_.pop();
 
-		STREAM_LOG_DEBUG(
+		STACK_LOG_DEBUG(
 			"Graphics::DescriptorAllocator<{}> | free descriptor handle. index: {},", category_, index
 		);
 

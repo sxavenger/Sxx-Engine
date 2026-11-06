@@ -51,6 +51,11 @@ void MainBuffer::Create(const Resolution& resolution) {
 void MainBuffer::Resize(const Resolution& resolution) {
 	buffers_[Layout::SceneRender].Resize(resolution.render); //!< SceneRenderはupscale前の解像度でリサイズする.
 	buffers_[Layout::SceneOutput].Resize(resolution.output); //!< SceneOutputはupscale後の解像度でリサイズする.
+
+	//!< 名前の設定
+	for (EnumUtil<Layout>::Underlying i = 0; i < EnumUtil<Layout>::GetCount(); ++i) {
+		buffers_[i].SetName(EnumUtil<Layout>::GetName(i));
+	}
 }
 
 void MainBuffer::ClearTarget(Graphics::GraphicsCommandContext& command) {

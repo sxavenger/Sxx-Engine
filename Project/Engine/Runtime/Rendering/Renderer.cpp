@@ -16,6 +16,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include "Pass/RenderPassDeferredBase.h"
 #include "Pass/RenderPassDirectLighting.h"
 #include "Pass/RenderPassCombineLighting.h"
+#include "Pass/RenderPassAntiAliasing.h"
 #include "Pass/RenderPassUpscaling.h"
 #include "Pass/RenderPassTonemap.h"
 
@@ -41,6 +42,7 @@ void Renderer::Init() {
 	Renderer::InsertRenderPass<RenderPassDeferredBase>();
 	Renderer::InsertRenderPass<RenderPassDirectLighting>();
 	Renderer::InsertRenderPass<RenderPassCombineLighting>();
+	Renderer::InsertRenderPass<RenderPassAntiAliasing>();
 	Renderer::InsertRenderPass<RenderPassUpscaling>();
 	Renderer::InsertRenderPass<RenderPassTonemap>();
 

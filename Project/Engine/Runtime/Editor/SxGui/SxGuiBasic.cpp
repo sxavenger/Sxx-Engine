@@ -53,6 +53,10 @@ void SxGui::TreePop() {
 	ImGui::TreePop();
 }
 
+bool SxGui::CollapsingHeader(const std::string_view& label, ImGuiTreeNodeFlags flags) {
+	return ImGui::CollapsingHeader(label.data(), flags);
+}
+
 bool SxGui::ColorEdit3(const std::string_view& label, float col[3], ImGuiColorEditFlags flags) {
 	return Internal::ColorEdit3(label.data(), col, flags);
 }

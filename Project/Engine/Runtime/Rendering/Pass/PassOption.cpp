@@ -21,7 +21,7 @@ float PassOption::GetUpscaleScaleFactor(UpscalerMode mode) {
 float PassOption::GetLimitUpscaleScaleFactor(Upscaler upscaler) {
 	switch (upscaler) {
 		case Upscaler::NIS:  return 2.0f; //!< NVIDIA Image Scaling (NIS) のupscale可能な最大倍率制約
-		case Upscaler::FSR1: return 2.0f; //!< AMD FidelityFX Super Resolution 1.0 (FSR1) のupscale可能な最大倍率制約
+		//case Upscaler::FSR1: return 2.0f; //!< AMD FidelityFX Super Resolution 1.0 (FSR1) のupscale可能な最大倍率制約
 		default:             return std::numeric_limits<float>::max();
 	}
 }
