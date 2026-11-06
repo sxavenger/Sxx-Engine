@@ -7,6 +7,7 @@
 #include "AssimpOption.h"
 #include "AssimpMesh.h"
 #include "AssimpMaterial.h"
+#include "AssimpNode.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -56,7 +57,7 @@ public:
 
 	AssimpMaterial GetMaterial(uint32_t index) const;
 
-	// TODO: Material/Animation関係の関数の追加.
+	AssimpNode GetRootNode() const;
 
 	//* operator [copy / move] <AssimpImporter> *//
 

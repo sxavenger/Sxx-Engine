@@ -46,6 +46,11 @@ AssimpMaterial AssimpImporter::GetMaterial(uint32_t index) const {
 	return importer_->GetScene()->mMaterials[index];
 }
 
+AssimpNode AssimpImporter::GetRootNode() const {
+	STREAM_ASSERT(HasScene(), "importer has no scene");
+	return AssimpNode(importer_->GetScene()->mRootNode);
+}
+
 AssimpImporter AssimpImporter::Load(const std::filesystem::path& filepath, FlagEnum<AssimpOption> option) {
 	std::shared_ptr<Assimp::Importer> instance = std::make_shared<Assimp::Importer>();
 	instance->SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType_POINT | aiPrimitiveType_LINE); //!< 点と線のプリミティブを削除する

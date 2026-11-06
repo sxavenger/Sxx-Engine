@@ -8,6 +8,7 @@
 #include "../Texture/TextureTraits.h"
 #include "../Mesh/StaticMeshTraits.h"
 #include "../Material/SurfaceMaterialTraits.h"
+#include "../Bone/BoneTraits.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
