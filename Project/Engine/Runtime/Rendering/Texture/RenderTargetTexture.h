@@ -32,6 +32,8 @@ public:
 		Default         = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
 		RenderTarget    = D3D12_RESOURCE_STATE_RENDER_TARGET,
 		UnorderedAccess = D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		Source          = D3D12_RESOURCE_STATE_COPY_SOURCE,
+		Dest            = D3D12_RESOURCE_STATE_COPY_DEST,
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////

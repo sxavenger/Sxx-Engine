@@ -73,7 +73,6 @@ void RenderPassTonemap::BeginTonemapPass(Graphics::GraphicsCommandContext& comma
 
 	{ //!< barrierの設定
 
-
 		//!< MainBufferをUnorderedAccessに遷移
 		for (EnumUtil<MainBuffer::Layout>::Underlying i = 0; i < kBufferCount; ++i) {
 			buffers[i]->Transition(command, RenderTargetTexture::State::UnorderedAccess);
