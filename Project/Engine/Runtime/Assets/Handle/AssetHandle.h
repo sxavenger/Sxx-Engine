@@ -145,7 +145,7 @@ void AssetHandle<T>::Reload() const {
 	AssetStorage::GetInstance()->Reload<T>(uuid_.value());
 }
 
-template<Asset T>
+template <Asset T>
 inline Scheduler::TaskHandle AssetHandle<T>::GetTaskHandle() const {
 	return Get()->GetTaskHandle();
 }
