@@ -24,6 +24,8 @@
 #include <Engine/Runtime/World/Component/Renderer/StaticMeshRenderer.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/PointLightComponent.h>
+#include <Engine/Runtime/World/Entity/EntityBehaviour.h>
+#include <Engine/Runtime/World/Entity/EntityFactory.h>
 
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Cache/Static/StaticMeshCache.h>
@@ -106,15 +108,8 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Objectの作成
 
-		object_->AddComponent<Sxx::World::TransformComponent>();
-		object_->AddComponent<Sxx::World::StaticMeshRenderer>();
-
-		auto transform = object_->GetComponent<Sxx::World::TransformComponent>();
-		transform->SetPosition({ 0.0f, 0.0f, 0.0f });
-
-		auto renderer = object_->GetComponent<Sxx::World::StaticMeshRenderer>();
-		renderer->SetMesh(Sxx::Assets::StaticMeshImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }).id);
-		renderer->SetMaterial(Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }).id);
+		Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
+		object_ = Sxx::World::EntityFactory::CreateModelEntity(contents);
 	}
 
 	{ //!< Lightの作成
@@ -145,8 +140,6 @@ void SandboxUnit::InitSandbox() {
 		auto viewport = Sxx::Framework::Context::GetUnit<Sxx::SlateEditorUnit>()->GetPanel<Sxx::Editor::ViewportPanel>();
 		viewport->SetBufferCollection(&buffer_);
 	}
-
-	Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
 }
 
 void SandboxUnit::TermSandbox() {
@@ -164,38 +157,31 @@ void SandboxUnit::UpdateSandbox() {
 		Vector3f position = transform->GetPosition();
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::A).IsPress()) {
-			position.x -= 0.01f;
+			position.x -= 0.1f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::D).IsPress()) {
-			position.x += 0.01f;
+			position.x += 0.1f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::W).IsPress()) {
-			position.z += 0.01f;
+			position.z += 0.1f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::S).IsPress()) {
-			position.z -= 0.01f;
+			position.z -= 0.1f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::Q).IsPress()) {
-			position.y += 0.01f;
+			position.y += 0.1f;
 		}
 
 		if (keyboard.GetKey(Sxx::Platform::KeyId::E).IsPress()) {
-			position.y -= 0.01f;
+			position.y -= 0.1f;
 		}
 
 
 		transform->SetPosition(position);
-	}
-
-	{
-		auto transform = object_->GetComponent<Sxx::World::TransformComponent>();
-
-		static const float rotationSpeed = 0.01f;
-		transform->SetRotation(transform->GetRotation() * Quaternionf::AxisAngle(Vector3f::Up(), rotationSpeed));
 	}
 
 	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {

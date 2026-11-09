@@ -11,6 +11,7 @@
 
 //* c++
 #include <vector>
+#include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -27,6 +28,8 @@ public:
 	// public methods
 	//=========================================================================================
 
+	const Uuid& GetMeshMaterialId(const Uuid& meshId) const;
+
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
@@ -35,6 +38,7 @@ public:
 	std::vector<Uuid> materialIds;
 	Uuid boneId;
 
+	std::unordered_map<Uuid, Uuid> meshMaterialMap; //!< meshに対応するmaterialのuuidを格納するunordered_map
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

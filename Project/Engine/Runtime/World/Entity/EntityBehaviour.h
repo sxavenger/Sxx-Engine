@@ -20,7 +20,6 @@
 #include <Lib/Reflection/TypeInfo.h>
 
 //* c++
-#include <unordered_set>
 #include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,11 +27,24 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(World)
 
+//-----------------------------------------------------------------------------------------
+// forward
+//-----------------------------------------------------------------------------------------
+class GameObject;
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // EntityBehaviour class
 ////////////////////////////////////////////////////////////////////////////////////////////
 class EntityBehaviour final {
 public:
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// OwnerShip enum class
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class Ownership : bool {
+		Owned,
+		Borrowed
+	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// Mobility enum class
@@ -56,15 +68,30 @@ public:
 
 	//* entity option *//
 
+	void SetName(const std::string_view& name) { name_ = name; }
+
+	std::string_view GetName() const noexcept { return name_; }
+
+	bool IsActive() const noexcept { return isActive_; }
+
+	void SetActive(bool active);
+
+	//* hierarchy option *//
+
 	bool HasParent() const noexcept { return parent_.HasHandle(); }
 
 	RefPtr<EntityBehaviour> GetParent() const;
 
-	void SetName(const std::string_view& name) { name_ = name; }
+	bool HasChildren() const noexcept { return !children_.empty(); }
 
-	const std::string_view GetName() const noexcept { return name_; }
+	//! @brief 所有権ごと子を渡す
+	void AttachChild(GameObject&& child);
 
-	bool IsActive() const noexcept { return isActive_; }
+	//! @brief 所有権ごと子を渡す
+	void AttachChild(EntityHandle&& child);
+
+	//! @brief 借用として子を追加
+	void AttachChild(const EntityHandle& child);
 
 	//* component option *//
 
@@ -96,7 +123,7 @@ private:
 	//* hierarchy *//
 
 	EntityHandle parent_ = std::nullopt;
-	std::unordered_set<EntityHandle, EntityHandle::Hash> children_;
+	std::unordered_map<EntityHandle, Ownership, EntityHandle::Hash> children_;
 
 	//* component *//
 
@@ -109,6 +136,12 @@ private:
 	Mobility mobility_ = Mobility::Movable;
 
 	bool isActive_ = true;
+
+	//=========================================================================================
+	// private methods
+	//=========================================================================================
+
+	void AttachInternal(const EntityHandle& child, Ownership ownership);
 
 };
 

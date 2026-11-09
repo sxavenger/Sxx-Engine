@@ -53,5 +53,11 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 	//!< boneの取り込み
 	contents.boneId = BoneImporter::Import(filepath, BoneImporter::ReferenceParameters{}).id;
 
+	//!< meshに対応するmaterialのuuidを格納するvectorの作成
+	for (uint32_t i = 0; i < meshCount; ++i) {
+		const AssimpMesh& mesh = importer.GetMesh(i);
+		contents.meshMaterialMap[contents.meshIds[i]] = contents.materialIds[mesh.GetMaterialIndex()];
+	}
+
 	return contents;
 }
