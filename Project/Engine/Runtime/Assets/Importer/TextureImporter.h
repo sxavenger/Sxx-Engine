@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
+#include "../Contents/TextureContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -48,7 +49,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static TextureContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

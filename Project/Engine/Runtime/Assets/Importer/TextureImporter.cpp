@@ -19,8 +19,10 @@ SXAVENGER_ENGINE_USING_(Assets)
 // TextureImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-Uuid TextureImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
+TextureContents TextureImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "texture file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
+
+	TextureContents contents = {};
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
 
@@ -35,7 +37,8 @@ Uuid TextureImporter::Import(const std::filesystem::path& filepath, const Refere
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {
-			return AssetStorage::GetInstance()->Import<Texture>(parent / filename); //!< AssetStorageに登録
+			contents.id = AssetStorage::GetInstance()->Import<Texture>(parent / filename); //!< AssetStorageに登録
+			return contents;
 		}
 
 		json::node node = json::node::object();
@@ -67,6 +70,6 @@ Uuid TextureImporter::Import(const std::filesystem::path& filepath, const Refere
 		STREAM_LOG_DEBUG("Assets::TextureImporter | texture metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
 	}
 
-	return AssetStorage::GetInstance()->Import<Texture>(parent / filename); //!< AssetStorageに登録
-	
+	contents.id = AssetStorage::GetInstance()->Import<Texture>(parent / filename); //!< AssetStorageに登録
+	return contents;
 }

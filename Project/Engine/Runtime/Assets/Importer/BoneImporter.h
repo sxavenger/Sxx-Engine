@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
+#include "../Contents/BoneContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -44,7 +45,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static BoneContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

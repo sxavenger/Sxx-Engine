@@ -35,7 +35,7 @@ namespace {
 		}
 
 		for (uint32_t i = 0; i < node.GetMeshCount(); ++i) {
-			Uuid mesh = StaticMeshImporter::Import(path, { .index = node.GetMeshIndex(i) });
+			Uuid mesh = StaticMeshImporter::Import(path, { .index = node.GetMeshIndex(i) }).id;
 			description.meshIds.emplace_back(mesh);
 		}
 

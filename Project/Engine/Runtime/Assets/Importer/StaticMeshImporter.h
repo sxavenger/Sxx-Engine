@@ -1,12 +1,11 @@
 #pragma once
 
-#pragma once
-
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
+#include "../Contents/StaticMeshContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -48,7 +47,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static StaticMeshContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

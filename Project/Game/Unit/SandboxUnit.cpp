@@ -113,8 +113,8 @@ void SandboxUnit::InitSandbox() {
 		transform->SetPosition({ 0.0f, 0.0f, 0.0f });
 
 		auto renderer = object_->GetComponent<Sxx::World::StaticMeshRenderer>();
-		renderer->SetMesh(Sxx::Assets::StaticMeshImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }));
-		renderer->SetMaterial(Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }));
+		renderer->SetMesh(Sxx::Assets::StaticMeshImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }).id);
+		renderer->SetMaterial(Sxx::Assets::SurfaceMaterialImporter::Import(L"Assets/DamagedHelmet/DamagedHelmet.gltf", { .index = 0 }).id);
 	}
 
 	{ //!< Lightの作成
@@ -146,7 +146,7 @@ void SandboxUnit::InitSandbox() {
 		viewport->SetBufferCollection(&buffer_);
 	}
 
-	Sxx::Assets::ModelImporter::Contents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
+	Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
 }
 
 void SandboxUnit::TermSandbox() {

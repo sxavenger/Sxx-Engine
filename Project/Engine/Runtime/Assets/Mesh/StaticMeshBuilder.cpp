@@ -105,7 +105,7 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 	}
 
 	//!< materialの取得
-	description.materialId = SurfaceMaterialImporter::Import(path, { .index = mesh.GetMaterialIndex() });
+	description.materialId = SurfaceMaterialImporter::Import(path, { .index = mesh.GetMaterialIndex() }).id;
 
 	return description;
 }

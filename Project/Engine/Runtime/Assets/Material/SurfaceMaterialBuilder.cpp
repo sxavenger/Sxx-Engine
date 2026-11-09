@@ -126,7 +126,7 @@ std::optional<Uuid> SurfaceMaterialBuilder::GetTextureId(const AssimpMaterial& m
 	parameters.encoding         = SurfaceMaterialBuilder::GetTextureEncoding(type);
 	parameters.isGenerateMipmap = true;
 
-	return TextureImporter::Import(path.value(), parameters);
+	return TextureImporter::Import(path.value(), parameters).id;
 }
 
 std::optional<Uuid> SurfaceMaterialBuilder::Unify(const std::optional<Uuid>& lhs, const std::optional<Uuid>& rhs) {

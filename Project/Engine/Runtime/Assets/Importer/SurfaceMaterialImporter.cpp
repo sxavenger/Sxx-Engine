@@ -21,8 +21,10 @@ SXAVENGER_ENGINE_USING_(Assets)
 // SurfaceMaterialImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-Uuid SurfaceMaterialImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
+SurfaceMaterialContents SurfaceMaterialImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "surface material file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
+
+	SurfaceMaterialContents contents = {};
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
 
@@ -42,7 +44,8 @@ Uuid SurfaceMaterialImporter::Import(const std::filesystem::path& filepath, cons
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {
-			return AssetStorage::GetInstance()->Import<SurfaceMaterial>(parent / filename); //!< AssetStorageに登録
+			contents.id = AssetStorage::GetInstance()->Import<SurfaceMaterial>(parent / filename); //!< AssetStorageに登録
+			return contents;
 		}
 
 		json::node node = json::node::object();
@@ -73,5 +76,6 @@ Uuid SurfaceMaterialImporter::Import(const std::filesystem::path& filepath, cons
 		STREAM_LOG_DEBUG("Assets::SurfaceMaterialImporter | surface material metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
 	}
 
-	return AssetStorage::GetInstance()->Import<SurfaceMaterial>(parent / filename); //!< AssetStorageに登録
+	contents.id = AssetStorage::GetInstance()->Import<SurfaceMaterial>(parent / filename); //!< AssetStorageに登録
+	return contents;
 }

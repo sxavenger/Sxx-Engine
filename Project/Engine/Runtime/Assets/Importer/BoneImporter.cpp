@@ -21,8 +21,10 @@ SXAVENGER_ENGINE_USING_(Assets)
 // BoneImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-Uuid BoneImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
+BoneContents BoneImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "bone file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
+
+	BoneContents contents = {};
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
 
@@ -41,7 +43,8 @@ Uuid BoneImporter::Import(const std::filesystem::path& filepath, const Reference
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {
-			return AssetStorage::GetInstance()->Import<Bone>(parent / filename); //!< AssetStorageに登録
+			contents.id = AssetStorage::GetInstance()->Import<Bone>(parent / filename); //!< AssetStorageに登録
+			return contents;
 		}
 
 		json::node node = json::node::object();
@@ -71,6 +74,7 @@ Uuid BoneImporter::Import(const std::filesystem::path& filepath, const Reference
 		STREAM_LOG_DEBUG("Assets::BoneImporter | bone metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
 	}
 
-	return AssetStorage::GetInstance()->Import<Bone>(parent / filename); //!< AssetStorageに登録
+	contents.id = AssetStorage::GetInstance()->Import<Bone>(parent / filename); //!< AssetStorageに登録
+	return contents;
 
 }

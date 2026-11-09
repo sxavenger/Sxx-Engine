@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
+#include "../Contents/ModelContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -25,32 +26,14 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 ////////////////////////////////////////////////////////////////////////////////////////////
 class ModelImporter final {
 public:
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Contents structure
-	////////////////////////////////////////////////////////////////////////////////////////////
-	struct Contents {
-	public:
-
-		//=========================================================================================
-		// public variables
-		//=========================================================================================
-
-		std::vector<Uuid> meshIds;
-		std::vector<Uuid> materialIds;
-
-		Uuid boneId;
-
-		// TODO: SkeletalMeshの作成
-	};
-
+	
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	static Contents Import(const std::filesystem::path& filepath);
+	static ModelContents Import(const std::filesystem::path& filepath);
 
 };
 
