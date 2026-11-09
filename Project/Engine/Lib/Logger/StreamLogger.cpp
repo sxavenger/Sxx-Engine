@@ -129,54 +129,6 @@ NORETURN void StreamLogger::Exception(const TracePoint& point, const std::wstrin
 	StreamLogger::ExceptionW(point, message);
 }
 
-void StreamLogger::AssertA(bool expression, const TracePoint& point, const std::string_view& message) {
-	if (expression) LIKELY {
-		 return; //!< assertionがtrueの場合は何もしない
-	}
-
-	StreamLogger::ExceptionA(point, message);
-}
-
-void StreamLogger::AssertW(bool expression, const TracePoint& point, const std::wstring_view& message) {
-	if (expression) LIKELY {
-		 return; //!< assertionがtrueの場合は何もしない
-	}
-
-	StreamLogger::ExceptionW(point, message);
-}
-
-void StreamLogger::AssertSummaryA(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message) {
-	if (expression) LIKELY {
-		 return; //!< assertionがtrueの場合は何もしない
-	}
-
-	StreamLogger::ExceptionSummaryA(point, summary, message);
-}
-
-void StreamLogger::AssertSummaryW(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message) {
-	if (expression) LIKELY {
-		 return; //!< assertionがtrueの場合は何もしない
-	}
-
-	StreamLogger::ExceptionSummaryW(point, summary, message);
-}
-
-void StreamLogger::Assert(bool expression, const TracePoint& point, const std::string_view& message) {
-	StreamLogger::AssertA(expression, point, message);
-}
-
-void StreamLogger::Assert(bool expression, const TracePoint& point, const std::wstring_view& message) {
-	StreamLogger::AssertW(expression, point, message);
-}
-
-void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message) {
-	StreamLogger::AssertSummaryA(expression, point, summary, message);
-}
-
-void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message) {
-	StreamLogger::AssertSummaryW(expression, point, summary, message);
-}
-
 void StreamLogger::OutputA(const std::string_view& message) {
 	ConsoleLogger::OutputA(message);
 	FileLogger::OutputA(message);

@@ -74,38 +74,6 @@ public:
 	template <typename... Args> requires (LoggerUtil::FormatW<Args>&& ...)
 	NORETURN static void ExceptionSummary(const TracePoint& point, const std::wstring_view& summary, std::wformat_string<Args...> format, Args&&... args);
 
-	//* assert methods *//
-
-	static void AssertA(bool expression, const TracePoint& point, const std::string_view& message);
-
-	static void AssertW(bool expression, const TracePoint& point, const std::wstring_view& message);
-
-	static void AssertSummaryA(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message);
-
-	static void AssertSummaryW(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message);
-
-	//* assert override methods *//
-
-	static void Assert(bool expression, const TracePoint& point, const std::string_view& message);
-
-	static void Assert(bool expression, const TracePoint& point, const std::wstring_view& message);
-
-	template <typename... Args> requires (LoggerUtil::FormatA<Args>&& ...)
-	static void Assert(bool expression, const TracePoint& point, std::format_string<Args...> format, Args&&... args);
-
-	template <typename... Args> requires (LoggerUtil::FormatW<Args>&& ...)
-	static void Assert(bool expression, const TracePoint& point, std::wformat_string<Args...> format, Args&&... args);
-
-	static void AssertSummary(bool expression, const TracePoint& point, const std::string_view& summary, const std::string_view& message);
-
-	static void AssertSummary(bool expression, const TracePoint& point, const std::wstring_view& summary, const std::wstring_view& message);
-
-	template <typename... Args> requires (LoggerUtil::FormatA<Args>&& ...)
-	static void AssertSummary(bool expression, const TracePoint& point, const std::string_view& summary, std::format_string<Args...> format, Args&&... args);
-
-	template <typename... Args> requires (LoggerUtil::FormatW<Args>&& ...)
-	static void AssertSummary(bool expression, const TracePoint& point, const std::wstring_view& summary, std::wformat_string<Args...> format, Args&&... args);
-
 private:
 
 	//=========================================================================================
@@ -192,26 +160,6 @@ NORETURN inline void StreamLogger::ExceptionSummary(const TracePoint& point, con
 	StreamLogger::ExceptionSummaryW(point, summary, std::format(format, std::forward<Args>(args)...));
 }
 
-template <typename... Args> requires (LoggerUtil::FormatA<Args>&& ...)
-inline void StreamLogger::Assert(bool expression, const TracePoint& point, std::format_string<Args...> format, Args&&... args) {
-	StreamLogger::AssertA(expression, point, std::format(format, std::forward<Args>(args)...));
-}
-
-template <typename... Args> requires (LoggerUtil::FormatW<Args>&& ...)
-inline void StreamLogger::Assert(bool expression, const TracePoint& point, std::wformat_string<Args...> format, Args&&... args) {
-	StreamLogger::AssertW(expression, point, std::format(format, std::forward<Args>(args)...));
-}
-
-template <typename... Args> requires (LoggerUtil::FormatA<Args>&& ...)
-inline void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::string_view& summary, std::format_string<Args...> format, Args&&... args) {
-	StreamLogger::AssertSummaryA(expression, point, summary, std::format(format, std::forward<Args>(args)...));
-}
-
-template <typename... Args> requires (LoggerUtil::FormatW<Args>&& ...)
-inline void StreamLogger::AssertSummary(bool expression, const TracePoint& point, const std::wstring_view& summary, std::wformat_string<Args...> format, Args&&... args) {
-	StreamLogger::AssertSummaryW(expression, point, summary, std::format(format, std::forward<Args>(args)...));
-}
-
 //-----------------------------------------------------------------------------------------
 // define
 //-----------------------------------------------------------------------------------------
@@ -231,5 +179,12 @@ inline void StreamLogger::AssertSummary(bool expression, const TracePoint& point
 
 // Assert macros
 
-#define STREAM_ASSERT(expression, format, ...)                  StreamLogger::Assert(expression, TracePoint::Current(), format, ##__VA_ARGS__)
-#define STREAM_ASSERT_SUMMARY(expression, summary, format, ...) StreamLogger::AssertSummary(expression, TracePoint::Current(), summary, format, ##__VA_ARGS__)
+#define STREAM_ASSERT(expression, format, ...) \
+	if (!(expression)) UNLIKELY { \
+		StreamLogger::Exception(TracePoint::Current(), format, ##__VA_ARGS__); \
+	}
+
+#define STREAM_ASSERT_SUMMARY(expression, summary, format, ...) \
+	if (!(expression)) UNLIKELY { \
+		StreamLogger::ExceptionSummary(TracePoint::Current(), summary, format, ##__VA_ARGS__); \
+	}
