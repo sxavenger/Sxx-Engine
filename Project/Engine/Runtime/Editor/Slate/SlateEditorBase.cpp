@@ -216,8 +216,10 @@ void Slate::EditorBase::UpdateEditor() {
 
 	//!< EditorPanelの更新. 描画に依存しない処理をここで回す.
 	//!< note: tabが裏に隠れていても呼ぶ. 描画は OnDraw() 側でImGuiのframe内で行われる.
-	for (const Editor::Slate::EditorPanelPointer& panel : panels_) {
-		if (panel != nullptr) {
+	//!< note: OnUpdateの中でAddPanelされるとpush_backでiteratorが壊れるため, indexで回す.
+	//!<       追加されたpanelはこのframeのうちにOnUpdateが呼ばれる.
+	for (size_t i = 0; i < panels_.size(); ++i) {
+		if (const Editor::Slate::EditorPanelPointer panel = panels_[i]) { //!< copyして寿命を保つ.
 			panel->OnUpdate();
 		}
 	}
@@ -536,6 +538,11 @@ void Slate::EditorBase::CollectClosedWindows() {
 		//!< このwindowを指す遅延要求とdrag状態を捨てる. 残すとerase後にdangling pointerを触る.
 		DiscardRequests(request);
 
+		//!< 中に残っているPinnedのpanelを破棄する. (tabの × を通らずwindowごと閉じられた場合)
+		for (const Editor::Slate::DockPanelPointer& panel : Editor::Slate::CollectAllPanels((*it)->dockRoot)) {
+			ReleasePinnedPanel(panel);
+		}
+
 		(*it)->dockRoot  = nullptr;
 		(*it)->statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
 		(*it)->root.reset();
@@ -852,10 +859,8 @@ void Slate::EditorBase::AddPanel(const Editor::Slate::EditorPanelPointer& panel,
 	}
 
 	//!< panelの所有はUnitが持つ. widgetはweak_ptrで参照するため, ここが唯一の所有者になる.
-	//!< tabを閉じてもインスタンスは残るので, 後から同じpanelを開き直せる.
-	if (std::find(panels_.begin(), panels_.end(), panel) == panels_.end()) {
-		panels_.push_back(panel);
-	}
+	//!< Globalはtabを閉じてもインスタンスは残るので, 後から同じpanelを開き直せる.
+	RegisterPanelInstance(panel, panel->GetState());
 
 	EditorWindow* target = (window != nullptr) ? window.Get() : GetMainEditorWindow().Get();
 
@@ -865,6 +870,44 @@ void Slate::EditorBase::AddPanel(const Editor::Slate::EditorPanelPointer& panel,
 	}
 
 	AddPanelToEditorWindow(*target, panel->GetDockPanel());
+}
+
+void Slate::EditorBase::RegisterPanelInstance(const Editor::Slate::EditorPanelPointer& panel, PanelState state) {
+
+	if (panel == nullptr) {
+		return;
+	}
+
+	panel->editor_ = this;
+	panel->state_  = state;
+
+	if (std::find(panels_.begin(), panels_.end(), panel) == panels_.end()) {
+		panels_.push_back(panel);
+	}
+}
+
+void Slate::EditorBase::ReleasePinnedPanel(const Editor::Slate::DockPanelPointer& dockPanel) {
+
+	if (dockPanel == nullptr) {
+		return;
+	}
+
+	const auto it = std::find_if(panels_.begin(), panels_.end(), [&dockPanel](const Editor::Slate::EditorPanelPointer& panel) {
+		return panel != nullptr
+			&& panel->GetState() == PanelState::Pinned
+			&& panel->HasDockPanel()
+			&& panel->GetDockPanel() == dockPanel;
+	});
+
+	if (it == panels_.end()) {
+		return; //!< Globalはtabを閉じてもインスタンスを残す.
+	}
+
+	(*it)->OnClose();
+
+	//!< widgetはweak_ptrで参照しているため, ここで破棄しても安全.
+	//!< note: ProcessPendingRequestsの中(panels_の走査外)から呼ばれる前提.
+	panels_.erase(it);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -1034,6 +1077,9 @@ void Slate::EditorBase::ProcessPanelCloseRequest(const PanelCloseRequest& reques
 	if (!Editor::Slate::RemovePanelFromTree(source.dockRoot, request.panel)) {
 		return;
 	}
+
+	//!< Pinnedのpanelは閉じたら破棄する. (残すと開くたびにinstanceが溜まる)
+	ReleasePinnedPanel(request.panel);
 
 	source.dockRoot = Editor::Slate::PruneEmptyNodes(source.dockRoot);
 	RebuildWindowChrome(source);

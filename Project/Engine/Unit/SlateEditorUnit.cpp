@@ -42,13 +42,13 @@ namespace {
 SlateEditorUnit::SlateEditorUnit() {
 
 	//!< 既定のpanel. 生成はGPUにもImGuiにも依存しないため, Push時点で作っておく.
-	//!< note: BuildMainLayoutが登録された全panelを1つのtab stackへ自動で並べるため, panelを追加するときはここにpush_backするだけでよい.
-	panels_.push_back(std::make_shared<Editor::ViewportPanel>());
-	panels_.push_back(std::make_shared<Editor::HierarchyPanel>());
-	panels_.push_back(std::make_shared<Editor::SettingsPanel>());
-	
-	//panels_.push_back(std::make_shared<Editor::EditorTestPanel>());
-	//panels_.push_back(std::make_shared<Editor::StyleEditorPanel>());
+	//!< note: BuildMainLayoutが登録された全panelを1つのtab stackへ自動で並べるため, panelを追加するときはここでRegisterPanelするだけでよい.
+	RegisterPanel<Editor::ViewportPanel>(PanelState::Global);
+	RegisterPanel<Editor::HierarchyPanel>(PanelState::Global);
+	RegisterPanel<Editor::SettingsPanel>(PanelState::Global);
+
+	//RegisterPanel<Editor::EditorTestPanel>(PanelState::Global);
+	//RegisterPanel<Editor::StyleEditorPanel>(PanelState::Global);
 }
 
 void SlateEditorUnit::OnInitEditor() {

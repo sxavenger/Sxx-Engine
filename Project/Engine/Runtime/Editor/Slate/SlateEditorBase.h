@@ -234,24 +234,39 @@ namespace Slate {
 
 		//* panel option *//
 
-		//! @brief EditorPanelを継承したpanelをtabとして追加する.
-		//! @note panelの寿命はUnitが持つ. tabを閉じてもインスタンスは破棄されないため,
-		//!       同じpanelを後から開き直せる.
-		//! @param window 追加先. nullptrならmain window.
-		//! @retval 追加したpanel. 追加に失敗した場合はnullptr.
+		using PanelState = Editor::Slate::EditorPanel::State;
+
+		//! @brief EditorPanelを継承したpanelを生成して所有に加える. tabとしては開かない.
+		//! @note layoutの構築前(constructor)用. BuildMainLayoutが登録済みのpanelを並べる.
+		//! @param state Globalで, 型TのGlobalなinstanceが既にあれば生成せずそれを返す. (argsは使われない)
+		//! @retval 登録したpanel.
 		template <class T, class... Args>
 			requires std::derived_from<T, Editor::Slate::EditorPanel>
-		std::shared_ptr<T> AddPanel(Args&&... args);
+		std::shared_ptr<T> RegisterPanel(PanelState state, Args&&... args);
 
-		//! @brief 生成済みのpanelをtabとして追加する.
+		//! @brief EditorPanelを継承したpanelを生成してtabとして開く.
+		//! @note EditorPanel::OnDraw / OnUpdateの中から呼んでよい. treeへの追加は次frameの
+		//!       ProcessPendingRequestsまで遅延する. (描画中にtreeを書き換えると走査中のtreeを壊すため)
+		//! @note 開く先はmain window.
+		//! @note Globalのpanelはtabを閉じてもインスタンスは破棄されず, 後から開き直せる.
+		//!       Pinnedのpanelはtabを閉じると破棄される.
+		//! @param state Globalで, 型TのGlobalなinstanceが既にあれば生成せず既存を開き直す. (argsは使われない)
+		//! @retval 追加したpanel.
+		template <class T, class... Args>
+			requires std::derived_from<T, Editor::Slate::EditorPanel>
+		std::shared_ptr<T> AddPanel(PanelState state, Args&&... args);
+
+		//! @brief 生成済みのpanelをtabとして即座に追加する.
+		//! @note treeを直接書き換えるため, EditorPanel::OnDrawの中から呼んではいけない.
+		//! @note stateはpanelが既に持っている値(未登録ならGlobal)を使う.
 		void AddPanel(const Editor::Slate::EditorPanelPointer& panel, RefPtr<EditorWindow> window = nullptr);
 
 		//! @brief Unitが保持しているpanelの一覧.
 		const std::vector<Editor::Slate::EditorPanelPointer>& GetPanels() const { return panels_; }
 
-		//! @brief 保持しているpanelから型Tのpanelを取得する.
+		//! @brief Globalとして登録された型Tのpanelを取得する.
 		//! @note 所有はUnitが持つ. 呼び出し側で保持し続ける場合はweak_ptrで持つこと.
-		//! @retval 最初に見つかったpanel. 無ければnullptr.
+		//! @retval Globalなpanel. Pinnedのinstanceしか無い / 未登録ならnullptr.
 		template <class T>
 			requires std::derived_from<T, Editor::Slate::EditorPanel>
 		std::shared_ptr<T> GetPanel() const;
@@ -281,7 +296,8 @@ namespace Slate {
 		//* panels *//
 
 		//!< EditorPanelを継承したpanelの所有者. widgetはweak_ptrで参照するため,
-		//!< ここが唯一の所有者になる. tabを閉じてもインスタンスは残る.
+		//!< ここが唯一の所有者になる. Globalはtabを閉じてもインスタンスは残り, Pinnedは破棄される.
+		//!< note: 直接push_backせず, RegisterPanel / AddPanelで登録すること. (editorとstateが設定されない)
 		std::vector<Editor::Slate::EditorPanelPointer> panels_;
 
 		//=========================================================================================
@@ -297,7 +313,7 @@ namespace Slate {
 		//! @brief main windowのdockRootを構築して返す.
 		//! @note SplitterとDockTabStackのみで構成すること. chrome(TitleBar / MenuBar / statusBar)は基底が包む.
 		//! @note layoutを組んでいる途中でdockRootがまだ無いためAddPanel()は使えない.
-		//!       panelは GetPanel<T>() で取得して直接tab stackへ入れる.
+		//!       登録済みのpanelは GetPanels() / GetPanel<T>() で取得して直接tab stackへ入れる.
 		virtual Editor::Slate::WidgetPointer BuildMainLayout() = 0;
 
 		//! @brief statusBarの中身を描く. ChromeBandのImGui Beginの内側(ImGuiのframe内)で呼ばれる.
@@ -431,6 +447,14 @@ namespace Slate {
 		//!       マーカーの描画位置と当たり判定がずれる.
 		float ResolveMainMenuBarHeight() const;
 
+		//* panel registry helper methods *//
+
+		//! @brief panelへeditorとstateを設定し, panels_へ加える. (既に居れば加えない)
+		void RegisterPanelInstance(const Editor::Slate::EditorPanelPointer& panel, PanelState state);
+
+		//! @brief 閉じられたDockPanelに対応するPinnedのpanelを破棄する. (Globalは残す)
+		void ReleasePinnedPanel(const Editor::Slate::DockPanelPointer& dockPanel);
+
 		//* docking helper methods *//
 
 		void EnqueueTearOff(EditorWindow* source, Editor::Slate::DockPanelPointer panel, Vector2f clientPosition);
@@ -439,7 +463,7 @@ namespace Slate {
 
 		//! @brief 閉じたtabを開き直す要求を積む. 同じpanelが既に積まれていれば捨てる.
 		//! @note 積むのは描画中(Application::TickのImGui callbackの中)のため, ここではtreeを触らない.
-		//! @note 現在の呼び出し元は無い. 閉じたtabを開き直すAPIとして残している. (menu barなどから呼ぶ想定)
+		//! @note AddPanel<T>() から呼ばれる. 閉じたGlobalのtabを開き直す場合も同じ経路を通る.
 		void EnqueuePanelOpen(const Editor::Slate::EditorPanelPointer& panel);
 
 		void ProcessPendingRequests();
@@ -527,11 +551,30 @@ namespace Slate {
 
 	template <class T, class... Args>
 		requires std::derived_from<T, Editor::Slate::EditorPanel>
-	std::shared_ptr<T> EditorBase::AddPanel(Args&&... args) {
+	std::shared_ptr<T> EditorBase::RegisterPanel(PanelState state, Args&&... args) {
+
+		if (state == PanelState::Global) {
+			if (std::shared_ptr<T> existing = GetPanel<T>()) {
+				return existing; //!< Globalは型ごとにinstanceを1つしか持たない.
+			}
+		}
 
 		std::shared_ptr<T> panel = std::make_shared<T>(std::forward<Args>(args)...);
 
-		AddPanel(panel, nullptr);
+		RegisterPanelInstance(panel, state);
+
+		return panel;
+	}
+
+	template <class T, class... Args>
+		requires std::derived_from<T, Editor::Slate::EditorPanel>
+	std::shared_ptr<T> EditorBase::AddPanel(PanelState state, Args&&... args) {
+
+		std::shared_ptr<T> panel = RegisterPanel<T>(state, std::forward<Args>(args)...);
+
+		//!< 描画中(OnDraw)に呼ばれ得るため, treeは触らず要求だけ積む.
+		//!< note: 既に開いているpanelはProcessPanelOpenRequestで無視される.
+		EnqueuePanelOpen(panel);
 
 		return panel;
 	}
@@ -541,6 +584,11 @@ namespace Slate {
 	std::shared_ptr<T> EditorBase::GetPanel() const {
 
 		for (const Editor::Slate::EditorPanelPointer& panel : panels_) {
+
+			if (panel == nullptr || panel->GetState() != PanelState::Global) {
+				continue; //!< Pinnedは取得させない.
+			}
+
 			if (std::shared_ptr<T> result = std::dynamic_pointer_cast<T>(panel)) {
 				return result;
 			}
