@@ -42,6 +42,9 @@ namespace {
 				Assets::AssetHandle<Assets::StaticMesh> mesh          = description.meshIds.front();
 				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
 
+				//!< 名前の設定
+				behaviour->SetName(mesh.GetName());
+
 				//!< rendererの追加
 				behaviour->AddComponent<StaticMeshRenderer>();
 				auto renderer = behaviour->GetComponent<StaticMeshRenderer>();
@@ -60,6 +63,9 @@ namespace {
 					//!< assetの取得
 					Assets::AssetHandle<Assets::StaticMesh> mesh          = meshId;
 					Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
+
+					//!< 名前の設定
+					entity->SetName(mesh.GetName());
 
 					//!< rendererの追加
 					entity->AddComponent<StaticMeshRenderer>();

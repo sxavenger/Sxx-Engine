@@ -8,6 +8,7 @@ SXAVENGER_ENGINE_USING_(Editor)
 #include "SxGui/SxGui.h"
 
 //* engine
+#include <Runtime/World/Component/Transform/TransformComponent.h>
 #include <Runtime/World/Entity/EntityBehaviour.h>
 #include <Runtime/World/Entity/EntityFactory.h>
 
@@ -33,4 +34,11 @@ void InspectorPanel::OnDraw() {
 	RefPtr<World::EntityBehaviour> entity = World::EntityFactory::GetEntity(handle_);
 
 	SxGui::Text(std::format("Entity Name: {}", entity->GetName()));
+
+	if (auto component = entity->GetComponent<World::TransformComponent>()) {
+		auto& transform = component->GetTransform();
+
+		SxGui::DragVectorN<float, 3>("Translation", &transform.translation.x, 0.01f);
+		SxGui::DragVectorN<float, 3>("Scale", &transform.scale.x, 0.01f);
+	}
 }

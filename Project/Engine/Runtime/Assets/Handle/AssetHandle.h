@@ -54,6 +54,10 @@ public:
 
 	Scheduler::TaskHandle GetTaskHandle() const;
 
+	//* asset option *//
+
+	std::string GetName() const;
+
 	uintptr_t GetAddress() const;
 
 	//* operator [copy / move] <AssetHandle> *//
@@ -148,6 +152,11 @@ void AssetHandle<T>::Reload() const {
 template <Asset T>
 inline Scheduler::TaskHandle AssetHandle<T>::GetTaskHandle() const {
 	return Get()->GetTaskHandle();
+}
+
+template <Asset T>
+inline std::string AssetHandle<T>::GetName() const {
+	return Get()->GetName();
 }
 
 template <Asset T>
