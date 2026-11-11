@@ -82,6 +82,9 @@ namespace SxGui {
 	template <Concept::Enum T>
 	bool ComboEnum(const std::string_view& label, T* v, ImGuiComboFlags flags = ImGuiComboFlags_None);
 
+	//! @brief テキストを指定された位置に中央揃えで表示する
+	void TextCenter(const std::string_view& text, const Vector2f& display_size);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
