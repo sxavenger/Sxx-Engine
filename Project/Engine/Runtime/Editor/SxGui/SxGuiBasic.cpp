@@ -37,6 +37,10 @@ void SxGui::Unindent(float unindent_width) {
 	ImGui::Unindent(unindent_width);
 }
 
+bool SxGui::IsItemClicked() {
+	return ImGui::IsItemClicked();
+}
+
 bool SxGui::BeginMenu(const std::string_view& label, bool enabled) {
 	return ImGui::BeginMenu(label.data(), enabled);
 }
@@ -91,6 +95,10 @@ void SxGui::Text(const std::string_view& text) {
 
 bool SxGui::Selectable(const std::string_view& label, bool* p_selected, ImGuiSelectableFlags flags, const Vector2f& size) {
 	return ImGui::Selectable(label.data(), p_selected, flags, { size.x, size.y });
+}
+
+bool SxGui::Selectable(const std::string_view& label, bool selected, ImGuiSelectableFlags flags, const Vector2f& size) {
+	return ImGui::Selectable(label.data(), selected, flags, { size.x, size.y });
 }
 
 bool SxGui::BeginCombo(const std::string_view& label, const std::string_view& preview_value, ImGuiComboFlags flags) {

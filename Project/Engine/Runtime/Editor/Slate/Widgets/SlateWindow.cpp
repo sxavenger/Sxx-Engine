@@ -14,8 +14,7 @@ SXAVENGER_ENGINE_USING_(Editor)
 
 Vector2f Slate::Window::ComputeDesiredSize(float scale, ImGuiRenderer* renderer) const {
 	if (pointer_ != nullptr) {
-		Vector2f size = pointer_->ComputeDesiredSize(scale, renderer);
-		pointer_->CacheDesiredSize(size);
+		pointer_->Prepass(scale, renderer);
 	}
 
 	//!< ルートはネイティブウィンドウのクライアントサイズに固定され、子の希望サイズには従わない.
@@ -38,14 +37,5 @@ int32_t Slate::Window::OnPaint(const PaintArguments& arguments, const Geometry& 
 	renderer->SetDrawTarget(ImGuiRenderer::DrawTarget::Background);
 	renderer->DrawRect(geometry, Style::GetStyle().colors.background);
 
-	int32_t maxLayer = layer;
-
-	ArrangedChildren arranged;
-	OnArrangeChildren(geometry, arranged);
-
-	for (const auto& child : arranged) {
-		maxLayer = std::max(maxLayer, child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1));
-	}
-
-	return maxLayer;
+	return PaintArrangedChildren(arguments, geometry, renderer, layer);
 }

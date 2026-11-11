@@ -14,6 +14,7 @@
 #include <Lib/Math/Color4.h>
 
 //* c++
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,6 +29,11 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Editor)
 // Slate namespace
 ////////////////////////////////////////////////////////////////////////////////////////////
 namespace Slate {
+
+	//-----------------------------------------------------------------------------------------
+	// forward
+	//-----------------------------------------------------------------------------------------
+	class EditorBase; //!< EditorBaseがこのheaderをincludeするため前方宣言に留める.
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// EditorPanel class
@@ -53,13 +59,25 @@ namespace Slate {
 	//! };
 	//! @endcode
 	//!
-	//! 登録は SlateEditorUnit::AddPanel<TestEditor>() で行う.
+	//! 登録は SlateEditorUnit::AddPanel<TestEditor>(State::Global) で行う.
+	//! 他panelのOnDraw / OnUpdateの中からも GetEditor()->AddPanel<T>(state) で追加できる.
 	//!
 	//! @note このクラスは必ず std::shared_ptr で保持すること.
 	//!       widgetへ渡すcallbackは weak_ptr を握るため, 破棄後に呼ばれても安全になる.
 	//!       生ポインタやスタック上のインスタンスで使うと dangling する.
 	class EditorPanel
 		: public std::enable_shared_from_this<EditorPanel> {
+	public:
+
+		////////////////////////////////////////////////////////////////////////////////////////////
+		// State enum class
+		////////////////////////////////////////////////////////////////////////////////////////////
+		//! @brief panelのinstanceの持ち方. 登録時(EditorBase::AddPanel / RegisterPanel)に引数で決める.
+		enum class State : uint8_t {
+			Global, //!< 型ごとにinstanceを1つしか持たない. EditorBase::GetPanel<T>()で取得可能.
+			Pinned, //!< instanceを複数持つ. 取得不可. tabを閉じると破棄される.
+		};
+
 	public:
 
 		//=========================================================================================
@@ -121,6 +139,15 @@ namespace Slate {
 		//! @brief DockPanelが既に生成されているか.
 		bool HasDockPanel() const { return dockPanel_ != nullptr; }
 
+		//* editor option *//
+
+		//! @brief このpanelを所有しているeditor.
+		//! @note 登録時に設定されるため, constructorの中ではnullptr.
+		EditorBase* GetEditor() const { return editor_; }
+
+		//! @brief 登録時に指定されたinstanceの持ち方.
+		State GetState() const { return state_; }
+
 		//* operator [copy] <EditorPanel> (delete) *//
 
 		EditorPanel(const EditorPanel&)            = delete;
@@ -131,6 +158,12 @@ namespace Slate {
 		//=========================================================================================
 		// private variables
 		//=========================================================================================
+
+		friend class EditorBase; //!< editor_ / state_ は登録時にEditorBaseが設定する.
+
+		EditorBase* editor_ = nullptr; //!< 所有しているeditor. (所有はeditor側)
+
+		State state_ = State::Global;
 
 		DockPanelPointer dockPanel_ = nullptr; //!< 遅延生成. GetDockPanel()で作る.
 

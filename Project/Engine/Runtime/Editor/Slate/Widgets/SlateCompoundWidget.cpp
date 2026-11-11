@@ -10,9 +10,7 @@ Vector2f Slate::CompoundWidget::ComputeDesiredSize(float scale, ImGuiRenderer* r
 		return {};
 	}
 
-	Vector2f s = pointer_->ComputeDesiredSize(scale, renderer);
-	pointer_->CacheDesiredSize(s);
-	return s;
+	return pointer_->Prepass(scale, renderer);
 }
 
 void Slate::CompoundWidget::OnArrangeChildren(const Geometry& allotted, ArrangedChildren& out) const {
@@ -30,14 +28,5 @@ void Slate::CompoundWidget::OnArrangeChildren(const Geometry& allotted, Arranged
 }
 
 int32_t Slate::CompoundWidget::OnPaint(const PaintArguments& arguments, const Geometry& geometry, ImGuiRenderer* renderer, int32_t layer) const {
-	int32_t maxLayer = layer;
-
-	ArrangedChildren arranged;
-	OnArrangeChildren(geometry, arranged);
-
-	for (const auto& child : arranged) {
-		maxLayer = std::max(maxLayer, child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1));
-	}
-
-	return maxLayer;
+	return PaintArrangedChildren(arguments, geometry, renderer, layer);
 }

@@ -17,6 +17,7 @@
 //* c++
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -126,7 +127,33 @@ namespace Slate {
 
 		void CacheDesiredSize(Vector2f size) { cachedDesiredSize_ = size; }
 
+		//! @brief desired sizeを計算してcacheする.
+		//! @note 親のComputeDesiredSizeから子に対して呼ぶ. (計算だけしてcacheを忘れるのを防ぐ)
+		Vector2f Prepass(float scale, ImGuiRenderer* renderer) {
+			cachedDesiredSize_ = ComputeDesiredSize(scale, renderer);
+			return cachedDesiredSize_;
+		}
+
 	protected:
+
+		//=========================================================================================
+		// protected methods
+		//=========================================================================================
+
+		//! @brief OnArrangeChildrenで配置した子を順に描く.
+		//! @retval 子が返したlayerの最大. (子が居なければ引数のlayer)
+		int32_t PaintArrangedChildren(const PaintArguments& arguments, const Geometry& geometry, ImGuiRenderer* renderer, int32_t layer) const {
+			ArrangedChildren arranged;
+			OnArrangeChildren(geometry, arranged);
+
+			int32_t maxLayer = layer;
+
+			for (const Arranged& child : arranged) {
+				maxLayer = std::max(maxLayer, child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1));
+			}
+
+			return maxLayer;
+		}
 
 		//=========================================================================================
 		// protected variables

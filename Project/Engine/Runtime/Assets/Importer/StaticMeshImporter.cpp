@@ -21,8 +21,10 @@ SXAVENGER_ENGINE_USING_(Assets)
 // StaticMeshImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-Uuid StaticMeshImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
+StaticMeshContents StaticMeshImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "static mesh file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
+
+	StaticMeshContents contents = {};
 
 	FileType type = Assets::CheckFileType(filepath.extension()); //!< ファイルの種類を判定
 
@@ -42,7 +44,8 @@ Uuid StaticMeshImporter::Import(const std::filesystem::path& filepath, const Ref
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {
-			return AssetStorage::GetInstance()->Import<StaticMesh>(parent / filename); //!< AssetStorageに登録
+			contents.id = AssetStorage::GetInstance()->Import<StaticMesh>(parent / filename); //!< AssetStorageに登録
+			return contents;
 		}
 
 		json::node node = json::node::object();
@@ -73,6 +76,6 @@ Uuid StaticMeshImporter::Import(const std::filesystem::path& filepath, const Ref
 		STREAM_LOG_DEBUG("Assets::StaticMeshImporter | static mesh metadata created. filepath: {}", (parent / filename).generic_string()); //!< metadataを作成したことを通知
 	}
 
-	return AssetStorage::GetInstance()->Import<StaticMesh>(parent / filename); //!< AssetStorageに登録
-
+	contents.id = AssetStorage::GetInstance()->Import<StaticMesh>(parent / filename); //!< AssetStorageに登録
+	return contents;
 }

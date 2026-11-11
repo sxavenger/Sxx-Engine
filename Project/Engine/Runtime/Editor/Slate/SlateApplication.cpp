@@ -17,8 +17,8 @@ void Slate::Application::Tick(Window& window, ImGuiRenderer* renderer, TimePoint
 	}
 
 	//!< pass 1. 希望サイズを再帰的に計算してキャッシュする(ボトムアップ).
-	//!< 各ウィジェットの ComputeDesiredSize() が自身の子の CacheDesiredSize() を埋めるため, ルートの一回で全段に伝播する.
-	window.CacheDesiredSize(window.ComputeDesiredSize(root.scale, renderer));
+	//!< 各ウィジェットの ComputeDesiredSize() が自身の子の Prepass() を呼んでcacheを埋めるため, ルートの一回で全段に伝播する.
+	window.Prepass(root.scale, renderer);
 
 	//!< pass 2. ルートジオメトリ全体を割り当てて描画する(トップダウン).
 	const Widget::PaintArguments arguments = { time };

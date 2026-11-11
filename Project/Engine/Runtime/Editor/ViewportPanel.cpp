@@ -31,15 +31,7 @@ void ViewportPanel::OnDraw() {
 	Vector2f region = SxGui::GetContentRegionAvail();
 
 	if (pointer_ == nullptr) {
-
-		static const std::string_view kDisplayText = "No Viewport";
-
-		// 中心に表示する
-		Vector2f textSize = SxGui::CalcTextSize(kDisplayText.data());
-
-		SxGui::SetCursorPos((region - textSize) / 2.0f);
-		SxGui::Text(kDisplayText.data());
-		
+		SxGui::TextCenter("No Viewport Buffer", region);
 		return; //!< バッファが無いので描画しない.
 	}
 

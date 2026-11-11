@@ -24,8 +24,7 @@ Vector2f Slate::BoxPanel::ComputeDesiredSize(float scale, ImGuiRenderer* rendere
 			continue;
 		}
 
-		const Vector2f desired = slot->GetWidget()->ComputeDesiredSize(scale, renderer);
-		slot->GetWidget()->CacheDesiredSize(desired);
+		const Vector2f desired = slot->GetWidget()->Prepass(scale, renderer);
 
 		if (isVertical_) {
 			total.x = std::max(total.x, desired.x);
@@ -98,14 +97,5 @@ void Slate::BoxPanel::OnArrangeChildren(const Geometry& allotted, ArrangedChildr
 }
 
 int32_t Slate::BoxPanel::OnPaint(const PaintArguments& arguments, const Geometry& geometry, ImGuiRenderer* renderer, int32_t layer) const {
-	int32_t maxLayer = layer;
-
-	ArrangedChildren arranged;
-	OnArrangeChildren(geometry, arranged);
-
-	for (const auto& child : arranged) {
-		maxLayer = std::max(maxLayer, child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1));
-	}
-
-	return maxLayer;
+	return PaintArrangedChildren(arguments, geometry, renderer, layer);
 }

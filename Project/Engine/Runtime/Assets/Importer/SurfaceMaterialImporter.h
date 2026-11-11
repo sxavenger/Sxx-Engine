@@ -7,6 +7,7 @@
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
+#include "../Contents/SurfaceMaterialContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -48,7 +49,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static Uuid Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static SurfaceMaterialContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

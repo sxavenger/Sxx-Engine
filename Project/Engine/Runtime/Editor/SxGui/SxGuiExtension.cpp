@@ -64,3 +64,14 @@ void SxGui::ImageAspectFit(const Graphics::Descriptor::Handle& handle, const Vec
 	//!< 表示領域の中央に配置
 	SxGui::ImageContentRect(handle, rect, bg_color, tint_col);
 }
+
+void SxGui::TextCenter(const std::string_view& text, const Vector2f& display_size) {
+
+	//!< 表示領域の中央に配置
+	Vector2f text_size = SxGui::CalcTextSize(text);
+	Vector2f position = (display_size - text_size) / 2.0f;
+
+	SxGui::SetCursorPos(SxGui::GetCursorPos() + position);
+	SxGui::Text(text);
+
+}

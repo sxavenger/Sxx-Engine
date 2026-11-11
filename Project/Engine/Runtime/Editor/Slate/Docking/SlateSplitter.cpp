@@ -24,12 +24,10 @@ Vector2f Slate::Splitter::ComputeDesiredSize(float scale, ImGuiRenderer* rendere
 	Vector2f a{}, b{};
 
 	if (first_) {
-		a = first_->ComputeDesiredSize(scale, renderer);
-		first_->CacheDesiredSize(a);
+		a = first_->Prepass(scale, renderer);
 	}
 	if (second_) {
-		b = second_->ComputeDesiredSize(scale, renderer);
-		second_->CacheDesiredSize(b);
+		b = second_->Prepass(scale, renderer);
 	}
 
 	if (orientation_ == Orientation::Horizontal) {
@@ -104,14 +102,7 @@ Slate::Geometry Slate::Splitter::DividerHitGeometry(const Geometry& allotted) co
 }
 
 int32_t Slate::Splitter::OnPaint(const PaintArguments& arguments, const Geometry& geometry, ImGuiRenderer* renderer, int32_t layer) const {
-	int32_t maxLayer = layer;
-	ArrangedChildren arranged;
-	OnArrangeChildren(geometry, arranged);
-
-	for (const auto& child : arranged) {
-		const int32_t childLayer = child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1);
-		maxLayer = std::max(maxLayer, childLayer);
-	}
+	const int32_t maxLayer = PaintArrangedChildren(arguments, geometry, renderer, layer);
 
 	PaintDivider(renderer, geometry);
 	return maxLayer;

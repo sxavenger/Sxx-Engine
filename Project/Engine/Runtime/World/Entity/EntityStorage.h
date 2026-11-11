@@ -61,6 +61,8 @@ public:
 
 	// TODO: 名前からの取得機能を追加する
 
+	const Storage& GetStorage() const noexcept { return storage_; }
+
 	//* singleton *//
 
 	static EntityStorage* GetInstance() noexcept;

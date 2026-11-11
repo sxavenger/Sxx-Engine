@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../sponza.gltf",
+			"index": 9
+		}
+	},
+	"type": "SurfaceMaterial",
+	"uuid": "7ac46179-1663-45ff-a7b0-fa6e8a049980"
+}

@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------------------
 //* slate
 #include "SlateTypes.h"
-#include "Widgets/SlateWidget.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -46,9 +45,8 @@ namespace Slate {
 	//!
 	//! 登録は SlateEditorUnit::AddMainMenu<FileMenu>() で行う.
 	//!
-	//! @note このクラスは必ず std::shared_ptr で保持すること.
-	//!       widgetへ渡すcallbackは weak_ptr を握るため, 破棄後に呼ばれても安全になる.
-	//!       生ポインタやスタック上のインスタンスで使うと dangling する.
+	//! @note 所有はEditorBaseがstd::shared_ptrで持つ. (EditorBase::AddMainMenu)
+	//!       menu barの1行は, EditorBaseが登録済みの全main menuのOnDraw()を順に呼んで描く.
 	class MainMenu
 		: public std::enable_shared_from_this<MainMenu> {
 	public:
@@ -79,14 +77,6 @@ namespace Slate {
 
 		float GetHeight() const { return height_; }
 
-		//* widget option *//
-
-		//! @brief このmenu barに対応するwidgetを取得する. 無ければ生成する.
-		//! @note chromeへ組み込むのはこれ. 何度呼んでも同じ実体を返す.
-		const WidgetPointer& GetWidget();
-
-		bool HasWidget() const { return widget_ != nullptr; }
-
 		//* operator [copy] <MainMenu> (delete) *//
 
 		MainMenu(const MainMenu&)            = delete;
@@ -98,16 +88,7 @@ namespace Slate {
 		// private variables
 		//=========================================================================================
 
-		WidgetPointer widget_ = nullptr; //!< 遅延生成. GetWidget()で作る.
-
 		float height_ = 0.0f; //!< 0以下ならImGuiMenuBarがStyleの値を使う.
-
-		//=========================================================================================
-		// private methods
-		//=========================================================================================
-
-		//! @brief ImGuiMenuBarを組み立てる.
-		void CreateWidget();
 
 	};
 

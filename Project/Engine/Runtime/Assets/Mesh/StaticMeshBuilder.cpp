@@ -104,9 +104,6 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 		description.polygons[i] = { mesh.GetTriangle(i) };
 	}
 
-	//!< materialの取得
-	description.materialId = SurfaceMaterialImporter::Import(path, { .index = mesh.GetMaterialIndex() });
-
 	return description;
 }
 

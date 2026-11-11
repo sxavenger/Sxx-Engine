@@ -54,6 +54,8 @@ public:
 
 	constexpr static Matrix4x4f ConvertMatrix(const Transformation3d& t) noexcept;
 
+	constexpr static Transformation3d FromMatrix(const Matrix4x4f& m) noexcept;
+
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
@@ -117,6 +119,18 @@ constexpr Matrix4x4f Transformation3d::ConvertMatrix(const Transformation3d& t) 
 		t.basis.m[2][0], t.basis.m[2][1], t.basis.m[2][2], 0.0f,
 		t.translation.x, t.translation.y, t.translation.z, 1.0f
 	};
+}
+
+inline constexpr Transformation3d Transformation3d::FromMatrix(const Matrix4x4f& m) noexcept {
+	Transformation3d t = {};
+	t.basis = {
+		m.m[0][0], m.m[0][1], m.m[0][2],
+		m.m[1][0], m.m[1][1], m.m[1][2],
+		m.m[2][0], m.m[2][1], m.m[2][2]
+	};
+	t.translation = { m.m[3][0], m.m[3][1], m.m[3][2] };
+
+	return t;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
