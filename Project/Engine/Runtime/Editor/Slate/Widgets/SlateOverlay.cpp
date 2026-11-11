@@ -24,8 +24,7 @@ Vector2f Slate::Overlay::ComputeDesiredSize(float scale, ImGuiRenderer* renderer
 			continue;
 		}
 
-		const Vector2f desired = slot->widget->ComputeDesiredSize(scale, renderer);
-		slot->widget->CacheDesiredSize(desired);
+		const Vector2f desired = slot->widget->Prepass(scale, renderer);
 
 		total = Math::Max(total, desired);
 	}

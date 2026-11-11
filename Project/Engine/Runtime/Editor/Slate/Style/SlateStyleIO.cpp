@@ -67,7 +67,7 @@ std::span<const Slate::StyleIO::ColorEntry> Slate::StyleIO::GetColorEntries() {
 
 	//!< Color4f は単項 operator& を float* を返すよう多重定義しているため, &color では
 	//!< Color4f* にならない. 実体へのポインタは std::addressof で作る.
-	static const std::array<ColorEntry, 19> kEntries = {{
+	static const auto kEntries = std::to_array<ColorEntry>({
 		//* surfaces *//
 		{ "Background",    std::addressof(GetColors().background),    kDefault.background,    "Surfaces",       "分割の溝(パネルの隙間)" },
 		{ "Panel",         std::addressof(GetColors().panel),         kDefault.panel,         "Surfaces",       "パネルの地色" },
@@ -96,7 +96,7 @@ std::span<const Slate::StyleIO::ColorEntry> Slate::StyleIO::GetColorEntries() {
 		//* tooltip *//
 		{ "TooltipBg",     std::addressof(GetColors().tooltipBg),     kDefault.tooltipBg,     "Tooltip",        "ツールチップの背景" },
 		{ "TooltipBorder", std::addressof(GetColors().tooltipBorder), kDefault.tooltipBorder, "Tooltip",        "ツールチップの枠線" },
-	}};
+	});
 
 	return kEntries;
 }
@@ -104,7 +104,7 @@ std::span<const Slate::StyleIO::ColorEntry> Slate::StyleIO::GetColorEntries() {
 std::span<const Slate::StyleIO::MetricEntry> Slate::StyleIO::GetMetricEntries() {
 	static const Style::Metrics kDefault = {};
 
-	static const std::array<MetricEntry, 18> kEntries = {{
+	static const auto kEntries = std::to_array<MetricEntry>({
 		//* spacing *//
 		{ "PaddingM",         std::addressof(GetMetrics().paddingM),         kDefault.paddingM,          0.0f, 20.0f, "Spacing",  "基本の内側余白" },
 		{ "MarginL",          std::addressof(GetMetrics().marginL),          kDefault.marginL,           0.0f, 30.0f, "Spacing",  "タイトル文字などの外側余白" },
@@ -134,7 +134,7 @@ std::span<const Slate::StyleIO::MetricEntry> Slate::StyleIO::GetMetricEntries() 
 		//* tooltip *//
 		{ "TooltipDelay",     std::addressof(GetMetrics().tooltipDelay),     kDefault.tooltipDelay,      0.0f,  3.0f, "Tooltip",  "ツールチップを出すまでの秒数" },
 		{ "TooltipPadding",   std::addressof(GetMetrics().tooltipPadding),   kDefault.tooltipPadding,    0.0f, 24.0f, "Tooltip",  "ツールチップの内側余白" },
-	}};
+	});
 
 	return kEntries;
 }

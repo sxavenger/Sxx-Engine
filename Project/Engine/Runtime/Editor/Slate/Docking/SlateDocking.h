@@ -8,6 +8,7 @@
 #include "SlateSplitter.h"
 
 //* c++
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -107,6 +108,12 @@ namespace Slate {
 	//! @brief ツリー全体のパネルを回収する.
 	std::vector<DockPanelPointer> CollectAllPanels(const WidgetPointer& root);
 
+	//! @brief treeの中にpanelが居るか. (CollectAllPanelsと違いvectorを作らない)
+	bool ContainsPanel(const WidgetPointer& root, const DockPanelPointer& panel);
+
+	//! @brief treeの中のpanelの総数. (CollectAllPanelsと違いvectorを作らない)
+	size_t CountPanels(const WidgetPointer& root);
+
 	//! @brief targetRoot に incoming(パネル群)をドッキングし, 新しいルートを返す.
 	//!        Center は既存のタブスタックにタブとして追加, Left/Right は左右分割(Horizontal),
 	//!        Top/Bottom は上下分割(Vertical)になる.
@@ -146,6 +153,17 @@ namespace Slate {
 	//! @brief ドックツリーを走査し, point を含むタブスタックとそのジオメトリを返す.
 	//! @note ウィンドウ全体ではなく「タブスタック単位」でドッキングするために使う.
 	bool FindDockTargetAt(const WidgetPointer& node, const Geometry& geometry, Vector2f point, DockTarget& out);
+
+	//! @brief drop先のゾーンを決める.
+	//! @note マーカーの上に居ればそれを使い, 外していても領域内の位置から推定する.
+	//!       マーカーだけを条件にすると狙いが厳しすぎて実用にならない.
+	DockZone ResolveDockZone(const DockTarget& target, Vector2f point);
+
+	//! @brief drag中のdrop先(対象の領域 / drop結果の領域 / 5つのゾーンマーカー)を描く.
+	//! @param dockArea previewが無効(tab stackが無い)なときに対象とする領域. (dock tree全体が置かれている矩形)
+	//! @note 描画先(ImGuiRenderer::DrawTarget)の切り替えは呼び出し側が行う.
+	//! @note マーカーの配置は BuildDockZoneMarkers を使う. 当たり判定(HitTestDockZoneMarkers)と必ず一致する.
+	void PaintDockOverlay(ImGuiRenderer& renderer, const Geometry& dockArea, const DockTarget& preview);
 
 	//! @brief 指定したタブスタックを基準にドッキングする(タブ単位のドッキング).
 	//!        Center は既存スタックへタブ追加, Left/Right/Top/Bottom は対象スタックの位置を

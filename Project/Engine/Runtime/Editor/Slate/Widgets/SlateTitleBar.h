@@ -144,6 +144,10 @@ namespace Slate {
 			return { absolute.x - geometry.absolutePosition.x, absolute.y - geometry.absolutePosition.y };
 		}
 
+		//! @brief index番目のボタンの左端. (rightはボタン列の右端)
+		//! @note 描画(ButtonGeometry)と当たり判定(HitTestButton)で必ず同じ式を使う.
+		static float ButtonLeft(float right, int32_t index) { return right - kButtonWidth * (kButtonCount - index); }
+
 		static Geometry ButtonGeometry(const Geometry& geometry, int32_t index);
 
 		void PaintGlyph(ImGuiRenderer* renderer, const Geometry& bg, Button button) const;

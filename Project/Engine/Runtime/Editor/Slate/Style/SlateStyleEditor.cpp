@@ -130,19 +130,27 @@ namespace {
 		}
 	}
 
-	//! @brief Colors タブの中身.
+	//! @brief 項目表を「分類の見出し + 1項目1行」で並べる. Colors / Sizes タブで共通の枠.
+	//! @param drawValue    bool(const Entry&). 値を編集するwidgetを描く. 書き換えたら true を返す.
+	//! @param isModified   bool(const Entry&). 現在値が既定値と違うか. (違えば戻すボタン "R" を出す)
+	//! @param drawResetTip void(const Entry&). 戻すボタンの tooltip の中身を描く.
+	//! @param drawSuffix   void(const Entry&). 項目名の右に足す表示を描く. (不要なら何もしない)
 	//! @return 値を書き換えたかどうか.
-	bool DrawColors(const ImGuiTextFilter& filter, ImGuiColorEditFlags alphaFlags, bool isShowHex) {
+	template <class Entry, class DrawValue, class IsModified, class DrawResetTip, class DrawSuffix>
+	bool DrawEntries(
+		const char* childId, std::span<const Entry> entries, const ImGuiTextFilter& filter,
+		DrawValue&& drawValue, IsModified&& isModified, DrawResetTip&& drawResetTip, DrawSuffix&& drawSuffix
+	) {
 		bool isChanged = false;
 
 		//!< BeginChild は戻り値によらず EndChild と対で呼ぶ.
-		if (ImGui::BeginChild("##colors", ImVec2(0.0f, 0.0f), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_AlwaysVerticalScrollbar)) {
+		if (ImGui::BeginChild(childId, ImVec2(0.0f, 0.0f), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_AlwaysVerticalScrollbar)) {
 			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.55f);
 
 			const char* currentGroup = nullptr;
 
 			int32_t index = 0;
-			for (const Slate::StyleIO::ColorEntry& entry : Slate::StyleIO::GetColorEntries()) {
+			for (const Entry& entry : entries) {
 				const int32_t id = index++; //!< フィルタで飛ばしても ID が動かないよう, 表の位置で振る.
 
 				if (!PassFilter(filter, entry.name, entry.group, entry.description)) {
@@ -157,29 +165,12 @@ namespace {
 
 				ImGui::PushID(id);
 
-				//!< Color4f は { r, g, b, a } と std::array<float, 4> の union なので,
-				//!< 先頭から 4 つの float がそのまま RGBA として並ぶ. ColorEdit4 には Data() で
-				//!< 実体を直接渡し, 編集結果をその場へ書き込ませる.
-				//!< (Color4floating は単項 operator& を float* を返すよう多重定義しているため
-				//!<  &(*entry.value) でも同じ float* になるが, 意図が読めないので Data() を使う.
-				//!<  Color4f* が必要な場面では std::addressof を使うこと.)
-				//!< Style::Colors は sRGB のバイト値をそのまま持っている. linear への変換は
-				//!< 描画側(ImGuiStyleIO::SetCurrentStyle / ImGuiRenderer)の役割なので,
-				//!< エディタは生の値を触る(変換すると編集値と ToHex() の保存値がずれる).
-				if (ImGui::ColorEdit4("##color", entry.value->Data(), ImGuiColorEditFlags_AlphaBar | alphaFlags)) {
+				if (drawValue(entry)) {
 					isChanged = true;
 				}
 
 				//!< 既定値と違えば戻すボタンを出す.
-				//!< Color4floating は operator== を持たないので成分ごとに比べる.
-				const Color4f current = *entry.value;
-				const bool isModified
-					= (current.r != entry.def.r)
-					|| (current.g != entry.def.g)
-					|| (current.b != entry.def.b)
-					|| (current.a != entry.def.a);
-
-				if (isModified) {
+				if (isModified(entry)) {
 					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
 					if (ImGui::SmallButton("R")) {
@@ -188,7 +179,7 @@ namespace {
 					}
 
 					if (ImGui::BeginItemTooltip()) {
-						ImGui::TextUnformatted("既定値へ戻す");
+						drawResetTip(entry);
 						ImGui::EndTooltip();
 					}
 				}
@@ -196,10 +187,7 @@ namespace {
 				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 				ImGui::TextUnformatted(ToText(entry.name));
 
-				if (isShowHex) {
-					ImGui::SameLine();
-					ImGui::TextDisabled("%s", Slate::StyleIO::ToHex(*entry.value).c_str());
-				}
+				drawSuffix(entry);
 
 				HelpMarker(entry.description);
 
@@ -214,69 +202,69 @@ namespace {
 		return isChanged;
 	}
 
+	//! @brief Colors タブの中身.
+	//! @return 値を書き換えたかどうか.
+	bool DrawColors(const ImGuiTextFilter& filter, ImGuiColorEditFlags alphaFlags, bool isShowHex) {
+		using Entry = Slate::StyleIO::ColorEntry;
+
+		return DrawEntries(
+			"##colors", Slate::StyleIO::GetColorEntries(), filter,
+			[alphaFlags](const Entry& entry) {
+				//!< Color4f は { r, g, b, a } と std::array<float, 4> の union なので,
+				//!< 先頭から 4 つの float がそのまま RGBA として並ぶ. ColorEdit4 には Data() で
+				//!< 実体を直接渡し, 編集結果をその場へ書き込ませる.
+				//!< (Color4floating は単項 operator& を float* を返すよう多重定義しているため
+				//!<  &(*entry.value) でも同じ float* になるが, 意図が読めないので Data() を使う.
+				//!<  Color4f* が必要な場面では std::addressof を使うこと.)
+				//!< Style::Colors は sRGB のバイト値をそのまま持っている. linear への変換は
+				//!< 描画側(ImGuiStyleIO::SetCurrentStyle / ImGuiRenderer)の役割なので,
+				//!< エディタは生の値を触る(変換すると編集値と ToHex() の保存値がずれる).
+				return ImGui::ColorEdit4("##color", entry.value->Data(), ImGuiColorEditFlags_AlphaBar | alphaFlags);
+			},
+			[](const Entry& entry) {
+				//!< Color4floating は operator== を持たないので成分ごとに比べる.
+				const Color4f current = *entry.value;
+				return (current.r != entry.def.r)
+					|| (current.g != entry.def.g)
+					|| (current.b != entry.def.b)
+					|| (current.a != entry.def.a);
+			},
+			[](const Entry& /*entry*/) {
+				ImGui::TextUnformatted("既定値へ戻す");
+			},
+			[isShowHex](const Entry& entry) {
+				if (isShowHex) {
+					ImGui::SameLine();
+					ImGui::TextDisabled("%s", Slate::StyleIO::ToHex(*entry.value).c_str());
+				}
+			}
+		);
+	}
+
 	//! @brief Sizes タブの中身.
 	//! @return 値を書き換えたかどうか.
 	bool DrawMetrics(const ImGuiTextFilter& filter) {
-		bool isChanged = false;
+		using Entry = Slate::StyleIO::MetricEntry;
 
-		if (ImGui::BeginChild("##sizes", ImVec2(0.0f, 0.0f), ImGuiChildFlags_NavFlattened, ImGuiWindowFlags_AlwaysVerticalScrollbar)) {
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.55f);
-
-			const char* currentGroup = nullptr;
-
-			int32_t index = 0;
-			for (const Slate::StyleIO::MetricEntry& entry : Slate::StyleIO::GetMetricEntries()) {
-				const int32_t id = index++;
-
-				if (!PassFilter(filter, entry.name, entry.group, entry.description)) {
-					continue;
-				}
-
-				if (currentGroup == nullptr || std::strcmp(currentGroup, ToText(entry.group)) != 0) {
-					currentGroup = ToText(entry.group);
-					ImGui::SeparatorText(currentGroup);
-				}
-
-				ImGui::PushID(id);
-
+		return DrawEntries(
+			"##sizes", Slate::StyleIO::GetMetricEntries(), filter,
+			[](const Entry& entry) {
 				//!< 秒の項目(TooltipDelay)だけ小数を見せる. それ以外は px なので整数表示でよい.
 				const bool isSeconds = (std::strstr(ToText(entry.name), "Delay") != nullptr);
 
 				//!< entry.min / entry.max は windows.h の min / max マクロと同名だが,
 				//!< .vcxproj の全構成で NOMINMAX が定義済みなのでメンバとして安全に読める.
 				//!< スライダは min / max の範囲でクランプするため, Load() のクランプと同じ範囲になる.
-				if (ImGui::SliderFloat("##value", entry.value, entry.min, entry.max, isSeconds ? "%.2f s" : "%.0f px")) {
-					isChanged = true;
-				}
-
-				if (*entry.value != entry.def) {
-					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-					if (ImGui::SmallButton("R")) {
-						*entry.value = entry.def;
-						isChanged    = true;
-					}
-
-					if (ImGui::BeginItemTooltip()) {
-						ImGui::Text("既定値 %.2f へ戻す", entry.def);
-						ImGui::EndTooltip();
-					}
-				}
-
-				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-				ImGui::TextUnformatted(ToText(entry.name));
-
-				HelpMarker(entry.description);
-
-				ImGui::PopID();
-			}
-
-			ImGui::PopItemWidth();
-		}
-
-		ImGui::EndChild();
-
-		return isChanged;
+				return ImGui::SliderFloat("##value", entry.value, entry.min, entry.max, isSeconds ? "%.2f s" : "%.0f px");
+			},
+			[](const Entry& entry) {
+				return *entry.value != entry.def;
+			},
+			[](const Entry& entry) {
+				ImGui::Text("既定値 %.2f へ戻す", entry.def);
+			},
+			[](const Entry& /*entry*/) {}
+		);
 	}
 
 }

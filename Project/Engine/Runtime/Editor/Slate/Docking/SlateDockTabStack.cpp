@@ -96,8 +96,7 @@ Vector2f Slate::DockTabStack::ComputeDesiredSize(float scale, ImGuiRenderer* ren
 	Vector2f content{};
 
 	if (auto panel = ActivePanel()) {
-		content = panel->ComputeDesiredSize(scale, renderer);
-		panel->CacheDesiredSize(content);
+		content = panel->Prepass(scale, renderer);
 	}
 
 	return { content.x, content.y + TabBarHeight() };
@@ -246,16 +245,7 @@ int32_t Slate::DockTabStack::OnPaint(const PaintArguments& arguments, const Geom
 	}
 
 	//!< アクティブなパネルの中身.
-	int32_t maxLayer = layer;
-	ArrangedChildren arranged;
-	OnArrangeChildren(geometry, arranged);
-
-	for (const auto& child : arranged) {
-		const int32_t childLayer = child.widget->OnPaint(arguments, child.geometry, renderer, layer + 1);
-		maxLayer = std::max(maxLayer, childLayer);
-	}
-
-	return maxLayer;
+	return PaintArrangedChildren(arguments, geometry, renderer, layer);
 }
 
 Slate::Reply Slate::DockTabStack::OnMouseButtonDown(const Geometry& /*geometry*/, const PointerEvent& event) {

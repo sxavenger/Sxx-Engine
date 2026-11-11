@@ -101,6 +101,14 @@ namespace Slate {
 			//! @brief tabの × が押された.
 			void RequestPanelClose(Editor::Slate::DockPanelPointer panel) override;
 
+			//* window option *//
+
+			//! @brief native windowが開いているか. (OSに閉じられるとfalse)
+			bool IsOpen() const { return viewport.GetWindow().IsOpen(); }
+
+			//! @brief native windowのhandle.
+			HWND GetHwnd() const { return viewport.GetWindow().GetHwnd(); }
+
 			//=========================================================================================
 			// public variables
 			//=========================================================================================
@@ -344,10 +352,6 @@ namespace Slate {
 
 		static constexpr int32_t kTearOffCursorOffsetX = 80; //!< 掴んだままdragを続けられるようにする横offset.
 
-		//!< マーカーを外していてもdropできるようにする縁の割合.
-		//!< 領域の端からこの比率までが上下左右, それより内側は中央(tabとして追加).
-		static constexpr float kDockEdgeRatio = 0.28f;
-
 		//!< drag中のwindowの不透明度. 下のマーカーが見えるように薄くする.
 		static constexpr uint8_t kWindowDragAlpha = 160;
 
@@ -378,7 +382,7 @@ namespace Slate {
 		//!< 追加されたmain menu. 追加順にmenu barの1行へ並べる.
 		std::vector<Editor::Slate::MainMenuPointer> mainMenus_;
 
-		//!< mainMenus_をまとめて描く1行. 各main menuのGetWidget()は使わない.
+		//!< mainMenus_をまとめて描く1行.
 		//!< note: RebuildWindowChromeのたびに作り直すとImGuiのwindow idが変わるため保持する.
 		std::shared_ptr<Editor::Slate::ImGuiMenuBar> mainMenuBar_ = nullptr;
 
@@ -482,13 +486,25 @@ namespace Slate {
 		//! @brief treeの全DockTabStackへhostを配り直す.
 		void ApplyDockingHostToWindow(EditorWindow& window);
 
+		//! @brief dockRootを差し替え, chromeで包み直してhostを配り直す.
+		//! @note dockRootを差し替えるときは必ずこれを通す. (RebuildWindowChrome / ApplyDockingHostToWindowの呼び忘れを防ぐ)
+		void SetDockRoot(EditorWindow& window, Editor::Slate::WidgetPointer dockRoot);
+
 		void AddPanelToEditorWindow(EditorWindow& window, const Editor::Slate::DockPanelPointer& panel);
+
+		//! @brief panelをwindowのtreeから外す. (空nodeの除去とchromeの巻き直しは呼び出し側が行う)
+		//! @retval false windowが破棄済み / treeが無い / 他の要求で既に移動済み.
+		bool RemovePanelFromEditorWindow(EditorWindow* window, const Editor::Slate::DockPanelPointer& panel);
 
 		//! @brief panelを全て失ったsub windowを閉じる. (mainは残す)
 		void CloseIfEmptyEditorWindow(EditorWindow& window);
 
 		//! @brief 破棄が予約された / OSに閉じられたwindowを回収する.
 		void CollectClosedWindows();
+
+		//! @brief windowが持つwidget tree / ImGui context / native windowを破棄する.
+		//! @note 呼び出し前にGPUの完了を待つこと. (Graphics::Core::SubmitDirectQueueWait)
+		static void ShutdownEditorWindow(EditorWindow& window);
 
 		//* window drag helper methods *//
 
@@ -507,11 +523,6 @@ namespace Slate {
 		void MoveEditorWindow(EditorWindow& window, const Vector2i& position);
 
 		EditorWindow* FindEditorWindowUnderCursor(const EditorWindow* dragged, const Vector2i& cursor);
-
-		//! @brief drop先のゾーンを決める.
-		//! @note マーカーの上に居ればそれを使い, 外していても領域内の位置から推定する.
-		//!       マーカーだけを条件にすると狙いが厳しすぎて実用にならない.
-		static Editor::Slate::DockZone ResolveDockZone(const Editor::Slate::DockTarget& target, const Vector2f& client);
 
 		//! @brief drag中のwindowを半透明にする. (下に隠れたマーカーを見えるようにする)
 		static void SetWindowDragOpacity(EditorWindow& window, bool isDragging);
@@ -540,8 +551,6 @@ namespace Slate {
 		static bool CanDockInto(const EditorWindow* dragged, const EditorWindow* target);
 
 		static bool ContainsScreenPoint(const EditorWindow& window, const Vector2i& cursor);
-
-		//* input helper methods *//
 
 	};
 

@@ -77,6 +77,18 @@ namespace {
 		return true;
 	}
 
+	//!< 要求を先に取り出してから処理する. 処理中にwindowが増減し, 新しい要求も積まれ得るため.
+	template <class T, class F>
+	void DrainRequests(std::vector<T>& queue, F&& process) {
+
+		std::vector<T> requests;
+		requests.swap(queue);
+
+		for (const T& request : requests) {
+			process(request);
+		}
+	}
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +108,7 @@ bool Slate::EditorBase::EditorWindow::CanTearOff(const Editor::Slate::DockPanelP
 
 	//!< sub windowの最後の1枚は引き出させない. 引き出すとwindowが空になって閉じられ,
 	//!< 閉じる途中に同じwindowへ戻す操作ができてtabごと消えるため. (windowごと動かせばよい)
-	return Editor::Slate::CollectAllPanels(dockRoot).size() > 1;
+	return Editor::Slate::CountPanels(dockRoot) > 1;
 }
 
 void Slate::EditorBase::EditorWindow::RequestTearOff(Editor::Slate::DockPanelPointer panel, Vector2f screenPosition) {
@@ -176,7 +188,7 @@ void Slate::EditorBase::UpdateEditor() {
 
 	for (const EditorWindowPointer& window : windows_) {
 
-		if (!window->viewport.GetWindow().IsOpen()) {
+		if (!window->IsOpen()) {
 			continue; //!< OSに閉じられたwindowは触らない. PresentEditorで回収する.
 		}
 
@@ -250,7 +262,7 @@ void Slate::EditorBase::RenderEditor() {
 
 	for (const EditorWindowPointer& window : windows_) {
 
-		if (!window->viewport.GetWindow().IsOpen() || window->root == nullptr) {
+		if (!window->IsOpen() || window->root == nullptr) {
 			continue;
 		}
 
@@ -312,71 +324,7 @@ void Slate::EditorBase::RenderDockOverlay(EditorWindow& window) {
 	//!< ドッキングのオーバーレイは最前面へ描く.
 	window.renderer.SetDrawTarget(Editor::Slate::ImGuiRenderer::DrawTarget::Foreground);
 
-	const Editor::Slate::Style& style = Editor::Slate::Style::GetStyle();
-
-	const Editor::Slate::Geometry target = window.dockPreview.IsValid() ? window.dockPreview.area : area;
-
-	//!< 1) 対象のtab stack全体をうっすら示す. どのpanelへ入るのかが分かるようにする.
-	//!<    マーカーの上に居ないときも出すことで, drop先が決まっていないことも伝わる.
-	window.renderer.DrawRect(target, style.colors.activeSoft);
-	window.renderer.DrawBorder(target, style.colors.active, style.metrics.borderThin);
-
-	//!< 2) drop結果の領域.
-	if (window.dockPreview.zone != Editor::Slate::DockZone::None) {
-		const Editor::Slate::Geometry preview
-			= Editor::Slate::DockZonePreviewGeometry(target, window.dockPreview.zone);
-		
-		window.renderer.DrawRect(preview, style.colors.activeSoft);
-		window.renderer.DrawBorder(preview, style.colors.active, style.metrics.borderThick);
-
-		//!< 中央(tabとして追加)のときはtab barを強調する.
-		//!< 領域全体が同じ塗りになるため, 上下左右との区別が付かないのを避ける.
-		if (window.dockPreview.zone == Editor::Slate::DockZone::Center) {
-
-			const Editor::Slate::Geometry tabBar = {
-				target.absolutePosition,
-				{ target.localSize.x, Editor::Slate::DockTabStack::TabBarHeight() },
-				target.scale
-			};
-
-			window.renderer.DrawRect(tabBar, style.colors.active);
-		}
-	}
-
-	//!< 3) 5つのゾーンマーカー. 描画と当たり判定で同じ BuildDockZoneMarkers を使う.
-	Editor::Slate::DockZoneMarker markers[Editor::Slate::kDockZoneMarkerCount] = {};
-	Editor::Slate::BuildDockZoneMarkers(target, markers);
-
-	for (const Editor::Slate::DockZoneMarker& marker : markers) {
-
-		const bool isHovered = (marker.zone == window.dockPreview.zone);
-
-		window.renderer.DrawRoundedRect(
-			marker.box, isHovered ? style.colors.active : style.colors.panel, style.metrics.tabRounding
-		);
-		window.renderer.DrawBorder(
-			marker.box, isHovered ? style.colors.text : style.colors.border, style.metrics.borderThin
-		);
-
-		//!< マーカーの中に結合結果を示す図を描く. これが無いとどのゾーンか判別できない.
-		//!< 中央 = tabとして追加(枠のみ) / 上下左右 = 分割される側を塗る.
-		//!< note: 移植元は colors.white を使っていたが engine には無いため colors.text で代用する.
-		const Color4f ink = isHovered ? style.colors.text : style.colors.textDim;
-
-		const float padding = marker.box.localSize.x * 0.22f;
-
-		const Editor::Slate::Geometry inner = {
-			{ marker.box.absolutePosition.x + padding, marker.box.absolutePosition.y + padding },
-			{ marker.box.localSize.x - padding * 2.0f, marker.box.localSize.y - padding * 2.0f },
-			target.scale
-		};
-
-		window.renderer.DrawBorder(inner, ink, style.metrics.borderThin);
-
-		if (marker.zone != Editor::Slate::DockZone::Center) {
-			window.renderer.DrawRect(Editor::Slate::DockZonePreviewGeometry(inner, marker.zone), ink);
-		}
-	}
+	Editor::Slate::PaintDockOverlay(window.renderer, area, window.dockPreview);
 
 	window.renderer.SetDrawTarget(Editor::Slate::ImGuiRenderer::DrawTarget::Background);
 }
@@ -385,7 +333,7 @@ void Slate::EditorBase::PresentEditor() {
 
 	for (const EditorWindowPointer& window : windows_) {
 
-		if (!window->viewport.GetWindow().IsOpen()) {
+		if (!window->IsOpen()) {
 			continue;
 		}
 
@@ -413,11 +361,7 @@ void Slate::EditorBase::TermEditor() {
 	}
 
 	for (const EditorWindowPointer& window : windows_) {
-		window->dockRoot  = nullptr;
-		window->statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
-		window->root.reset();                 //!< widget treeを先に破棄する.
-		window->renderer.Shutdown();          //!< ImGuiのcontextはwidgetの後に破棄する.
-		window->viewport.GetWindow().Reset(); //!< DestroyWindowとUnregisterClassを行う.
+		EditorBase::ShutdownEditorWindow(*window);
 	}
 
 	windows_.clear(); //!< ここでViewport(swap chain)が破棄される.
@@ -463,7 +407,7 @@ RefPtr<Slate::EditorBase::EditorWindow> Slate::EditorBase::CreateEditorWindow(co
 		Platform::Window::Style::Borderless
 	);
 
-	if (const HWND hwnd = window->viewport.GetWindow().GetHwnd(); hwnd != nullptr) {
+	if (const HWND hwnd = window->GetHwnd(); hwnd != nullptr) {
 		::SetWindowTextW(hwnd, name.c_str());
 	}
 
@@ -511,7 +455,7 @@ void Slate::EditorBase::CollectClosedWindows() {
 			continue; //!< main windowはWM_QUITでloopが終了するため, ここでは回収しない.
 		}
 
-		if (!window->viewport.GetWindow().IsOpen()) {
+		if (!window->IsOpen()) {
 			closeRequests_.push_back(window.get());
 		}
 	}
@@ -543,20 +487,25 @@ void Slate::EditorBase::CollectClosedWindows() {
 			ReleasePinnedPanel(panel);
 		}
 
-		(*it)->dockRoot  = nullptr;
-		(*it)->statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
-		(*it)->root.reset();
-		(*it)->renderer.Shutdown();
-
-		//!< Viewport::CloseはCloseWindow(= 最小化)を呼ぶだけでwindowを破棄しない.
-		//!< 破棄しないとGWLP_USERDATAが解放済みのWindow*を指したままmessageを受け, use after freeになる.
-		//!< Window::ResetはDestroyWindowとUnregisterClassを行うため, こちらを使う.
-		(*it)->viewport.GetWindow().Reset();
+		EditorBase::ShutdownEditorWindow(**it);
 
 		windows_.erase(it);
 	}
 
 	closeRequests_.clear();
+}
+
+void Slate::EditorBase::ShutdownEditorWindow(EditorWindow& window) {
+
+	window.dockRoot  = nullptr;
+	window.statusBar = nullptr; //!< callbackがUnitのthisとwindowのポインタを握るため, rootの破棄前に外す.
+	window.root.reset();        //!< widget treeを先に破棄する.
+	window.renderer.Shutdown(); //!< ImGuiのcontextはwidgetの後に破棄する.
+
+	//!< Viewport::CloseはCloseWindow(= 最小化)を呼ぶだけでwindowを破棄しない.
+	//!< 破棄しないとGWLP_USERDATAが解放済みのWindow*を指したままmessageを受け, use after freeになる.
+	//!< Window::ResetはDestroyWindowとUnregisterClassを行うため, こちらを使う.
+	window.viewport.GetWindow().Reset();
 }
 
 bool Slate::EditorBase::IsAliveEditorWindow(const EditorWindow* window) const {
@@ -578,16 +527,9 @@ bool Slate::EditorBase::IsPanelOpen(const Editor::Slate::EditorPanelPointer& pan
 
 	const Editor::Slate::DockPanelPointer& dockPanel = panel->GetDockPanel();
 
-	for (const EditorWindowPointer& window : windows_) {
-
-		const std::vector<Editor::Slate::DockPanelPointer> all = Editor::Slate::CollectAllPanels(window->dockRoot);
-
-		if (std::find(all.begin(), all.end(), dockPanel) != all.end()) {
-			return true;
-		}
-	}
-
-	return false;
+	return std::any_of(windows_.begin(), windows_.end(), [&dockPanel](const EditorWindowPointer& window) {
+		return Editor::Slate::ContainsPanel(window->dockRoot, dockPanel);
+	});
 }
 
 void Slate::EditorBase::DiscardRequests(EditorWindow* window) {
@@ -675,7 +617,7 @@ Platform::Window::CursorShape Slate::EditorBase::QueryWindowCursor(const EditorW
 
 Editor::Slate::WidgetPointer Slate::EditorBase::CreateTitleBar(EditorWindow& window, bool isButtonsOnly) {
 
-	const HWND hwnd = window.viewport.GetWindow().GetHwnd();
+	const HWND hwnd = window.GetHwnd();
 
 	Editor::Slate::Decl<Editor::Slate::TitleBar> titleBar;
 	titleBar->SetButtonsOnly(isButtonsOnly);
@@ -786,21 +728,19 @@ void Slate::EditorBase::BuildLayout(EditorWindow& window) {
 		return;
 	}
 
-	if (!window.isMain) {
-		//!< sub windowは切り離されたpanelの受け皿として空のtab stackを置く.
-		Editor::Slate::Decl<Editor::Slate::DockTabStack> stack;
+	//!< main windowのlayoutは派生classが組む. (SplitterとDockTabStackのみ)
+	//!< sub windowは切り離されたpanelの受け皿として空のtab stackを置く.
+	Editor::Slate::WidgetPointer dockRoot = nullptr;
 
-		window.dockRoot = stack.pointer;
-		RebuildWindowChrome(window);
-		ApplyDockingHostToWindow(window);
-		return;
+	if (window.isMain) {
+		dockRoot = BuildMainLayout();
+
+	} else {
+		Editor::Slate::Decl<Editor::Slate::DockTabStack> stack;
+		dockRoot = stack.pointer;
 	}
 
-	//!< main windowのlayoutは派生classが組む. (SplitterとDockTabStackのみ)
-	window.dockRoot = BuildMainLayout();
-	RebuildWindowChrome(window); //!< chromeで包んでrootへ設定する.
-
-	ApplyDockingHostToWindow(window); //!< 生成した全tab stackへ切り離し要求の通知先を配る.
+	SetDockRoot(window, std::move(dockRoot)); //!< chromeで包み, 生成した全tab stackへ切り離し要求の通知先を配る.
 }
 
 const std::shared_ptr<Editor::Slate::ImGuiMenuBar>& Slate::EditorBase::GetOrCreateMainMenuBar() {
@@ -930,7 +870,7 @@ void Slate::EditorBase::EnqueueTearOff(EditorWindow* source, Editor::Slate::Dock
 	//!< Slateのイベントはclient座標なので, windowの配置に使うscreen座標へ変換する.
 	POINT point = { static_cast<LONG>(clientPosition.x), static_cast<LONG>(clientPosition.y) };
 
-	if (const HWND hwnd = source->viewport.GetWindow().GetHwnd(); hwnd != nullptr) {
+	if (const HWND hwnd = source->GetHwnd(); hwnd != nullptr) {
 		::ClientToScreen(hwnd, &point);
 	}
 
@@ -981,59 +921,21 @@ void Slate::EditorBase::ProcessPendingRequests() {
 
 	//!< closeを先に処理する. 逆順にすると, 同じframeで × を押されたpanelが新しいwindowへ移った後に
 	//!< 閉じられ, 生成直後のwindowが空のまま残る.
-	if (!panelCloseRequests_.empty()) {
-		//!< 処理中にwindowが増減するため, 要求は先に取り出しておく.
-		std::vector<PanelCloseRequest> requests;
-		requests.swap(panelCloseRequests_);
-
-		for (const PanelCloseRequest& request : requests) {
-			ProcessPanelCloseRequest(request);
-		}
-	}
-
-	if (!panelOpenRequests_.empty()) {
-		//!< 処理中にwindowが増減するため, 要求は先に取り出しておく.
-		std::vector<Editor::Slate::EditorPanelPointer> requests;
-		requests.swap(panelOpenRequests_);
-
-		for (const Editor::Slate::EditorPanelPointer& request : requests) {
-			ProcessPanelOpenRequest(request);
-		}
-	}
-
-	if (!tearOffRequests_.empty()) {
-		std::vector<TearOffRequest> requests;
-		requests.swap(tearOffRequests_);
-
-		for (const TearOffRequest& request : requests) {
-			ProcessTearOffRequest(request);
-		}
-	}
+	DrainRequests(panelCloseRequests_, [this](const PanelCloseRequest& request) { ProcessPanelCloseRequest(request); });
+	DrainRequests(panelOpenRequests_,  [this](const Editor::Slate::EditorPanelPointer& panel) { ProcessPanelOpenRequest(panel); });
+	DrainRequests(tearOffRequests_,    [this](const TearOffRequest& request) { ProcessTearOffRequest(request); });
 }
 
 void Slate::EditorBase::ProcessTearOffRequest(const TearOffRequest& request) {
 
-	//!< 要求を積んだwindowが既に破棄されている場合は何もしない.
-	if (!IsAliveEditorWindow(request.source) || request.panel == nullptr) {
+	if (!RemovePanelFromEditorWindow(request.source, request.panel)) {
 		return;
 	}
 
 	EditorWindow& source = *request.source;
 
-	if (source.dockRoot == nullptr) {
-		return;
-	}
-
-	//!< 元のtreeから外せない場合(他の要求で既に移動済み)は中止する.
-	//!< ここを飛ばすと同じpanelが2つのtreeへ入る.
-	if (!Editor::Slate::RemovePanelFromTree(source.dockRoot, request.panel)) {
-		return;
-	}
-
 	//!< 空になったノードを詰める. PruneEmptyNodesは新しいrootを返す. (全て空ならnullptr)
-	source.dockRoot = Editor::Slate::PruneEmptyNodes(source.dockRoot);
-	RebuildWindowChrome(source);
-	ApplyDockingHostToWindow(source);
+	SetDockRoot(source, Editor::Slate::PruneEmptyNodes(source.dockRoot));
 
 	//!< 新しいsub windowを生成する. titleは引き出したpanel名にする.
 	RefPtr<EditorWindow> torn = CreateEditorWindow(UnicodeConverter::ConvertW(request.panel->GetTitle()), kTearOffClientSize);
@@ -1064,26 +966,16 @@ void Slate::EditorBase::ProcessTearOffRequest(const TearOffRequest& request) {
 
 void Slate::EditorBase::ProcessPanelCloseRequest(const PanelCloseRequest& request) {
 
-	if (!IsAliveEditorWindow(request.source) || request.panel == nullptr) {
+	if (!RemovePanelFromEditorWindow(request.source, request.panel)) {
 		return;
 	}
 
 	EditorWindow& source = *request.source;
 
-	if (source.dockRoot == nullptr) {
-		return;
-	}
-
-	if (!Editor::Slate::RemovePanelFromTree(source.dockRoot, request.panel)) {
-		return;
-	}
-
 	//!< Pinnedのpanelは閉じたら破棄する. (残すと開くたびにinstanceが溜まる)
 	ReleasePinnedPanel(request.panel);
 
-	source.dockRoot = Editor::Slate::PruneEmptyNodes(source.dockRoot);
-	RebuildWindowChrome(source);
-	ApplyDockingHostToWindow(source);
+	SetDockRoot(source, Editor::Slate::PruneEmptyNodes(source.dockRoot));
 
 	CloseIfEmptyEditorWindow(source);
 }
@@ -1110,6 +1002,14 @@ void Slate::EditorBase::ApplyDockingHostToWindow(EditorWindow& window) {
 	Editor::Slate::ApplyDockingHost(window.dockRoot, &window);
 }
 
+void Slate::EditorBase::SetDockRoot(EditorWindow& window, Editor::Slate::WidgetPointer dockRoot) {
+
+	window.dockRoot = std::move(dockRoot);
+
+	RebuildWindowChrome(window);      //!< chromeで包み直してrootへ設定する.
+	ApplyDockingHostToWindow(window); //!< 組み替えで生成されたtab stackへhostを配り直す.
+}
+
 void Slate::EditorBase::AddPanelToEditorWindow(EditorWindow& window, const Editor::Slate::DockPanelPointer& panel) {
 
 	if (panel == nullptr) {
@@ -1121,14 +1021,25 @@ void Slate::EditorBase::AddPanelToEditorWindow(EditorWindow& window, const Edito
 	if (stack == nullptr) {
 		//!< treeが空(全panelを失った)の場合は受け皿のtab stackを作る.
 		Editor::Slate::Decl<Editor::Slate::DockTabStack> created;
-		stack           = created.pointer;
-		window.dockRoot = stack;
-		RebuildWindowChrome(window);
+		stack = created.pointer;
+		SetDockRoot(window, stack);
 	}
 
 	stack->AddPanel(panel, true); //!< 裏に隠れると「出ない」ように見えるため前面にする.
 
 	ApplyDockingHostToWindow(window);
+}
+
+bool Slate::EditorBase::RemovePanelFromEditorWindow(EditorWindow* window, const Editor::Slate::DockPanelPointer& panel) {
+
+	//!< 要求を積んだwindowが既に破棄されている場合は何もしない.
+	if (!IsAliveEditorWindow(window) || panel == nullptr || window->dockRoot == nullptr) {
+		return false;
+	}
+
+	//!< 元のtreeから外せない場合(他の要求で既に移動済み)は中止させる.
+	//!< ここを飛ばすと同じpanelが2つのtreeへ入る.
+	return Editor::Slate::RemovePanelFromTree(window->dockRoot, panel);
 }
 
 void Slate::EditorBase::CloseIfEmptyEditorWindow(EditorWindow& window) {
@@ -1137,7 +1048,7 @@ void Slate::EditorBase::CloseIfEmptyEditorWindow(EditorWindow& window) {
 		return; //!< main windowは空でも閉じない. 閉じるとapplicationが終了するため土台として残す.
 	}
 
-	if (!Editor::Slate::CollectAllPanels(window.dockRoot).empty()) {
+	if (Editor::Slate::CountPanels(window.dockRoot) > 0) {
 		return;
 	}
 
@@ -1192,13 +1103,13 @@ bool Slate::EditorBase::TryBeginWindowDrag(const Vector2i& cursor) {
 			continue; //!< main windowはOSのtitle barで移動する. (HTCAPTION)
 		}
 
-		if (!window->viewport.GetWindow().IsOpen() || window->dockRoot == nullptr) {
+		if (!window->IsOpen() || window->dockRoot == nullptr) {
 			continue;
 		}
 
 		Vector2f client = {};
 
-		if (!ToClientPosition(window->viewport.GetWindow().GetHwnd(), cursor, client)) {
+		if (!ToClientPosition(window->GetHwnd(), cursor, client)) {
 			continue;
 		}
 
@@ -1221,7 +1132,7 @@ bool Slate::EditorBase::TryBeginWindowDrag(const Vector2i& cursor) {
 
 void Slate::EditorBase::BeginWindowDrag(EditorWindow& window, const Vector2i& cursor) {
 
-	const HWND hwnd = window.viewport.GetWindow().GetHwnd();
+	const HWND hwnd = window.GetHwnd();
 
 	if (hwnd == nullptr) {
 		return;
@@ -1300,24 +1211,21 @@ void Slate::EditorBase::EndWindowDrag(const Vector2i& cursor) {
 	//!< 引き出し元のtreeを「そのまま」移す. panel一覧へ平坦化すると分割layoutが失われる.
 	const Editor::Slate::WidgetPointer subtree = dragged->dockRoot;
 
-	if (subtree == nullptr || Editor::Slate::CollectAllPanels(subtree).empty()) {
+	if (Editor::Slate::CountPanels(subtree) == 0) {
 		ClearDockPreviews();
 		return;
 	}
 
 	//!< 先に元windowのtreeを空にする. 同じsubtreeが2つのwindowに載ったままRenderEditorへ進むと,
 	//!< 同じwidgetを2回layoutして矩形のcache(tabRects_)が壊れる.
-	dragged->dockRoot = nullptr;
-	RebuildWindowChrome(*dragged);
+	//!< note: nullptrへのApplyDockingHostは何もしないため, SetDockRootを通しても挙動は変わらない.
+	SetDockRoot(*dragged, nullptr);
 
 	//!< note: DockSubtreeIntoTargetはtarget.stackがtarget->dockRootの中に居ることが前提.
 	//!<       別のtreeから取ったDockTargetを渡すとincomingが黙って消える.
 	//!<       UpdateDockPreviewがtarget->dockRootから取っているためこの前提は満たされている.
-	target->dockRoot = Editor::Slate::DockSubtreeIntoTarget(target->dockRoot, target->dockPreview, subtree);
-	RebuildWindowChrome(*target);
-
-	//!< 移ってきたtab stackのhostは引き出し元を指しているため, 必ずtarget側へ配り直す.
-	ApplyDockingHostToWindow(*target);
+	//!< note: 移ってきたtab stackのhostは引き出し元を指しているため, 必ずtarget側へ配り直す. (SetDockRootが行う)
+	SetDockRoot(*target, Editor::Slate::DockSubtreeIntoTarget(target->dockRoot, target->dockPreview, subtree));
 
 	ClearDockPreviews();
 
@@ -1339,7 +1247,7 @@ void Slate::EditorBase::UpdateDockPreview(EditorWindow* dragged, const Vector2i&
 
 	Vector2f client = {};
 
-	if (!ToClientPosition(target->viewport.GetWindow().GetHwnd(), cursor, client)) {
+	if (!ToClientPosition(target->GetHwnd(), cursor, client)) {
 		return;
 	}
 
@@ -1353,7 +1261,7 @@ void Slate::EditorBase::UpdateDockPreview(EditorWindow* dragged, const Vector2i&
 		preview.area  = area;
 	}
 
-	preview.zone = EditorBase::ResolveDockZone(preview, client);
+	preview.zone = Editor::Slate::ResolveDockZone(preview, client);
 
 	target->dockPreview = preview;
 }
@@ -1367,7 +1275,7 @@ void Slate::EditorBase::ClearDockPreviews() {
 
 void Slate::EditorBase::MoveEditorWindow(EditorWindow& window, const Vector2i& position) {
 
-	const HWND hwnd = window.viewport.GetWindow().GetHwnd();
+	const HWND hwnd = window.GetHwnd();
 
 	if (hwnd == nullptr) {
 		return;
@@ -1389,7 +1297,7 @@ Slate::EditorBase::EditorWindow* Slate::EditorBase::FindEditorWindowUnderCursor(
 			continue;
 		}
 
-		if (!window->viewport.GetWindow().IsOpen()) {
+		if (!window->IsOpen()) {
 			continue;
 		}
 
@@ -1405,62 +1313,9 @@ Slate::EditorBase::EditorWindow* Slate::EditorBase::FindEditorWindowUnderCursor(
 	return nullptr;
 }
 
-Editor::Slate::DockZone Slate::EditorBase::ResolveDockZone(const Editor::Slate::DockTarget& target, const Vector2f& client) {
-
-	using Editor::Slate::DockZone;
-
-	const Editor::Slate::Geometry& area = target.area;
-
-	if (area.localSize.x <= 0.0f || area.localSize.y <= 0.0f) {
-		return DockZone::None;
-	}
-
-	if (!area.ContainsAbsolute(client)) {
-		return DockZone::None; //!< 領域の外ではdropしない.
-	}
-
-	//!< 1) マーカーの上に居るならそれを最優先する. 意図が明確なため.
-	//!<    note: 当たり判定は HitTestDockZoneMarkers 側で見た目より広げている.
-	if (const DockZone zone = Editor::Slate::HitTestDockZoneMarkers(area, client); zone != DockZone::None) {
-		return zone;
-	}
-
-	//!< 2) tab barの行に居るならtabとして追加する. (中央と同じ)
-	//!<    「ドッキング済みのtabへ足す」がこのgestureで済むようにする.
-	if (target.stack != nullptr) {
-
-		const float tabBarBottom = area.absolutePosition.y + Editor::Slate::DockTabStack::TabBarHeight();
-
-		if (client.y < tabBarBottom) {
-			return DockZone::Center;
-		}
-	}
-
-	//!< 3) マーカーを外していても, 領域内の位置からゾーンを推定する.
-	//!<    マーカーだけを条件にすると狙いが厳しすぎて実用にならない.
-	//!<    端から kDockEdgeRatio までが上下左右, それより内側は中央.
-	//!<    note: 最も近い縁を採用する. 角では距離が小さい方が勝つ.
-	const float left   = (client.x - area.absolutePosition.x) / area.localSize.x;
-	const float top    = (client.y - area.absolutePosition.y) / area.localSize.y;
-	const float right  = 1.0f - left;
-	const float bottom = 1.0f - top;
-
-	const float nearest = std::min(std::min(left, right), std::min(top, bottom));
-
-	if (nearest >= kDockEdgeRatio) {
-		return DockZone::Center; //!< 中央寄りはtabとして追加.
-	}
-
-	if (nearest == left)  { return DockZone::Left; }
-	if (nearest == right) { return DockZone::Right; }
-	if (nearest == top)   { return DockZone::Top; }
-
-	return DockZone::Bottom;
-}
-
 void Slate::EditorBase::SetWindowDragOpacity(EditorWindow& window, bool isDragging) {
 
-	const HWND hwnd = window.viewport.GetWindow().GetHwnd();
+	const HWND hwnd = window.GetHwnd();
 
 	if (hwnd == nullptr) {
 		return;
@@ -1560,7 +1415,7 @@ bool Slate::EditorBase::ContainsScreenPoint(const EditorWindow& window, const Ve
 
 	RECT rect = {};
 
-	if (::GetWindowRect(window.viewport.GetWindow().GetHwnd(), &rect) == FALSE) {
+	if (::GetWindowRect(window.GetHwnd(), &rect) == FALSE) {
 		return false;
 	}
 
@@ -1582,7 +1437,7 @@ void Slate::EditorBase::UpdateInput(EditorWindow& window) {
 		return;
 	}
 
-	const HWND hwnd = window.viewport.GetWindow().GetHwnd();
+	const HWND hwnd = window.GetHwnd();
 
 	if (hwnd == nullptr) {
 		return;

@@ -17,7 +17,7 @@ Slate::TitleBar::Button Slate::TitleBar::HitTestButton(Vector2f pos, float clien
 	}
 
 	for (int32_t i = 0; i < kButtonCount; ++i) {
-		const float x0 = clientWidth - kButtonWidth * (kButtonCount - i);
+		const float x0 = ButtonLeft(clientWidth, i);
 		const float x1 = x0 + kButtonWidth;
 
 		if (pos.x >= x0 && pos.x < x1) {
@@ -128,7 +128,7 @@ Slate::Reply Slate::TitleBar::OnMouseButtonUp(const Geometry& geometry, const Po
 }
 
 Slate::Geometry Slate::TitleBar::ButtonGeometry(const Geometry& geometry, int32_t index) {
-	const float x = geometry.absolutePosition.x + geometry.localSize.x - kButtonWidth * (kButtonCount - index);
+	const float x = ButtonLeft(geometry.absolutePosition.x + geometry.localSize.x, index);
 	return Geometry{ { x, geometry.absolutePosition.y }, { kButtonWidth, geometry.localSize.y }, geometry.scale };
 }
 
