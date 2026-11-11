@@ -102,7 +102,7 @@ RefPtr<EntityBehaviour> EntityFactory::GetEntity(const EntityHandle& handle) {
 
 EntityHandle EntityFactory::CreateModelEntity(const Assets::ModelContents& contents) {
 
-	Sxx::Assets::AssetHandle<Sxx::Assets::Bone> bone = contents.boneId;
+	Assets::AssetHandle<Assets::Bone> bone = contents.boneId;
 
 	EntityHandle handle = EntityFactory::Create();
 	StaticMeshNode(EntityFactory::GetEntity(handle), *bone.WaitGet(), contents);
