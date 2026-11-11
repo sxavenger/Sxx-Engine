@@ -13,6 +13,7 @@ SXAVENGER_ENGINE_USING
 #include <Runtime/Editor/ViewportPanel.h>
 #include <Runtime/Editor/HierarchyPanel.h>
 #include <Runtime/Editor/SettingsPanel.h>
+#include <Runtime/Editor/InspectorPanel.h>
 
 //* imgui
 #include <imgui.h>
@@ -46,6 +47,7 @@ SlateEditorUnit::SlateEditorUnit() {
 	RegisterPanel<Editor::ViewportPanel>(PanelState::Global);
 	RegisterPanel<Editor::HierarchyPanel>(PanelState::Global);
 	RegisterPanel<Editor::SettingsPanel>(PanelState::Global);
+	RegisterPanel<Editor::InspectorPanel>(PanelState::Global);
 
 	//RegisterPanel<Editor::EditorTestPanel>(PanelState::Global);
 	//RegisterPanel<Editor::StyleEditorPanel>(PanelState::Global);

@@ -93,6 +93,8 @@ public:
 	//! @brief 借用として子を追加
 	void AttachChild(const EntityHandle& child);
 
+	const std::unordered_map<EntityHandle, Ownership, EntityHandle::Hash>& GetChildren() const noexcept { return children_; }
+
 	//* component option *//
 
 	//! @brief componentを追加
