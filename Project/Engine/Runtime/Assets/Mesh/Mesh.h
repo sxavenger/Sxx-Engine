@@ -38,7 +38,6 @@ public:
 	Vector3f tangent;
 	Vector3f bitangent;
 
-	// TODO: GPU側に転送するためのPackedバッファ構造体を定義.
 private:
 };
 
