@@ -7,7 +7,10 @@
 #include <comdef.h>
 
 //* c++
+#include <locale>
+#ifdef CONSOLE
 #include <iostream>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ConsoleLogger class methods
