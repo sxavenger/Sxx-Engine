@@ -101,7 +101,10 @@ StaticMesh::Description StaticMeshBuilder::BuildReference(const std::filesystem:
 
 	//!< 三角形データの取得
 	for (uint32_t i = 0; i < mesh.GetFaceCount(); ++i) {
-		description.polygons[i] = { mesh.GetTriangle(i) };
+		AssimpMesh::Triangle triangle = mesh.GetTriangle(i);
+		description.polygons[i].triangles[0] = triangle[0];
+		description.polygons[i].triangles[1] = triangle[1];
+		description.polygons[i].triangles[2] = triangle[2];
 	}
 
 	return description;

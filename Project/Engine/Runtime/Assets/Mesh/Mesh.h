@@ -38,7 +38,6 @@ public:
 	Vector3f tangent;
 	Vector3f bitangent;
 
-	// TODO: GPU側に転送するためのPackedバッファ構造体を定義.
 private:
 };
 
@@ -56,7 +55,7 @@ public:
 	// public variables
 	//=========================================================================================
 
-	std::array<uint32_t, 3> indices; //!< 三角形の頂点インデックスを格納する配列
+	std::array<uint32_t, 3> triangles; //!< 三角形の頂点インデックスを格納する配列
 
 };
 

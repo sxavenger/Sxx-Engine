@@ -4,7 +4,6 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* lib
-#include <Lib/Logger/StreamLogger.h>
 #include <Lib/Pointer/ReferencePointer.h>
 
 //* c++
@@ -51,6 +50,16 @@ public:
 
 	bool operator==(const TypeInfo& other) const noexcept { return info_ == other.info_; }
 	bool operator!=(const TypeInfo& other) const noexcept { return info_ != other.info_; }
+
+	//* operator [comparison] <std::type_info*> *//
+
+	bool operator==(const std::type_info* other) const noexcept { return info_ == other; }
+	bool operator!=(const std::type_info* other) const noexcept { return info_ != other; }
+
+	//* operator [comparison] <std::type_info&> *//
+
+	bool operator==(const std::type_info& other) const noexcept { return info_ == &other; }
+	bool operator!=(const std::type_info& other) const noexcept { return info_ != &other; }
 
 	//* operator [comparison] <std::nullptr_t> *//
 
