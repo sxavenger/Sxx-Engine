@@ -27,7 +27,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Runtime/World/Component/ComponentStorage.h>
 #include <Runtime/World/Component/Transform/TransformComponent.h>
 #include <Runtime/World/Component/Camera/CameraComponent.h>
-#include <Runtime/World/Component/Renderer/StaticMeshRenderer.h>
+#include <Runtime/World/Component/Renderer/StaticMeshRendererComponent.h>
 #include <Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
 #include <Runtime/World/Component/Light/Punctual/PointLightComponent.h>
 #include <Runtime/World/Entity/EntityBehaviour.h>
@@ -74,7 +74,7 @@ void Renderer::Cache() {
 	{ //!< RendererComponentのcacheの更新
 
 		Scheduler::TaskHandle handle = Scheduler::System::PushCpuTask("StaticMeshRenderer Component Cache", Scheduler::TaskPriority::Priority::High, []() {
-			Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::StaticMeshRenderer>([](Sxx::World::StaticMeshRenderer* renderer) {
+			Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::StaticMeshRendererComponent>([](Sxx::World::StaticMeshRendererComponent* renderer) {
 
 				const Sxx::Assets::AssetHandle<Sxx::Assets::StaticMesh>& mesh = renderer->GetMesh();
 				const Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial>& material = renderer->GetMaterial();

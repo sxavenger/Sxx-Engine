@@ -23,23 +23,23 @@ namespace {
 	// methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	Bone::Description ReadNode(const std::filesystem::path& path, const AssimpNode& node) {
+	Bone::Node ReadNode(const std::filesystem::path& path, const AssimpNode& node) {
 
 		//!< descriptionを設定
-		Bone::Description description = {};
-		description.name           = node.GetName();
-		description.transform      = node.GetTransform();
+		Bone::Node output = {};
+		output.name           = node.GetName();
+		output.transform      = node.GetTransform();
 
 		for (uint32_t i = 0; i < node.GetChildCount(); ++i) {
-			description.children.emplace_back(ReadNode(path, node.GetChild(i)));
+			output.children.emplace_back(ReadNode(path, node.GetChild(i)));
 		}
 
 		for (uint32_t i = 0; i < node.GetMeshCount(); ++i) {
 			Uuid mesh = StaticMeshImporter::Import(path, { .index = node.GetMeshIndex(i) }).id;
-			description.meshIds.emplace_back(mesh);
+			output.meshIds.emplace_back(mesh);
 		}
 
-		return description;
+		return output;
 	}
 
 }
@@ -92,7 +92,8 @@ Bone::Description BoneBuilder::BuildReference(const std::filesystem::path& direc
 	const AssimpNode root         = importer.GetRootNode();
 
 	//!< descriptionの作成
-	Bone::Description description = ReadNode(path, root);
+	Bone::Description description = {};
+	description.root = ReadNode(path, root);
 
 	return description;
 }
