@@ -22,24 +22,22 @@ namespace {
 	// methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	void StaticMeshNode(EntityBehaviour* parent, const Assets::Bone& bone, const Assets::ModelContents& contents) {
+	void StaticMeshNode(EntityBehaviour* parent, const Assets::Bone::Node& node, const Assets::ModelContents& contents) {
 
 		//!< entityを作成
 		EntityHandle handle        = EntityFactory::Create();
 		EntityBehaviour* behaviour = EntityFactory::GetEntity(handle);
 
-		const Assets::Bone::Description& description = bone.GetDescription();
-
 		//!< transformの追加
 		behaviour->AddComponent<TransformComponent>();
-		behaviour->GetComponent<TransformComponent>()->SetTransform(description.transform);
+		behaviour->GetComponent<TransformComponent>()->SetTransform(node.transform);
 
 		//!< rendererの追加
-		if (!description.meshIds.empty()) {
-			if (description.meshIds.size() == 1) {
+		if (!node.meshIds.empty()) {
+			if (node.meshIds.size() == 1) {
 
 				//!< assetの取得
-				Assets::AssetHandle<Assets::StaticMesh> mesh          = description.meshIds.front();
+				Assets::AssetHandle<Assets::StaticMesh> mesh          = node.meshIds.front();
 				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
 
 				//!< 名前の設定
@@ -52,7 +50,7 @@ namespace {
 				renderer->SetMaterial(material.GetUuid());
 
 			} else {
-				for (const auto& meshId : description.meshIds) {
+				for (const auto& meshId : node.meshIds) {
 
 					EntityHandle child      = EntityFactory::Create(); //!< entityを作成
 					EntityBehaviour* entity = EntityFactory::GetEntity(child); //!< entityを取得
@@ -80,8 +78,11 @@ namespace {
 		}
 		
 		parent->AttachChild(std::move(handle)); //!< entityを親に追加
-	}
 
+		for (const auto& child : node.children) {
+			StaticMeshNode(behaviour, child, contents);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +106,7 @@ EntityHandle EntityFactory::CreateModelEntity(const Assets::ModelContents& conte
 	Assets::AssetHandle<Assets::Bone> bone = contents.boneId;
 
 	EntityHandle handle = EntityFactory::Create();
-	StaticMeshNode(EntityFactory::GetEntity(handle), *bone.WaitGet(), contents);
+	StaticMeshNode(EntityFactory::GetEntity(handle), bone.WaitGet()->GetDescription().root, contents);
 
 	return handle;
 }
