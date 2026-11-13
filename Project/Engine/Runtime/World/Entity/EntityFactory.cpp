@@ -11,7 +11,7 @@ SXAVENGER_ENGINE_USING_(World)
 #include <Runtime/Assets/Bone/Bone.h>
 #include <Runtime/Assets/Handle/AssetHandle.h>
 #include <Runtime/World/Component/Transform/TransformComponent.h>
-#include <Runtime/World/Component/Renderer/StaticMeshRenderer.h>
+#include <Runtime/World/Component/Renderer/StaticMeshRendererComponent.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // (anonymous namespace)
@@ -46,8 +46,8 @@ namespace {
 				behaviour->SetName(mesh.GetName());
 
 				//!< rendererの追加
-				behaviour->AddComponent<StaticMeshRenderer>();
-				auto renderer = behaviour->GetComponent<StaticMeshRenderer>();
+				behaviour->AddComponent<StaticMeshRendererComponent>();
+				auto renderer = behaviour->GetComponent<StaticMeshRendererComponent>();
 				renderer->SetMesh(mesh.GetUuid());
 				renderer->SetMaterial(material.GetUuid());
 
@@ -68,8 +68,8 @@ namespace {
 					entity->SetName(mesh.GetName());
 
 					//!< rendererの追加
-					entity->AddComponent<StaticMeshRenderer>();
-					auto renderer = entity->GetComponent<StaticMeshRenderer>();
+					entity->AddComponent<StaticMeshRendererComponent>();
+					auto renderer = entity->GetComponent<StaticMeshRendererComponent>();
 					renderer->SetMesh(mesh.GetUuid());
 					renderer->SetMaterial(material.GetUuid());
 
