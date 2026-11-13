@@ -7,18 +7,14 @@
 #include <comdef.h>
 
 //* c++
-#ifdef CONSOLE
 #include <iostream>
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ConsoleLogger class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void ConsoleLogger::Init() {
-#ifdef CONSOLE
 	std::locale::global(std::locale("ja_JP.UTF-8")); //!< 日本語出力に対応.
-#endif
 }
 
 void ConsoleLogger::OutputA(const std::string_view& message) {
