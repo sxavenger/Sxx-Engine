@@ -122,7 +122,7 @@ SkeletalMesh::Description SkeletalMeshBuilder::BuildReference(const std::filesys
 			cluster.weights.emplace_back(weight.weight, weight.index);
 		}
 
-		description.clusters.emplace(bone.GetName(), std::move(cluster));
+		description.clusters.Emplace(bone.GetName(), std::move(cluster));
 	}
 
 	return description;

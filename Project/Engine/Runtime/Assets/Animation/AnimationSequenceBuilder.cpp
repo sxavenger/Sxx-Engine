@@ -70,7 +70,7 @@ AnimationSequence::Description AnimationSequenceBuilder::BuildReference(const st
 	for (uint32_t channel = 0; channel < animation.GetChannelCount(); ++channel) {
 
 		const AssimpNodeAnimation& nodeAnimation = animation.GetChannel(channel); //!< nodeAnimationの取得
-		Animation& boneAnimation                 = description.boneAnimations[std::string(nodeAnimation.GetNodeName())]; //!< boneAnimationの取得
+		Animation& boneAnimation                 = description.boneAnimations[nodeAnimation.GetNodeName()]; //!< boneAnimationの取得
 		
 		{ //!< Positionの設定
 
@@ -81,7 +81,7 @@ AnimationSequence::Description AnimationSequenceBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(AnimationSequence::kTranslationCurveName), std::move(curve));
+			boneAnimation.SetCurve(AnimationSequence::Description::kTranslationCurveName, std::move(curve));
 		}
 
 		{ //!< Rotationの設定
@@ -93,7 +93,7 @@ AnimationSequence::Description AnimationSequenceBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Quaternionf>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(AnimationSequence::kRotationCurveName), std::move(curve));
+			boneAnimation.SetCurve(AnimationSequence::Description::kRotationCurveName, std::move(curve));
 		}
 
 		{ //!< Scaleの設定
@@ -105,7 +105,7 @@ AnimationSequence::Description AnimationSequenceBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(AnimationSequence::kScaleCurveName), std::move(curve));
+			boneAnimation.SetCurve(AnimationSequence::Description::kScaleCurveName, std::move(curve));
 		}
 	}
 

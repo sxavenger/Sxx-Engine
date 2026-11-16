@@ -12,6 +12,7 @@
 
 //* lib
 #include <Lib/Any/Any.h>
+#include <Lib/Container/StringHashMap.h>
 #include <Lib/Logger/StreamLogger.h>
 
 //* c++
@@ -86,22 +87,22 @@ public:
 	//=========================================================================================
 
 	template <typename T>
-	bool HasCurve(const std::string& name) const;
+	bool HasCurve(const std::string_view& name) const;
 
 	template <typename T>
-	void SetCurve(const std::string& name, const Curve<T>& curve);
+	void SetCurve(const std::string_view& name, const Curve<T>& curve);
 
 	template <typename T>
-	void SetCurve(const std::string& name, Curve<T>&& curve);
+	void SetCurve(const std::string_view& name, Curve<T>&& curve);
 
 	template <typename T>
-	const Curve<T>& GetCurve(const std::string& name) const;
+	const Curve<T>& GetCurve(const std::string_view& name) const;
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
-	std::unordered_map<std::string, Any> curves;
+	StringHashMap<Any> curves;
 	//!< stringをキーにして, Curve<T>をAnyで保持するmap
 
 };
@@ -171,24 +172,24 @@ inline void Animation::Curve<T>::Sort(Animation::Curve<T>& curve) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-inline bool Animation::HasCurve(const std::string& name) const {
-	return curves.contains(name);
+inline bool Animation::HasCurve(const std::string_view& name) const {
+	return curves.Contains(name);
 }
 
 template <typename T>
-inline void Animation::SetCurve(const std::string& name, const Animation::Curve<T>& curve) {
+inline void Animation::SetCurve(const std::string_view& name, const Animation::Curve<T>& curve) {
 	curves[name] = curve;
 }
 
 template <typename T>
-inline void Animation::SetCurve(const std::string& name, Animation::Curve<T>&& curve) {
+inline void Animation::SetCurve(const std::string_view& name, Animation::Curve<T>&& curve) {
 	curves[name] = std::move(curve);
 }
 
 template <typename T>
-inline const Animation::Curve<T>& Animation::GetCurve(const std::string& name) const {
-	STREAM_ASSERT(curves.contains(name), "Animation::GetCurve | curve not found. name: {}", name);
-	return curves.at(name).Get<Animation::Curve<T>>();
+inline const Animation::Curve<T>& Animation::GetCurve(const std::string_view& name) const {
+	STREAM_ASSERT(curves.Contains(name), "Animation::GetCurve | curve not found. name: {}", name);
+	return curves.At(name).Get<Animation::Curve<T>>();
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

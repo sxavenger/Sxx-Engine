@@ -12,6 +12,7 @@
 #include <Runtime/Foundation.hpp>
 
 //* lib
+#include <Lib/Container/StringHashMap.h>
 #include <Lib/Math/Transform/Transformation3d.h>
 
 //* c++
@@ -83,7 +84,7 @@ public:
 		std::vector<MeshVertex> vertices;
 		std::vector<MeshPolygon> polygons;
 
-		std::unordered_map<std::string, SkinCluster> clusters;
+		StringHashMap<SkinCluster> clusters;
 
 	};
 

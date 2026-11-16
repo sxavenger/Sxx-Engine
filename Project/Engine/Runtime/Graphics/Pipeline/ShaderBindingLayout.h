@@ -16,6 +16,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <Lib/Container/StringHashMap.h>
+
 //* c++
 #include <vector>
 #include <unordered_map>
@@ -41,10 +44,10 @@ public:
 
 	void Reset();
 
-	bool Contains(const std::string& name) const;
+	bool Contains(const std::string_view& name) const;
 
-	ShaderBindingSlot& GetSlot(const std::string& name);
-	const ShaderBindingSlot& GetSlot(const std::string& name) const;
+	ShaderBindingSlot& GetSlot(const std::string_view& name);
+	const ShaderBindingSlot& GetSlot(const std::string_view& name) const;
 
 	//* root signature option *//
 
@@ -84,7 +87,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	std::unordered_map<std::string, ShaderBindingSlot> slots_;
+	StringHashMap<ShaderBindingSlot> slots_;
 
 	//=========================================================================================
 	// private methods

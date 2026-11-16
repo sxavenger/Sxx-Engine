@@ -9,6 +9,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <Lib/Container/StringHashMap.h>
+
 //* c++
 #include <string>
 #include <unordered_map>
@@ -30,25 +33,25 @@ public:
 
 	//* sampler option *//
 
-	void SetSamplerFilter(const std::string& name, SampleFilter filter, SampleMode mode, UINT anisotropic = 0);
+	void SetSamplerFilter(const std::string_view& name, SampleFilter filter, SampleMode mode, UINT anisotropic = 0);
 
-	void SetSamplerLinear(const std::string& name, SampleMode mode);
+	void SetSamplerLinear(const std::string_view& name, SampleMode mode);
 
-	void SetSamplerPoint(const std::string& name, SampleMode mode);
+	void SetSamplerPoint(const std::string_view& name, SampleMode mode);
 
-	void SetSamplerAnisotropic(const std::string& name, SampleMode mode, UINT anisotropic);
+	void SetSamplerAnisotropic(const std::string_view& name, SampleMode mode, UINT anisotropic);
 
 	//* samplers set option *//
 
-	bool Contains(const std::string& name) const;
+	bool Contains(const std::string_view& name) const;
 
-	D3D12_STATIC_SAMPLER_DESC GetSampler(const std::string& name, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0) const;
+	D3D12_STATIC_SAMPLER_DESC GetSampler(const std::string_view& name, ShaderVisibility stage, UINT registerNumber, UINT registerSpace = 0) const;
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
-	std::unordered_map<std::string, D3D12_STATIC_SAMPLER_DESC> samplers;
+	StringHashMap<D3D12_STATIC_SAMPLER_DESC> samplers;
 
 private:
 };
