@@ -83,3 +83,7 @@ bool AssimpMesh::HasBone() const {
 uint32_t AssimpMesh::GetBoneCount() const {
 	return mesh_->mNumBones;
 }
+
+AssimpBone AssimpMesh::GetBone(uint32_t index) const {
+	return mesh_->mBones[index];
+}

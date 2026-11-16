@@ -24,6 +24,7 @@ enum class AssetType : uint8_t {
 	Unknown,
 	Texture,
 	StaticMesh,
+	SkeletalMesh,
 	SurfaceMaterial,
 	Bone,
 	SkeletalAnimation,

@@ -8,6 +8,8 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include "../Assimp/AssimpCommon.h"
 #include "../Assimp/AssimpImporter.h"
 #include "StaticMeshImporter.h"
+#include "SkeletalMeshImporter.h"
+#include "MeshImporter.h"
 #include "SurfaceMaterialImporter.h"
 #include "BoneImporter.h"
 #include "SkeletalAnimationImporter.h"
@@ -28,17 +30,8 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 	//!< importerの取得
 	const AssimpImporter& importer = AssimpCommon::GetImporter(filepath);
 
-	const uint32_t meshCount     = importer.GetMeshCount();
-	const uint32_t materialCount = importer.GetMaterialCount();
-	const uint32_t animationCount = importer.GetAnimationCount();
-
-	//!< meshとmaterialのidを格納するvectorの容量を確保
-	contents.materialIds.reserve(materialCount);
-	contents.meshIds.reserve(meshCount);
-	contents.animationIds.reserve(animationCount);
-
 	//!< materialの取り込み
-	for (uint32_t i = 0; i < materialCount; ++i) {
+	for (uint32_t i = 0; i < importer.GetMaterialCount(); ++i) {
 		SurfaceMaterialImporter::ReferenceParameters parameters = {};
 		parameters.index = i;
 
@@ -46,24 +39,31 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 	}
 
 	//!< meshの取り込み
-	for (uint32_t i = 0; i < meshCount; ++i) {
-		StaticMeshImporter::ReferenceParameters parameters = {};
-		parameters.index = i;
+	for (uint32_t i = 0; i < importer.GetMeshCount(); ++i) {
 
-		contents.meshIds.emplace_back(StaticMeshImporter::Import(filepath, parameters).id);
-	}
+		const AssimpMesh mesh = importer.GetMesh(i);
 
-	//!< meshに対応するmaterialのuuidを格納するvectorの作成
-	for (uint32_t i = 0; i < meshCount; ++i) {
-		const AssimpMesh& mesh = importer.GetMesh(i);
-		contents.meshMaterialMap[contents.meshIds[i]] = contents.materialIds[mesh.GetMaterialIndex()];
+		MeshContents meshContents = MeshImporter::Import(filepath, MeshImporter::ReferenceParameters{ .index = i });
+
+		switch (meshContents.type) {
+			case MeshContents::Type::Static:
+				contents.staticMeshIds.emplace_back(meshContents.id);
+				break;
+
+			case MeshContents::Type::Skeletal:
+				contents.skeletalMeshIds.emplace_back(meshContents.id);
+				break;
+		}
+
+		//!< meshに対応するmaterialのuuidを格納する
+		contents.meshMaterialMap[meshContents.id] = contents.materialIds[mesh.GetMaterialIndex()];
 	}
 
 	//!< boneの取り込み
 	contents.boneId = BoneImporter::Import(filepath, BoneImporter::ReferenceParameters{}).id;
 
 	//!< animationの取り込み
-	for (uint32_t i = 0; i < animationCount; ++i) {
+	for (uint32_t i = 0; i < importer.GetAnimationCount(); ++i) {
 		contents.animationIds.emplace_back(SkeletalAnimationImporter::Import(filepath, SkeletalAnimationImporter::ReferenceParameters{ .index = i }).id);
 	}
 

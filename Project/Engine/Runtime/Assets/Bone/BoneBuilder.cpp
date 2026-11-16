@@ -8,7 +8,8 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include "../Assimp/AssimpCommon.h"
 #include "../Assimp/AssimpImporter.h"
 #include "../Assimp/AssimpNode.h"
-#include "../Importer/StaticMeshImporter.h"
+#include "../Assimp/AssimpMesh.h"
+#include "../Importer/MeshImporter.h"
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -35,8 +36,22 @@ namespace {
 		}
 
 		for (uint32_t i = 0; i < node.GetMeshCount(); ++i) {
-			Uuid mesh = StaticMeshImporter::Import(path, { .index = node.GetMeshIndex(i) }).id;
-			output.meshIds.emplace_back(mesh);
+
+			MeshContents mesh = MeshImporter::Import(path, MeshImporter::ReferenceParameters{ .index = node.GetMeshIndex(i) });
+
+			switch (mesh.type) {
+				case MeshContents::Type::Static:
+					output.staticMeshIds.emplace_back(mesh.id);
+					break;
+
+				case MeshContents::Type::Skeletal:
+					output.skeletalMeshIds.emplace_back(mesh.id);
+					break;
+
+				default:
+					STREAM_LOG_ERROR("Assets::BoneBuilder | mesh type is unknown. name: {}, mesh index: {}", node.GetName(), node.GetMeshIndex(i));
+					break;
+			}
 		}
 
 		return output;

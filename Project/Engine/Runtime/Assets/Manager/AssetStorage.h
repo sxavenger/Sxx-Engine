@@ -7,6 +7,7 @@
 #include "../Base/BaseAsset.h"
 #include "../Texture/TextureTraits.h"
 #include "../Mesh/StaticMeshTraits.h"
+#include "../Mesh/SkeletalMeshTraits.h"
 #include "../Material/SurfaceMaterialTraits.h"
 #include "../Bone/BoneTraits.h"
 #include "../Animation/SkeletalAnimationTraits.h"
