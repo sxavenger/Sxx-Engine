@@ -12,9 +12,13 @@
 #include <Runtime/Foundation.hpp>
 
 //* lib
-#include <Lib/Time/TimeUnit.h>
+#include <Lib/Container/StringHashMap.h>
+#include <Lib/Time/TimePoint.h>
+#include <Lib/Math/Transform/Transform3d.h>
 
 //* c++
+#include <string>
+#include <optional>
 #include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,12 +43,18 @@ public:
 		// public methods
 		//=========================================================================================
 
+		Transform3d SampleBoneTransform(const std::string_view& name, TimePointd<TimeUnit::Second> time) const;
+
 		//=========================================================================================
-		// private variables
+		// public variables
 		//=========================================================================================
 
 		TimePointd<TimeUnit::Second> duration; //!< アニメーション全体時間
-		std::unordered_map<std::string, Animation> boneAnimations; //!< bone名をキーにして, Animationを保持するmap
+		StringHashMap<Animation> boneAnimations; //!< bone名をキーにして, Animationを保持するmap
+
+		static inline const std::string_view kTranslationCurveName = "translation"; //!< translationのcurve名
+		static inline const std::string_view kRotationCurveName    = "rotation";    //!< rotationのcurve名
+		static inline const std::string_view kScaleCurveName       = "scale";       //!< scaleのcurve名
 
 	};
 
@@ -70,10 +80,6 @@ public:
 	//* directory *//
 
 	static inline const std::filesystem::path kDirectory = L"Animations"; //!< SkeletalAnimationの保存ディレクトリ
-
-	static inline const std::string_view kTranslationCurveName = "translation"; //!< translationのcurve名
-	static inline const std::string_view kRotationCurveName    = "rotation";    //!< rotationのcurve名
-	static inline const std::string_view kScaleCurveName       = "scale";       //!< scaleのcurve名
 
 private:
 
