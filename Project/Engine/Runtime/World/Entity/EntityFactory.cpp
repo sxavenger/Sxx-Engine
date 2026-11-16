@@ -27,6 +27,7 @@ namespace {
 		//!< entityを作成
 		EntityHandle handle        = EntityFactory::Create();
 		EntityBehaviour* behaviour = EntityFactory::GetEntity(handle);
+		behaviour->SetName(node.name);
 
 		//!< transformの追加
 		behaviour->AddComponent<TransformComponent>();
@@ -76,8 +77,6 @@ namespace {
 				}
 			}
 
-		} else {
-			behaviour->SetName(node.name);
 		}
 		
 		parent->AttachChild(std::move(handle)); //!< entityを親に追加
