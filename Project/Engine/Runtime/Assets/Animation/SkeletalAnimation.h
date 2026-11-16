@@ -69,7 +69,7 @@ public:
 
 	//* directory *//
 
-	static inline const std::filesystem::path kDirectory = L"SkeletalAnimation"; //!< SkeletalAnimationの保存ディレクトリ
+	static inline const std::filesystem::path kDirectory = L"Animations"; //!< SkeletalAnimationの保存ディレクトリ
 
 	static inline const std::string_view kTranslationCurveName = "translation"; //!< translationのcurve名
 	static inline const std::string_view kRotationCurveName    = "rotation";    //!< rotationのcurve名
