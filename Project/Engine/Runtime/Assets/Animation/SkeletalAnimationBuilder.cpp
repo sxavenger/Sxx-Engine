@@ -80,7 +80,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 				curve.keyframes.emplace_back(key.time, key.value);
 			}
 
-			Animation::Curve<Vector3f>::Sort(curve.keyframes); //!< キーフレームを時刻順にソートする
+			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
 			boneAnimation.SetCurve(std::string(SkeletalAnimation::kTranslationCurveName), std::move(curve));
 		}
 
@@ -92,7 +92,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 				curve.keyframes.emplace_back(key.time, key.value);
 			}
 
-			Animation::Curve<Quaternionf>::Sort(curve.keyframes); //!< キーフレームを時刻順にソートする
+			Animation::Curve<Quaternionf>::Sort(curve); //!< キーフレームを時刻順にソートする
 			boneAnimation.SetCurve(std::string(SkeletalAnimation::kRotationCurveName), std::move(curve));
 		}
 
@@ -104,7 +104,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 				curve.keyframes.emplace_back(key.time, key.value);
 			}
 
-			Animation::Curve<Vector3f>::Sort(curve.keyframes); //!< キーフレームを時刻順にソートする
+			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
 			boneAnimation.SetCurve(std::string(SkeletalAnimation::kScaleCurveName), std::move(curve));
 		}
 	}

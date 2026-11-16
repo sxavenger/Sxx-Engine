@@ -68,7 +68,7 @@ public:
 		Segument GetSegument(TimePointd<TimeUnit::Second> time) const;
 
 		//! @brief キーフレームを時間順にソートする
-		static void Sort(std::vector<Keyframe<T>>& keyframes);
+		static void Sort(Curve& curve);
 
 		//=========================================================================================
 		// public variables
@@ -162,8 +162,8 @@ inline Animation::Curve<T>::Segument Animation::Curve<T>::GetSegument(TimePointd
 }
 
 template <typename T>
-inline void Animation::Curve<T>::Sort(std::vector<Keyframe<T>>& keyframes) {
-	std::sort(keyframes.begin(), keyframes.end(), [](const Keyframe<T>& a, const Keyframe<T>& b) { return a.time < b.time; });
+inline void Animation::Curve<T>::Sort(Animation::Curve<T>& curve) {
+	std::sort(curve.keyframes.begin(), curve.keyframes.end(), [](const Keyframe<T>& a, const Keyframe<T>& b) { return a.time < b.time; });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
