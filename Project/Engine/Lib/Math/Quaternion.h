@@ -73,6 +73,10 @@ public:
 		constexpr Imaginary operator+() const noexcept { return *this; }
 		constexpr Imaginary operator-() const noexcept { return { -x, -y, -z }; }
 
+		//* operator [cast] <Vector3> *//
+
+		explicit constexpr operator Vector3<T>() const noexcept { return { x, y, z }; }
+
 		//* mathmatical methods *//
 
 		constexpr static T Dot(const Imaginary& lhs, const Imaginary& rhs) noexcept {
@@ -252,23 +256,25 @@ constexpr T Quaternion<T>::Dot(const Quaternion& x, const Quaternion& y) noexcep
 
 template <std::floating_point T>
 Quaternion<T> Quaternion<T>::Slerp(const Quaternion& x, const Quaternion& y, T t) noexcept {
-	T dot = Imaginary::Dot(x.imaginary, y.imaginary);
+	T dot = Quaternion::Dot(x, y);
 
-		// fromとtoが同じ方向の場合
-	if (dot >= T(1.0) - Math::kEpsilon<T>) {
-		return Quaternion<T>::Identity();
+	Quaternion q = x;
+
+	if (dot < 0.0f) {
+		q = -x;
+		dot = -dot;
 	}
 
-	// fromとtoが逆方向の場合
-	if (dot <= T(-1.0) + Math::kEpsilon<T>) {
-		const Vector3<T> orthogonal = std::abs(x.imaginary.x) > T(1.0) - Math::kEpsilon<T> ? Vector3<T>::UnitY() : Vector3<T>::UnitX();
-		return { Vector3<T>::Cross(x.imaginary, orthogonal).Normalize(), T(0) };
+	if (dot >= 1.0f - Math::kEpsilon<T>) {
+		return (1.0f - t) * q + t * y;
 	}
 
-	Vector3<T> axis = Vector3<T>::Cross(x.imaginary, y.imaginary).Normalize();
-	T angle = std::acos(dot);
+	T theta = std::acos(dot);
 
-	return Quaternion<T>::AxisAngle(axis, angle);
+	T scaler0 = std::sin(theta * (T(1.0) - t)) / std::sin(theta);
+	T scaler1 = std::sin(theta * t) / std::sin(theta);
+
+	return scaler0 * q + scaler1 * y;
 }
 
 template <std::floating_point T>
@@ -296,7 +302,8 @@ Quaternion<T> Quaternion<T>::FromToRotation(const Vector3<T>& from, const Vector
 	// fromとtoが逆方向の場合
 	if (dot <= T(-1.0) + Math::kEpsilon<T>) {
 		const Vector3<T> orthogonal = std::abs(from.x) > T(1.0) - Math::kEpsilon<T> ? Vector3<T>::UnitY() : Vector3<T>::UnitX();
-		return { Math::Normalize(Math::Cross(from, orthogonal)), T(0) };
+		Vector3<T> axis = Math::Normalize(Math::Cross(from, orthogonal));
+		return { axis.x, axis.y, axis.z, T(0) };
 	}
 
 	Vector3<T> axis = Math::Normalize(Math::Cross(from, to));
