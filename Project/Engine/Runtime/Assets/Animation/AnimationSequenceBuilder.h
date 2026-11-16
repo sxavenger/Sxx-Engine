@@ -4,8 +4,8 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* assets
-#include "SkeletalAnimationMetadata.h"
-#include "SkeletalAnimation.h"
+#include "AnimationSequenceMetadata.h"
+#include "AnimationSequence.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -19,16 +19,16 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SkeletalAnimationBuilder class
+// AnimationSequenceBuilder class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class SkeletalAnimationBuilder final {
+class AnimationSequenceBuilder final {
 public:
 
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
 
-	static void Build(std::shared_ptr<SkeletalAnimation>& animation);
+	static void Build(std::shared_ptr<AnimationSequence>& animation);
 
 private:
 
@@ -38,7 +38,7 @@ private:
 
 	//* build helper methods *//
 
-	static SkeletalAnimation::Description BuildReference(const std::filesystem::path& directory, const SkeletalAnimationMetadata::ReferenceData& data);
+	static AnimationSequence::Description BuildReference(const std::filesystem::path& directory, const AnimationSequenceMetadata::ReferenceData& data);
 
 };
 

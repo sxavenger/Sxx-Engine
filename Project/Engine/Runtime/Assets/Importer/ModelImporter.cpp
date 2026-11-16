@@ -12,7 +12,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include "MeshImporter.h"
 #include "SurfaceMaterialImporter.h"
 #include "BoneImporter.h"
-#include "SkeletalAnimationImporter.h"
+#include "AnimationSequenceImporter.h"
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -64,7 +64,7 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 
 	//!< animationの取り込み
 	for (uint32_t i = 0; i < importer.GetAnimationCount(); ++i) {
-		contents.animationIds.emplace_back(SkeletalAnimationImporter::Import(filepath, SkeletalAnimationImporter::ReferenceParameters{ .index = i }).id);
+		contents.animationIds.emplace_back(AnimationSequenceImporter::Import(filepath, AnimationSequenceImporter::ReferenceParameters{ .index = i }).id);
 	}
 
 	return contents;

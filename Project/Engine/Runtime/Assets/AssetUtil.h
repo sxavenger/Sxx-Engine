@@ -27,7 +27,7 @@ enum class AssetType : uint8_t {
 	SkeletalMesh,
 	SurfaceMaterial,
 	Bone,
-	SkeletalAnimation,
+	AnimationSequence,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////

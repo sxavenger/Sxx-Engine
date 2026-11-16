@@ -15,9 +15,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SkeletalAnimationContents structure
+// AnimationSequenceContents structure
 ////////////////////////////////////////////////////////////////////////////////////////////
-struct SkeletalAnimationContents final {
+struct AnimationSequenceContents final {
 public:
 
 	//=========================================================================================

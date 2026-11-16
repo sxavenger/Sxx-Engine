@@ -1,13 +1,11 @@
 #pragma once
 
-#pragma once
-
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
 //* assets
 #include "../AssetUtil.h"
-#include "../Contents/SkeletalAnimationContents.h"
+#include "../Contents/AnimationSequenceContents.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -24,9 +22,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SkeletalAnimationImporter class
+// AnimationSequenceImporter class
 ////////////////////////////////////////////////////////////////////////////////////////////
-class SkeletalAnimationImporter final {
+class AnimationSequenceImporter final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +47,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static SkeletalAnimationContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static AnimationSequenceContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
 
 };
 

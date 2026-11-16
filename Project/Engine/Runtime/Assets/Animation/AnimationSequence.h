@@ -4,17 +4,18 @@
 // include
 //-----------------------------------------------------------------------------------------
 //* assets
-#include "../AssetUtil.h"
+#include "../Base/BaseAsset.h"
+#include "Animation.h"
+#include "AnimationSequenceMetadata.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
 
 //* lib
-#include <Lib/Format/Json/JsonNode.h>
+#include <Lib/Time/TimeUnit.h>
 
 //* c++
-#include <filesystem>
-#include <variant>
+#include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Sxavenger Engine namespace
@@ -22,42 +23,29 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SkeletalAnimationMetadata structure
+// AnimationSequence class
 ////////////////////////////////////////////////////////////////////////////////////////////
-struct SkeletalAnimationMetadata final {
+class AnimationSequence final
+	: public BaseAsset {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// ReferenceData structure
+	// Description structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct ReferenceData {
+	struct Description {
 	public:
 
 		//=========================================================================================
 		// public methods
 		//=========================================================================================
 
-		//* serialization option *//
-
-		static json::node Serialize(const ReferenceData& data);
-
-		static ReferenceData Deserialize(const json::node& node);
-
 		//=========================================================================================
-		// public variables
+		// private variables
 		//=========================================================================================
 
-		std::filesystem::path filepath; //!< 参照されているAnimationのファイルパス
-		uint32_t index;                 //!< Animationのインデックス番号
+		TimePointd<TimeUnit::Second> duration; //!< アニメーション全体時間
+		std::unordered_map<std::string, Animation> boneAnimations; //!< bone名をキーにして, Animationを保持するmap
 
-	};
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// InlineData structure
-	////////////////////////////////////////////////////////////////////////////////////////////
-	struct InlineData {
-	public:
-		// TODO: Inline情報の定義.
 	};
 
 public:
@@ -66,25 +54,46 @@ public:
 	// public methods
 	//=========================================================================================
 
-	//* metadata type *//
+	//* constructor / destructor *//
 
-	MetadataType GetType() const;
+	AnimationSequence(const BaseAssetMetadata& metadata) noexcept : BaseAsset(metadata) {}
+	~AnimationSequence() noexcept override = default;
 
-	const ReferenceData& GetReferenceData() const;
+	//* description option *//
 
-	//* serialization option *//
-
-	static json::node Serialize(const SkeletalAnimationMetadata& metadata);
-
-	static SkeletalAnimationMetadata Deserialize(const json::node& node);
+	const Description& GetDescription() const;
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
-	std::variant<std::monostate, ReferenceData, InlineData> data;
+	//* directory *//
+
+	static inline const std::filesystem::path kDirectory = L"Animations"; //!< SkeletalAnimationの保存ディレクトリ
+
+	static inline const std::string_view kTranslationCurveName = "translation"; //!< translationのcurve名
+	static inline const std::string_view kRotationCurveName    = "rotation";    //!< rotationのcurve名
+	static inline const std::string_view kScaleCurveName       = "scale";       //!< scaleのcurve名
 
 private:
+
+	//=========================================================================================
+	// private variables
+	//=========================================================================================
+
+	//* metadata *//
+
+	AnimationSequenceMetadata metadata_;
+
+	//* description *//
+
+	Description description_;
+
+	//-----------------------------------------------------------------------------------------
+	// friend class
+	//-----------------------------------------------------------------------------------------
+	friend class AnimationSequenceBuilder;
+
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END

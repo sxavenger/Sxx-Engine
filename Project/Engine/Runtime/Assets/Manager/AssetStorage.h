@@ -10,7 +10,7 @@
 #include "../Mesh/SkeletalMeshTraits.h"
 #include "../Material/SurfaceMaterialTraits.h"
 #include "../Bone/BoneTraits.h"
-#include "../Animation/SkeletalAnimationTraits.h"
+#include "../Animation/AnimationSequenceTraits.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>

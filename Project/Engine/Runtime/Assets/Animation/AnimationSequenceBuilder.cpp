@@ -1,4 +1,4 @@
-#include "SkeletalAnimationBuilder.h"
+#include "AnimationSequenceBuilder.h"
 SXAVENGER_ENGINE_USING_(Assets)
 
 //-----------------------------------------------------------------------------------------
@@ -15,15 +15,15 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include <Lib/Format/Json/JsonFile.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// SkeletalAnimationBuilder class methods
+// AnimationSequenceBuilder class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void SkeletalAnimationBuilder::Build(std::shared_ptr<SkeletalAnimation>& animation) {
+void AnimationSequenceBuilder::Build(std::shared_ptr<AnimationSequence>& animation) {
 	//!< ファイルパスの取得
 	const std::filesystem::path& filepath = animation->GetFilepath();
 
 	if (!std::filesystem::exists(filepath)) {
-		STREAM_LOG_ERROR("Assets::SkeletalAnimationBuilder | file does not exist. filepath: {}", filepath.generic_string());
+		STREAM_LOG_ERROR("Assets::AnimationSequenceBuilder | file does not exist. filepath: {}", filepath.generic_string());
 		return; //!< ファイルが存在しない場合は処理を終了
 	}
 
@@ -31,27 +31,27 @@ void SkeletalAnimationBuilder::Build(std::shared_ptr<SkeletalAnimation>& animati
 	json::node node = JsonFile::Load(filepath);
 
 	//!< metadataの設定
-	const SkeletalAnimationMetadata& metadata = animation->metadata_ = SkeletalAnimationMetadata::Deserialize(node["metadata"]);
+	const AnimationSequenceMetadata& metadata = animation->metadata_ = AnimationSequenceMetadata::Deserialize(node["metadata"]);
 
 	switch (metadata.GetType()) {
 		case MetadataType::Reference:
-			animation->description_ = SkeletalAnimationBuilder::BuildReference(animation->GetDirectory(), metadata.GetReferenceData());
+			animation->description_ = AnimationSequenceBuilder::BuildReference(animation->GetDirectory(), metadata.GetReferenceData());
 			break;
 
 		case MetadataType::Inline:
 			animation->description_ = {}; //!< TODO: Inline情報の定義.
-			STREAM_LOG_ERROR("Assets::SkeletalAnimationBuilder | inline skeletal animation metadata type is not defined. filepath: {}", filepath.generic_string());
+			STREAM_LOG_ERROR("Assets::AnimationSequenceBuilder | inline animation sequence metadata type is not defined. filepath: {}", filepath.generic_string());
 			return;
 
 		default:
-			STREAM_LOG_ERROR("Assets::SkeletalAnimationBuilder | skeletal animation metadata type is unknown. filepath: {}", filepath.generic_string());
+			STREAM_LOG_ERROR("Assets::AnimationSequenceBuilder | animation sequence metadata type is unknown. filepath: {}", filepath.generic_string());
 			return; //!< metadataがUnknownの場合は処理を終了
 	}
 
-	STREAM_LOG_INFO("Assets::SkeletalAnimationBuilder | skeletal animation build completed. name: {}", animation->GetName());
+	STREAM_LOG_INFO("Assets::AnimationSequenceBuilder | animation sequence build completed. name: {}", animation->GetName());
 }
 
-SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const std::filesystem::path& directory, const SkeletalAnimationMetadata::ReferenceData& data) {
+AnimationSequence::Description AnimationSequenceBuilder::BuildReference(const std::filesystem::path& directory, const AnimationSequenceMetadata::ReferenceData& data) {
 
 	//!< 参照されているanimationのファイルパスの取得
 	std::filesystem::path path = (directory / data.filepath).lexically_normal();
@@ -61,7 +61,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 	const AssimpAnimation animation = importer.GetAnimation(data.index);
 
 	//!< descriptionの作成
-	SkeletalAnimation::Description description;
+	AnimationSequence::Description description;
 
 	//!< animationの全体時間の設定
 	description.duration = animation.GetDuration();
@@ -81,7 +81,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(SkeletalAnimation::kTranslationCurveName), std::move(curve));
+			boneAnimation.SetCurve(std::string(AnimationSequence::kTranslationCurveName), std::move(curve));
 		}
 
 		{ //!< Rotationの設定
@@ -93,7 +93,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Quaternionf>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(SkeletalAnimation::kRotationCurveName), std::move(curve));
+			boneAnimation.SetCurve(std::string(AnimationSequence::kRotationCurveName), std::move(curve));
 		}
 
 		{ //!< Scaleの設定
@@ -105,7 +105,7 @@ SkeletalAnimation::Description SkeletalAnimationBuilder::BuildReference(const st
 			}
 
 			Animation::Curve<Vector3f>::Sort(curve); //!< キーフレームを時刻順にソートする
-			boneAnimation.SetCurve(std::string(SkeletalAnimation::kScaleCurveName), std::move(curve));
+			boneAnimation.SetCurve(std::string(AnimationSequence::kScaleCurveName), std::move(curve));
 		}
 	}
 
