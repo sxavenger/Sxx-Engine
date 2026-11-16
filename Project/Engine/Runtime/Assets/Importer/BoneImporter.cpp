@@ -34,7 +34,7 @@ BoneContents BoneImporter::Import(const std::filesystem::path& filepath, MAYBE_U
 	if (type == FileType::Other) {
 		//!< Assetファイル以外の場合はMetadataを作成.
 
-		//! directoryの追加
+		//!< directoryの追加
 		parent /= Bone::kDirectory;
 		std::filesystem::create_directories(parent); //!< ディレクトリが存在しない場合は作成する
 

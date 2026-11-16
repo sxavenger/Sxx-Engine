@@ -34,7 +34,7 @@ SurfaceMaterialContents SurfaceMaterialImporter::Import(const std::filesystem::p
 	if (type == FileType::Other) {
 		//!< Assetファイル以外の場合はMetadataを作成.
 
-		//! directoryの追加
+		//!< directoryの追加
 		parent /= SurfaceMaterial::kDirectory;
 		std::filesystem::create_directories(parent); //!< ディレクトリが存在しない場合は作成する
 
