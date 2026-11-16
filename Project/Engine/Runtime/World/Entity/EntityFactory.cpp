@@ -75,6 +75,9 @@ namespace {
 					behaviour->AttachChild(std::move(child));
 				}
 			}
+
+		} else {
+			behaviour->SetName(node.name);
 		}
 		
 		parent->AttachChild(std::move(handle)); //!< entityを親に追加
