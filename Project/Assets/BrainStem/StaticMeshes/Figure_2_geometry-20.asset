@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../BrainStem.gltf",
+			"index": 20
+		}
+	},
+	"type": "StaticMesh",
+	"uuid": "c14129bf-8373-423e-ae82-834dec820636"
+}
