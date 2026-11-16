@@ -8,6 +8,7 @@
 #include "AssimpMesh.h"
 #include "AssimpMaterial.h"
 #include "AssimpNode.h"
+#include "AssimpAnimation.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -58,6 +59,10 @@ public:
 	AssimpMaterial GetMaterial(uint32_t index) const;
 
 	AssimpNode GetRootNode() const;
+
+	uint32_t GetAnimationCount() const;
+
+	AssimpAnimation GetAnimation(uint32_t index) const;
 
 	//* operator [copy / move] <AssimpImporter> *//
 

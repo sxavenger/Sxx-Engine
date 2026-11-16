@@ -21,7 +21,7 @@
 //* world [world]
 #include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
 #include <Engine/Runtime/World/Component/Camera/CameraComponent.h>
-#include <Engine/Runtime/World/Component/Renderer/StaticMeshRenderer.h>
+#include <Engine/Runtime/World/Component/Renderer/StaticMeshRendererComponent.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/PointLightComponent.h>
 #include <Engine/Runtime/World/Entity/EntityBehaviour.h>
@@ -108,7 +108,8 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Objectの作成
 
-		Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
+		//Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
+		Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/BrainStem/BrainStem.gltf");
 		object_ = Sxx::World::EntityFactory::CreateModelEntity(contents);
 	}
 
@@ -201,7 +202,7 @@ void SandboxUnit::RenderSandbox() {
 		scene_.Reset();
 
 		//!< RendererComponentのsceneへの追加
-		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::StaticMeshRenderer>([this](Sxx::World::StaticMeshRenderer* renderer) {
+		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::StaticMeshRendererComponent>([this](Sxx::World::StaticMeshRendererComponent* renderer) {
 
 			std::shared_ptr<const Sxx::Rendering::StaticMeshCache> mesh
 				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::StaticMeshCache>(renderer->GetMesh().GetUuid());
@@ -284,7 +285,7 @@ void SandboxUnit::RenderSandbox() {
 
 		viewport.BeginRenderPass(context, ColorCode4(0x9BA8A8FF));
 
-#if 1
+#if 0
 
 		{ //!< Shaderでの書き込み
 

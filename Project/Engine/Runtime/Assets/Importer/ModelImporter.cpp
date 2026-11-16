@@ -10,6 +10,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 #include "StaticMeshImporter.h"
 #include "SurfaceMaterialImporter.h"
 #include "BoneImporter.h"
+#include "SkeletalAnimationImporter.h"
 
 //* lib
 #include <Lib/Logger/StreamLogger.h>
@@ -29,10 +30,12 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 
 	const uint32_t meshCount     = importer.GetMeshCount();
 	const uint32_t materialCount = importer.GetMaterialCount();
+	const uint32_t animationCount = importer.GetAnimationCount();
 
 	//!< meshとmaterialのidを格納するvectorの容量を確保
 	contents.materialIds.reserve(materialCount);
 	contents.meshIds.reserve(meshCount);
+	contents.animationIds.reserve(animationCount);
 
 	//!< materialの取り込み
 	for (uint32_t i = 0; i < materialCount; ++i) {
@@ -50,13 +53,18 @@ ModelContents ModelImporter::Import(const std::filesystem::path& filepath) {
 		contents.meshIds.emplace_back(StaticMeshImporter::Import(filepath, parameters).id);
 	}
 
-	//!< boneの取り込み
-	contents.boneId = BoneImporter::Import(filepath, BoneImporter::ReferenceParameters{}).id;
-
 	//!< meshに対応するmaterialのuuidを格納するvectorの作成
 	for (uint32_t i = 0; i < meshCount; ++i) {
 		const AssimpMesh& mesh = importer.GetMesh(i);
 		contents.meshMaterialMap[contents.meshIds[i]] = contents.materialIds[mesh.GetMaterialIndex()];
+	}
+
+	//!< boneの取り込み
+	contents.boneId = BoneImporter::Import(filepath, BoneImporter::ReferenceParameters{}).id;
+
+	//!< animationの取り込み
+	for (uint32_t i = 0; i < animationCount; ++i) {
+		contents.animationIds.emplace_back(SkeletalAnimationImporter::Import(filepath, SkeletalAnimationImporter::ReferenceParameters{ .index = i }).id);
 	}
 
 	return contents;

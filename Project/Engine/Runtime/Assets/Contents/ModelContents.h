@@ -37,6 +37,7 @@ public:
 	std::vector<Uuid> meshIds;
 	std::vector<Uuid> materialIds;
 	Uuid boneId;
+	std::vector<Uuid> animationIds;
 
 	std::unordered_map<Uuid, Uuid> meshMaterialMap; //!< meshに対応するmaterialのuuidを格納するunordered_map
 };
