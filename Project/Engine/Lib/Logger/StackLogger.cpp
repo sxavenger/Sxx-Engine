@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* logger
 #include "ConsoleLogger.h"
+#include "FileLogger.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Stamp structure methods
@@ -45,6 +46,8 @@ void StackLogger::StackStampA(LoggerUtil::Level level, const TracePoint& point, 
 	stamp.count   = 1;
 
 	std::unique_lock<std::mutex> lock(mutex_);
+
+	FileLogger::OutputStampA("Stack", level, point, message);
 
 	if (!stamps_.empty() && Stamp::Equals(stamps_.back().first, stamp)) {
 		//!< スタックの最後のLogと同じ場合はcountを増やす
