@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING_(World)
 //-----------------------------------------------------------------------------------------
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 //* c++
 #include <limits>
@@ -44,7 +45,7 @@ void EntityStorage::Unregister(EntityHandle handle) {
 	}
 
 	unregister_.emplace(handle);
-	STREAM_LOG_DEBUG("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
+	STACK_LOG_DEBUG("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
 }
 
 void EntityStorage::Destroy() {

@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING_(World)
 //-----------------------------------------------------------------------------------------
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 //* c++
 #include <ranges>
@@ -33,7 +34,7 @@ void ComponentStorage::Unregister(const TypeInfo& type, ComponentHandle handle) 
 		return;
 	}
 
-	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", type.GetName(), handle.GetHandle());
+	STACK_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", type.GetName(), handle.GetHandle());
 	storage_[type].Unregister(handle);
 }
 
