@@ -56,7 +56,7 @@ public:
 		// public variables
 		//=========================================================================================
 
-		Transformation3d bindPoseInverse;  //!< 逆バインドポーズ行列
+		Transformation3d bindPose;         //!< バインドポーズ行列
 		std::vector<VertexWeight> weights; //!< 影響を受ける頂点のウェイト情報群
 
 	};
