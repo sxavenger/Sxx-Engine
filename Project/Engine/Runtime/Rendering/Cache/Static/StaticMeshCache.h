@@ -11,7 +11,7 @@
 #include <Runtime/Graphics/Buffer/BottomLevelAccelerationStructure.h>
 #include <Runtime/Assets/Mesh/StaticMesh.h>
 #include <Runtime/Rendering/Meshlet/PositionVertexBuffer.h>
-#include <Runtime/Rendering/Meshlet/StaticMeshVertexBuffer.h>
+#include <Runtime/Rendering/Meshlet/MeshVertexBuffer.h>
 #include <Runtime/Rendering/Meshlet/TriangleIndexDimensionBuffer.h>
 #include <Runtime/Rendering/Meshlet/MeshletBuffer.h>
 
@@ -37,7 +37,7 @@ public:
 
 	const PositionVertexBuffer& GetPositionVertexBuffer() const { return positionVertexBuffer_; }
 
-	const StaticMeshVertexBuffer& GetStaticMeshVertexBuffer() const { return staticMeshVertexBuffer_; }
+	const MeshVertexBuffer& GetMeshVertexBuffer() const { return meshVertexBuffer_; }
 
 	const TriangleIndexDimensionBuffer& GetIndexBuffer() const { return indexBuffer_; }
 
@@ -58,7 +58,7 @@ private:
 	//* Vertex Buffer *//
 
 	PositionVertexBuffer positionVertexBuffer_;
-	StaticMeshVertexBuffer staticMeshVertexBuffer_;
+	MeshVertexBuffer meshVertexBuffer_;
 
 	TriangleIndexDimensionBuffer indexBuffer_;
 
@@ -76,7 +76,7 @@ private:
 
 	static PositionVertexBuffer CreatePositionVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
-	static StaticMeshVertexBuffer CreateStaticMeshVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
+	static MeshVertexBuffer CreateMeshVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 
 	static TriangleIndexDimensionBuffer CreateIndexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description);
 

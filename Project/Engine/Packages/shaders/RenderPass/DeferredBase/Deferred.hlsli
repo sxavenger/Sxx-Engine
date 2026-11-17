@@ -10,7 +10,7 @@
 #include "../../System/Semantics.hlsli"
 
 //* meshlet
-#include "../../Meshlet/StaticMeshVertex.hlsli"
+#include "../../Meshlet/MeshVertex.hlsli"
 #include "../../Meshlet/Meshlet.hlsli"
 
 //* component
@@ -30,8 +30,8 @@ cbuffer PassData : register(b1, space1) {
 }
 
 //! @brief 頂点情報
-StructuredBuffer<float32_t3> gPositions      : register(t0, space1);
-StructuredBuffer<StaticMeshVertex> gVertices : register(t1, space1);
+StructuredBuffer<float32_t3> gPositions  : register(t0, space1);
+StructuredBuffer<MeshVertex> gVertices   : register(t1, space1);
 
 //! @brief メッシュレット情報 (vertex shaderの場合は不要)
 cbuffer MeshletData : register(b2, space1) {
@@ -130,7 +130,7 @@ struct PixelOutputData { //!< [Rendering::GBuffer 参照]
 // methods structure
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-PixelInputData BuildPixelInputData(float32_t3 local_position, StaticMeshVertex vertex) {
+PixelInputData BuildPixelInputData(float32_t3 local_position, MeshVertex vertex) {
 
 	float32_t3 world_position = gTransform.TransformPoint(local_position);
 

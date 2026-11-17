@@ -1,4 +1,4 @@
-#include "StaticMeshVertexBuffer.h"
+#include "MeshVertexBuffer.h"
 SXAVENGER_ENGINE_USING_(Rendering)
 
 //-----------------------------------------------------------------------------------------
@@ -8,19 +8,19 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Runtime/Graphics/Core.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// [StaticMeshVertexBuffer] Vertex structure methods
+// [MeshVertexBuffer] Vertex structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-PackedNormal StaticMeshVertexBuffer::Vertex::EncodeTangent(const Vector3f& normal, const Vector3f& tangent, const Vector3f& bitangent) {
+PackedNormal MeshVertexBuffer::Vertex::EncodeTangent(const Vector3f& normal, const Vector3f& tangent, const Vector3f& bitangent) {
 	//!< tangentの方向を正規化する
 	float bias = (Math::Dot(Math::Cross(tangent, bitangent), normal) < 0.0f) ? -1.0f : 1.0f;
 	return Vector4f{ tangent.x, tangent.y, tangent.z, bias };
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// StaticMeshVertexBuffer structure methods
+// MeshVertexBuffer structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-StaticMeshVertexBuffer StaticMeshVertexBuffer::Create(uint32_t capacity, uint8_t frameCount) {
-	return StaticMeshVertexBuffer{ Graphics::Core::CreateDimensionBuffer<StaticMeshVertexBuffer::Vertex>(capacity, frameCount) };
+MeshVertexBuffer MeshVertexBuffer::Create(uint32_t capacity, uint8_t frameCount) {
+	return MeshVertexBuffer{ Graphics::Core::CreateDimensionBuffer<MeshVertexBuffer::Vertex>(capacity, frameCount) };
 }

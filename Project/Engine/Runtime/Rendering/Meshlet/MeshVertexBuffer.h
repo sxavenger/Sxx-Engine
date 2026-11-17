@@ -17,9 +17,9 @@
 SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Rendering)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// StaticMeshVertexBuffer structure
+// MeshVertexBuffer structure
 ////////////////////////////////////////////////////////////////////////////////////////////
-struct StaticMeshVertexBuffer final {
+struct MeshVertexBuffer final {
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static StaticMeshVertexBuffer Create(uint32_t capacity, uint8_t frameCount);
+	static MeshVertexBuffer Create(uint32_t capacity, uint8_t frameCount);
 
 	//=========================================================================================
 	// public variables

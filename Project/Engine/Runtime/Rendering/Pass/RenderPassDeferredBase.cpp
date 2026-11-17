@@ -168,7 +168,7 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 
 		//!< 頂点情報の設定
 		parameter.SetAddress("gPositions", instance.mesh->GetPositionVertexBuffer().positions.GetGpuVirtualAddress());
-		parameter.SetAddress("gVertices",  instance.mesh->GetStaticMeshVertexBuffer().vertices.GetGpuVirtualAddress());
+		parameter.SetAddress("gVertices",  instance.mesh->GetMeshVertexBuffer().vertices.GetGpuVirtualAddress());
 
 		//!< メッシュレット情報の設定
 		parameter.Set32bitConstants("MeshletData", instance.mesh->GetMeshletBuffer().meshletCount);
