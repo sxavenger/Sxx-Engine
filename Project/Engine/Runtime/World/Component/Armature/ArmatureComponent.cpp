@@ -44,9 +44,11 @@ void ArmatureComponent::Animate(const Assets::AssetHandle<Assets::AnimationSeque
 
 RefPtr<const EntityBehaviour> ArmatureComponent::FindJointEntityRecursive(const EntityBehaviour* entity, const std::string_view& name) {
 
-	RefPtr<const ArmatureJointComponent> component = entity->GetComponent<ArmatureJointComponent>();
-	if (component != nullptr && component->GetName() == name) {
-		return entity; //!< joint名が一致した場合はentityを返す
+	if (entity->HasComponent<ArmatureJointComponent>()) {
+		RefPtr<const ArmatureJointComponent> component = entity->GetComponent<ArmatureJointComponent>();
+		if (component->GetName() == name) {
+			return entity; //!< joint名が一致した場合はentityを返す
+		}
 	}
 
 	for (const auto& handle : entity->GetChildren() | std::views::keys) {
