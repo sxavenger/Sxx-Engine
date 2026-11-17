@@ -41,6 +41,14 @@ public:
 
 	const Assets::AssetHandle<Assets::SurfaceMaterial>& GetMaterial() const { return material_; }
 
+	//* joint option *//
+
+	void SetJointName(const std::string_view& name) { jointName_ = name; }
+
+	const std::string_view GetJointName() const { return jointName_; }
+
+	RefPtr<const EntityBehaviour> FindJointEntity() const;
+
 private:
 
 	//=========================================================================================
@@ -50,7 +58,13 @@ private:
 	Assets::AssetHandle<Assets::SkeletalMesh> mesh_ = std::nullopt; //!< 描画するメッシュ
 	Assets::AssetHandle<Assets::SurfaceMaterial> material_ = std::nullopt; //!< 使用するマテリアル
 
+	std::string jointName_; //!< 描画するjoint名
+
 	// TODO: 描画設定の追加
+
+	//=========================================================================================
+	// private methods
+	//=========================================================================================
 
 };
 

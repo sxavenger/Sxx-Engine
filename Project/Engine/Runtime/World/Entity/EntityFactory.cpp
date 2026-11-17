@@ -13,6 +13,8 @@ SXAVENGER_ENGINE_USING_(World)
 #include <Runtime/World/Component/Transform/TransformComponent.h>
 #include <Runtime/World/Component/Renderer/StaticMeshRendererComponent.h>
 #include <Runtime/World/Component/Renderer/SkeletalMeshRendererComponent.h>
+#include <Runtime/World/Component/Armature/ArmatureComponent.h>
+#include <Runtime/World/Component/Armature/ArmatureJointComponent.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // (anonymous namespace)
@@ -23,108 +25,113 @@ namespace {
 	// methods
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	void InstantiateNode(EntityBehaviour* parent, const Assets::Bone::Node& node, const Assets::ModelContents& contents) {
+	void InstantiateNode(EntityBehaviour* parent, const Assets::Bone::Node& node, const Assets::ModelContents& contents, const bool isArmature) {
 
-		//!< entityを作成
-		EntityHandle handle        = EntityFactory::Create();
-		EntityBehaviour* behaviour = EntityFactory::GetEntity(handle);
-		behaviour->SetName(node.name);
+		//!< entityの生成
+		EntityHandle handle     = EntityFactory::Create();
+		EntityBehaviour* entity = EntityFactory::GetEntity(handle);
+		entity->SetName(node.name);
+		
+		{ //!< transformの設定
+			auto transform = entity->AddComponent<TransformComponent>();
+			transform->SetTransform(node.transform);
+		}
 
-		//!< transformの追加
-		behaviour->AddComponent<TransformComponent>();
-		behaviour->GetComponent<TransformComponent>()->SetTransform(node.transform);
+		if (isArmature) { //!< Armatureを使用する場合, ArmatureJointComponentを追加
+			entity->AddComponent<ArmatureJointComponent>();
+			entity->GetComponent<ArmatureJointComponent>()->SetName(node.name);
+		}
 
-		//!< rendererの追加
-		if (!node.staticMeshIds.empty() && !contents.skeletalMeshIds.empty()) {
-			if (node.staticMeshIds.size() + contents.skeletalMeshIds.size() == 1) { //!< どちらかが1つだけの場合, そのentityにmeshを追加する.
-				if (node.staticMeshIds.size() == 1) {
+		const size_t nodeMeshCount = node.staticMeshIds.size() + node.skeletalMeshIds.size(); //!< メッシュの数
+		if (nodeMeshCount == 1) {
+			//!< meshが1つの場合, 不要なTreeNodeを生成せず, 直接MeshRendererComponentを追加する.
 
-					//!< assetの取得
-					Assets::AssetHandle<Assets::StaticMesh> mesh          = node.staticMeshIds.front();
-					Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
+			if (node.staticMeshIds.size() == 1) {
 
-					//!< 名前の設定
-					behaviour->SetName(mesh.GetName());
+				//!< assetの取得
+				Assets::AssetHandle<Assets::StaticMesh> mesh          = node.staticMeshIds.front();
+				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
 
-					//!< rendererの追加
-					behaviour->AddComponent<StaticMeshRendererComponent>();
-					auto renderer = behaviour->GetComponent<StaticMeshRendererComponent>();
-					renderer->SetMesh(mesh);
-					renderer->SetMaterial(material);
+				//!< 名前の変更
+				entity->SetName(mesh.GetName());
 
-				} else if (contents.skeletalMeshIds.size() == 1) {
+				//!< MeshRendererComponentの追加
+				auto renderer = entity->AddComponent<StaticMeshRendererComponent>();
+				renderer->SetMesh(mesh);
+				renderer->SetMaterial(material);
 
-					//!< assetの取得
-					Assets::AssetHandle<Assets::SkeletalMesh> mesh        = contents.skeletalMeshIds.front();
-					Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
+			} else if (node.skeletalMeshIds.size() == 1) {
 
-					//!< 名前の設定
-					behaviour->SetName(mesh.GetName());
+				//!< assetの取得
+				Assets::AssetHandle<Assets::SkeletalMesh> mesh        = node.skeletalMeshIds.front();
+				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
 
-					behaviour->AddComponent<SkeletalMeshRendererComponent>();
-					auto renderer = behaviour->GetComponent<SkeletalMeshRendererComponent>();
-					renderer->SetMesh(mesh);
-					renderer->SetMaterial(material);
-					
-				}
-			} else {
-				for (const auto& meshId : node.staticMeshIds) {
+				//!< 名前の変更
+				entity->SetName(mesh.GetName());
 
-					EntityHandle child      = EntityFactory::Create(); //!< entityを作成
-					EntityBehaviour* entity = EntityFactory::GetEntity(child); //!< entityを取得
+				//!< MeshRendererComponentの追加
+				auto renderer = entity->AddComponent<SkeletalMeshRendererComponent>();
+				renderer->SetMesh(mesh);
+				renderer->SetMaterial(material);
+				renderer->SetJointName(node.name); //!< joint名を設定
+				
+			}
+			
+		} else if (nodeMeshCount > 1) {
+			//!< meshが複数ある場合, 子としてMeshRendererComponentを追加する.
 
-					//!< transformの追加
-					entity->AddComponent<TransformComponent>();
+			for (const auto& meshId : node.staticMeshIds) {
 
-					//!< assetの取得
-					Assets::AssetHandle<Assets::StaticMesh> mesh          = meshId;
-					Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
+				//!< assetの取得
+				Assets::AssetHandle<Assets::StaticMesh> mesh          = meshId;
+				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
 
-					//!< 名前の設定
-					entity->SetName(mesh.GetName());
+				//!< entityの生成
+				EntityHandle child           = EntityFactory::Create();
+				EntityBehaviour* childEntity = EntityFactory::GetEntity(child);
+				childEntity->SetName(mesh.GetName());
 
-					//!< rendererの追加
-					entity->AddComponent<StaticMeshRendererComponent>();
-					auto renderer = entity->GetComponent<StaticMeshRendererComponent>();
-					renderer->SetMesh(mesh);
-					renderer->SetMaterial(material);
+				//!< transformの設定
+				childEntity->AddComponent<TransformComponent>();
 
-					//!< entityを親に追加
-					behaviour->AttachChild(std::move(child));
-				}
+				//!< MeshRendererComponentの追加
+				auto renderer = childEntity->AddComponent<StaticMeshRendererComponent>();
+				renderer->SetMesh(mesh);
+				renderer->SetMaterial(material);
 
-				for (const auto& meshId : node.skeletalMeshIds) {
-					//!< entityの作成
-					EntityHandle child      = EntityFactory::Create();
-					EntityBehaviour* entity = EntityFactory::GetEntity(child);
-
-					//!< transformの追加
-					entity->AddComponent<TransformComponent>();
-					entity->GetComponent<TransformComponent>()->SetTransform(node.transform);
-
-					//!< assetの取得
-					Assets::AssetHandle<Assets::SkeletalMesh> mesh        = meshId;
-					Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
-
-					//!< 名前の設定
-					entity->SetName(mesh.GetName());
-
-					entity->AddComponent<SkeletalMeshRendererComponent>();
-					auto renderer = entity->GetComponent<SkeletalMeshRendererComponent>();
-					renderer->SetMesh(mesh);
-					renderer->SetMaterial(material);
-
-					//!< entityを親に追加
-					behaviour->AttachChild(std::move(child));
-				}
+				//!< 親子関係の設定
+				entity->AttachChild(std::move(child));
 			}
 
+			for (const auto& meshId : node.skeletalMeshIds) {
+
+				//!< assetの取得
+				Assets::AssetHandle<Assets::SkeletalMesh> mesh        = meshId;
+				Assets::AssetHandle<Assets::SurfaceMaterial> material = contents.GetMeshMaterialId(mesh.GetUuid());
+
+				//!< entityの生成
+				EntityHandle child           = EntityFactory::Create();
+				EntityBehaviour* childEntity = EntityFactory::GetEntity(child);
+				childEntity->SetName(mesh.GetName());
+
+				//!< transformの設定
+				childEntity->AddComponent<TransformComponent>();
+
+				//!< MeshRendererComponentの追加
+				auto renderer = childEntity->AddComponent<SkeletalMeshRendererComponent>();
+				renderer->SetMesh(mesh);
+				renderer->SetMaterial(material);
+				renderer->SetJointName(node.name); //!< joint名を設定
+
+				//!< 親子関係の設定
+				entity->AttachChild(std::move(child));
+			}
 		}
-		
-		parent->AttachChild(std::move(handle)); //!< entityを親に追加
+
+		parent->AttachChild(std::move(handle)); //!< 親子関係の設定
 
 		for (const auto& child : node.children) {
-			InstantiateNode(behaviour, child, contents);
+			InstantiateNode(entity, child, contents, isArmature);
 		}
 	}
 }
@@ -149,8 +156,19 @@ EntityHandle EntityFactory::CreateModelEntity(const Assets::ModelContents& conte
 
 	Assets::AssetHandle<Assets::Bone> bone = contents.boneId;
 
-	EntityHandle handle = EntityFactory::Create();
-	InstantiateNode(EntityFactory::GetEntity(handle), bone.WaitGet()->GetDescription().root, contents);
+	const bool isArmature = !contents.skeletalMeshIds.empty(); //!< Armatureを使用するかどうかの判定
+
+	EntityHandle handle        = EntityFactory::Create();
+	EntityBehaviour* behaviour = EntityFactory::GetEntity(handle);
+
+	behaviour->AddComponent<TransformComponent>();
+
+	if (isArmature) { //!< Armatureを使用する場合, ArmatureComponentを追加
+		behaviour->AddComponent<ArmatureComponent>();
+		behaviour->GetComponent<ArmatureComponent>()->SetBone(bone);
+	}
+	
+	InstantiateNode(behaviour, bone.WaitGet()->GetDescription().root, contents, isArmature);
 
 	return handle;
 }

@@ -43,6 +43,8 @@ public:
 		// public methods
 		//=========================================================================================
 
+		bool ContainsBone(const std::string_view& name) const;
+
 		Transform3d SampleBoneTransform(const std::string_view& name, TimePointd<TimeUnit::Second> time) const;
 
 		//=========================================================================================

@@ -35,74 +35,6 @@ class ArmatureComponent final
 	: public BaseComponent {
 public:
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Armature structure
-	////////////////////////////////////////////////////////////////////////////////////////////
-	struct Armature final {
-	public:
-
-		////////////////////////////////////////////////////////////////////////////////////////////
-		// Joint structure
-		////////////////////////////////////////////////////////////////////////////////////////////
-		struct Joint final {
-		public:
-
-			//=========================================================================================
-			// public variables
-			//=========================================================================================
-
-			std::string name;
-
-			std::optional<uint32_t> parent; //!< 親のJointのindex, いなければnull
-
-			Transform3d transform;
-			Transformation3d skeletonSpaceMatrix;
-
-		};
-
-	public:
-
-		//=========================================================================================
-		// public methods
-		//=========================================================================================
-
-		void Create(const Assets::Bone& bone);
-
-		void Reset();
-
-		void Animate(const Assets::AnimationSequence::Description& animation, TimePointd<TimeUnit::Second> time);
-
-		// todo: IKの追加
-
-		void UpdateTransformation();
-
-		bool IsValid() const;
-
-		bool Contains(const std::string_view& name) const { return jointMap.Contains(name); }
-
-		const Joint& GetJoint(const std::string_view& name) const;
-
-		//=========================================================================================
-		// public variables
-		//=========================================================================================
-
-		std::vector<Joint> joints;
-		StringHashMap<uint32_t> jointMap; //!< nameからjointのindexを取得するためのmap
-
-	private:
-
-		//=========================================================================================
-		// private methods
-		//=========================================================================================
-
-		uint32_t RegisterJoint(const Joint& joint);
-
-		void CreateJoint(const Assets::Bone::Node& node, const std::optional<uint32_t>& parent);
-
-	};
-
-public:
-
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -116,10 +48,13 @@ public:
 
 	const Assets::AssetHandle<Assets::Bone>& GetBone() const { return bone_; }
 
+	//* joint option *//
+
+	RefPtr<const EntityBehaviour> FindJointEntity(const std::string_view& name) const;
+
 	//* animation option *//
 
 	void Animate(const Assets::AssetHandle<Assets::AnimationSequence>& animation, TimePointd<TimeUnit::Second> time);
-
 	// TODO: animation方法等の検討.
 
 private:
@@ -132,9 +67,13 @@ private:
 
 	// TODO: roop設定の追加
 
-	//* runtime parameter *//
+	//=========================================================================================
+	// private variables
+	//=========================================================================================
 
-	Armature armature_;
+	static RefPtr<const EntityBehaviour> FindJointEntityRecursive(const EntityBehaviour* entity, const std::string_view& name);
+
+	static void AnimateJointEntityRecursive(EntityBehaviour* entity, const Assets::AnimationSequence::Description& animation, TimePointd<TimeUnit::Second> time);
 
 };
 
