@@ -39,10 +39,10 @@ void main(
 	//!< vertexの出力
 	if (semantics.group_thread_id.x < meshlet.vertex_count) {
 
-		uint32_t vertex_index     = gVertexIndices[meshlet.vertex_offset + semantics.group_thread_id.x];
+		uint32_t vertex_index = gVertexIndices[meshlet.vertex_offset + semantics.group_thread_id.x];
 
 		//!< 頂点情報の取得
-		StaticMeshVertex vertex   = gVertices[vertex_index];
+		MeshVertex vertex         = gVertices[vertex_index];
 		float32_t3 local_position = gPositions[vertex_index];
 
 		PixelInputData output = BuildPixelInputData(local_position, vertex);
