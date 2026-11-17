@@ -95,11 +95,13 @@ public:
 
 	const std::unordered_map<EntityHandle, Ownership, EntityHandle::Hash>& GetChildren() const noexcept { return children_; }
 
+	RefPtr<const EntityBehaviour> FindEntity(const std::string_view& name) const;
+
 	//* component option *//
 
 	//! @brief componentを追加
 	template <Component T>
-	void AddComponent();
+	RefPtr<T> AddComponent();
 
 	//! @brief componentを削除
 	template <Component T>
@@ -111,6 +113,10 @@ public:
 	//! @brief componentを取得
 	template <Component T>
 	RefPtr<T> GetComponent();
+
+	//! @brief componentを取得
+	template <Component T>
+	RefPtr<const T> GetComponent() const;
 
 private:
 
@@ -152,52 +158,67 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <Component T>
-inline void EntityBehaviour::AddComponent() {
-	constexpr const std::type_info* type = &typeid(T);
+inline RefPtr<T> EntityBehaviour::AddComponent() {
+	constexpr const TypeInfo type = TypeInfo::GetType<T>();
 
 	if (components_.contains(type)) {
-		STREAM_LOG_WARNING("World::EntityBehaviour | component already exists. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component already exists. type: {}", type.GetName());
 		//!< すでにcomponentが存在する場合は追加しない.
-		return;
+		return ComponentStorage::GetInstance()->GetComponent<T>(components_.at(type));
 	}
 
 	//!< componentの追加
 	components_[type] = ComponentStorage::GetInstance()->Register<T>(this);
+	return ComponentStorage::GetInstance()->GetComponent<T>(components_.at(type));
 }
 
 template <Component T>
 inline void EntityBehaviour::RemoveComponent() {
-	constexpr const std::type_info* type = &typeid(T);
+	constexpr const TypeInfo type = TypeInfo::GetType<T>();
 
 	if (!components_.contains(type)) {
-		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: {}", type.GetName());
 		//!< componentが存在しない場合は削除しない.
 		return;
 	}
 
 	//!< componentの削除
-	ComponentStorage::GetInstance()->Unregister(components_[type]);
+	ComponentStorage::GetInstance()->Unregister(components_.at(type));
 	components_.erase(type);
 }
 
 template <Component T>
 inline bool EntityBehaviour::HasComponent() const {
-	constexpr const std::type_info* type = &typeid(T);
+	constexpr const TypeInfo type = TypeInfo::GetType<T>();
 	return components_.contains(type);
 }
 
 template <Component T>
 inline RefPtr<T> EntityBehaviour::GetComponent() {
-	constexpr const std::type_info* type = &typeid(T);
+	constexpr const TypeInfo type = TypeInfo::GetType<T>();
 
 	if (!components_.contains(type)) {
-		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: ", type->name());
+		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: {}", type.GetName());
 		//!< componentが存在しない場合は取得しない.
 		return nullptr;
 	}
 
 	//!< componentの取得
-	return ComponentStorage::GetInstance()->GetComponent<T>(components_[type]);
+	return ComponentStorage::GetInstance()->GetComponent<T>(components_.at(type));
+}
+
+template <Component T>
+inline RefPtr<const T> EntityBehaviour::GetComponent() const {
+	constexpr const TypeInfo type = TypeInfo::GetType<T>();
+
+	if (!components_.contains(type)) {
+		STREAM_LOG_WARNING("World::EntityBehaviour | component not found. type: {}", type.GetName());
+		//!< componentが存在しない場合は取得しない.
+		return nullptr;
+	}
+
+	//!< componentの取得
+	return ComponentStorage::GetInstance()->GetComponent<T>(components_.at(type));
 }
 
 SXAVENGER_ENGINE_NAMESPACE_END

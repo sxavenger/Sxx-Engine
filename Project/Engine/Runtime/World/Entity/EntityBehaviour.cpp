@@ -71,6 +71,30 @@ void EntityBehaviour::AttachChild(const EntityHandle& child) {
 	AttachInternal(child, Ownership::Borrowed); //!< 借用として子を追加
 }
 
+RefPtr<const EntityBehaviour> EntityBehaviour::FindEntity(const std::string_view& name) const {
+	static const std::function<RefPtr<const EntityBehaviour>(const EntityBehaviour*, const std::string_view&)> FindChildrenRecursive //!< 子のentityを再帰的に探索するラムダ関数
+		= [](const EntityBehaviour* entity, const std::string_view& name) -> RefPtr<const EntityBehaviour> {
+
+		if (entity->GetName() == name) {
+			return entity; //!< 子のentity名が一致した場合はentityを返す
+		}
+
+		//!< 子のentityを再帰的に探索
+		for (const auto& handle : entity->GetChildren() | std::views::keys) {
+			RefPtr<EntityBehaviour> child = EntityStorage::GetInstance()->GetEntity(handle);
+
+			RefPtr<const EntityBehaviour> found = FindChildrenRecursive(child.Get(), name);
+			if (found != nullptr) {
+				return found;
+			}
+		}
+
+		return nullptr; //!< 子のentity名が一致するentityがなかった場合はnullptrを返す
+	};
+
+	return FindChildrenRecursive(this, name); //!< 自身のentityから子のentity名を探索
+}
+
 void EntityBehaviour::AttachInternal(const EntityHandle& child, Ownership ownership) {
 	STREAM_ASSERT(child != handle_, "cannot attach self."); //!< thisを子として追加することはできない.
 

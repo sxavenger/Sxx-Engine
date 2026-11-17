@@ -4,83 +4,15 @@ SXAVENGER_ENGINE_USING_(World)
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* world
+#include "../../Entity/EntityBehaviour.h"
+#include "../../Entity/EntityStorage.h"
+#include "ArmatureJointComponent.h"
+#include "../Transform/TransformComponent.h"
+
 //* lib
 #include <Lib/Logger/StreamLogger.h>
-
-////////////////////////////////////////////////////////////////////////////////////////////
-// [ArmatureComponent] Armature structure methods
-////////////////////////////////////////////////////////////////////////////////////////////
-
-void ArmatureComponent::Armature::Create(const Assets::Bone& bone) {
-	CreateJoint(bone.GetDescription().root, std::nullopt);
-}
-
-void ArmatureComponent::Armature::Reset() {
-	*this = Armature();
-}
-
-void ArmatureComponent::Armature::Animate(const Assets::AnimationSequence::Description& animation, TimePointd<TimeUnit::Second> time) {
-	for (auto& joint : joints) { //!< 親が若いので(indexが子より親の方が小さいので)通常ループで処理可能
-
-		if (!animation.boneAnimations.Contains(joint.name)) {
-			continue; //!< jointに対応するboneAnimationがない場合は処理をスキップ
-		}
-
-		Transform3d transform = animation.SampleBoneTransform(joint.name, time);
-		joint.transform = transform;
-	}
-}
-
-void ArmatureComponent::Armature::UpdateTransformation() {
-	for (auto& joint : joints) { //!< 親が若いので(indexが子より親の方が小さいので)通常ループで処理可能
-		joint.skeletonSpaceMatrix = Transform3d::ConvertTransformation(joint.transform);
-
-		if (joint.parent.has_value()) { //!< 親がいる場合
-			uint32_t parent = joint.parent.value();
-			joint.skeletonSpaceMatrix *= joints[parent].skeletonSpaceMatrix;
-		}
-	}
-}
-
-bool ArmatureComponent::Armature::IsValid() const {
-	return !joints.empty(); //!< jointが一つもない場合はinvalid
-}
-
-const ArmatureComponent::Armature::Joint& ArmatureComponent::Armature::GetJoint(const std::string_view& name) const {
-	STREAM_ASSERT(jointMap.Contains(name), "ArmatureComponent::Armature | joint not found. name: {}", name);
-
-	uint32_t index = jointMap.At(name);
-	return joints.at(index);
-}
-
-uint32_t ArmatureComponent::Armature::RegisterJoint(const Joint& joint) {
-
-	uint32_t index = static_cast<uint32_t>(joints.size()); //!< joint登録順にindexを取得
-
-	//!< jointを登録
-	joints.emplace_back(joint);
-	jointMap.Emplace(joint.name, index);
-
-	//!< 登録したindexを返す
-	return index;
-}
-
-void ArmatureComponent::Armature::CreateJoint(const Assets::Bone::Node& node, const std::optional<uint32_t>& parent) {
-
-	Joint joint = {};
-	joint.name   = node.name;
-
-	joint.parent = parent;
-
-	joint.transform           = node.transform;
-	joint.skeletonSpaceMatrix = Transformation3d::Identity();
-
-	uint32_t index = RegisterJoint(joint); //!< jointを登録
-
-	for (const auto& child : node.children) {
-		CreateJoint(child, index);
-	}
-}
+#include <Lib/Logger/StackLogger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // ArmatureComponent class methods
@@ -88,7 +20,15 @@ void ArmatureComponent::Armature::CreateJoint(const Assets::Bone::Node& node, co
 
 void ArmatureComponent::SetBone(const Assets::AssetHandle<Assets::Bone>& bone) {
 	bone_ = bone; //!< boneを設定
-	armature_.Reset(); //!< armatureをリセット
+}
+
+RefPtr<const EntityBehaviour> ArmatureComponent::FindJointEntity(const std::string_view& name) const {
+	RefPtr<const EntityBehaviour> result = ArmatureComponent::FindJointEntityRecursive(BaseComponent::GetOwner().Get(), name); //!< 自身のentityからjoint名を探索
+	if (result == nullptr) {
+		STACK_LOG_WARNING("World::ArmatureComponent | joint entity not found. name: {}", name);
+	}
+
+	return result;
 }
 
 void ArmatureComponent::Animate(const Assets::AssetHandle<Assets::AnimationSequence>& animation, TimePointd<TimeUnit::Second> time) {
@@ -98,10 +38,47 @@ void ArmatureComponent::Animate(const Assets::AssetHandle<Assets::AnimationSeque
 		return; //!< boneが設定されていない場合は処理を終了
 	}
 
-	if (!armature_.IsValid()) {
-		armature_.Create(*bone_.WaitGet()); //!< armatureを作成
+	//!< 自身のentityからjoint名を探索し, TransformComponentにtransformを設定
+	ArmatureComponent::AnimateJointEntityRecursive(BaseComponent::GetOwner().Get(), animation.WaitGet()->GetDescription(), time); 
+}
+
+RefPtr<const EntityBehaviour> ArmatureComponent::FindJointEntityRecursive(const EntityBehaviour* entity, const std::string_view& name) {
+
+	RefPtr<const ArmatureJointComponent> component = entity->GetComponent<ArmatureJointComponent>();
+	if (component != nullptr && component->GetName() == name) {
+		return entity; //!< joint名が一致した場合はentityを返す
 	}
 
-	armature_.Animate(animation.WaitGet()->GetDescription(), time); //!< armatureをアニメーション
-	armature_.UpdateTransformation(); //!< armatureの変換行列を更新
+	for (const auto& handle : entity->GetChildren() | std::views::keys) {
+		RefPtr<const EntityBehaviour> child = EntityStorage::GetInstance()->GetEntity(handle);
+		RefPtr<const EntityBehaviour> found = ArmatureComponent::FindJointEntityRecursive(child, name); //!< 子のentityを再帰的に探索
+		if (found != nullptr) {
+			return found; //!< joint名が一致するentityが見つかった場合はそのentityを返す
+		}
+	}
+
+	return nullptr; //!< joint名が一致するentityがなかった場合はnullptrを返す
+}
+
+void ArmatureComponent::AnimateJointEntityRecursive(EntityBehaviour* entity, const Assets::AnimationSequence::Description& animation, TimePointd<TimeUnit::Second> time) {
+
+	RefPtr<const ArmatureJointComponent> component = entity->GetComponent<ArmatureJointComponent>();
+	if (component != nullptr) {
+		std::string_view name = component->GetName();
+		if (animation.ContainsBone(name)) {
+			Transform3d transform = animation.SampleBoneTransform(name, time);
+			entity->GetComponent<TransformComponent>()->SetTransform(transform); //!< TransformComponentにtransformを設定
+		}
+	}
+
+	for (const auto& handle : entity->GetChildren() | std::views::keys) {
+		RefPtr<EntityBehaviour> child = EntityStorage::GetInstance()->GetEntity(handle);
+
+		if (!child->HasComponent<ArmatureJointComponent>()) {
+			continue;
+		}
+
+		ArmatureComponent::AnimateJointEntityRecursive(child, animation, time); //!< 子のentityを再帰的に探索
+	}
+
 }

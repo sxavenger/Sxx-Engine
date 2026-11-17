@@ -12,6 +12,10 @@ SXAVENGER_ENGINE_USING_(Assets)
 // [AnimationSequence] Description structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+bool AnimationSequence::Description::ContainsBone(const std::string_view& name) const {
+	return boneAnimations.Contains(name); //!< boneAnimationsにnameが含まれているかを返す
+}
+
 Transform3d AnimationSequence::Description::SampleBoneTransform(const std::string_view& name, TimePointd<TimeUnit::Second> time) const {
 	STREAM_ASSERT(boneAnimations.Contains(name), "Assets::AnimationSequence | bone animation not found.");
 
