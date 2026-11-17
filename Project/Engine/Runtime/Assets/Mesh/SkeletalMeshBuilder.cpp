@@ -113,8 +113,7 @@ SkeletalMesh::Description SkeletalMeshBuilder::BuildReference(const std::filesys
 		SkeletalMesh::SkinCluster cluster = {};
 		
 		//!< bindPoseの取得
-		Transformation3d offset = bone.GetOffsetTransformation();
-		cluster.bindPose        = Transformation3d::Inverse(offset);
+		cluster.bindPoseInverse = bone.GetOffsetTransformation(); //!< bindPoseInverseの取得(内部でInverseされている)
 
 		//!< weightsの取得
 		for (uint32_t j = 0; j < bone.GetVertexWeightCount(); ++j) {
