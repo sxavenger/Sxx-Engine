@@ -34,7 +34,7 @@ EntityHandle EntityStorage::Register() {
 	EntityHandle handle = EntityHandle(allocator_.Allocate());
 	storage_.emplace(handle, std::make_unique<EntityBehaviour>(handle.GetHandle()));
 
-	STREAM_LOG_DEBUG("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
+	STACK_LOG_DEBUG("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
 	return handle;
 }
 
