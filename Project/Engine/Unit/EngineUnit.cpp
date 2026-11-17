@@ -89,6 +89,7 @@ void EngineUnit::InitEngine() {
 	CrashHandler::Install();
 
 	STREAM_LOG_INFO("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
+	STREAM_LOG_INFO("Agility SDK >> version: 1.{}", D3D12_SDK_VERSION);
 	STREAM_LOG_INFO("Assimp >> version: {}", Assets::AssimpCommon::GetAssimpVersion());
 
 	configuration_.Load("Engine/Packages/config/Platform.toml");
