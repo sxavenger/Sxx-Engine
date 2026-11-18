@@ -52,27 +52,27 @@ void FileLogger::Endline() {
 	FileLogger::OutputA(""); //!< 空行を出力し, Output側で改行する.
 }
 
-void FileLogger::OutputStampA(const std::string_view& label, LoggerUtil::Level level, const TracePoint& point, const std::string_view& message) {
-	//!< "<label> [timestamp] [location(one-line)] [thread] [level] message"の形式で出力する.
+void FileLogger::OutputStampA(const std::string_view& label, LoggerUtil::Level level, const Snapshot& snapshot, const std::string_view& message) {
+	//!< "<label> [timestamp] [location-filepath(one-line)] [thread] [level] message"の形式で出力する.
 	FileLogger::OutputA(
 		"<{}> [{}] [{}] [{}] [{}] {}",
 		label,
-		LoggerUtil::SerializeTimestampA(point.timestamp),
-		LoggerUtil::SerializeLocationOneLineA(point.location),
-		LoggerUtil::SerializeThreadstampA(point.id),
+		LoggerUtil::SerializeTimestampA(snapshot.GetTimestamp()),
+		LoggerUtil::SerializeLocationOneLineA(snapshot.GetSourceFile(), snapshot.GetSourceLine()),
+		LoggerUtil::SerializeThreadstampA(snapshot.GetThreadId()),
 		LoggerUtil::SerializeLevelA(level),
 		message
 	);
 }
 
-void FileLogger::OutputStampW(const std::wstring_view& label, LoggerUtil::Level level, const TracePoint& point, const std::wstring_view& message) {
-	//!< "<label> [timestamp] [location(one-line)] [thread] [level] message"の形式で出力する.
+void FileLogger::OutputStampW(const std::wstring_view& label, LoggerUtil::Level level, const Snapshot& snapshot, const std::wstring_view& message) {
+	//!< "<label> [timestamp] [location-filepath(one-line)] [thread] [level] message"の形式で出力する.
 	FileLogger::OutputW(
 		L"<{}> [{}] [{}] [{}] [{}] {}",
 		label,
-		LoggerUtil::SerializeTimestampW(point.timestamp),
-		LoggerUtil::SerializeLocationOneLineW(point.location),
-		LoggerUtil::SerializeThreadstampW(point.id),
+		LoggerUtil::SerializeTimestampW(snapshot.GetTimestamp()),
+		LoggerUtil::SerializeLocationOneLineW(snapshot.GetSourceFile(), snapshot.GetSourceLine()),
+		LoggerUtil::SerializeThreadstampW(snapshot.GetThreadId()),
 		LoggerUtil::SerializeLevelW(level),
 		message
 	);
