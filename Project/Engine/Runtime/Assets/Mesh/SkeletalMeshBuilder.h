@@ -40,6 +40,8 @@ private:
 
 	static SkeletalMesh::Description BuildReference(const std::filesystem::path& directory, const SkeletalMeshMetadata::ReferenceData& data);
 
+	// TODO: Optimizeメソッドの定義. SkeletalMeshの最適化処理を行う.
+
 };
 
 SXAVENGER_ENGINE_NAMESPACE_END
