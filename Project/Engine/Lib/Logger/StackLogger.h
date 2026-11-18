@@ -45,8 +45,8 @@ public:
 		//* snapshot information *//
 
 		std::thread::id id;
-		LocalTimePoint beginTimestamp;
-		LocalTimePoint endTimestamp;
+		LocalTimePoint firstTimestamp;
+		LocalTimePoint lastTimestamp;
 
 		std::filesystem::path filename;
 		uint_least32_t line;

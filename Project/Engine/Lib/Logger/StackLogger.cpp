@@ -12,11 +12,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string StackLogger::Stamp::SerializeA() const {
-	//!< [being-timestamp ~ end-timestamp] [location] [thread] [level] message [xcount]
+	//!< [first-timestamp ~ last-timestamp] [location] [thread] [level] message [xcount]
 	return std::format(
 		"[{} ~ {}] [{}] [{}] [{}] {} [x{}]",
-		LoggerUtil::SerializeTimestampA(beginTimestamp),
-		LoggerUtil::SerializeTimestampA(endTimestamp),
+		LoggerUtil::SerializeTimestampA(firstTimestamp),
+		LoggerUtil::SerializeTimestampA(lastTimestamp),
 		LoggerUtil::SerializeLocationOneLineA(filename, line),
 		LoggerUtil::SerializeThreadstampA(id),
 		LoggerUtil::SerializeLevelA(level),
@@ -43,8 +43,8 @@ void StackLogger::StackStampA(LoggerUtil::Level level, const Snapshot& snapshot,
 	Stamp stamp = {};
 	stamp.level          = level;
 	stamp.id             = snapshot.GetThreadId();
-	stamp.beginTimestamp = snapshot.GetTimestamp();
-	stamp.endTimestamp   = snapshot.GetTimestamp();
+	stamp.firstTimestamp = snapshot.GetTimestamp();
+	stamp.lastTimestamp  = snapshot.GetTimestamp();
 	stamp.filename       = snapshot.GetSourceFile().filename().string();
 	stamp.line           = snapshot.GetSourceLine();
 	stamp.message        = std::string(message);
@@ -59,7 +59,7 @@ void StackLogger::StackStampA(LoggerUtil::Level level, const Snapshot& snapshot,
 
 		Stamp& last = stamps_.back().first;
 		last.count++;
-		last.endTimestamp = snapshot.GetTimestamp(); //!< タイムスタンプを更新する
+		last.lastTimestamp = snapshot.GetTimestamp(); //!< 最終タイムスタンプを更新する
 
 		stamps_.back().second = last.SerializeA(); //!< シリアライズ文字列を更新する
 		return;
