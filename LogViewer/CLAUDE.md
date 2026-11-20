@@ -10,9 +10,3 @@ include CLAUDE_Manual.md
 
 ## プロジェクトについて
 include CLAUDE_Project.md
-
-## 制作物について
-このdirectoryにApplicationフォルダを作成して成果物をまとめてください
-
-## 作業ログについて
-claude-output.mdにまとめてください

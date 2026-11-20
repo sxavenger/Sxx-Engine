@@ -39,6 +39,12 @@
   .radio-sm[type=checkbox] { --size: calc(var(--size-selector, .25rem) * 5); }
   .facet-row { display: flex; align-items: center; gap: .5rem; padding: .25rem .5rem; border-radius: .375rem; cursor: pointer; }
   .facet-row:hover { background: color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+  table.stk { table-layout: fixed; width: 100%; }
+  table.stk th, table.stk td { padding-block: .2rem; line-height: 1.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* 検索一致箇所: 下線 + 薄い背景。赤い alert (Exception) 上では不透明な黄色に */
+  mark.hl { background: color-mix(in oklab, var(--color-warning) 25%, transparent); color: inherit; border-radius: 2px;
+    text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; text-decoration-color: var(--color-warning); }
+  .alert mark.hl { background: var(--color-warning); color: var(--color-warning-content); text-decoration-color: var(--color-warning-content); }
   .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
   .sxx-hl-line { background: rgba(250, 204, 21, .28); }
   .sxx-hl-glyph { background: #eab308; width: 4px !important; margin-left: 3px; }
@@ -115,7 +121,7 @@
               <col style="width:140px"><col style="width:104px"><col>
             </colgroup>
             <thead>
-              <tr><th class="text-right">#</th><th>Label</th><th>Timestamp</th><th>File:Line</th><th>Thread</th><th>Level</th><th>Message</th></tr>
+              <tr><th class="text-right">#</th><th>Label</th><th>Timestamp</th><th>Location</th><th>Thread</th><th>Level</th><th>Message</th></tr>
             </thead>
             <tbody id="logBody"></tbody>
           </table>
@@ -174,7 +180,7 @@
       <div id="facets" class="flex flex-col gap-2"></div>
       <div class="flex-1"></div>
       <div class="text-xs opacity-60 px-1">
-        Stack グループは行クリックで展開/折り畳み。File:Line をクリックするとソースを右パネルに表示します。
+        Stack グループは行クリックで展開/折り畳み。Location をクリックするとソースを右パネルに表示します。
       </div>
     </div>
   </div>
@@ -242,7 +248,7 @@ const fmt = n => Number(n).toLocaleString("ja-JP");
 const state = {
   cfg: null, logs: [], data: null, source: null,
   filters: { label: new Set(), thread: new Set(), level: new Set() },
-  query: "", regex: false, expanded: new Set(), rows: [], flashId: null, excIdx: -1, reqSeq: 0,
+  query: "", regex: false, hlRe: null, expanded: new Set(), rows: [], flashId: null, excIdx: -1, reqSeq: 0,
 };
 
 /* ---------- 共通ユーティリティ ---------- */
@@ -312,20 +318,59 @@ function labelBadge(label) {
 function threadCell(t) {
   return t === "main thread" ? `<span class="font-semibold text-accent">${esc(t)}</span>` : `<span class="opacity-80">${esc(t)}</span>`;
 }
+/* ---- 検索一致のハイライト ----
+   一致位置は「元の生文字列」で求め、セグメントごとに esc() してから <mark> で包む (エスケープ後の文字列には触れない)。 */
+const nlFmt = t => esc(t).replace(/\r?\n/g, " \u23CE ");
+function matchRanges(raw) {
+  const re = state.hlRe;
+  if (!re || !raw) return [];
+  re.lastIndex = 0;
+  const out = [];
+  let m;
+  while ((m = re.exec(raw)) !== null) {
+    if (m[0].length === 0) { re.lastIndex++; continue; }   // 長さ 0 の一致 (^ や a* など) は飛ばす
+    out.push([m.index, m.index + m[0].length]);
+    if (out.length >= 200) break;
+  }
+  return out;
+}
+function renderRanges(raw, ranges, from, to, fmt = esc) {
+  let html = "", pos = from;
+  for (const [st, en] of ranges) {
+    const a = Math.max(st, from), b = Math.min(en, to);
+    if (b <= a) continue;
+    if (a > pos) html += fmt(raw.slice(pos, a));
+    html += `<mark class="hl">${fmt(raw.slice(a, b))}</mark>`;
+    pos = b;
+  }
+  if (pos < to) html += fmt(raw.slice(pos, to));
+  return html;
+}
+function hl(raw, fmt = esc) {
+  raw = String(raw ?? "");
+  return state.hlRe ? renderRanges(raw, matchRanges(raw), 0, raw.length, fmt) : fmt(raw);
+}
+
 function splitPath(p) { const i = p.lastIndexOf("/"); return i < 0 ? ["", p] : [p.slice(0, i + 1), p.slice(i + 1)]; }
-// ディレクトリ部分だけを左側から省略し、ファイル名:行番号は常に全文を表示する
-function fileLink(file, line, extra = "") {
+// ディレクトリ部分だけを左側から省略し、ファイル名:行番号は常に全文を表示する (検索一致はファイル名側も省略後のディレクトリ側も強調)
+function fileLink(file, line, extra = "", maxChars = 44, highlight = true) {
   if (!file) return "";
   const lbl = line != null ? `${file}:${line}` : file;
-  const [dir, base] = splitPath(String(file).replace(/\\/g, "/"));
+  const nf = String(file).replace(/\\/g, "/");
+  const [dir, base] = splitPath(nf);
   const name = line != null ? `${base}:${line}` : base;
-  const avail = Math.max(0, 44 - name.length);
-  const shownDir = dir.length <= avail ? dir : (avail > 2 ? "\u2026" + dir.slice(dir.length - (avail - 1)) : (dir ? "\u2026/" : ""));
-  return `<a href="#" class="link link-primary link-hover mono filelink ${extra}" data-act="src" data-path="${esc(file)}" data-line="${line ?? ""}" title="${esc(lbl)}"><span class="fdir">${esc(shownDir)}</span><span class="fname">${esc(name)}</span></a>`;
+  const avail = Math.max(0, maxChars - name.length);
+  const ranges = highlight ? matchRanges(nf) : [];
+  const R = (from, to) => renderRanges(nf, ranges, from, to);
+  let dirHtml;
+  if (dir.length <= avail) dirHtml = R(0, dir.length);
+  else if (avail > 2) dirHtml = "\u2026" + R(dir.length - (avail - 1), dir.length);
+  else dirHtml = dir ? "\u2026/" : "";
+  const nameHtml = R(dir.length, nf.length) + (line != null ? esc(":" + line) : "");
+  return `<a href="#" class="link link-primary link-hover mono filelink ${extra}" data-act="src" data-path="${esc(file)}" data-line="${line ?? ""}" title="${esc(lbl)}"><span class="fdir">${dirHtml}</span><span class="fname">${nameHtml}</span></a>`;
 }
 function msgText(m) {
-  const s = m.length > 600 ? m.slice(0, 600) : m;
-  return esc(s.replace(/\r?\n/g, " \u23CE "));
+  return hl(m.length > 600 ? m.slice(0, 600) : m, nlFmt);
 }
 function tsRange(g) {   // 要件どおり first ~ last を両方フル表示 (同一なら単一)
   return g.first_ts === g.last_ts ? esc(g.first_ts) : `${esc(g.first_ts)} ~ ${esc(g.last_ts)}`;
@@ -402,12 +447,17 @@ $("#groupMode").addEventListener("change", async e => {
 /* ---------- 行の組み立てと仮想スクロール ---------- */
 function buildMatcher() {
   const q = state.query.trim();
+  state.hlRe = null;
   $("#qErr").classList.add("hidden"); $("#q").classList.remove("input-error");
   if (!q) return null;
   if (state.regex) {
-    try { const re = new RegExp(q, "i"); return s => re.test(s); }
-    catch (_) { $("#qErr").classList.remove("hidden"); $("#q").classList.add("input-error"); return null; }
+    try {
+      const re = new RegExp(q, "i");
+      state.hlRe = new RegExp(q, "gi");      // ハイライト用 (検索語変更ごとに 1 回だけ生成)
+      return s => re.test(s);
+    } catch (_) { $("#qErr").classList.remove("hidden"); $("#q").classList.add("input-error"); return null; }
   }
+  state.hlRe = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
   const l = q.toLowerCase();
   return s => s.toLowerCase().includes(l);
 }
@@ -444,9 +494,9 @@ function rowHtml(r, i) {
   const e = r.e, flash = state.flashId === e.id && r.t !== "child" ? " flash" : "";
   if (r.t === "exc") {
     return `<tr data-i="${i}" class="row-click${flash}"><td colspan="7" class="exc"><div class="alert alert-error">
-      <strong>[Exception]</strong><span class="truncate">${esc(e.title)}</span>
+      <strong>[Exception]</strong><span class="truncate">${hl(e.title)}</span>
       <span class="opacity-90">${fileLink(e.file, e.line, "!text-error-content underline")}</span>
-      <span class="truncate opacity-90">${esc(e.message.replace(/\n/g, " "))}</span>
+      <span class="truncate opacity-90">${hl(e.message, t => esc(t).replace(/\n/g, " "))}</span>
       <span class="ml-auto text-xs opacity-80 flex-none">#${e.lineno} クリックで詳細</span></div></td></tr>`;
   }
   if (r.t === "raw") {
@@ -648,32 +698,43 @@ function showDetail(e) {
     <h3 class="font-bold text-lg mb-2">ログ詳細 <span class="text-sm opacity-60">(行 ${e.lineno})</span></h3>
     <table class="table table-sm"><tbody>
       ${kvRow("Label", labelBadge(e.label))}${kvRow("Timestamp", esc(e.ts))}
-      ${kvRow("File:Line", fileLink(e.file, e.line))}${kvRow("Thread", threadCell(e.thread))}${kvRow("Level", levelBadge(e.level))}
+      ${kvRow("Location", fileLink(e.file, e.line))}${kvRow("Thread", threadCell(e.thread))}${kvRow("Level", levelBadge(e.level))}
     </tbody></table>
     <div class="mt-2 text-sm font-semibold">Message</div>
-    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all max-h-80 overflow-auto">${esc(e.message)}</pre>
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all max-h-80 overflow-auto">${hl(e.message)}</pre>
     <div class="mt-2"><button class="btn btn-xs" data-copy-msg>メッセージをコピー</button></div>`;
   $("#detailBody").querySelector("[data-copy-msg]").onclick = () => copyText(e.message);
   $("#detailModal").showModal();
 }
 function showException(x) {
-  const frames = x.frames.map(f => f.file
-    ? `<li class="py-0.5 break-all"><span class="opacity-60 mono mr-2">${f.index}#</span><span class="mono">${esc(f.module ? f.module + "!" : "")}${esc(f.symbol)}${f.offset ? `<span class="opacity-60">+${esc(f.offset)}</span>` : ""}</span>
-        <span class="whitespace-nowrap"> | ${fileLink(f.file, f.line)}</span></li>`
-    : `<li class="py-0.5 mono opacity-80">${esc(f.raw)}</li>`).join("");
+  // stacktrace: "#i  Description  Filepath:line" の表 (列幅固定。Description だけが伸縮し、溢れたら省略)
+  const frameRows = x.frames.map(f => {
+    const idx = `<td class="text-right mono opacity-60">#${f.index}</td>`;
+    if (!f.file) return `<tr>${idx}<td class="mono opacity-80" title="${esc(f.raw)}">${esc(f.raw)}</td><td></td></tr>`;
+    const full = `${f.module ? f.module + "!" : ""}${f.symbol}${f.offset ? "+" + f.offset : ""}`;
+    const desc = `${f.module ? `<span class="opacity-60">${esc(f.module)}!</span>` : ""}${esc(f.symbol)}${f.offset ? `<span class="opacity-60">+${esc(f.offset)}</span>` : ""}`;
+    return `<tr>${idx}<td class="mono" title="${esc(full)}">${desc}</td><td>${fileLink(f.file, f.line, "", 24, false)}</td></tr>`;
+  }).join("");
+  const moreRow = x.more_frames ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${x.more_frames} フレーム</td></tr>` : "";
+  const frames = frameRows || moreRow ? frameRows + moreRow : `<tr><td colspan="3" class="opacity-60">(なし)</td></tr>`;
   $("#excBody").innerHTML = `
-    <div class="alert alert-error mb-3"><div><div class="font-bold">[Exception] ${esc(x.title)}</div><div class="text-xs opacity-80">ログ ${x.lineno} 行目</div></div></div>
+    <div class="alert alert-error mb-3"><div><div class="font-bold">[Exception] ${hl(x.title)}</div><div class="text-xs opacity-80">ログ ${x.lineno} 行目</div></div></div>
     <table class="table table-sm"><tbody>
-      ${kvRow("location", fileLink(x.file, x.line))}
-      ${kvRow("function", `<span class="mono">${esc(x.function ?? "")}</span>`)}
+      ${kvRow("Location", fileLink(x.file, x.line))}
+      ${kvRow("function", `<span class="mono">${hl(x.function ?? "")}</span>`)}
       ${kvRow("thread", threadCell(x.thread ?? ""))}
       ${kvRow("timestamp", esc(x.ts ?? ""))}
     </tbody></table>
     <div class="mt-3 font-semibold text-sm">stacktrace</div>
-    <ul class="bg-base-200 rounded-box mt-1 text-sm p-2 max-h-80 overflow-auto">${frames || "<li class='opacity-60'>(なし)</li>"}
-      ${x.more_frames ? `<li class="pt-1 opacity-70 mono">... (more ${x.more_frames} frames)</li>` : ""}</ul>
+    <div class="mt-1 max-h-80 overflow-y-auto overflow-x-hidden rounded-box border border-base-300">
+      <table class="table table-sm table-zebra table-pin-rows stk">
+        <colgroup><col style="width:3.5rem"><col><col style="width:14.5rem"></colgroup>
+        <thead><tr><th class="text-right">#</th><th>Description</th><th>Filepath:line</th></tr></thead>
+        <tbody>${frames}</tbody>
+      </table>
+    </div>
     <div class="mt-3 font-semibold text-sm">message</div>
-    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${esc(x.message)}</pre>`;
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(x.message)}</pre>`;
   $("#excModal").showModal();
 }
 document.addEventListener("click", ev => {   // モーダル内の File:Line リンク

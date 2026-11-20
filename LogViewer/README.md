@@ -49,8 +49,8 @@ Windows では `start.bat` でも起動できます (`py -3` / `python` を自�
 
 - 左サイドバー: Label / Thread / Level のチェックボックス (件数付き)、`message` と `filepath` の検索 (`.*` で正規表現)、Stack のまとめ方。
 - Stack グループ行 (`x120` バッジ) をクリックで子行を展開/折り畳み。
-- 行をクリックで詳細。Exception 行(赤)クリックで location / function / thread / stacktrace / message を表示。ナビバーの「Exception」で該当行へジャンプ。
-- `File:Line` や stacktrace のフレームをクリックすると、右パネルの Monaco エディタ (読み取り専用) で該当行を中央表示・ハイライトします。
+- 行をクリックで詳細。Exception 行(赤)クリックで Location / function / thread / stacktrace / message を表示。ナビバーの「Exception」で該当行へジャンプ。
+- `Location` 列や stacktrace のフレームをクリックすると、右パネルの Monaco エディタ (読み取り専用) で該当行を中央表示・ハイライトします。
   スタックフレームのようにファイル名だけの場合は `source_root` 以下から検索し、複数あれば選択できます。
 - キーボード: `Ctrl+F` 検索欄 / `Esc` モーダル・右パネルを閉じる。
 
