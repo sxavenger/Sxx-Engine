@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../sponza.gltf",
+			"index": 20
+		}
+	},
+	"type": "StaticMesh",
+	"uuid": "68cca967-96f0-4c1d-a92b-e33a43698a58"
+}
