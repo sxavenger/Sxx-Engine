@@ -69,6 +69,7 @@ SkeletalMesh::Description SkeletalMeshBuilder::BuildReference(const std::filesys
 	SkeletalMesh::Description description;
 	description.vertices.resize(mesh.GetVertexCount());
 	description.polygons.resize(mesh.GetFaceCount());
+	description.joints.resize(mesh.GetBoneCount());
 
 	//!< 頂点データの取得
 	
@@ -110,18 +111,21 @@ SkeletalMesh::Description SkeletalMeshBuilder::BuildReference(const std::filesys
 
 		const AssimpBone bone = mesh.GetBone(i);
 
-		SkeletalMesh::SkinCluster cluster = {};
-		
+		SkeletalMesh::SkinJoint joint;
+
+		//!< joint名の取得
+		joint.name = bone.GetName();
+
 		//!< bindPoseの取得
-		cluster.bindPoseInverse = bone.GetOffsetTransformation(); //!< bindPoseInverseの取得(内部でInverseされている)
+		joint.bindPoseInverse = bone.GetOffsetTransformation(); //!< bindPoseInverseの取得(内部でInverseされている)
 
 		//!< weightsの取得
 		for (uint32_t j = 0; j < bone.GetVertexWeightCount(); ++j) {
 			AssimpBone::VertexWeight weight = bone.GetVertexWeight(j);
-			cluster.weights.emplace_back(weight.weight, weight.index);
+			joint.weights.emplace_back(weight.weight, weight.index);
 		}
 
-		description.clusters.Emplace(bone.GetName(), std::move(cluster));
+		description.joints[i] = std::move(joint); //!< jointの設定
 	}
 
 	return description;

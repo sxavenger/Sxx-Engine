@@ -32,9 +32,9 @@ class SkeletalMesh final
 public:
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	// SkinCluster structure
+	// SkinJoint structure
 	////////////////////////////////////////////////////////////////////////////////////////////
-	struct SkinCluster {
+	struct SkinJoint {
 	public:
 
 		////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,9 @@ public:
 		// public variables
 		//=========================================================================================
 
+		std::string name;                   //!< ジョイント名
 		Transformation3d bindPoseInverse;  //!< バインドポーズ行列
 		std::vector<VertexWeight> weights; //!< 影響を受ける頂点のウェイト情報群
-
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ public:
 		std::vector<MeshVertex> vertices;
 		std::vector<MeshPolygon> polygons;
 
-		StringHashMap<SkinCluster> clusters;
+		std::vector<SkinJoint> joints;
 
 	};
 
