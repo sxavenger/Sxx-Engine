@@ -110,6 +110,68 @@ class ServerTests(unittest.TestCase):
         st, data = self.req("POST", "/api/config", body=body)
         self.assertEqual((st, json.loads(data)["theme"]), (200, "light"))
 
+    def post_exists(self, obj, headers=None):
+        body = json.dumps(obj).encode("utf-8")
+        st, data = self.req("POST", "/api/exists", body=body, headers=headers)
+        return st, (json.loads(data) if data else None)
+
+    def test_exists_api(self):
+        st, d = self.post_exists({"paths": ["Engine/a.cpp", "Engine/zzz.cpp", "Engine", "Engine\\b.cpp"], "names": ["a.cpp", "A.CPP", "zzz.cpp"]})
+        self.assertEqual(st, 200)
+        self.assertEqual(d["paths"], {"Engine/a.cpp": True, "Engine/zzz.cpp": False, "Engine": False, "Engine\\b.cpp": True})
+        self.assertEqual(d["names"], {"a.cpp": True, "A.CPP": True, "zzz.cpp": False})
+        self.assertTrue(d["source_root_ok"])
+
+    def test_exists_traversal_rejected_before_resolve(self):
+        from unittest import mock
+        from pathlib import Path as P
+        bad = ["../outside.log", "..\\outside.log", "/etc/passwd", "C:\\Windows\\win.ini", "C:win.ini", "\\\\srv\\share\\x.cpp", "//srv/share/x.cpp",
+               "Engine/../../outside.log", "a\0b", "", "  "]
+        with mock.patch.object(P, "resolve", side_effect=AssertionError("resolve must not be reached")):
+            st, d = self.post_exists({"paths": bad, "names": ["../a.cpp", "Engine/a.cpp", "a\\b.cpp", "a\0.cpp", ""]})
+        self.assertEqual(st, 200)
+        self.assertFalse(any(d["paths"].values()), d)
+        self.assertFalse(any(d["names"].values()), d)
+
+    def test_exists_symlink_escape(self):
+        link = self.src / "Engine" / "esc.cpp"
+        try:
+            link.symlink_to(self.src.parent / "outside.log")
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink 不可")
+        self.srv.resolver().reset_index()
+        try:
+            st, d = self.post_exists({"paths": ["Engine/esc.cpp"], "names": ["esc.cpp"]})
+            self.assertEqual((d["paths"]["Engine/esc.cpp"], d["names"]["esc.cpp"]), (False, False))
+        finally:
+            link.unlink()
+            self.srv.resolver().reset_index()
+
+    def test_exists_limit(self):
+        st, d = self.post_exists({"paths": ["a%d" % i for i in range(3000)], "names": ["n%d" % i for i in range(2001)]})
+        self.assertEqual(st, 413)
+        st, d = self.post_exists({"paths": ["a%d" % i for i in range(3000)], "names": ["n%d" % i for i in range(2000)]})
+        self.assertEqual(st, 200)
+        for bad in (b"nope", b"[]", b'{"paths":"x"}'):
+            self.assertEqual(self.req("POST", "/api/exists", body=bad)[0], 400)
+
+    def test_exists_origin(self):
+        st, _ = self.post_exists({"paths": ["Engine/a.cpp"]}, headers={"Origin": "http://evil.example"}); self.assertEqual(st, 403)
+        st, _ = self.post_exists({"paths": ["Engine/a.cpp"]}, headers={"Host": "evil.example"}); self.assertEqual(st, 403)
+
+    def test_exists_no_stale_rebuild_on_miss(self):
+        r = self.srv.resolver()
+        r.name_exists("a.cpp")
+        r._index_time -= 10_000          # 古いインデックスでも /api/exists では再構築しない
+        before = r._index
+        self.assertFalse(r.name_exists("nothere.cpp"))
+        self.assertIs(r._index, before)
+
+    def test_exists_no_root(self):
+        from sxxlog.sources import SourceResolver
+        r = SourceResolver(None)
+        self.assertFalse(r.exists("Engine/a.cpp")); self.assertFalse(r.name_exists("a.cpp"))
+
     def test_parse_endpoint(self):
         st, data = self.req("POST", "/api/parse?group=callsite", body=LOG.encode("utf-8"))
         d = json.loads(data)

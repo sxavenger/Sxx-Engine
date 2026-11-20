@@ -48,7 +48,24 @@
   .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
   .sxx-hl-line { background: rgba(250, 204, 21, .28); }
   .sxx-hl-glyph { background: #eab308; width: 4px !important; margin-left: 3px; }
-  #codePanel { max-width: calc(100% - 426px); }  /* ログテーブルが最低 420px 残るように */
+  #rightPane { max-width: calc(100% - 426px); }  /* ログテーブルが最低 420px 残るように */
+  #vsplitter { height: 6px; cursor: row-resize; flex: none; background: var(--color-base-300); }
+  #vsplitter:hover, #vsplitter.drag { background: var(--color-primary); opacity: .6; }
+  #detailPane { min-height: 120px; }
+  #detailPane th { font-weight: 600; }
+  #logTable tr.sel > td { background: color-mix(in oklab, var(--color-primary) 20%, var(--color-base-100)) !important; }
+  #logTable tr.sel > td:first-child { box-shadow: inset 3px 0 0 var(--color-primary); }
+  #logTable tr.sel td.exc .alert { outline: 3px solid var(--color-primary); outline-offset: -3px; }
+  .tgl { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 1.5rem; margin: -.25rem 0 -.25rem -.4rem;
+    border-radius: .375rem; cursor: pointer; vertical-align: middle; }
+  .tgl:hover { background: color-mix(in oklab, var(--color-base-content) 18%, transparent); }
+  /* Location の色: 閲覧できる=青リンク / できない=disabled / 判定前=通常の文字色 */
+  .filelink.loc-missing { color: color-mix(in oklab, var(--color-base-content) 40%, transparent); text-decoration: none; cursor: default; }
+  .filelink.loc-pending { color: inherit; text-decoration: none; }
+  .alert .filelink:not(.loc-missing):not(.loc-pending) { color: var(--color-error-content); text-decoration: underline; }
+  .alert .filelink.loc-missing { color: color-mix(in oklab, var(--color-error-content) 60%, transparent); }
+  tr.pickrow { cursor: pointer; }
+  tr.pickrow:hover > td { background: color-mix(in oklab, var(--color-primary) 12%, transparent); }
   .filelink { display: flex; min-width: 0; align-items: baseline; }
   .filelink .fdir { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; opacity: .7; }
   .filelink .fname { flex: none; font-weight: 700; }
@@ -112,7 +129,7 @@
       <div class="flex flex-col flex-1 min-w-0 min-h-0 relative">
         <div class="flex-none text-xs opacity-70 px-1 pb-1 flex justify-between">
           <span id="visibleInfo">&nbsp;</span>
-          <span><kbd class="kbd kbd-xs">Ctrl</kbd>+<kbd class="kbd kbd-xs">F</kbd> 検索 / <kbd class="kbd kbd-xs">Esc</kbd> 閉じる</span>
+          <span><kbd class="kbd kbd-xs">Ctrl</kbd>+<kbd class="kbd kbd-xs">F</kbd> 検索 / <kbd class="kbd kbd-xs">Esc</kbd> 選択解除</span>
         </div>
         <div id="logScroller" class="flex-1 min-h-0 overflow-auto rounded-box border border-base-300">
           <table id="logTable" class="table table-zebra table-pin-rows table-xs">
@@ -135,23 +152,29 @@
         </div>
       </div>
 
-      <!-- Monaco パネル (右ドロワー) -->
-      <div id="splitter" class="hidden"></div>
-      <aside id="codePanel" class="hidden flex-col min-h-0 min-w-0 rounded-box border border-base-300 bg-base-100 overflow-hidden" style="width:48%">
-        <div class="flex-none flex items-center gap-2 bg-base-200 px-3 py-2">
-          <div class="min-w-0 flex-1">
-            <div id="cpPath" class="mono text-sm font-semibold truncate" title=""></div>
-            <div id="cpSub" class="text-xs opacity-70 truncate"></div>
+      <!-- 右ペイン: 詳細 (上) + Monaco (下)。常駐 -->
+      <div id="splitter" style="width:6px;cursor:col-resize;flex:none"></div>
+      <aside id="rightPane" class="flex flex-col min-h-0 min-w-0 rounded-box border border-base-300 bg-base-100 overflow-hidden" style="width:48%">
+        <section id="detailPane" class="flex-none overflow-auto" style="height:50%"></section>
+        <div id="vsplitter"></div>
+        <section id="codePanel" class="flex flex-col flex-1 min-h-0 min-w-0">
+          <div class="flex-none flex items-center gap-2 bg-base-200 px-3 py-2">
+            <div class="min-w-0 flex-1">
+              <div id="cpPath" class="mono text-sm font-semibold truncate" title="">ソース</div>
+              <div id="cpSub" class="text-xs opacity-70 truncate"></div>
+            </div>
+            <span id="cpLine" class="badge badge-warning badge-sm hidden"></span>
+            <span id="cpLang" class="badge badge-ghost badge-sm hidden"></span>
+            <button id="cpCopy" class="btn btn-xs" title="絶対パス:行 をクリップボードへ">パスをコピー</button>
           </div>
-          <span id="cpLine" class="badge badge-warning badge-sm hidden"></span>
-          <span id="cpLang" class="badge badge-ghost badge-sm hidden"></span>
-          <button id="cpCopy" class="btn btn-xs" title="絶対パス:行 をクリップボードへ">パスをコピー</button>
-          <button id="cpClose" class="btn btn-xs btn-ghost btn-square" title="閉じる (Esc)">&#10005;</button>
-        </div>
-        <div id="cpAlert" class="flex-none p-2 hidden"></div>
-        <div id="cpCands" class="flex-none p-2 hidden"></div>
-        <div id="cpBusy" class="hidden flex-1 flex items-center justify-center"><span class="loading loading-spinner"></span></div>
-        <div id="editor" class="flex-1 min-h-0 hidden"></div>
+          <div id="cpAlert" class="flex-none p-2 hidden"></div>
+          <div id="cpCands" class="flex-none p-2 hidden"></div>
+          <div id="cpBusy" class="hidden flex-1 flex items-center justify-center"><span class="loading loading-spinner"></span></div>
+          <div id="cpEmpty" class="flex-1 flex items-center justify-center text-center p-6 opacity-60 text-sm">
+            ログ行をクリックすると、その Location のソースコードをここに表示します。<br>(source_root の設定が必要です)
+          </div>
+          <div id="editor" class="flex-1 min-h-0 hidden"></div>
+        </section>
       </aside>
     </div>
   </div>
@@ -180,29 +203,13 @@
       <div id="facets" class="flex flex-col gap-2"></div>
       <div class="flex-1"></div>
       <div class="text-xs opacity-60 px-1">
-        Stack グループは行クリックで展開/折り畳み。Location をクリックするとソースを右パネルに表示します。
+        行をクリックすると右に詳細とソースを表示します。Stack グループは行頭の ▸ で展開/折り畳み。Esc で選択解除。
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== モーダル ===== -->
-<dialog id="excModal" class="modal">
-  <div class="modal-box max-w-4xl">
-    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">&#10005;</button></form>
-    <div id="excBody"></div>
-  </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
-</dialog>
-
-<dialog id="detailModal" class="modal">
-  <div class="modal-box max-w-3xl">
-    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">&#10005;</button></form>
-    <div id="detailBody"></div>
-  </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
-</dialog>
-
 <dialog id="settingsModal" class="modal">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-3">設定</h3>
@@ -248,7 +255,7 @@ const fmt = n => Number(n).toLocaleString("ja-JP");
 const state = {
   cfg: null, logs: [], data: null, source: null,
   filters: { label: new Set(), thread: new Set(), level: new Set() },
-  query: "", regex: false, hlRe: null, expanded: new Set(), rows: [], flashId: null, excIdx: -1, reqSeq: 0,
+  query: "", regex: false, hlRe: null, expanded: new Set(), rows: [], sel: null, ex: { done: false, paths: new Map(), names: new Map(), rootOk: true, seq: 0 }, byKey: new Map(), flashId: null, excIdx: -1, reqSeq: 0,
 };
 
 /* ---------- 共通ユーティリティ ---------- */
@@ -353,9 +360,19 @@ function hl(raw, fmt = esc) {
 
 function splitPath(p) { const i = p.lastIndexOf("/"); return i < 0 ? ["", p] : [p.slice(0, i + 1), p.slice(i + 1)]; }
 // ディレクトリ部分だけを左側から省略し、ファイル名:行番号は常に全文を表示する (検索一致はファイル名側も省略後のディレクトリ側も強調)
+function locState(file) {   // "ok" | "no" | "pending" (問い合わせ結果のキャッシュ参照のみ。通信しない)
+  const ex = state.ex;
+  if (!ex.done) return "pending";
+  const nameOnly = !String(file).replace(/\\/g, "/").includes("/");
+  const v = (nameOnly ? ex.names : ex.paths).get(file);
+  return v === undefined ? "pending" : v ? "ok" : "no";
+}
 function fileLink(file, line, extra = "", maxChars = 44, highlight = true) {
   if (!file) return "";
+  const st = locState(file);
   const lbl = line != null ? `${file}:${line}` : file;
+  const cls = st === "ok" ? `link link-primary link-hover mono filelink ${extra}` : `mono filelink ${st === "no" ? "loc-missing" : "loc-pending"}`;
+  const ttl = st === "no" ? `ソースが見つかりません (source_root: ${(state.cfg && state.cfg.source_root) || "未設定"})\n${lbl}` : lbl;
   const nf = String(file).replace(/\\/g, "/");
   const [dir, base] = splitPath(nf);
   const name = line != null ? `${base}:${line}` : base;
@@ -367,7 +384,7 @@ function fileLink(file, line, extra = "", maxChars = 44, highlight = true) {
   else if (avail > 2) dirHtml = "\u2026" + R(dir.length - (avail - 1), dir.length);
   else dirHtml = dir ? "\u2026/" : "";
   const nameHtml = R(dir.length, nf.length) + (line != null ? esc(":" + line) : "");
-  return `<a href="#" class="link link-primary link-hover mono filelink ${extra}" data-act="src" data-path="${esc(file)}" data-line="${line ?? ""}" title="${esc(lbl)}"><span class="fdir">${dirHtml}</span><span class="fname">${nameHtml}</span></a>`;
+  return `<a href="#" class="${cls}" data-act="src" data-path="${esc(file)}" data-line="${line ?? ""}" title="${esc(ttl)}"><span class="fdir">${dirHtml}</span><span class="fname">${nameHtml}</span></a>`;
 }
 function msgText(m) {
   return hl(m.length > 600 ? m.slice(0, 600) : m, nlFmt);
@@ -490,14 +507,15 @@ function computeRows() {
   }
   state.rows = rows;
 }
+const rowKey = r => (r.t === "group" ? "g:" : "e:") + r.e.id;
 function rowHtml(r, i) {
-  const e = r.e, flash = state.flashId === e.id && r.t !== "child" ? " flash" : "";
+  const e = r.e, flash = (state.flashId === e.id && r.t !== "child" ? " flash" : "") + (state.sel === rowKey(r) ? " sel" : "");
   if (r.t === "exc") {
     return `<tr data-i="${i}" class="row-click${flash}"><td colspan="7" class="exc"><div class="alert alert-error">
       <strong>[Exception]</strong><span class="truncate">${hl(e.title)}</span>
       <span class="opacity-90">${fileLink(e.file, e.line, "!text-error-content underline")}</span>
       <span class="truncate opacity-90">${hl(e.message, t => esc(t).replace(/\n/g, " "))}</span>
-      <span class="ml-auto text-xs opacity-80 flex-none">#${e.lineno} クリックで詳細</span></div></td></tr>`;
+      <span class="ml-auto text-xs opacity-80 flex-none">#${e.lineno}</span></div></td></tr>`;
   }
   if (r.t === "raw") {
     return `<tr data-i="${i}" class="row-click"><td class="text-right opacity-60">${e.lineno}</td><td colspan="6" class="mono opacity-80">${esc(e.text)}</td></tr>`;
@@ -506,7 +524,7 @@ function rowHtml(r, i) {
     const open = state.expanded.has(e.id);
     const part = r.hit !== e.count ? ` <span class="opacity-60">/ 一致 ${r.hit}</span>` : "";
     return `<tr data-i="${i}" class="row-click${flash}">
-      <td class="text-right opacity-60">${open ? "&#9662;" : "&#9656;"} ${e.lineno}</td>
+      <td class="text-right opacity-60"><button type="button" class="tgl" data-act="toggle" title="${open ? "折り畳む" : "展開する"}" aria-expanded="${open}">${open ? "&#9662;" : "&#9656;"}</button>${e.lineno}</td>
       <td>${labelBadge(e.label)}</td><td>${tsRange(e)}</td><td>${fileLink(e.file, e.line)}</td>
       <td>${threadCell(e.thread)}</td><td>${levelBadge(e.level)}</td>
       <td class="msgcell"><div><span class="txt">${msgText(e.message)}</span><span class="badge badge-sm badge-secondary">x${fmt(e.count)}</span>${part ? `<span class="text-xs flex-none">${part}</span>` : ""}</div></td></tr>`;
@@ -572,6 +590,7 @@ function refresh(keepScroll) {
   lastRange = "";
   render(true);
   updateInfo();
+  renderDetail();
 }
 
 /* ---------- ログの読み込み ---------- */
@@ -586,11 +605,53 @@ function showHeader(d) {
   $("#excCount").textContent = d ? d.counts.exceptions : 0;
   $("#jumpExcBtn").disabled = !d || d.counts.exceptions === 0;
 }
+/* Location の存在確認: ログ内のユニークなパスとスタックフレームのファイル名を (必要なら分割して) まとめて問い合わせ、結果を Map にキャッシュ */
+async function refreshExists() {
+  const ex = state.ex, seq = ++ex.seq;
+  ex.done = false; ex.paths = new Map(); ex.names = new Map();
+  const d = state.data;
+  if (!d) return;
+  render(true); renderDetail();   // 判定前 (通常の文字色) で描画
+  const paths = new Set(), names = new Set();
+  const add = f => { if (f) (String(f).replace(/\\/g, "/").includes("/") ? paths : names).add(f); };
+  for (const e of d.entries) {
+    if (e.kind === "raw") continue;
+    add(e.file);
+    if (e.kind === "stack_group") for (const c of e.children) add(c.file);
+    else if (e.kind === "exception") for (const f of e.frames) add(f.file);
+  }
+  const items = [...paths].map(x => [0, x]).concat([...names].map(x => [1, x])), LIM = 4000;   // サーバ上限 5000 件に収める
+  const paths2 = new Map(), names2 = new Map();
+  try {
+    let rootOk = true;
+    for (let i = 0; i < items.length; i += LIM) {
+      const part = items.slice(i, i + LIM);
+      const bp = part.filter(x => x[0] === 0).map(x => x[1]), bn = part.filter(x => x[0] === 1).map(x => x[1]);
+      const r = await postJson("/api/exists", { paths: bp, names: bn });
+      if (seq !== ex.seq) return;
+      rootOk = r.source_root_ok;
+      for (const k in r.paths) paths2.set(k, r.paths[k]);
+      for (const k in r.names) names2.set(k, r.names[k]);
+    }
+    ex.paths = paths2; ex.names = names2; ex.rootOk = rootOk; ex.done = true;
+  } catch (_) { return; }   // 失敗時は「判定前」のまま (表示は壊さない)
+  if (seq !== ex.seq) return;
+  render(true); renderDetail();
+}
 async function applyData(d, label, id) {
   const keep = state.facetsFor === id;   // 同じログならフィルター選択を保持
   state.facetsFor = id;
   state.data = d; state.expanded.clear(); state.excIdx = -1; state.flashId = null;
+  state.byKey = new Map();
+  for (const e of d.entries) {
+    if (e.kind === "stack_group") {
+      state.byKey.set("g:" + e.id, { t: "group", e });
+      for (const c of e.children) state.byKey.set("e:" + c.id, { t: "child", e: c, g: e });
+    } else state.byKey.set("e:" + e.id, { t: e.kind === "exception" ? "exc" : e.kind === "raw" ? "raw" : "log", e });
+  }
+  if (!(keep && state.sel && state.byKey.has(state.sel))) clearSel(false);   // 同じログの再読み込みなら選択を維持
   showHeader(d); buildFacets(keep); refresh();
+  refreshExists();
   clearNotice();
   if (label) document.title = `${label} - SxxLogViewer`;
 }
@@ -675,39 +736,81 @@ window.addEventListener("drop", ev => {
   if (f) loadLocalFile(f);
 });
 
-/* ---------- テーブル操作 ---------- */
+/* ---------- 選択 / 詳細ペイン (常駐) ---------- */
 tbody.addEventListener("click", ev => {
   const tr = ev.target.closest("tr[data-i]");
   if (!tr) return;
   const r = state.rows[+tr.dataset.i];
   if (!r) return;
+  if (ev.target.closest("[data-act='toggle']")) { ev.preventDefault(); toggleGroup(r.e.id); return; }
   const a = ev.target.closest("[data-act='src']");
-  if (a) { ev.preventDefault(); ev.stopPropagation(); openSource(a.dataset.path, a.dataset.line ? +a.dataset.line : null); return; }
-  if (window.getSelection && String(window.getSelection()).length > 0) return;   // テキスト選択中は何もしない
-  if (r.t === "group") toggleGroup(r.e.id);
-  else if (r.t === "exc") showException(r.e);
-  else if (r.t === "log" || r.t === "child") showDetail(r.e);
+  if (a) ev.preventDefault();
+  else if (window.getSelection && String(window.getSelection()).length > 0) return;   // テキスト選択中は何もしない
+  selectKey(rowKey(r));
 });
 function toggleGroup(id) {
   state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
   refresh(true);
 }
+function entryLoc(it) { return it && it.e.file ? { file: it.e.file, line: it.e.line } : null; }
+function selectKey(key, opts = {}) {
+  const it = state.byKey.get(key);
+  if (!it) return;
+  state.sel = key;
+  render(true);
+  renderDetail(true);
+  const loc = entryLoc(it);
+  if (opts.openSrc === false) return;
+  if (loc) openSource(loc.file, loc.line);
+  else { panelReq++; curSrc = null; resetPanelHeader(); clearPanelAlert(); panelState("empty"); }
+}
+function clearSel(rerender = true) {
+  state.sel = null;
+  panelReq++; curSrc = null;
+  resetPanelHeader(); clearPanelAlert(); panelState("empty");
+  if (rerender) { render(true); renderDetail(true); }
+}
 function kvRow(k, v) { return `<tr><th class="whitespace-nowrap align-top w-28">${k}</th><td class="break-all">${v}</td></tr>`; }
-function showDetail(e) {
-  $("#detailBody").innerHTML = `
-    <h3 class="font-bold text-lg mb-2">ログ詳細 <span class="text-sm opacity-60">(行 ${e.lineno})</span></h3>
+let detailCopy = "";
+function detailLog(e) {
+  detailCopy = e.message;
+  return `<div class="font-bold mb-2">ログ詳細 <span class="text-sm font-normal opacity-60">(行 ${e.lineno})</span></div>
     <table class="table table-sm"><tbody>
       ${kvRow("Label", labelBadge(e.label))}${kvRow("Timestamp", esc(e.ts))}
-      ${kvRow("Location", fileLink(e.file, e.line))}${kvRow("Thread", threadCell(e.thread))}${kvRow("Level", levelBadge(e.level))}
+      ${kvRow("Location", fileLink(e.file, e.line, "", 80))}${kvRow("Thread", threadCell(e.thread))}${kvRow("Level", levelBadge(e.level))}
     </tbody></table>
     <div class="mt-2 text-sm font-semibold">Message</div>
-    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all max-h-80 overflow-auto">${hl(e.message)}</pre>
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(e.message)}</pre>
     <div class="mt-2"><button class="btn btn-xs" data-copy-msg>メッセージをコピー</button></div>`;
-  $("#detailBody").querySelector("[data-copy-msg]").onclick = () => copyText(e.message);
-  $("#detailModal").showModal();
 }
-function showException(x) {
-  // stacktrace: "#i  Description  Filepath:line" の表 (列幅固定。Description だけが伸縮し、溢れたら省略)
+function detailGroup(g) {
+  detailCopy = g.message;
+  const last = g.children[g.children.length - 1];
+  const LIM = 300;
+  const kids = g.children.slice(0, LIM).map(c => `<tr class="pickrow" data-pick-key="e:${c.id}">
+      <td class="text-right mono opacity-60">${c.lineno}</td><td class="mono">${esc(c.ts)}</td>
+      <td class="mono" title="${esc(c.message.slice(0, 300))}">${hl(c.message.slice(0, 300), nlFmt)}</td></tr>`).join("");
+  const more = g.children.length > LIM ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${g.children.length - LIM} 件</td></tr>` : "";
+  return `<div class="alert alert-secondary alert-soft mb-2 py-2"><div><span class="font-bold">Stack グループ</span>
+      <span class="badge badge-sm badge-secondary">x${fmt(g.count)}</span>
+      <span class="text-xs opacity-70">ログ ${g.lineno} ~ ${last.lineno} 行目</span></div></div>
+    <table class="table table-sm"><tbody>
+      ${kvRow("範囲", `<span class="mono">${tsRange(g)}</span>`)}${kvRow("件数", fmt(g.count))}
+      ${kvRow("Location", fileLink(g.file, g.line, "", 80))}${kvRow("Thread", threadCell(g.thread))}${kvRow("Level", levelBadge(g.level))}
+      ${kvRow("Message", `<span class="whitespace-pre-wrap">${hl(g.message)}</span>`)}
+    </tbody></table>
+    <div class="mt-2 text-sm font-semibold">含まれるログ (クリックで個別に表示)</div>
+    <div class="mt-1 rounded-box border border-base-300 overflow-x-hidden">
+      <table class="table table-xs table-zebra stk">
+        <colgroup><col style="width:4rem"><col style="width:13rem"><col></colgroup>
+        <thead><tr><th class="text-right">#</th><th>Timestamp</th><th>Message</th></tr></thead>
+        <tbody>${kids}${more}</tbody>
+      </table>
+    </div>`;
+}
+function detailException(x) {
+  detailCopy = x.message;
+  // stacktrace: "#i  Description  Location" の表 (列幅固定。Description だけが伸縮し、溢れたら省略)
   const frameRows = x.frames.map(f => {
     const idx = `<td class="text-right mono opacity-60">#${f.index}</td>`;
     if (!f.file) return `<tr>${idx}<td class="mono opacity-80" title="${esc(f.raw)}">${esc(f.raw)}</td><td></td></tr>`;
@@ -717,32 +820,57 @@ function showException(x) {
   }).join("");
   const moreRow = x.more_frames ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${x.more_frames} フレーム</td></tr>` : "";
   const frames = frameRows || moreRow ? frameRows + moreRow : `<tr><td colspan="3" class="opacity-60">(なし)</td></tr>`;
-  $("#excBody").innerHTML = `
-    <div class="alert alert-error mb-3"><div><div class="font-bold">[Exception] ${hl(x.title)}</div><div class="text-xs opacity-80">ログ ${x.lineno} 行目</div></div></div>
+  return `
+    <div class="alert alert-error mb-2 py-2"><div><div class="font-bold">[Exception] ${hl(x.title)}</div><div class="text-xs opacity-80">ログ ${x.lineno} 行目</div></div></div>
     <table class="table table-sm"><tbody>
-      ${kvRow("Location", fileLink(x.file, x.line))}
+      ${kvRow("Location", fileLink(x.file, x.line, "", 80))}
       ${kvRow("function", `<span class="mono">${hl(x.function ?? "")}</span>`)}
       ${kvRow("thread", threadCell(x.thread ?? ""))}
       ${kvRow("timestamp", esc(x.ts ?? ""))}
     </tbody></table>
-    <div class="mt-3 font-semibold text-sm">stacktrace</div>
-    <div class="mt-1 max-h-80 overflow-y-auto overflow-x-hidden rounded-box border border-base-300">
-      <table class="table table-sm table-zebra table-pin-rows stk">
+    <div class="mt-2 font-semibold text-sm">stacktrace</div>
+    <div class="mt-1 rounded-box border border-base-300 overflow-x-hidden">
+      <table class="table table-sm table-zebra stk">
         <colgroup><col style="width:3.5rem"><col><col style="width:14.5rem"></colgroup>
-        <thead><tr><th class="text-right">#</th><th>Description</th><th>Filepath:line</th></tr></thead>
+        <thead><tr><th class="text-right">#</th><th>Description</th><th>Location</th></tr></thead>
         <tbody>${frames}</tbody>
       </table>
     </div>
-    <div class="mt-3 font-semibold text-sm">message</div>
-    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(x.message)}</pre>`;
-  $("#excModal").showModal();
+    <div class="mt-2 font-semibold text-sm">message</div>
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(x.message)}</pre>
+    <div class="mt-2"><button class="btn btn-xs" data-copy-msg>メッセージをコピー</button></div>`;
 }
-document.addEventListener("click", ev => {   // モーダル内の File:Line リンク
-  const a = ev.target.closest("dialog [data-act='src']");
-  if (!a) return;
-  ev.preventDefault();
-  a.closest("dialog").close();
-  openSource(a.dataset.path, a.dataset.line ? +a.dataset.line : null);
+function renderDetail(resetScroll) {
+  const el = $("#detailPane"), it = state.sel ? state.byKey.get(state.sel) : null;
+  const top = resetScroll ? 0 : el.scrollTop;
+  let html;
+  if (!it) html = `<div class="h-full flex items-center justify-center opacity-60 text-sm p-4">ログ行をクリックすると詳細を表示します</div>`;
+  else if (it.t === "raw") { detailCopy = it.e.text; html = `<div class="font-bold mb-2">生のテキスト <span class="text-sm font-normal opacity-60">(行 ${it.e.lineno})</span></div><pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(it.e.text)}</pre>`; }
+  else if (it.t === "group") html = detailGroup(it.e);
+  else if (it.t === "exc") html = detailException(it.e);
+  else html = detailLog(it.e);
+  el.innerHTML = it ? `<div class="p-3">${html}</div>` : html;
+  el.scrollTop = top;
+}
+$("#detailPane").addEventListener("click", ev => {
+  if (ev.target.closest("[data-copy-msg]")) { copyText(detailCopy); return; }
+  const a = ev.target.closest("[data-act='src']");
+  if (a) {   // Location / スタックフレーム: 選択は変えず Monaco だけ移動
+    ev.preventDefault();
+    openSource(a.dataset.path, a.dataset.line ? +a.dataset.line : null);
+    return;
+  }
+  const pk = ev.target.closest("[data-pick-key]");
+  if (pk) {   // グループの子ログを選択 (グループを展開して行へスクロール)
+    const key = pk.dataset.pickKey, it = state.byKey.get(key);
+    if (it && it.g) { state.expanded.add(it.g.id); computeRows(); }
+    selectKey(key);
+    const idx = state.rows.findIndex(r => rowKey(r) === key);
+    if (idx >= 0 && (idx * ROW_H < scroller.scrollTop || idx * ROW_H > scroller.scrollTop + scroller.clientHeight - 2 * ROW_H)) {
+      scroller.scrollTop = Math.max(0, idx * ROW_H - scroller.clientHeight / 3);
+    }
+    render(true); updateInfo();
+  }
 });
 
 /* Exception へジャンプ */
@@ -756,7 +884,7 @@ $("#jumpExcBtn").addEventListener("click", () => {
   if (idx < 0) { toast("Exception は現在の検索条件で非表示です", "warning"); return; }
   state.flashId = target.id;
   scroller.scrollTop = Math.max(0, idx * ROW_H - scroller.clientHeight / 3);
-  render(true);
+  selectKey("e:" + target.id);
   setTimeout(() => { state.flashId = null; render(true); }, 1800);
 });
 
@@ -783,24 +911,17 @@ function loadMonaco() {
   monacoPromise.catch(() => { monacoPromise = null; });
   return monacoPromise;
 }
-const panel = $("#codePanel");
+const panel = $("#rightPane");
 let panelReq = 0, curSrc = null;
-const MIN_LOG_W = 420;
-function clampPanel() {   // 狭い画面でもログテーブルが最低 MIN_LOG_W 残るようにする
-  if (panel.classList.contains("hidden")) return;
-  const max = Math.max(200, panel.parentElement.clientWidth - MIN_LOG_W - 6);
-  if (panel.getBoundingClientRect().width > max) panel.style.width = max + "px";
+function resetPanelHeader() {
+  $("#cpPath").textContent = "ソース"; $("#cpPath").title = ""; $("#cpSub").textContent = "";
+  $("#cpLine").classList.add("hidden"); $("#cpLang").classList.add("hidden");
 }
-window.addEventListener("resize", clampPanel);
-function panelOpen() { panel.classList.remove("hidden"); panel.classList.add("flex"); $("#splitter").classList.remove("hidden"); clampPanel(); }
-function panelClose() {
-  panel.classList.add("hidden"); panel.classList.remove("flex"); $("#splitter").classList.add("hidden");
-  panelReq++;
-}
-$("#cpClose").addEventListener("click", panelClose);
-function panelState(mode) {   // "busy" | "editor" | "none"
+function panelState(mode) {   // "busy" | "editor" | "empty" | "none"
   $("#cpBusy").classList.toggle("hidden", mode !== "busy");
   $("#cpBusy").classList.toggle("flex", mode === "busy");
+  $("#cpEmpty").classList.toggle("hidden", mode !== "empty");
+  $("#cpEmpty").classList.toggle("flex", mode === "empty");
   $("#editor").classList.toggle("hidden", mode !== "editor");
 }
 function panelAlert(html, kind = "warning", withSettings = false) {
@@ -823,12 +944,23 @@ function showCandidates(name, line, cands, note) {
 }
 async function openSource(path, line, opts = {}) {
   const req = ++panelReq;
-  panelOpen(); clearPanelAlert(); panelState("busy");
+  clearPanelAlert(); panelState("busy");
   $("#cpPath").textContent = path; $("#cpPath").title = path;
   $("#cpSub").textContent = "";
   $("#cpLine").classList.toggle("hidden", line == null); $("#cpLine").textContent = line != null ? `L${line}` : "";
   $("#cpLang").classList.add("hidden");
   curSrc = { path, line, abs: null };
+  if (!opts.direct && locState(path) === "no") {   // 存在しないと判定済み: Monaco は開かず案内だけ出す
+    const p = String(path).replace(/\\/g, "/"), root = ((state.cfg && state.cfg.source_root) || "").replace(/\\/g, "/").replace(/\/$/, "");
+    panelState("none");
+    if (!state.ex.rootOk) panelAlert("source_root が未設定、または存在しません。設定でエンジンのリポジトリルートを指定してください。", "warning", true);
+    else if (!p.includes("/")) panelAlert(`ソースが見つかりません: <b>${esc(p)}</b> は source_root (<span class="mono">${esc(root)}</span>) 以下にありません。`, "warning", true);
+    else {
+      const abs = /^([A-Za-z]:\/|\/)/.test(p) ? p : `${root}/${p}`;
+      panelAlert(`ソースが見つかりません: <b>${esc(p)}</b><br>source_root: <span class="mono">${esc(root)}</span><br>解決したパス: <span class="mono">${esc(abs)}</span>`, "warning", true);
+    }
+    return;
+  }
   try {
     const p = String(path).replace(/\\/g, "/");
     // ファイル名のみ (スタックフレーム) は /api/find で候補を出す
@@ -913,22 +1045,45 @@ $("#cpCopy").addEventListener("click", () => {
   const base = curSrc.abs || curSrc.path;
   copyText(curSrc.line != null ? `${base}:${curSrc.line}` : base);
 });
-/* スプリッタ */
-(() => {
-  const sp = $("#splitter");
-  let startX = 0, startW = 0;
-  sp.addEventListener("pointerdown", e => {
-    startX = e.clientX; startW = panel.getBoundingClientRect().width;
-    sp.setPointerCapture(e.pointerId); sp.classList.add("drag");
+/* スプリッタ (左右: ログ | 右ペイン / 上下: 詳細 | Monaco)。比率は localStorage に保存 (失敗しても動作) */
+const lsGet = k => { try { const v = parseFloat(localStorage.getItem(k)); return v > 0 && v < 1 ? v : null; } catch (_) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (_) {} };
+const MIN_LOG_W = 420, MIN_PANE_H = 120, K_H = "sxx.split.h", K_V = "sxx.split.v";
+let hFrac = lsGet(K_H) ?? 0.48, vFrac = lsGet(K_V) ?? 0.5;
+function applyH(w) {     // w: px (null なら比率から)
+  const total = panel.parentElement.clientWidth;
+  if (!total) return;
+  const max = Math.max(200, total - MIN_LOG_W - 6), min = Math.min(320, max);
+  panel.style.width = Math.min(Math.max(w ?? hFrac * total, min), max) + "px";
+}
+function applyV(h) {
+  const total = panel.clientHeight - 6;
+  if (total <= 0) return;
+  const max = Math.max(MIN_PANE_H, total - MIN_PANE_H);
+  $("#detailPane").style.height = Math.min(Math.max(h ?? vFrac * total, MIN_PANE_H), max) + "px";
+}
+window.addEventListener("resize", () => { applyH(); applyV(); });
+function dragger(el, axis) {
+  let start = 0, startSize = 0;
+  el.addEventListener("pointerdown", e => {
+    start = axis === "x" ? e.clientX : e.clientY;
+    startSize = axis === "x" ? panel.getBoundingClientRect().width : $("#detailPane").getBoundingClientRect().height;
+    el.setPointerCapture(e.pointerId); el.classList.add("drag"); e.preventDefault();
   });
-  sp.addEventListener("pointermove", e => {
-    if (!sp.classList.contains("drag")) return;
-    const max = Math.max(200, panel.parentElement.clientWidth - MIN_LOG_W - 6);
-    panel.style.width = Math.min(Math.max(Math.min(320, max), startW + (startX - e.clientX)), max) + "px";
+  el.addEventListener("pointermove", e => {
+    if (!el.classList.contains("drag")) return;
+    if (axis === "x") applyH(startSize + (start - e.clientX)); else applyV(startSize + (e.clientY - start));
   });
-  const end = e => { sp.classList.remove("drag"); try { sp.releasePointerCapture(e.pointerId); } catch (_) {} };
-  sp.addEventListener("pointerup", end); sp.addEventListener("pointercancel", end);
-})();
+  const end = e => {
+    if (!el.classList.contains("drag")) return;
+    el.classList.remove("drag"); try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+    if (axis === "x") { hFrac = panel.getBoundingClientRect().width / panel.parentElement.clientWidth; lsSet(K_H, hFrac.toFixed(4)); applyH(); }
+    else { vFrac = $("#detailPane").getBoundingClientRect().height / (panel.clientHeight - 6); lsSet(K_V, vFrac.toFixed(4)); applyV(); }
+  };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+}
+dragger($("#splitter"), "x"); dragger($("#vsplitter"), "y");
+applyH(); applyV();
 
 /* ---------- 設定 ---------- */
 function openSettings() {
@@ -967,7 +1122,8 @@ $("#setSave").addEventListener("click", async () => {
     await loadLogList();
     if (state.cfg.log_dir !== before && state.logs.length && (!state.source || state.source.type === "server")) loadServerLog(state.logs[0].name);
     updateInfo();
-    if (!$("#codePanel").classList.contains("hidden") && curSrc) openSource(curSrc.path, curSrc.line);
+    refreshExists();
+    if (curSrc) openSource(curSrc.path, curSrc.line);
   } catch (e) {
     $("#setErr").textContent = e.message; $("#setErr").classList.remove("hidden");
   }
@@ -983,8 +1139,8 @@ document.addEventListener("keydown", ev => {
     q.focus(); q.select();
   } else if (ev.key === "Escape") {
     if (document.querySelector("dialog[open]")) return;               // dialog は標準動作で閉じる
-    if (!panel.classList.contains("hidden")) { panelClose(); }
-    else if (document.activeElement === $("#q") && $("#q").value) { $("#q").value = ""; state.query = ""; refresh(); }
+    if (document.activeElement === $("#q") && $("#q").value) { $("#q").value = ""; state.query = ""; refresh(); }
+    else if (state.sel) clearSel();
   }
 });
 

@@ -184,6 +184,30 @@ class SourceResolver:
                 out = self._lookup(name, rebuild=True)
         return out
 
+    def exists(self, path) -> bool:
+        """通常ファイルとして source_root 配下に存在するか (内容は読まない)。安全判定は resolve() と同一。"""
+        if not isinstance(path, str):
+            return False
+        try:
+            self.resolve(path)
+        except SourceError:
+            return False
+        return True
+
+    def name_exists(self, name) -> bool:
+        """find_by_name と同じインデックスで候補が 1 件以上あるか。0 件でも再構築はしない (問い合わせの連発対策)。"""
+        if self.root is None or not isinstance(name, str):
+            return False
+        name = name.strip()
+        if not name or "/" in name or "\\" in name or "\0" in name:
+            return False
+        with self._lock:
+            if self._index is None:
+                self._index = self._build_index()
+                self._index_time = self._clock()
+            rels = self._index.get(name.lower(), [])
+        return any(self.exists(rel) for rel in rels)
+
     def _lookup(self, name: str, rebuild: bool) -> list[str]:
         with self._lock:
             if self._index is None or rebuild:

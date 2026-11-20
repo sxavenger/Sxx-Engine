@@ -20,6 +20,7 @@ from .parser import GROUP_MODES, group_entries, parse_bytes
 from .sources import SourceError, SourceResolver, is_safe_relative
 
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+MAX_EXISTS_ITEMS = 5000
 THEMES = ("light", "dark")
 MONACO_VERSION = "0.52.2"
 CDN = "https://cdn.jsdelivr.net/npm"
@@ -362,6 +363,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._api_post_config()
             elif url.path == "/api/parse":
                 self._api_parse(q)
+            elif url.path == "/api/exists":
+                self._api_exists()
             elif url.path == "/api/pick-folder":
                 self._api_pick_folder()
             else:
@@ -409,6 +412,28 @@ class Handler(BaseHTTPRequestHandler):
             return self._error(HTTPStatus.BAD_REQUEST, "invalid", str(e))
         self.server.resolver().reset_index()
         self._json(self._config_payload())
+
+    def _api_exists(self) -> None:
+        body = self._read_body(4 * 1024 * 1024)
+        if body is None:
+            return
+        try:
+            obj = json.loads(body.decode("utf-8") or "{}")
+            if not isinstance(obj, dict):
+                raise ValueError("JSON オブジェクトで指定してください。")
+            paths = obj.get("paths", [])
+            names = obj.get("names", [])
+            if not isinstance(paths, list) or not isinstance(names, list):
+                raise ValueError("paths / names は配列で指定してください。")
+        except (ValueError, UnicodeDecodeError) as e:
+            return self._error(HTTPStatus.BAD_REQUEST, "invalid", str(e))
+        if len(paths) + len(names) > MAX_EXISTS_ITEMS:
+            return self._error(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, "too_large", f"件数が多すぎます (上限 {MAX_EXISTS_ITEMS})。")
+        r = self.server.resolver()
+        ok = r.root is not None
+        out_p = {x: (ok and r.exists(x)) for x in paths if isinstance(x, str)}
+        out_n = {x: (ok and r.name_exists(x)) for x in names if isinstance(x, str)}
+        self._json({"paths": out_p, "names": out_n, "source_root_ok": ok})
 
     def _api_pick_folder(self) -> None:
         body = self._read_body(64 * 1024)

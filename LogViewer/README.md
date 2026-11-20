@@ -48,11 +48,16 @@ Windows では `start.bat` でも起動できます (`py -3` / `python` を自�
 ## 使い方
 
 - 左サイドバー: Label / Thread / Level のチェックボックス (件数付き)、`message` と `filepath` の検索 (`.*` で正規表現)、Stack のまとめ方。
-- Stack グループ行 (`x120` バッジ) をクリックで子行を展開/折り畳み。
-- 行をクリックで詳細。Exception 行(赤)クリックで Location / function / thread / stacktrace / message を表示。ナビバーの「Exception」で該当行へジャンプ。
-- `Location` 列や stacktrace のフレームをクリックすると、右パネルの Monaco エディタ (読み取り専用) で該当行を中央表示・ハイライトします。
+- 画面は `ログ一覧 | 右ペイン` の 2 カラムで、右ペインは常駐です (ポップアップなし)。右ペインは上に「選択したログの詳細」、下に Monaco エディタ (読み取り専用) です。
+  左右・上下の境界はドラッグで調整でき、比率はブラウザ (localStorage) に保存されます。
+- ログ行をクリックすると行を選択し、詳細 (Label / Timestamp / Location / Thread / Level / Message 全文) を表示して、同時にその Location のソースを Monaco で該当行に中央表示・ハイライトします。
+- Exception 行 (赤) は Location / function / thread / timestamp / stacktrace 表 / message を詳細に表示します。stacktrace のフレームをクリックすると Monaco がそのフレームへ移動します。
+- Stack グループ行 (`x120` バッジ) をクリックすると、範囲 (`first ~ last`)・件数・代表メッセージと子ログの一覧を詳細に表示します。子ログの展開/折り畳みは行頭の ▸/▾ ボタンで行います (行クリックでは展開しません)。
+- Location の色: 青 = source_root 配下にファイルが存在し閲覧可能 / グレー (disabled) = 見つからない (クリックしても Monaco は開かず案内を表示) / 判定前は通常の文字色。判定は `POST /api/exists` でログ読込後・設定保存後に 1 回まとめて行います。
+- ナビバーの「Exception」で該当行へジャンプし、そのまま選択します。
+- `Location` やフレームのリンクをクリックすると Monaco がそのファイルの該当行へ移動します。
   スタックフレームのようにファイル名だけの場合は `source_root` 以下から検索し、複数あれば選択できます。
-- キーボード: `Ctrl+F` 検索欄 / `Esc` モーダル・右パネルを閉じる。
+- キーボード: `Ctrl+F` 検索欄 / `Esc` 選択解除 (設定ダイアログは閉じる)。
 
 ## オフライン化 (vendor)
 
