@@ -63,6 +63,11 @@ public:
 
 	const Storage& GetStorage() const noexcept { return storage_; }
 
+	//* for each option *//
+
+	///! @brief ActiveなEntityBehaviourに対してルートから階層的に処理を行う.
+	void ForEachRootActiveRecursive(const std::function<void(const RefPtr<EntityBehaviour>&)>& function);
+
 	//* singleton *//
 
 	static EntityStorage* GetInstance() noexcept;
@@ -79,6 +84,12 @@ private:
 
 	IndexAllocator<EntityHandle::Type> allocator_;
 	std::queue<EntityHandle> unregister_;
+
+	//=========================================================================================
+	// private methods
+	//=========================================================================================
+
+	static void ForEachActiveRecursive(const RefPtr<EntityBehaviour>& entity, const std::function<void(const RefPtr<EntityBehaviour>&)>& function);
 
 	//-----------------------------------------------------------------------------------------
 	// friend

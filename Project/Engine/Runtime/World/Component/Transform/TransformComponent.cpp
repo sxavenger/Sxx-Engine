@@ -15,7 +15,7 @@ SXAVENGER_ENGINE_USING_(World)
 void TransformComponent::Update() {
 
 	//!< transformからtransformationに変換
-	transformation_ = Transform3d::ConvertTransformation(transform_);
+	world_ = Transform3d::ConvertTransformation(transform_);
 
 	//!< Entityの親が存在する場合, 親のTransformComponentのtransformationを掛ける.
 	if (BaseComponent::GetOwner()->HasParent()) {
@@ -23,7 +23,7 @@ void TransformComponent::Update() {
 
 		if (parent->HasComponent<TransformComponent>()) {
 			RefPtr<TransformComponent> component = parent->GetComponent<TransformComponent>();
-			transformation_ *= component->GetTransformation();
+			world_ *= component->GetWorld();
 		}
 	}
 }

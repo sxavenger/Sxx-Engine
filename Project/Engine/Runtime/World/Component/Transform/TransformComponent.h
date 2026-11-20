@@ -56,7 +56,7 @@ public:
 	Transform3d& GetTransform() { return transform_; }
 	const Transform3d& GetTransform() const { return transform_; }
 
-	const Transformation3d& GetTransformation() const { return transformation_; }
+	const Transformation3d& GetWorld() const { return world_; }
 
 	//* operator [access] *//
 
@@ -74,8 +74,8 @@ private:
 
 	//* transform *//
 
-	Transformation3d transformation_ = Transformation3d::Identity(); //!< 変換行列
-	Transform3d transform_           = Transform3d::Identity();
+	Transformation3d world_ = Transformation3d::Identity(); //!< 変換行列
+	Transform3d transform_  = Transform3d::Identity();
 
 };
 
