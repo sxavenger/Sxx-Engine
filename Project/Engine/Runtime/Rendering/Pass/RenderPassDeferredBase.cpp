@@ -182,6 +182,10 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 
 		pipeline.BindShaderParameter(command, parameter);
 
-		commandList->DispatchMesh(Sxx::Graphics::RoundUp(instance.mesh->GetMeshletBuffer().meshletCount, Meshlet::kAmplificationThreadCount), 1, 1);
+		commandList->DispatchMesh(
+			Sxx::Graphics::ThreadGroupSize::RoundUp(instance.mesh->GetMeshletBuffer().meshletCount, Meshlet::kAmplificationThreadCount),
+			1,
+			1
+		);
 	}
 }

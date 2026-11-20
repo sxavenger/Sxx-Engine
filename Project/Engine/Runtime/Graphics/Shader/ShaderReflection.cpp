@@ -25,8 +25,8 @@ ID3D12ShaderReflectionConstantBuffer* ShaderReflection::GetConstantBufferByName(
 	return reflection_->GetConstantBufferByName(name.data());
 }
 
-Vector3u ShaderReflection::GetThreadGroupSize() const {
-	Vector3u numthreads = {};
+ThreadGroupSize ShaderReflection::GetThreadGroupSize() const {
+	ThreadGroupSize numthreads = {};
 	reflection_->GetThreadGroupSize(&numthreads.x, &numthreads.y, &numthreads.z);
 
 	return numthreads;

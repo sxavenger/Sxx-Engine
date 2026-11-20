@@ -57,6 +57,15 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 		Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
 	});
 
+	pipeline.SetProcess(Framework::Phase::Update, Framework::Priority::Lowest, [this]() {
+		World::EntityStorage::GetInstance()->ForEachRootActiveRecursive([](const RefPtr<World::EntityBehaviour>& entity) {
+			if (entity->HasComponent<World::TransformComponent>()) {
+				RefPtr<World::TransformComponent> transform = entity->GetComponent<World::TransformComponent>();
+				transform->Update(); //!< TransformComponentの更新処理
+			}
+		});
+	});
+
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
 		//!< graphicsの終了frame処理
 		Graphics::Core::SubmitDirectQueueAdvance();

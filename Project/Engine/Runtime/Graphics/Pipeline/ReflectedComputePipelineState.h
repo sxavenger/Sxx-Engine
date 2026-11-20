@@ -33,7 +33,7 @@ public:
 
 	void BindShaderParameter(const GraphicsCommandContext& context, const ShaderParameter& parameter) const;
 
-	const Vector3u& GetThreadGroupSize() const { return threadGroupSize_; }
+	const ThreadGroupSize& GetThreadGroupSize() const { return threadGroupSize_; }
 
 	//* static methods *//
 
@@ -60,7 +60,7 @@ private:
 
 	ShaderBindingLayout layout_;
 
-	Vector3u threadGroupSize_ = {};
+	ThreadGroupSize threadGroupSize_ = {};
 
 	//=========================================================================================
 	// private methods

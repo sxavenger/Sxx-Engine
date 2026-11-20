@@ -119,10 +119,10 @@ void RenderPassTonemap::Tonemap(Graphics::GraphicsCommandContext& command, const
 
 	pipeline_.BindShaderParameter(command, parameter);
 
-	const Vector3u& threadGroupSize = pipeline_.GetThreadGroupSize();
+	const Graphics::ThreadGroupSize& threadGroupSize = pipeline_.GetThreadGroupSize();
 	commandList->Dispatch(
-		Graphics::RoundUp(data.outputResolution.x, threadGroupSize.x),
-		Graphics::RoundUp(data.outputResolution.y, threadGroupSize.y),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.x, threadGroupSize.x),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.y, threadGroupSize.y),
 		1
 	);
 }
