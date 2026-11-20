@@ -23,6 +23,8 @@ void CpuTaskScheduler::Condition::Wait(const Predicate& predicate) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 TaskHandle CpuTaskScheduler::Push(const std::shared_ptr<CpuTask>& task) {
+	std::unique_lock<std::mutex> lock(mutex_); //!< queueの排他制御用lock.
+	
 	queue_.emplace(task); //!< taskをqueueに追加する.
 	condition_.Notify(); //!< threadに通知する.
 
@@ -30,8 +32,7 @@ TaskHandle CpuTaskScheduler::Push(const std::shared_ptr<CpuTask>& task) {
 }
 
 std::shared_ptr<CpuTask> CpuTaskScheduler::Pop() {
-	static std::mutex mutex;
-	std::unique_lock<std::mutex> lock(mutex); //!< queueの排他制御用lock.
+	std::unique_lock<std::mutex> lock(mutex_); //!< queueの排他制御用lock.
 
 	if (queue_.empty()) {
 		return nullptr; //!< queueが空の場合はnullptrを返す.

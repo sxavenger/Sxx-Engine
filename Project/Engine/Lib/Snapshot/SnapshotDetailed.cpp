@@ -15,7 +15,7 @@ SnapshotDetailed SnapshotDetailed::Current(const std::source_location& location,
 	for (const auto& frame : stacktrace) {
 		StackFrame stackframe;
 		stackframe.description = frame.description();
-		stackframe.file        = std::filesystem::path(location.file_name()).lexically_proximate(std::filesystem::current_path()); //!< current_path()からの相対パスに変換する.
+		stackframe.file        = std::filesystem::path(frame.source_file()).lexically_proximate(std::filesystem::current_path()); //!< current_path()からの相対パスに変換する.
 		stackframe.line        = frame.source_line();
 
 		snapshot.stacktrace.emplace_back(std::move(stackframe));
