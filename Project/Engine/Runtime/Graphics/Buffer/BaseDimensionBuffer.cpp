@@ -65,7 +65,7 @@ D3D12_HEAP_TYPE BaseDimensionBuffer::GetCategoryHeap(Category category) {
 D3D12_RESOURCE_STATES BaseDimensionBuffer::GetCategoryState(Category category) {
 	switch (category) {
 		case Category::Upload:    return D3D12_RESOURCE_STATE_GENERIC_READ;
-		case Category::Unordered: return D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+		case Category::Unordered: return D3D12_RESOURCE_STATE_COMMON;
 		case Category::Readback:  return D3D12_RESOURCE_STATE_COMMON;
 		default: STREAM_EXCEPTION("invalid category.");
 	}

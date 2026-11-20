@@ -46,6 +46,10 @@ public:
 	//! @brief Resourceのデバッグ用の名前を設定する.
 	void SetName(const std::string_view& name) const;
 
+	//* transition option *//
+
+	void Transition();
+
 	//* operator [copy] <DimensionBuffer> (delete) *//
 
 	UnorderedDimensionBuffer(const UnorderedDimensionBuffer&)            = delete;
