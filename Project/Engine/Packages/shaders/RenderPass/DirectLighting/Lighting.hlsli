@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------
 //* pass
 #include "../PassContext.hlsli"
-#include "GBuffer.hlsli"
+#include "../GBuffer.hlsli"
 
 //* system
 #include "../../System/Semantics.hlsli"
