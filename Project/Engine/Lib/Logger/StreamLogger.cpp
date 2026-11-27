@@ -223,8 +223,8 @@ std::string StreamLogger::GetStacktraceMessageA(const std::span<const SnapshotDe
 
 	for (size_t i = 0; i < count; ++i) {
 		const SnapshotDetailed::StackFrame& frame = stacktrace[i];
-		//!< (i# description | filename:line)の形式で出力する.
-		message << " " << i << "# " << frame.description << " | " << frame.file.filename().string() << ":" << frame.line << "\n";
+		//!< (i# description | filepath:line)の形式で出力する.
+		message << " " << i << "# " << frame.description << " | " << frame.file.generic_string() << ":" << frame.line << "\n";
 	}
 
 	if (stacktrace.size() > count) {
@@ -243,8 +243,8 @@ std::wstring StreamLogger::GetStacktraceMessageW(const std::span<const SnapshotD
 
 	for (size_t i = 0; i < count; ++i) {
 		const SnapshotDetailed::StackFrame& frame = stacktrace[i];
-		//!< (i# description | filename:line)の形式で出力する.
-		message << " " << i << L"# " << frame.description.data() << L" | " << frame.file.filename().wstring() << L":" << frame.line << L"\n";
+		//!< (i# description | filepath:line)の形式で出力する.
+		message << " " << i << L"# " << frame.description.data() << L" | " << frame.file.generic_wstring() << L":" << frame.line << L"\n";
 	}
 
 	if (stacktrace.size() > count) {

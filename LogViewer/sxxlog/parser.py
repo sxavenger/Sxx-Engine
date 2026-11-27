@@ -1,7 +1,7 @@
 """Sxavenger Library File Logger のログパーサ (UI 非依存)。
 
 parse_bytes() / parse_text() でフラットなエントリ列を作り、
-group_entries() で Stack の連続行をまとめる。
+group_entries() で同じ Label の連続行をまとめる。
 """
 from __future__ import annotations
 
@@ -216,12 +216,12 @@ def parse_bytes(data: bytes) -> dict[str, Any]:
 
 
 def _group_key(e: dict[str, Any], mode: str):
-    base = (e["file"], e["line"], e["thread"], e["level"])
+    base = (e["label"], e["file"], e["line"], e["thread"], e["level"])
     return base + (e["message"],) if mode == "exact" else base
 
 
 def group_entries(entries: list[dict[str, Any]], mode: str = "callsite") -> list[dict[str, Any]]:
-    """連続する Stack ログを mode に従ってまとめた新しいリストを返す(純関数)。"""
+    """連続する通常ログ(Label が同じもの)を mode に従ってまとめた新しいリストを返す(純関数)。"""
     if mode not in GROUP_MODES:
         raise ValueError(f"unknown group mode: {mode}")
     if mode == "none":
@@ -237,7 +237,7 @@ def group_entries(entries: list[dict[str, Any]], mode: str = "callsite") -> list
         else:
             first = run[0]
             out.append({
-                "id": first["id"], "kind": "stack_group", "label": first["label"],
+                "id": first["id"], "kind": "group", "label": first["label"],
                 "first_ts": first["ts"], "last_ts": run[-1]["ts"],
                 "file": first["file"], "line": first["line"],
                 "thread": first["thread"], "level": first["level"],
@@ -247,7 +247,7 @@ def group_entries(entries: list[dict[str, Any]], mode: str = "callsite") -> list
         run.clear()
 
     for e in entries:
-        if e["kind"] == "log" and e["label"] == "Stack":
+        if e["kind"] == "log":
             if run and _group_key(run[0], mode) != _group_key(e, mode):
                 flush()
             run.append(e)

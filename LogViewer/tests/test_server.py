@@ -66,7 +66,7 @@ class ServerTests(unittest.TestCase):
         self.assertEqual([x["name"] for x in d["logs"]], ["t.log"])
         st, d = self.jget("/api/log?name=t.log&group=callsite")
         self.assertEqual(st, 200)
-        self.assertEqual(d["entries"][0]["kind"], "stack_group")
+        self.assertEqual(d["entries"][0]["kind"], "group")
         self.assertEqual(d["entries"][0]["count"], 2)
         st, d = self.jget("/api/log?name=t.log&group=none")
         self.assertEqual(len(d["entries"]), 2)

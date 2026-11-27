@@ -192,7 +192,7 @@
       <div id="qErr" class="text-error text-xs hidden">正規表現が不正です</div>
 
       <div>
-        <div class="text-xs opacity-70 px-1 pb-1">Stack のまとめ方</div>
+        <div class="text-xs opacity-70 px-1 pb-1">まとめ方</div>
         <select id="groupMode" class="select select-sm w-full">
           <option value="callsite">呼び出し箇所が同じ (既定)</option>
           <option value="exact">メッセージまで同じ</option>
@@ -203,7 +203,7 @@
       <div id="facets" class="flex flex-col gap-2"></div>
       <div class="flex-1"></div>
       <div class="text-xs opacity-60 px-1">
-        行をクリックすると右に詳細とソースを表示します。Stack グループは行頭の ▸ で展開/折り畳み。Esc で選択解除。
+        行をクリックすると右に詳細とソースを表示します。グループは行頭の ▸ で展開/折り畳み。Esc で選択解除。
       </div>
     </div>
   </div>
@@ -488,7 +488,7 @@ function computeRows() {
       case "log":
         if (facetOk(e) && (!m || m(e.message) || m(e.file))) rows.push({ t: "log", e });
         break;
-      case "stack_group": {
+      case "group": {
         if (!facetOk(e)) break;
         let kids = e.children;
         if (m && !m(e.file)) { kids = e.children.filter(c => m(c.message)); if (!kids.length) break; }
@@ -578,7 +578,7 @@ function updateInfo() {
     return;
   }
   const lines = state.rows.length;
-  $("#visibleInfo").textContent = `表示 ${fmt(lines)} 行 (Stack まとめ後 ${fmt(d.entries.length)} 行 / ログ ${fmt(d.counts.logs)} 件)`;
+  $("#visibleInfo").textContent = `表示 ${fmt(lines)} 行 (まとめ後 ${fmt(d.entries.length)} 行 / ログ ${fmt(d.counts.logs)} 件)`;
   if (lines === 0) {
     es.classList.remove("hidden");
     es.textContent = d.entries.length ? "条件に一致するログがありません" : "ログ行がありません";
@@ -617,7 +617,7 @@ async function refreshExists() {
   for (const e of d.entries) {
     if (e.kind === "raw") continue;
     add(e.file);
-    if (e.kind === "stack_group") for (const c of e.children) add(c.file);
+    if (e.kind === "group") for (const c of e.children) add(c.file);
     else if (e.kind === "exception") for (const f of e.frames) add(f.file);
   }
   const items = [...paths].map(x => [0, x]).concat([...names].map(x => [1, x])), LIM = 4000;   // サーバ上限 5000 件に収める
@@ -644,7 +644,7 @@ async function applyData(d, label, id) {
   state.data = d; state.expanded.clear(); state.excIdx = -1; state.flashId = null;
   state.byKey = new Map();
   for (const e of d.entries) {
-    if (e.kind === "stack_group") {
+    if (e.kind === "group") {
       state.byKey.set("g:" + e.id, { t: "group", e });
       for (const c of e.children) state.byKey.set("e:" + c.id, { t: "child", e: c, g: e });
     } else state.byKey.set("e:" + e.id, { t: e.kind === "exception" ? "exc" : e.kind === "raw" ? "raw" : "log", e });
@@ -791,7 +791,7 @@ function detailGroup(g) {
       <td class="text-right mono opacity-60">${c.lineno}</td><td class="mono">${esc(c.ts)}</td>
       <td class="mono" title="${esc(c.message.slice(0, 300))}">${hl(c.message.slice(0, 300), nlFmt)}</td></tr>`).join("");
   const more = g.children.length > LIM ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${g.children.length - LIM} 件</td></tr>` : "";
-  return `<div class="alert alert-secondary alert-soft mb-2 py-2"><div><span class="font-bold">Stack グループ</span>
+  return `<div class="alert alert-secondary alert-soft mb-2 py-2"><div><span class="font-bold">${esc(g.label)} グループ</span>
       <span class="badge badge-sm badge-secondary">x${fmt(g.count)}</span>
       <span class="text-xs opacity-70">ログ ${g.lineno} ~ ${last.lineno} 行目</span></div></div>
     <table class="table table-sm"><tbody>

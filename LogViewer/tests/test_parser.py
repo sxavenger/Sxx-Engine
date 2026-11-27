@@ -84,9 +84,9 @@ class SampleLogTests(unittest.TestCase):
     def test_callsite_grouping(self):
         flat = self.r1["entries"]
         g = group_entries(flat, "callsite")
-        counts = [e["count"] for e in g if e["kind"] == "stack_group"]
-        self.assertEqual(max(counts), 120)
-        self.assertEqual(sum(counts) + sum(1 for e in g if e["kind"] != "stack_group"), len(flat))
+        counts = [e["count"] for e in g if e["kind"] == "group"]
+        self.assertEqual(max(e["count"] for e in g if e["kind"] == "group" and e["label"] == "Stack"), 120)
+        self.assertEqual(sum(counts) + sum(1 for e in g if e["kind"] != "group"), len(flat))
         grp = next(e for e in g if e.get("count") == 120)
         self.assertEqual(len(grp["children"]), 120)
         self.assertEqual(grp["first_ts"], grp["children"][0]["ts"])
@@ -94,10 +94,20 @@ class SampleLogTests(unittest.TestCase):
         # 元データは破壊されない
         self.assertEqual(len(self.r1["entries"]), 1022)
 
-    def test_exact_grouping_has_none(self):
+    def test_stream_grouping_on_samples(self):
+        for r, n in ((self.r1, 8), (self.r2, 10)):
+            g = group_entries(r["entries"], "callsite")
+            sg = [e for e in g if e["kind"] == "group" and e["label"] == "Stream"]
+            self.assertEqual((len(sg), max(e["count"] for e in sg)), (n, 192))
+            self.assertTrue(all(c["label"] == e["label"] for e in g if e["kind"] == "group" for c in e["children"]))
+            self.assertEqual(sum(e["count"] if e["kind"] == "group" else 1 for e in g), len(r["entries"]))
+
+    def test_exact_grouping_only_identical_messages(self):
         g = group_entries(self.r1["entries"], "exact")
-        self.assertFalse([e for e in g if e["kind"] == "stack_group"])
-        self.assertEqual(len(g), len(self.r1["entries"]))
+        for e in g:
+            if e["kind"] == "group":
+                self.assertEqual(len({c["message"] for c in e["children"]}), 1)
+        self.assertFalse([e for e in g if e["kind"] == "group" and e["label"] == "Stack"])
 
     def test_none_grouping(self):
         self.assertEqual(group_entries(self.r1["entries"], "none"), self.r1["entries"])
@@ -208,6 +218,39 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(cs[0]["count"], 2)
         self.assertEqual(cs[2]["count"], 2)
         self.assertEqual(cs[2]["message"], "other")
+
+
+class MixedGroupingTests(unittest.TestCase):
+    L = "<{lab}> [2026-01-01 00:00:0{i}] [a.cpp:1] [main thread] [Debug] {m}"
+
+    def parse(self, rows, mode="callsite"):
+        txt = "Sxavenger Library File Logger\nprofile: Debug\nmain thread id: 1\ntimestamp: x\n" + "#" * 40 + "\n" + "\n".join(
+            self.L.format(lab=lab, i=i % 10, m=m) for i, (lab, m) in enumerate(rows)) + "\n"
+        r = parse_bytes(txt.encode("utf-8"))
+        return group_entries(r["entries"], mode)
+
+    def test_stream_and_stack_not_mixed(self):
+        g = self.parse([("Stream", "a")] * 3 + [("Stack", "a")] * 2 + [("Stream", "a")] * 2)
+        self.assertEqual([(e["kind"], e["label"], e.get("count")) for e in g],
+                         [("group", "Stream", 3), ("group", "Stack", 2), ("group", "Stream", 2)])
+
+    def test_exact_and_none(self):
+        rows = [("Stream", "a"), ("Stream", "a"), ("Stream", "b")]
+        g = self.parse(rows, "exact")
+        self.assertEqual([(e["kind"], e.get("count")) for e in g], [("group", 2), ("log", None)])
+        self.assertEqual(len(self.parse(rows, "none")), 3)
+        self.assertEqual(len(self.parse(rows, "callsite")), 1)
+
+    def test_exception_and_raw_break_and_stay(self):
+        txt = ("Sxavenger Library File Logger\nprofile: Debug\nmain thread id: 1\ntimestamp: x\n" + "#" * 40 + "\n"
+               + self.L.format(lab="Stream", i=0, m="a") + "\n" + self.L.format(lab="Stream", i=1, m="a") + "\n"
+               + "=" * 40 + "\n[2026-01-01 00:00:02] [Exception] boom\n" + "=" * 40 + "\n"
+               + self.L.format(lab="Stream", i=3, m="a") + "\n" + self.L.format(lab="Stream", i=4, m="a") + "\n")
+        g = group_entries(parse_bytes(txt.encode("utf-8"))["entries"], "callsite")
+        kinds = [(e["kind"], e.get("count")) for e in g]
+        self.assertEqual(kinds[0], ("group", 2))
+        self.assertEqual(kinds[-1], ("group", 2))
+        self.assertNotIn("group", [e["kind"] for e in g if e["kind"] in ("exception", "raw")])
 
 
 if __name__ == "__main__":

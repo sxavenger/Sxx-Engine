@@ -42,17 +42,17 @@ Windows では `start.bat` でも起動できます (`py -3` / `python` を自�
   `.git` / `node_modules` / `build` / `bin` / `obj` / `x64` などはファイル名検索の対象外です。5MB を超えるファイルは開けません。
 - 設定画面の入力欄の右にある「参照…」ボタンで、この PC 上にネイティブのフォルダ選択ダイアログ(tkinter、使えなければ Windows の PowerShell)を開いて `source_root` / `log_dir` を選べます。
   選んだパスは入力欄に入るだけなので、「保存」で確定してください。ダイアログを開けない環境ではテキストで入力します。
-- `group_mode`: Stack ログのまとめ方。`callsite` (既定: filepath・line・thread・level が同じ連続行) / `exact` (message も同じ) / `none`
+- `group_mode`: 通常ログ (Label が同じ連続行) のまとめ方。`callsite` (既定: filepath・line・thread・level が同じ連続行) / `exact` (message も同じ) / `none`
 - `theme`: `dark` / `light`
 
 ## 使い方
 
-- 左サイドバー: Label / Thread / Level のチェックボックス (件数付き)、`message` と `filepath` の検索 (`.*` で正規表現)、Stack のまとめ方。
+- 左サイドバー: Label / Thread / Level のチェックボックス (件数付き)、`message` と `filepath` の検索 (`.*` で正規表現)、まとめ方。
 - 画面は `ログ一覧 | 右ペイン` の 2 カラムで、右ペインは常駐です (ポップアップなし)。右ペインは上に「選択したログの詳細」、下に Monaco エディタ (読み取り専用) です。
   左右・上下の境界はドラッグで調整でき、比率はブラウザ (localStorage) に保存されます。
 - ログ行をクリックすると行を選択し、詳細 (Label / Timestamp / Location / Thread / Level / Message 全文) を表示して、同時にその Location のソースを Monaco で該当行に中央表示・ハイライトします。
 - Exception 行 (赤) は Location / function / thread / timestamp / stacktrace 表 / message を詳細に表示します。stacktrace のフレームをクリックすると Monaco がそのフレームへ移動します。
-- Stack グループ行 (`x120` バッジ) をクリックすると、範囲 (`first ~ last`)・件数・代表メッセージと子ログの一覧を詳細に表示します。子ログの展開/折り畳みは行頭の ▸/▾ ボタンで行います (行クリックでは展開しません)。
+- グループ行 (`x120` バッジ) をクリックすると、範囲 (`first ~ last`)・件数・代表メッセージと子ログの一覧を詳細に表示します。子ログの展開/折り畳みは行頭の ▸/▾ ボタンで行います (行クリックでは展開しません)。
 - Location の色: 青 = source_root 配下にファイルが存在し閲覧可能 / グレー (disabled) = 見つからない (クリックしても Monaco は開かず案内を表示) / 判定前は通常の文字色。判定は `POST /api/exists` でログ読込後・設定保存後に 1 回まとめて行います。
 - ナビバーの「Exception」で該当行へジャンプし、そのまま選択します。
 - `Location` やフレームのリンクをクリックすると Monaco がそのファイルの該当行へ移動します。
@@ -82,7 +82,7 @@ python -m unittest discover -s tests
 
 ```
 sxxlogview.py        エントリポイント
-sxxlog/parser.py     パーサ (UI 非依存) と Stack グループ化
+sxxlog/parser.py     パーサ (UI 非依存) と グループ化
 sxxlog/sources.py    ソース解決 (source_root 内に限定)
 sxxlog/server.py     http.server ベースのサーバと JSON API
 web/index.html       フロントエンド (1 ファイル)
