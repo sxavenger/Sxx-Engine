@@ -20,7 +20,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 // TextureCache class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
+void TextureCache::Cache(const std::shared_ptr<const Assets::Texture>& texture) {
 
 	Scheduler::TaskHandle handle = texture->GetTaskHandle();
 
@@ -55,10 +55,15 @@ void TextureCache::Cache(const std::shared_ptr<Assets::Texture>& texture) {
 
 	task.Wait(); //!< taskが完了するまで待機.
 
-	//!< addressの取得
-	address_ = texture->GetAddress();
+	//!< キャッシュの参照データの保持
+	reference_ = texture;
+	address_   = texture->GetAddress();
 
 	STREAM_LOG_INFO("Rendering::TextureCache | cache texture completed. name: {}", texture->GetName());
+}
+
+std::shared_ptr<const Assets::Texture> TextureCache::GetReference() const {
+	return reference_.Get<std::shared_ptr<const Assets::Texture>>(); //!< キャッシュの参照データを返す
 }
 
 Graphics::ResourceHandle TextureCache::CreateTextureResource(const std::string_view& name, const Assets::Texture::Description& description) {

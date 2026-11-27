@@ -35,6 +35,8 @@ public:
 
 	//* cache option *//
 
+	std::shared_ptr<const Assets::StaticMesh> GetReference() const;
+
 	const PositionVertexBuffer& GetPositionVertexBuffer() const { return positionVertexBuffer_; }
 
 	const MeshVertexBuffer& GetMeshVertexBuffer() const { return meshVertexBuffer_; }

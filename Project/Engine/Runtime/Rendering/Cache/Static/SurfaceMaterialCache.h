@@ -34,6 +34,8 @@ public:
 
 	//* cache option *//
 
+	std::shared_ptr<const Assets::SurfaceMaterial> GetReference() const;
+
 	const SurfaceMaterialBuffer& GetMaterialBuffer() const { return materialBuffer_; }
 
 private:
@@ -41,8 +43,6 @@ private:
 	//=========================================================================================
 	// private variables
 	//=========================================================================================
-
-	std::shared_ptr<const Assets::SurfaceMaterial> material_;
 
 	//* Material Buffer *//
 

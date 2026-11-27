@@ -14,9 +14,6 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Lib/Logger/StreamLogger.h>
 #include <Lib/Logger/StackLogger.h>
 
-//* meshoptimizer
-#include <meshoptimizer/meshoptimizer.h>
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StaticMeshCache class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,10 +41,15 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	//!< BLASの構築
 	BuildBottomLevelAccelerationStructure(mesh->GetName());
 
-	//!< addressの取得
-	address_ = mesh->GetAddress();
+	//!< キャッシュの参照データの保持
+	reference_ = mesh;
+	address_   = mesh->GetAddress();
 
 	STREAM_LOG_INFO("Rendering::StaticMeshCache | cache static mesh completed. name: {}", mesh->GetName());
+}
+
+std::shared_ptr<const Assets::StaticMesh> StaticMeshCache::GetReference() const {
+	return reference_.Get<std::shared_ptr<const Assets::StaticMesh>>(); //!< キャッシュの参照データを返す
 }
 
 PositionVertexBuffer StaticMeshCache::CreatePositionVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description) {
@@ -88,7 +90,7 @@ MeshVertexBuffer StaticMeshCache::CreateMeshVertexBuffer(const std::string_view&
 		);
 	}
 
-	buffer.vertices.SetName(std::format("StaticMeshCache | StaticMeshVertexBuffer | {}", name));
+	buffer.vertices.SetName(std::format("StaticMeshCache | MeshVertexBuffer | {}", name));
 	return buffer;
 }
 
