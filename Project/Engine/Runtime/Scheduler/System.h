@@ -50,7 +50,11 @@ public:
 
 	static TaskHandle PushCopyQueueTask(const std::string_view& name, const GpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default);
 
+	static TaskHandle PushCopyQueueTask(const std::string_view& name, TaskPriority priority, const GpuTask::Function& function);
+
 	static TaskHandle PushComputeQueueTask(const std::string_view& name, const GpuTask::Function& function, TaskPriority priority = TaskPriority::Priority::Default);
+
+	static TaskHandle PushComputeQueueTask(const std::string_view& name, TaskPriority priority, const GpuTask::Function& function);
 
 private:
 
