@@ -11,6 +11,7 @@
 #include <Runtime/Foundation.hpp>
 
 //* lib
+#include <Lib/CXXAttribute.hpp>
 #include <Lib/Uuid/Uuid.h>
 
 //* c++
@@ -45,7 +46,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static BoneContents Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters);
+	static BoneContents Import(const std::filesystem::path& filepath, MAYBE_UNUSED const ReferenceParameters& parameters);
 
 };
 

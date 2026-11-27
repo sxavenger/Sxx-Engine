@@ -109,6 +109,8 @@ private:
 	// private variables
 	//=========================================================================================
 
+	std::mutex mutex_;
+
 	Queue queue_;
 	Condition condition_;
 

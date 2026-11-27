@@ -34,13 +34,19 @@ SurfaceMaterialContents SurfaceMaterialImporter::Import(const std::filesystem::p
 	if (type == FileType::Other) {
 		//!< Assetファイル以外の場合はMetadataを作成.
 
-		//! directoryの追加
+		//!< directoryの追加
 		parent /= SurfaceMaterial::kDirectory;
 		std::filesystem::create_directories(parent); //!< ディレクトリが存在しない場合は作成する
 
 		//!< metadataのファイル名の作成
 		const AssimpMaterial& material = AssimpCommon::GetImporter(filepath).GetMaterial(parameters.index); //!< assimpのmaterialを取得
-		filename = std::filesystem::path(material.GetName()).replace_extension(kAssetFileExtension); //!< ファイル名をmaterial名に変更
+
+		std::string name = material.GetName();
+		if (name.empty()) {
+			name = std::format("SurfaceMaterial_{}", parameters.index); //!< material名が空の場合は, "SurfaceMaterial_{index}"という名前を付ける
+		}
+
+		filename = std::filesystem::path(name).replace_extension(kAssetFileExtension); //!< ファイル名をmaterial名に変更
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {

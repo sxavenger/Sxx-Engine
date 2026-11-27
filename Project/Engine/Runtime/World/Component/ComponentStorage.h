@@ -14,6 +14,7 @@
 #include <Lib/CXXAttribute.hpp>
 #include <Lib/Pointer/ReferencePointer.h>
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 #include <Lib/Reflection/TypeInfo.h>
 
 //* c++
@@ -116,7 +117,7 @@ private:
 template <Component T>
 inline ComponentHandle ComponentStorage::Register(RefPtr<EntityBehaviour> entity) {
 	ComponentHandle handle = storage_[typeid(T)].Allocate(); //!< handleを生成
-	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component allocate. handle: {}", typeid(T).name(), handle.GetHandle());
+	STACK_LOG_DEBUG("World::ComponentStorage<{}> | component allocate. handle: {}", typeid(T).name(), handle.GetHandle());
 
 	storage_[typeid(T)].Register(std::make_unique<T>(handle.GetHandle(), entity));
 	return handle;
@@ -129,7 +130,7 @@ inline void ComponentStorage::Unregister(ComponentHandle handle) {
 		return;
 	}
 
-	STREAM_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", typeid(T).name(), handle.GetHandle());
+	STACK_LOG_DEBUG("World::ComponentStorage<{}> | component unregistered. handle: {}", typeid(T).name(), handle.GetHandle());
 	storage_[typeid(T)].Unregister(handle);
 }
 

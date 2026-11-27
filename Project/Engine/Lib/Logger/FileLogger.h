@@ -65,10 +65,10 @@ public:
 	//* stamp output methods *//
 
 	//! @brief コンソールにスタンプ付きの文字列を出力する.
-	static void OutputStampA(const std::string_view& label, LoggerUtil::Level level, const TracePoint& point, const std::string_view& message);
+	static void OutputStampA(const std::string_view& label, LoggerUtil::Level level, const Snapshot& snapshot, const std::string_view& message);
 
 	//! @brief コンソールにスタンプ付きの文字列を出力する.
-	static void OutputStampW(const std::wstring_view& label, LoggerUtil::Level level, const TracePoint& point, const std::wstring_view& message);
+	static void OutputStampW(const std::wstring_view& label, LoggerUtil::Level level, const Snapshot& snapshot, const std::wstring_view& message);
 
 	//* filename methods *//
 

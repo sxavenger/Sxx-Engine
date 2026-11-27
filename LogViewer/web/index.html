@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SxxLogViewer</title>
+<!-- アセットは CDN / vendor をサーバが切り替える (asset mode: {{ASSET_MODE}}) -->
+<link href="{{ASSET_DAISYUI_CSS}}" rel="stylesheet" type="text/css">
+<link href="{{ASSET_THEMES_CSS}}" rel="stylesheet" type="text/css">
+<script src="{{ASSET_TAILWIND_JS}}"></script>
+<style>
+  html, body { height: 100%; margin: 0; }
+  #logScroller { position: relative; }
+  #logTable { table-layout: fixed; width: 100%; min-width: 1300px; }
+  #logTable th, #logTable td { height: 27px; padding: 0 8px; line-height: 26px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle; box-sizing: border-box; }
+  #logTable thead th { height: 32px; }
+  #logTable tbody tr { height: 27px; }
+  #logTable td .badge { height: 1.2rem; vertical-align: middle; }
+  #logTable tr.spacer, #logTable tr.spacer td { height: auto; padding: 0; border: 0; background: none !important; }
+  #logTable tr.spacer:hover td { background: none !important; }
+  #logTable td.msgcell > div { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+  #logTable td.msgcell .txt { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #logTable td.msgcell .badge { flex: none; }
+  #logTable tr.row-click { cursor: pointer; }
+  #logTable tr.row-child td { background: color-mix(in oklab, var(--color-base-300) 35%, transparent); }
+  #logTable tr.row-child td:first-child { box-shadow: inset 3px 0 0 var(--color-secondary); }
+  #logTable tr.flash td { background: color-mix(in oklab, var(--color-warning) 35%, transparent) !important; }
+  #logTable td.exc { padding: 0; }   /* alert を行の左端〜右端いっぱいに (以前は 4px 内側に寄って見えた) */
+  #logTable td.exc .alert { height: 26px; min-height: 0; width: 100%; margin: 0; padding: 0 .75rem; border-radius: 0; overflow: hidden; display: flex; gap: .5rem; align-items: center; white-space: nowrap; }
+  /* Label / Level バッジは固定幅・中央揃えで、どの値でも同じ形の箱にする */
+  #logTable .badge.fixw { width: 4.75rem; min-width: 4.75rem; max-width: 4.75rem; justify-content: center; padding-inline: 0;
+    overflow: hidden; text-overflow: clip; white-space: nowrap; display: inline-flex; vertical-align: middle; }
+  #logTable .badge.lvl-debug { background: color-mix(in oklab, var(--color-base-content) 16%, var(--color-base-100));
+    color: var(--color-base-content); border: 1px solid color-mix(in oklab, var(--color-base-content) 28%, transparent); }
+  #logTable tr.flash td { background: color-mix(in oklab, var(--color-warning) 35%, transparent) !important; color: var(--color-warning-content) !important; }
+  /* facet は daisyUI の radio と同じ見た目 (丸枠 + ON で内側に小さい塗り丸) だが、中身は複数選択の checkbox。
+     daisyUI は .radio-sm のサイズ指定を [type=radio] にしか適用しないので、checkbox にも同じサイズを与える */
+  .radio-sm[type=checkbox] { --size: calc(var(--size-selector, .25rem) * 5); }
+  .facet-row { display: flex; align-items: center; gap: .5rem; padding: .25rem .5rem; border-radius: .375rem; cursor: pointer; }
+  .facet-row:hover { background: color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+  table.stk { table-layout: fixed; width: 100%; }
+  table.stk th, table.stk td { padding-block: .2rem; line-height: 1.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* 検索一致箇所: 下線 + 薄い背景。赤い alert (Exception) 上では不透明な黄色に */
+  mark.hl { background: color-mix(in oklab, var(--color-warning) 25%, transparent); color: inherit; border-radius: 2px;
+    text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; text-decoration-color: var(--color-warning); }
+  .alert mark.hl { background: var(--color-warning); color: var(--color-warning-content); text-decoration-color: var(--color-warning-content); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  .sxx-hl-line { background: rgba(250, 204, 21, .28); }
+  .sxx-hl-glyph { background: #eab308; width: 4px !important; margin-left: 3px; }
+  #rightPane { max-width: calc(100% - 426px); }  /* ログテーブルが最低 420px 残るように */
+  #vsplitter { height: 6px; cursor: row-resize; flex: none; background: var(--color-base-300); }
+  #vsplitter:hover, #vsplitter.drag { background: var(--color-primary); opacity: .6; }
+  #detailPane { min-height: 120px; }
+  #detailPane th { font-weight: 600; }
+  #logTable tr.sel > td { background: color-mix(in oklab, var(--color-primary) 20%, var(--color-base-100)) !important; }
+  #logTable tr.sel > td:first-child { box-shadow: inset 3px 0 0 var(--color-primary); }
+  #logTable tr.sel td.exc .alert { outline: 3px solid var(--color-primary); outline-offset: -3px; }
+  .tgl { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 1.5rem; margin: -.25rem 0 -.25rem -.4rem;
+    border-radius: .375rem; cursor: pointer; vertical-align: middle; }
+  .tgl:hover { background: color-mix(in oklab, var(--color-base-content) 18%, transparent); }
+  /* Location の色: 閲覧できる=青リンク / できない=disabled / 判定前=通常の文字色 */
+  .filelink.loc-missing { color: color-mix(in oklab, var(--color-base-content) 40%, transparent); text-decoration: none; cursor: default; }
+  .filelink.loc-pending { color: inherit; text-decoration: none; }
+  .alert .filelink:not(.loc-missing):not(.loc-pending) { color: var(--color-error-content); text-decoration: underline; }
+  .alert .filelink.loc-missing { color: color-mix(in oklab, var(--color-error-content) 60%, transparent); }
+  tr.pickrow { cursor: pointer; }
+  tr.pickrow:hover > td { background: color-mix(in oklab, var(--color-primary) 12%, transparent); }
+  .filelink { display: flex; min-width: 0; align-items: baseline; }
+  .filelink .fdir { flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; opacity: .7; }
+  .filelink .fname { flex: none; font-weight: 700; }
+  #splitter { width: 6px; cursor: col-resize; flex: none; }
+  #splitter:hover, #splitter.drag { background: var(--color-primary); opacity: .6; }
+  .stats .stat { padding: .35rem 1rem; }
+  .stats .stat-value { font-size: 1.15rem; line-height: 1.5rem; }
+  .stats .stat-title { font-size: .7rem; }
+</style>
+</head>
+<body class="bg-base-100 text-base-content">
+
+<div class="drawer lg:drawer-open h-screen">
+  <input id="sidebarToggle" type="checkbox" class="drawer-toggle">
+
+  <!-- ===== メイン ===== -->
+  <div class="drawer-content flex flex-col h-screen min-w-0">
+    <div id="serverDown" role="alert" class="alert alert-error rounded-none flex-none justify-center hidden">
+      <span>サーバーが終了しました。start.bat から再起動してください。</span>
+    </div>
+    <div class="navbar bg-base-200 shadow-sm gap-1 flex-none min-h-12 px-2">
+      <div class="flex-none lg:hidden">
+        <label for="sidebarToggle" class="btn btn-square btn-ghost btn-sm" aria-label="フィルターを開く">&#9776;</label>
+      </div>
+      <div class="flex-none"><span class="text-lg font-bold px-2">SxxLogViewer</span></div>
+      <div class="flex-1 flex items-center gap-2 min-w-0">
+        <select id="logSelect" class="select select-sm w-64 max-w-full" title="log_dir 内のログ"></select>
+        <label class="btn btn-sm" title="ログファイルを開く (ドラッグ&ドロップも可)">
+          ファイルを開く
+          <input id="fileInput" type="file" class="hidden" accept=".log,.txt,text/plain">
+        </label>
+        <button id="reloadBtn" class="btn btn-sm btn-ghost" title="再読み込み">再読み込み</button>
+        <button id="jumpExcBtn" class="btn btn-sm btn-error btn-outline" title="Exception へジャンプ (押すたびに次へ)" disabled>
+          Exception <span id="excCount" class="badge badge-error badge-sm">0</span>
+        </button>
+      </div>
+      <div class="flex-none flex items-center gap-1">
+        <button id="settingsBtn" class="btn btn-sm btn-ghost" title="設定">設定</button>
+        <label class="swap swap-rotate btn btn-ghost btn-sm btn-circle" title="テーマ切替 (light / dark)">
+          <input id="themeChk" type="checkbox" class="theme-controller" value="light">
+          <span class="swap-off">&#9790;</span>
+          <span class="swap-on">&#9728;</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="statsBar" class="flex-none px-2 pt-2">
+      <div class="stats stats-horizontal bg-base-200 w-full overflow-x-auto shadow-sm">
+        <div class="stat"><div class="stat-title">profile</div><div id="stProfile" class="stat-value">-</div></div>
+        <div class="stat"><div class="stat-title">main thread id</div><div id="stMain" class="stat-value">-</div></div>
+        <div class="stat"><div class="stat-title">timestamp</div><div id="stTs" class="stat-value">-</div></div>
+        <div class="stat"><div class="stat-title">ログ件数</div><div id="stCount" class="stat-value">-</div></div>
+        <div class="stat"><div class="stat-title">Exception</div><div id="stExc" class="stat-value">-</div></div>
+      </div>
+    </div>
+
+    <div id="notice" class="flex-none px-2 pt-2 hidden"></div>
+
+    <div class="flex flex-1 min-h-0 px-2 py-2 gap-0">
+      <!-- ログテーブル -->
+      <div class="flex flex-col flex-1 min-w-0 min-h-0 relative">
+        <div class="flex-none text-xs opacity-70 px-1 pb-1 flex justify-between">
+          <span id="visibleInfo">&nbsp;</span>
+          <span><kbd class="kbd kbd-xs">Ctrl</kbd>+<kbd class="kbd kbd-xs">F</kbd> 検索 / <kbd class="kbd kbd-xs">Esc</kbd> 選択解除</span>
+        </div>
+        <div id="logScroller" class="flex-1 min-h-0 overflow-auto rounded-box border border-base-300">
+          <table id="logTable" class="table table-zebra table-pin-rows table-xs">
+            <colgroup>
+              <col style="width:76px"><col style="width:104px"><col style="width:300px"><col style="width:330px">
+              <col style="width:140px"><col style="width:104px"><col>
+            </colgroup>
+            <thead>
+              <tr><th class="text-right">#</th><th>Label</th><th>Timestamp</th><th>Location</th><th>Thread</th><th>Level</th><th>Message</th></tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+          <div id="emptyState" class="hidden p-10 text-center opacity-70"></div>
+          <div id="loading" class="hidden absolute inset-0 bg-base-100/60 flex items-center justify-center z-10">
+            <span class="loading loading-spinner loading-lg"></span>
+          </div>
+        </div>
+        <div id="dropOverlay" class="hidden absolute inset-0 z-20 rounded-box border-4 border-dashed border-primary bg-base-100/80 flex items-center justify-center text-xl font-bold pointer-events-none">
+          ここにログファイルをドロップ
+        </div>
+      </div>
+
+      <!-- 右ペイン: 詳細 (上) + Monaco (下)。常駐 -->
+      <div id="splitter" style="width:6px;cursor:col-resize;flex:none"></div>
+      <aside id="rightPane" class="flex flex-col min-h-0 min-w-0 rounded-box border border-base-300 bg-base-100 overflow-hidden" style="width:48%">
+        <section id="detailPane" class="flex-none overflow-auto" style="height:50%"></section>
+        <div id="vsplitter"></div>
+        <section id="codePanel" class="flex flex-col flex-1 min-h-0 min-w-0">
+          <div class="flex-none flex items-center gap-2 bg-base-200 px-3 py-2">
+            <div class="min-w-0 flex-1">
+              <div id="cpPath" class="mono text-sm font-semibold truncate" title="">ソース</div>
+              <div id="cpSub" class="text-xs opacity-70 truncate"></div>
+            </div>
+            <span id="cpLine" class="badge badge-warning badge-sm hidden"></span>
+            <span id="cpLang" class="badge badge-ghost badge-sm hidden"></span>
+            <button id="cpCopy" class="btn btn-xs" title="絶対パス:行 をクリップボードへ">パスをコピー</button>
+          </div>
+          <div id="cpAlert" class="flex-none p-2 hidden"></div>
+          <div id="cpCands" class="flex-none p-2 hidden"></div>
+          <div id="cpBusy" class="hidden flex-1 flex items-center justify-center"><span class="loading loading-spinner"></span></div>
+          <div id="cpEmpty" class="flex-1 flex items-center justify-center text-center p-6 opacity-60 text-sm">
+            ログ行をクリックすると、その Location のソースコードをここに表示します。<br>(source_root の設定が必要です)
+          </div>
+          <div id="editor" class="flex-1 min-h-0 hidden"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ===== サイドバー ===== -->
+  <div class="drawer-side z-30">
+    <label for="sidebarToggle" aria-label="閉じる" class="drawer-overlay"></label>
+    <div class="bg-base-200 w-72 min-h-full h-full overflow-y-auto p-3 flex flex-col gap-3">
+      <div class="font-bold text-lg px-1">フィルター</div>
+
+      <div class="join w-full">
+        <input id="q" type="text" class="input input-sm join-item flex-1 min-w-0" placeholder="message / filepath を検索" autocomplete="off">
+        <button id="qRegex" type="button" class="btn btn-sm join-item mono" title="正規表現" aria-pressed="false">.*</button>
+      </div>
+      <div id="qErr" class="text-error text-xs hidden">正規表現が不正です</div>
+
+      <div>
+        <div class="text-xs opacity-70 px-1 pb-1">まとめ方</div>
+        <select id="groupMode" class="select select-sm w-full">
+          <option value="callsite">呼び出し箇所が同じ (既定)</option>
+          <option value="exact">メッセージまで同じ</option>
+          <option value="none">まとめない</option>
+        </select>
+      </div>
+
+      <div id="facets" class="flex flex-col gap-2"></div>
+      <div class="flex-1"></div>
+      <div class="text-xs opacity-60 px-1">
+        行をクリックすると右に詳細とソースを表示します。グループは行頭の ▸ で展開/折り畳み。Esc で選択解除。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== モーダル ===== -->
+<dialog id="settingsModal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-3">設定</h3>
+    <div class="flex flex-col gap-3">
+      <label class="form-control w-full">
+        <div class="mb-1 text-sm">source_root (エンジンのリポジトリルート)</div>
+        <div class="join w-full">
+          <input id="setSourceRoot" type="text" class="input input-sm join-item flex-1 min-w-0 mono" placeholder="例: C:\Dev\SxavengerEngine">
+          <button type="button" class="btn btn-sm join-item" data-pick="setSourceRoot" data-title="source_root (エンジンのリポジトリルート) を選択">参照…</button>
+        </div>
+        <div class="mt-1 text-xs opacity-70">ログ内の <span class="mono">Engine/Runtime/...</span> はこのディレクトリからの相対パスとして解決します。配下以外は開けません。</div>
+      </label>
+      <label class="form-control w-full">
+        <div class="mb-1 text-sm">log_dir (ログのあるディレクトリ)</div>
+        <div class="join w-full">
+          <input id="setLogDir" type="text" class="input input-sm join-item flex-1 min-w-0 mono" placeholder="例: C:\Dev\SxavengerEngine\Logs">
+          <button type="button" class="btn btn-sm join-item" data-pick="setLogDir" data-title="log_dir (ログのあるディレクトリ) を選択">参照…</button>
+        </div>
+      </label>
+      <div id="setErr" class="alert alert-error alert-soft hidden text-sm"></div>
+      <div class="text-xs opacity-60">ライブラリ読み込み: <span id="setAssets"></span></div>
+    </div>
+    <div class="modal-action">
+      <button id="setSave" class="btn btn-primary btn-sm">保存</button>
+      <form method="dialog"><button class="btn btn-sm">キャンセル</button></form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<div id="toasts" class="toast toast-end toast-bottom z-50"></div>
+
+<script>
+"use strict";
+const MONACO_VS = "{{ASSET_MONACO_VS}}";
+const ASSET_MODE = "{{ASSET_MODE}}";
+let ROW_H = 28; const OVERSCAN = 14;
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => Number(n).toLocaleString("ja-JP");
+
+const state = {
+  cfg: null, logs: [], data: null, source: null,
+  filters: { label: new Set(), thread: new Set(), level: new Set() },
+  query: "", regex: false, hlRe: null, expanded: new Set(), rows: [], sel: null, ex: { done: false, paths: new Map(), names: new Map(), rootOk: true, seq: 0 }, byKey: new Map(), flashId: null, excIdx: -1, reqSeq: 0,
+};
+
+/* ---------- 共通ユーティリティ ---------- */
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  let body = null;
+  try { body = await r.json(); } catch (_) { /* 非 JSON */ }
+  if (!r.ok) {
+    const e = new Error((body && body.message) || r.statusText || "通信エラー");
+    e.code = body && body.error; e.status = r.status;
+    throw e;
+  }
+  return body;
+}
+const postJson = (path, obj) => api(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(obj) });
+
+function toast(msg, kind = "info") {
+  const el = document.createElement("div");
+  el.className = `alert alert-${kind} text-sm py-2`;
+  el.textContent = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+function showNotice(html, kind = "error") {
+  const n = $("#notice");
+  n.innerHTML = `<div class="alert alert-${kind} alert-soft py-2 text-sm"><span>${html}</span><button class="btn btn-xs btn-ghost" onclick="this.closest('#notice').classList.add('hidden')">&#10005;</button></div>`;
+  n.classList.remove("hidden");
+}
+function clearNotice() { $("#notice").classList.add("hidden"); }
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (_) {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } finally { ta.remove(); }
+  }
+  toast("コピーしました", "success");
+}
+
+/* ---------- テーマ ---------- */
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  $("#themeChk").checked = t === "light";
+  if (window.monaco) window.monaco.editor.setTheme(t === "dark" ? "vs-dark" : "vs");
+}
+$("#themeChk").addEventListener("change", e => {
+  const t = e.target.checked ? "light" : "dark";
+  applyTheme(t);
+  postJson("/api/config", { theme: t }).catch(() => {});
+});
+
+/* ---------- 表示ヘルパ ---------- */
+function levelBadge(level) {
+  const l = String(level).toLowerCase();
+  let c = "badge-outline";
+  if (l === "debug") c = "lvl-debug";
+  else if (l === "info") c = "badge-info";
+  else if (l === "warning" || l === "warn") c = "badge-warning";
+  else if (["error", "critical", "fatal"].includes(l)) c = "badge-error";
+  return `<span class="badge badge-sm fixw ${c}" title="${esc(level)}">${esc(level)}</span>`;
+}
+function labelBadge(label) {
+  const c = label === "Stack" ? "badge-secondary" : label === "Stream" ? "badge-primary" : "badge-neutral";
+  return `<span class="badge badge-sm fixw badge-outline ${c}">${esc(label)}</span>`;
+}
+function threadCell(t) {
+  return t === "main thread" ? `<span class="font-semibold text-accent">${esc(t)}</span>` : `<span class="opacity-80">${esc(t)}</span>`;
+}
+/* ---- 検索一致のハイライト ----
+   一致位置は「元の生文字列」で求め、セグメントごとに esc() してから <mark> で包む (エスケープ後の文字列には触れない)。 */
+const nlFmt = t => esc(t).replace(/\r?\n/g, " \u23CE ");
+function matchRanges(raw) {
+  const re = state.hlRe;
+  if (!re || !raw) return [];
+  re.lastIndex = 0;
+  const out = [];
+  let m;
+  while ((m = re.exec(raw)) !== null) {
+    if (m[0].length === 0) { re.lastIndex++; continue; }   // 長さ 0 の一致 (^ や a* など) は飛ばす
+    out.push([m.index, m.index + m[0].length]);
+    if (out.length >= 200) break;
+  }
+  return out;
+}
+function renderRanges(raw, ranges, from, to, fmt = esc) {
+  let html = "", pos = from;
+  for (const [st, en] of ranges) {
+    const a = Math.max(st, from), b = Math.min(en, to);
+    if (b <= a) continue;
+    if (a > pos) html += fmt(raw.slice(pos, a));
+    html += `<mark class="hl">${fmt(raw.slice(a, b))}</mark>`;
+    pos = b;
+  }
+  if (pos < to) html += fmt(raw.slice(pos, to));
+  return html;
+}
+function hl(raw, fmt = esc) {
+  raw = String(raw ?? "");
+  return state.hlRe ? renderRanges(raw, matchRanges(raw), 0, raw.length, fmt) : fmt(raw);
+}
+
+function splitPath(p) { const i = p.lastIndexOf("/"); return i < 0 ? ["", p] : [p.slice(0, i + 1), p.slice(i + 1)]; }
+// ディレクトリ部分だけを左側から省略し、ファイル名:行番号は常に全文を表示する (検索一致はファイル名側も省略後のディレクトリ側も強調)
+function locState(file) {   // "ok" | "no" | "pending" (問い合わせ結果のキャッシュ参照のみ。通信しない)
+  const ex = state.ex;
+  if (!ex.done) return "pending";
+  const nameOnly = !String(file).replace(/\\/g, "/").includes("/");
+  const v = (nameOnly ? ex.names : ex.paths).get(file);
+  return v === undefined ? "pending" : v ? "ok" : "no";
+}
+function fileLink(file, line, extra = "", maxChars = 44, highlight = true) {
+  if (!file) return "";
+  const st = locState(file);
+  const lbl = line != null ? `${file}:${line}` : file;
+  const cls = st === "ok" ? `link link-primary link-hover mono filelink ${extra}` : `mono filelink ${st === "no" ? "loc-missing" : "loc-pending"}`;
+  const ttl = st === "no" ? `ソースが見つかりません (source_root: ${(state.cfg && state.cfg.source_root) || "未設定"})\n${lbl}` : lbl;
+  const nf = String(file).replace(/\\/g, "/");
+  const [dir, base] = splitPath(nf);
+  const name = line != null ? `${base}:${line}` : base;
+  const avail = Math.max(0, maxChars - name.length);
+  const ranges = highlight ? matchRanges(nf) : [];
+  const R = (from, to) => renderRanges(nf, ranges, from, to);
+  let dirHtml;
+  if (dir.length <= avail) dirHtml = R(0, dir.length);
+  else if (avail > 2) dirHtml = "\u2026" + R(dir.length - (avail - 1), dir.length);
+  else dirHtml = dir ? "\u2026/" : "";
+  const nameHtml = R(dir.length, nf.length) + (line != null ? esc(":" + line) : "");
+  return `<a href="#" class="${cls}" data-act="src" data-path="${esc(file)}" data-line="${line ?? ""}" title="${esc(ttl)}"><span class="fdir">${dirHtml}</span><span class="fname">${nameHtml}</span></a>`;
+}
+function msgText(m) {
+  return hl(m.length > 600 ? m.slice(0, 600) : m, nlFmt);
+}
+function tsRange(g) {   // 要件どおり first ~ last を両方フル表示 (同一なら単一)
+  return g.first_ts === g.last_ts ? esc(g.first_ts) : `${esc(g.first_ts)} ~ ${esc(g.last_ts)}`;
+}
+
+/* ---------- フィルター (サイドバー) ---------- */
+const FACET_TITLES = { label: "Label", thread: "Thread", level: "Level" };
+// keep=true (同じログの再読み込み / まとめ方変更) なら選択状態を引き継ぎ、新規出現値は選択状態で追加する
+function buildFacets(keep) {
+  const f = state.data.facets, box = $("#facets");
+  const prevKnown = state.known || {};
+  state.known = {};
+  box.innerHTML = "";
+  for (const key of ["label", "thread", "level"]) {
+    const values = Object.keys(f[key]);
+    const prevSel = state.filters[key], known = prevKnown[key] || new Set();
+    state.known[key] = new Set(values);
+    state.filters[key] = new Set(keep ? values.filter(v => prevSel.has(v) || !known.has(v)) : values);
+    const items = Object.entries(f[key]);
+    const det = document.createElement("details");
+    det.className = "collapse collapse-arrow bg-base-100 border border-base-300";
+    det.open = true;
+    det.innerHTML = `
+      <summary class="collapse-title text-sm font-semibold py-2 min-h-0">${FACET_TITLES[key]} <span class="badge badge-ghost badge-xs">${items.length}</span></summary>
+      <div class="collapse-content px-2 pb-2">
+        <div class="flex gap-1 mb-1">
+          <button class="btn btn-xs btn-ghost" data-facet-all="${key}">全選択</button>
+          <button class="btn btn-xs btn-ghost" data-facet-none="${key}">全解除</button>
+        </div>
+        <ul class="menu menu-xs p-0 max-h-56 overflow-y-auto flex-nowrap w-full">
+          ${items.map(([v, n]) => `
+            <li><label class="facet-row">
+              <input type="checkbox" class="radio radio-primary radio-sm" data-facet="${key}" value="${esc(v)}" ${state.filters[key].has(v) ? "checked" : ""}>
+              <span class="flex-1 truncate" title="${esc(v)}">${esc(v)}</span>
+              <span class="badge badge-sm">${fmt(n)}</span>
+            </label></li>`).join("")}
+        </ul>
+      </div>`;
+    box.appendChild(det);
+  }
+}
+$("#facets").addEventListener("change", e => {
+  const cb = e.target.closest("input[data-facet]");
+  if (!cb) return;
+  const set = state.filters[cb.dataset.facet];
+  cb.checked ? set.add(cb.value) : set.delete(cb.value);
+  refresh();
+});
+$("#facets").addEventListener("click", e => {
+  const b = e.target.closest("button[data-facet-all],button[data-facet-none]");
+  if (!b) return;
+  const key = b.dataset.facetAll || b.dataset.facetNone, all = !!b.dataset.facetAll;
+  state.filters[key] = new Set(all ? Object.keys(state.data.facets[key]) : []);
+  document.querySelectorAll(`input[data-facet="${key}"]`).forEach(cb => { cb.checked = all; });
+  refresh();
+});
+let qTimer = null;
+$("#q").addEventListener("input", e => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { state.query = e.target.value; refresh(); }, 180);
+});
+$("#qRegex").addEventListener("click", e => {
+  state.regex = !state.regex;
+  e.currentTarget.classList.toggle("btn-primary", state.regex);
+  e.currentTarget.setAttribute("aria-pressed", String(state.regex));
+  refresh();
+});
+$("#groupMode").addEventListener("change", async e => {
+  postJson("/api/config", { group_mode: e.target.value }).catch(() => {});
+  state.expanded.clear();
+  await reloadCurrent();
+});
+
+/* ---------- 行の組み立てと仮想スクロール ---------- */
+function buildMatcher() {
+  const q = state.query.trim();
+  state.hlRe = null;
+  $("#qErr").classList.add("hidden"); $("#q").classList.remove("input-error");
+  if (!q) return null;
+  if (state.regex) {
+    try {
+      const re = new RegExp(q, "i");
+      state.hlRe = new RegExp(q, "gi");      // ハイライト用 (検索語変更ごとに 1 回だけ生成)
+      return s => re.test(s);
+    } catch (_) { $("#qErr").classList.remove("hidden"); $("#q").classList.add("input-error"); return null; }
+  }
+  state.hlRe = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+  const l = q.toLowerCase();
+  return s => s.toLowerCase().includes(l);
+}
+function computeRows() {
+  const rows = [];
+  if (!state.data) { state.rows = rows; return; }
+  const f = state.filters, m = buildMatcher();
+  const facetOk = e => f.label.has(e.label) && f.thread.has(e.thread) && f.level.has(e.level);
+  for (const e of state.data.entries) {
+    switch (e.kind) {
+      case "log":
+        if (facetOk(e) && (!m || m(e.message) || m(e.file))) rows.push({ t: "log", e });
+        break;
+      case "group": {
+        if (!facetOk(e)) break;
+        let kids = e.children;
+        if (m && !m(e.file)) { kids = e.children.filter(c => m(c.message)); if (!kids.length) break; }
+        rows.push({ t: "group", e, hit: kids.length });
+        if (state.expanded.has(e.id)) for (const c of kids) rows.push({ t: "child", e: c });
+        break;
+      }
+      case "exception":
+        if (!(f.label.has("Exception") && f.level.size > 0 && (e.thread == null || f.thread.has(e.thread)))) break;
+        if (!m || m(e.title) || m(e.message) || m(e.file || "") || m(e.function || "")) rows.push({ t: "exc", e });
+        break;
+      default:
+        if (!(f.label.has("(raw)") && f.thread.size > 0 && f.level.size > 0)) break;
+        if (!m || m(e.text)) rows.push({ t: "raw", e });
+    }
+  }
+  state.rows = rows;
+}
+const rowKey = r => (r.t === "group" ? "g:" : "e:") + r.e.id;
+function rowHtml(r, i) {
+  const e = r.e, flash = (state.flashId === e.id && r.t !== "child" ? " flash" : "") + (state.sel === rowKey(r) ? " sel" : "");
+  if (r.t === "exc") {
+    return `<tr data-i="${i}" class="row-click${flash}"><td colspan="7" class="exc"><div class="alert alert-error">
+      <strong>[Exception]</strong><span class="truncate">${hl(e.title)}</span>
+      <span class="opacity-90">${fileLink(e.file, e.line, "!text-error-content underline")}</span>
+      <span class="truncate opacity-90">${hl(e.message, t => esc(t).replace(/\n/g, " "))}</span>
+      <span class="ml-auto text-xs opacity-80 flex-none">#${e.lineno}</span></div></td></tr>`;
+  }
+  if (r.t === "raw") {
+    return `<tr data-i="${i}" class="row-click"><td class="text-right opacity-60">${e.lineno}</td><td colspan="6" class="mono opacity-80">${esc(e.text)}</td></tr>`;
+  }
+  if (r.t === "group") {
+    const open = state.expanded.has(e.id);
+    const part = r.hit !== e.count ? ` <span class="opacity-60">/ 一致 ${r.hit}</span>` : "";
+    return `<tr data-i="${i}" class="row-click${flash}">
+      <td class="text-right opacity-60"><button type="button" class="tgl" data-act="toggle" title="${open ? "折り畳む" : "展開する"}" aria-expanded="${open}">${open ? "&#9662;" : "&#9656;"}</button>${e.lineno}</td>
+      <td>${labelBadge(e.label)}</td><td>${tsRange(e)}</td><td>${fileLink(e.file, e.line)}</td>
+      <td>${threadCell(e.thread)}</td><td>${levelBadge(e.level)}</td>
+      <td class="msgcell"><div><span class="txt">${msgText(e.message)}</span><span class="badge badge-sm badge-secondary">x${fmt(e.count)}</span>${part ? `<span class="text-xs flex-none">${part}</span>` : ""}</div></td></tr>`;
+  }
+  const child = r.t === "child";
+  return `<tr data-i="${i}" class="row-click${child ? " row-child" : ""}${flash}">
+    <td class="text-right opacity-60">${e.lineno}</td><td>${labelBadge(e.label)}</td><td>${esc(e.ts)}</td>
+    <td>${fileLink(e.file, e.line)}</td><td>${threadCell(e.thread)}</td><td>${levelBadge(e.level)}</td>
+    <td class="msgcell"><div><span class="txt" title="${esc(e.message.slice(0, 300))}">${msgText(e.message)}</span></div></td></tr>`;
+}
+const scroller = $("#logScroller"), tbody = $("#logBody");
+let lastRange = "";
+function render(force) {
+  const total = state.rows.length;
+  const headH = $("#logTable thead").offsetHeight || 32;
+  let start = Math.max(0, Math.floor((scroller.scrollTop - headH) / ROW_H) - OVERSCAN);
+  start -= start % 2;                       // zebra の偶奇を固定
+  const end = Math.min(total, start + Math.ceil(scroller.clientHeight / ROW_H) + OVERSCAN * 2);
+  const key = `${start}-${end}-${total}`;
+  if (!force && key === lastRange) return;
+  lastRange = key;
+  let html = `<tr class="spacer" style="height:${start * ROW_H}px"><td colspan="7"></td></tr>`;
+  for (let i = start; i < end; i++) html += rowHtml(state.rows[i], i);
+  html += `<tr class="spacer" style="height:${(total - end) * ROW_H}px"><td colspan="7"></td></tr>`;
+  tbody.innerHTML = html;
+  // 実測した行高が想定とずれていたら補正して描画し直す (テーマ/フォント差の保険)
+  const first = tbody.querySelector("tr[data-i]");
+  if (first) {
+    const h = first.getBoundingClientRect().height;
+    if (h > 0 && Math.abs(h - ROW_H) > 0.3 && !render.fixing) {
+      render.fixing = true; ROW_H = h; lastRange = ""; render(true); render.fixing = false;
+    }
+  }
+}
+let rafPending = false;
+scroller.addEventListener("scroll", () => {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => { rafPending = false; render(); });
+});
+window.addEventListener("resize", () => render(true));
+
+function updateInfo() {
+  const d = state.data, es = $("#emptyState");
+  if (!d) {
+    $("#visibleInfo").innerHTML = "&nbsp;";
+    es.classList.remove("hidden");
+    es.innerHTML = `<div class="text-lg mb-2">ログが読み込まれていません</div>
+      <div>上部のリストからログを選ぶか、ログファイルをここにドラッグ&ドロップしてください。</div>
+      <div class="mt-2 text-sm">log_dir: <span class="mono">${esc(state.cfg ? state.cfg.log_dir || "(未設定)" : "")}</span></div>`;
+    return;
+  }
+  const lines = state.rows.length;
+  $("#visibleInfo").textContent = `表示 ${fmt(lines)} 行 (まとめ後 ${fmt(d.entries.length)} 行 / ログ ${fmt(d.counts.logs)} 件)`;
+  if (lines === 0) {
+    es.classList.remove("hidden");
+    es.textContent = d.entries.length ? "条件に一致するログがありません" : "ログ行がありません";
+  } else es.classList.add("hidden");
+}
+function refresh(keepScroll) {
+  computeRows();
+  if (!keepScroll) scroller.scrollTop = 0;
+  lastRange = "";
+  render(true);
+  updateInfo();
+  renderDetail();
+}
+
+/* ---------- ログの読み込み ---------- */
+function showHeader(d) {
+  const h = d ? d.header : {};
+  $("#stProfile").textContent = h.profile ?? "-";
+  $("#stMain").textContent = h["main thread id"] ?? "-";
+  $("#stTs").textContent = h.timestamp ?? "-";
+  $("#stCount").textContent = d ? fmt(d.counts.logs) : "-";
+  $("#stExc").textContent = d ? fmt(d.counts.exceptions) : "-";
+  $("#stExc").className = "stat-value " + (d && d.counts.exceptions ? "text-error" : "");
+  $("#excCount").textContent = d ? d.counts.exceptions : 0;
+  $("#jumpExcBtn").disabled = !d || d.counts.exceptions === 0;
+}
+/* Location の存在確認: ログ内のユニークなパスとスタックフレームのファイル名を (必要なら分割して) まとめて問い合わせ、結果を Map にキャッシュ */
+async function refreshExists() {
+  const ex = state.ex, seq = ++ex.seq;
+  ex.done = false; ex.paths = new Map(); ex.names = new Map();
+  const d = state.data;
+  if (!d) return;
+  render(true); renderDetail();   // 判定前 (通常の文字色) で描画
+  const paths = new Set(), names = new Set();
+  const add = f => { if (f) (String(f).replace(/\\/g, "/").includes("/") ? paths : names).add(f); };
+  for (const e of d.entries) {
+    if (e.kind === "raw") continue;
+    add(e.file);
+    if (e.kind === "group") for (const c of e.children) add(c.file);
+    else if (e.kind === "exception") for (const f of e.frames) add(f.file);
+  }
+  const items = [...paths].map(x => [0, x]).concat([...names].map(x => [1, x])), LIM = 4000;   // サーバ上限 5000 件に収める
+  const paths2 = new Map(), names2 = new Map();
+  try {
+    let rootOk = true;
+    for (let i = 0; i < items.length; i += LIM) {
+      const part = items.slice(i, i + LIM);
+      const bp = part.filter(x => x[0] === 0).map(x => x[1]), bn = part.filter(x => x[0] === 1).map(x => x[1]);
+      const r = await postJson("/api/exists", { paths: bp, names: bn });
+      if (seq !== ex.seq) return;
+      rootOk = r.source_root_ok;
+      for (const k in r.paths) paths2.set(k, r.paths[k]);
+      for (const k in r.names) names2.set(k, r.names[k]);
+    }
+    ex.paths = paths2; ex.names = names2; ex.rootOk = rootOk; ex.done = true;
+  } catch (_) { return; }   // 失敗時は「判定前」のまま (表示は壊さない)
+  if (seq !== ex.seq) return;
+  render(true); renderDetail();
+}
+async function applyData(d, label, id) {
+  const keep = state.facetsFor === id;   // 同じログならフィルター選択を保持
+  state.facetsFor = id;
+  state.data = d; state.expanded.clear(); state.excIdx = -1; state.flashId = null;
+  state.byKey = new Map();
+  for (const e of d.entries) {
+    if (e.kind === "group") {
+      state.byKey.set("g:" + e.id, { t: "group", e });
+      for (const c of e.children) state.byKey.set("e:" + c.id, { t: "child", e: c, g: e });
+    } else state.byKey.set("e:" + e.id, { t: e.kind === "exception" ? "exc" : e.kind === "raw" ? "raw" : "log", e });
+  }
+  if (!(keep && state.sel && state.byKey.has(state.sel))) clearSel(false);   // 同じログの再読み込みなら選択を維持
+  showHeader(d); buildFacets(keep); refresh();
+  refreshExists();
+  clearNotice();
+  if (label) document.title = `${label} - SxxLogViewer`;
+}
+function groupParam() { return $("#groupMode").value; }
+async function loadServerLog(name) {
+  const seq = ++state.reqSeq;
+  $("#loading").classList.remove("hidden");
+  try {
+    const d = await api(`/api/log?name=${encodeURIComponent(name)}&group=${groupParam()}`);
+    if (seq !== state.reqSeq) return;
+    state.source = { type: "server", name };
+    $("#logSelect").value = name;
+    await applyData(d, name, `server:${name}`);
+  } catch (e) {
+    if (seq === state.reqSeq) showNotice(`ログを読み込めません: ${esc(e.message)}`);
+  } finally { if (seq === state.reqSeq) $("#loading").classList.add("hidden"); }
+}
+async function loadLocalFile(file) {
+  const seq = ++state.reqSeq;
+  $("#loading").classList.remove("hidden");
+  try {
+    const buf = await file.arrayBuffer();
+    const d = await api(`/api/parse?group=${groupParam()}`, { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: buf });
+    if (seq !== state.reqSeq) return;
+    state.source = { type: "file", file };
+    setLocalOption(file.name);
+    await applyData(d, file.name, `file:${file.name}`);
+  } catch (e) {
+    if (seq === state.reqSeq) showNotice(`ファイルを解析できません: ${esc(e.message)}`);
+  } finally { if (seq === state.reqSeq) $("#loading").classList.add("hidden"); }
+}
+function setLocalOption(name) {
+  const sel = $("#logSelect");
+  let o = sel.querySelector("option[data-local]");
+  if (!o) { o = document.createElement("option"); o.dataset.local = "1"; sel.insertBefore(o, sel.firstChild); }
+  o.value = "__local__"; o.textContent = `(ローカル) ${name}`; sel.value = "__local__";
+}
+async function reloadCurrent() {
+  if (!state.source) return;
+  if (state.source.type === "server") await loadServerLog(state.source.name);
+  else await loadLocalFile(state.source.file);
+}
+async function loadLogList() {
+  try {
+    const r = await api("/api/logs");
+    state.logs = r.logs;
+    const sel = $("#logSelect"), local = sel.querySelector("option[data-local]");
+    sel.innerHTML = "";
+    if (local) sel.appendChild(local);
+    if (!r.logs.length) {
+      const o = document.createElement("option"); o.value = ""; o.textContent = "(ログなし)"; o.disabled = true; o.selected = !local;
+      sel.appendChild(o);
+    }
+    for (const l of r.logs) {
+      const o = document.createElement("option");
+      o.value = l.name; o.textContent = `${l.name}  (${Math.max(1, Math.round(l.size / 1024))} KB)`;
+      sel.appendChild(o);
+    }
+    if (state.source && state.source.type === "server") sel.value = state.source.name;
+  } catch (e) { showNotice(`ログ一覧を取得できません: ${esc(e.message)}`); }
+}
+$("#logSelect").addEventListener("change", e => {
+  if (e.target.value === "__local__") return;
+  if (e.target.value) loadServerLog(e.target.value);
+});
+$("#reloadBtn").addEventListener("click", async () => { await loadLogList(); await reloadCurrent(); });
+$("#fileInput").addEventListener("change", e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (f) loadLocalFile(f);
+});
+
+/* ドラッグ & ドロップ */
+let dragDepth = 0;
+const hasFiles = ev => ev.dataTransfer && Array.from(ev.dataTransfer.types || []).includes("Files");
+window.addEventListener("dragenter", ev => { if (hasFiles(ev)) { dragDepth++; $("#dropOverlay").classList.remove("hidden"); ev.preventDefault(); } });
+window.addEventListener("dragover", ev => { if (hasFiles(ev)) ev.preventDefault(); });
+window.addEventListener("dragleave", ev => { if (hasFiles(ev) && --dragDepth <= 0) { dragDepth = 0; $("#dropOverlay").classList.add("hidden"); } });
+window.addEventListener("drop", ev => {
+  if (!hasFiles(ev)) return;
+  ev.preventDefault(); dragDepth = 0; $("#dropOverlay").classList.add("hidden");
+  const f = ev.dataTransfer.files[0];
+  if (f) loadLocalFile(f);
+});
+
+/* ---------- 選択 / 詳細ペイン (常駐) ---------- */
+tbody.addEventListener("click", ev => {
+  const tr = ev.target.closest("tr[data-i]");
+  if (!tr) return;
+  const r = state.rows[+tr.dataset.i];
+  if (!r) return;
+  if (ev.target.closest("[data-act='toggle']")) { ev.preventDefault(); toggleGroup(r.e.id); return; }
+  const a = ev.target.closest("[data-act='src']");
+  if (a) ev.preventDefault();
+  else if (window.getSelection && String(window.getSelection()).length > 0) return;   // テキスト選択中は何もしない
+  selectKey(rowKey(r));
+});
+function toggleGroup(id) {
+  state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
+  refresh(true);
+}
+function entryLoc(it) { return it && it.e.file ? { file: it.e.file, line: it.e.line } : null; }
+function selectKey(key, opts = {}) {
+  const it = state.byKey.get(key);
+  if (!it) return;
+  state.sel = key;
+  render(true);
+  renderDetail(true);
+  const loc = entryLoc(it);
+  if (opts.openSrc === false) return;
+  if (loc) openSource(loc.file, loc.line);
+  else { panelReq++; curSrc = null; resetPanelHeader(); clearPanelAlert(); panelState("empty"); }
+}
+function clearSel(rerender = true) {
+  state.sel = null;
+  panelReq++; curSrc = null;
+  resetPanelHeader(); clearPanelAlert(); panelState("empty");
+  if (rerender) { render(true); renderDetail(true); }
+}
+function kvRow(k, v) { return `<tr><th class="whitespace-nowrap align-top w-28">${k}</th><td class="break-all">${v}</td></tr>`; }
+let detailCopy = "";
+function detailLog(e) {
+  detailCopy = e.message;
+  return `<div class="font-bold mb-2">ログ詳細 <span class="text-sm font-normal opacity-60">(行 ${e.lineno})</span></div>
+    <table class="table table-sm"><tbody>
+      ${kvRow("Label", labelBadge(e.label))}${kvRow("Timestamp", esc(e.ts))}
+      ${kvRow("Location", fileLink(e.file, e.line, "", 80))}${kvRow("Thread", threadCell(e.thread))}${kvRow("Level", levelBadge(e.level))}
+    </tbody></table>
+    <div class="mt-2 text-sm font-semibold">Message</div>
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(e.message)}</pre>
+    <div class="mt-2"><button class="btn btn-xs" data-copy-msg>メッセージをコピー</button></div>`;
+}
+function detailGroup(g) {
+  detailCopy = g.message;
+  const last = g.children[g.children.length - 1];
+  const LIM = 300;
+  const kids = g.children.slice(0, LIM).map(c => `<tr class="pickrow" data-pick-key="e:${c.id}">
+      <td class="text-right mono opacity-60">${c.lineno}</td><td class="mono">${esc(c.ts)}</td>
+      <td class="mono" title="${esc(c.message.slice(0, 300))}">${hl(c.message.slice(0, 300), nlFmt)}</td></tr>`).join("");
+  const more = g.children.length > LIM ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${g.children.length - LIM} 件</td></tr>` : "";
+  return `<div class="alert alert-secondary alert-soft mb-2 py-2"><div><span class="font-bold">${esc(g.label)} グループ</span>
+      <span class="badge badge-sm badge-secondary">x${fmt(g.count)}</span>
+      <span class="text-xs opacity-70">ログ ${g.lineno} ~ ${last.lineno} 行目</span></div></div>
+    <table class="table table-sm"><tbody>
+      ${kvRow("範囲", `<span class="mono">${tsRange(g)}</span>`)}${kvRow("件数", fmt(g.count))}
+      ${kvRow("Location", fileLink(g.file, g.line, "", 80))}${kvRow("Thread", threadCell(g.thread))}${kvRow("Level", levelBadge(g.level))}
+      ${kvRow("Message", `<span class="whitespace-pre-wrap">${hl(g.message)}</span>`)}
+    </tbody></table>
+    <div class="mt-2 text-sm font-semibold">含まれるログ (クリックで個別に表示)</div>
+    <div class="mt-1 rounded-box border border-base-300 overflow-x-hidden">
+      <table class="table table-xs table-zebra stk">
+        <colgroup><col style="width:4rem"><col style="width:13rem"><col></colgroup>
+        <thead><tr><th class="text-right">#</th><th>Timestamp</th><th>Message</th></tr></thead>
+        <tbody>${kids}${more}</tbody>
+      </table>
+    </div>`;
+}
+function detailException(x) {
+  detailCopy = x.message;
+  // stacktrace: "#i  Description  Location" の表 (列幅固定。Description だけが伸縮し、溢れたら省略)
+  const frameRows = x.frames.map(f => {
+    const idx = `<td class="text-right mono opacity-60">#${f.index}</td>`;
+    if (!f.file) return `<tr>${idx}<td class="mono opacity-80" title="${esc(f.raw)}">${esc(f.raw)}</td><td></td></tr>`;
+    const full = `${f.module ? f.module + "!" : ""}${f.symbol}${f.offset ? "+" + f.offset : ""}`;
+    const desc = `${f.module ? `<span class="opacity-60">${esc(f.module)}!</span>` : ""}${esc(f.symbol)}${f.offset ? `<span class="opacity-60">+${esc(f.offset)}</span>` : ""}`;
+    return `<tr>${idx}<td class="mono" title="${esc(full)}">${desc}</td><td>${fileLink(f.file, f.line, "", 24, false)}</td></tr>`;
+  }).join("");
+  const moreRow = x.more_frames ? `<tr><td colspan="3" class="text-center opacity-60">… 他 ${x.more_frames} フレーム</td></tr>` : "";
+  const frames = frameRows || moreRow ? frameRows + moreRow : `<tr><td colspan="3" class="opacity-60">(なし)</td></tr>`;
+  return `
+    <div class="alert alert-error mb-2 py-2"><div><div class="font-bold">[Exception] ${hl(x.title)}</div><div class="text-xs opacity-80">ログ ${x.lineno} 行目</div></div></div>
+    <table class="table table-sm"><tbody>
+      ${kvRow("Location", fileLink(x.file, x.line, "", 80))}
+      ${kvRow("function", `<span class="mono">${hl(x.function ?? "")}</span>`)}
+      ${kvRow("thread", threadCell(x.thread ?? ""))}
+      ${kvRow("timestamp", esc(x.ts ?? ""))}
+    </tbody></table>
+    <div class="mt-2 font-semibold text-sm">stacktrace</div>
+    <div class="mt-1 rounded-box border border-base-300 overflow-x-hidden">
+      <table class="table table-sm table-zebra stk">
+        <colgroup><col style="width:3.5rem"><col><col style="width:14.5rem"></colgroup>
+        <thead><tr><th class="text-right">#</th><th>Description</th><th>Location</th></tr></thead>
+        <tbody>${frames}</tbody>
+      </table>
+    </div>
+    <div class="mt-2 font-semibold text-sm">message</div>
+    <pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(x.message)}</pre>
+    <div class="mt-2"><button class="btn btn-xs" data-copy-msg>メッセージをコピー</button></div>`;
+}
+function renderDetail(resetScroll) {
+  const el = $("#detailPane"), it = state.sel ? state.byKey.get(state.sel) : null;
+  const top = resetScroll ? 0 : el.scrollTop;
+  let html;
+  if (!it) html = `<div class="h-full flex items-center justify-center opacity-60 text-sm p-4">ログ行をクリックすると詳細を表示します</div>`;
+  else if (it.t === "raw") { detailCopy = it.e.text; html = `<div class="font-bold mb-2">生のテキスト <span class="text-sm font-normal opacity-60">(行 ${it.e.lineno})</span></div><pre class="mono text-sm bg-base-200 rounded-box p-3 whitespace-pre-wrap break-all">${hl(it.e.text)}</pre>`; }
+  else if (it.t === "group") html = detailGroup(it.e);
+  else if (it.t === "exc") html = detailException(it.e);
+  else html = detailLog(it.e);
+  el.innerHTML = it ? `<div class="p-3">${html}</div>` : html;
+  el.scrollTop = top;
+}
+$("#detailPane").addEventListener("click", ev => {
+  if (ev.target.closest("[data-copy-msg]")) { copyText(detailCopy); return; }
+  const a = ev.target.closest("[data-act='src']");
+  if (a) {   // Location / スタックフレーム: 選択は変えず Monaco だけ移動
+    ev.preventDefault();
+    openSource(a.dataset.path, a.dataset.line ? +a.dataset.line : null);
+    return;
+  }
+  const pk = ev.target.closest("[data-pick-key]");
+  if (pk) {   // グループの子ログを選択 (グループを展開して行へスクロール)
+    const key = pk.dataset.pickKey, it = state.byKey.get(key);
+    if (it && it.g) { state.expanded.add(it.g.id); computeRows(); }
+    selectKey(key);
+    const idx = state.rows.findIndex(r => rowKey(r) === key);
+    if (idx >= 0 && (idx * ROW_H < scroller.scrollTop || idx * ROW_H > scroller.scrollTop + scroller.clientHeight - 2 * ROW_H)) {
+      scroller.scrollTop = Math.max(0, idx * ROW_H - scroller.clientHeight / 3);
+    }
+    render(true); updateInfo();
+  }
+});
+
+/* Exception へジャンプ */
+$("#jumpExcBtn").addEventListener("click", () => {
+  const d = state.data; if (!d) return;
+  const excs = d.entries.filter(e => e.kind === "exception");
+  if (!excs.length) return;
+  state.excIdx = (state.excIdx + 1) % excs.length;
+  const target = excs[state.excIdx];
+  let idx = state.rows.findIndex(r => r.t === "exc" && r.e.id === target.id);
+  if (idx < 0) { toast("Exception は現在の検索条件で非表示です", "warning"); return; }
+  state.flashId = target.id;
+  scroller.scrollTop = Math.max(0, idx * ROW_H - scroller.clientHeight / 3);
+  selectKey("e:" + target.id);
+  setTimeout(() => { state.flashId = null; render(true); }, 1800);
+});
+
+/* ---------- Monaco (読み取り専用ソースビュー) ---------- */
+let monacoPromise = null, editor = null, curModel = null, decos = [];
+function loadMonaco() {
+  if (monacoPromise) return monacoPromise;
+  const base = new URL(MONACO_VS, location.href).href.replace(/\/$/, "");
+  const root = base.replace(/\/vs$/, "");
+  monacoPromise = new Promise((resolve, reject) => {
+    window.MonacoEnvironment = {
+      getWorkerUrl: () => "data:text/javascript;charset=utf-8," + encodeURIComponent(
+        `self.MonacoEnvironment={baseUrl:${JSON.stringify(root + "/")}};importScripts(${JSON.stringify(base + "/base/worker/workerMain.js")});`),
+    };
+    const s = document.createElement("script");
+    s.src = base + "/loader.js";
+    s.onerror = () => reject(new Error(`Monaco を読み込めません (${s.src})。ネットワーク接続を確認するか、tools/setup_vendor.py でオフライン用ファイルを取得してください。`));
+    s.onload = () => {
+      window.require.config({ paths: { vs: base } });
+      window.require(["vs/editor/editor.main"], () => resolve(window.monaco), err => reject(new Error("Monaco の初期化に失敗: " + (err && err.message || err))));
+    };
+    document.head.appendChild(s);
+  });
+  monacoPromise.catch(() => { monacoPromise = null; });
+  return monacoPromise;
+}
+const panel = $("#rightPane");
+let panelReq = 0, curSrc = null;
+function resetPanelHeader() {
+  $("#cpPath").textContent = "ソース"; $("#cpPath").title = ""; $("#cpSub").textContent = "";
+  $("#cpLine").classList.add("hidden"); $("#cpLang").classList.add("hidden");
+}
+function panelState(mode) {   // "busy" | "editor" | "empty" | "none"
+  $("#cpBusy").classList.toggle("hidden", mode !== "busy");
+  $("#cpBusy").classList.toggle("flex", mode === "busy");
+  $("#cpEmpty").classList.toggle("hidden", mode !== "empty");
+  $("#cpEmpty").classList.toggle("flex", mode === "empty");
+  $("#editor").classList.toggle("hidden", mode !== "editor");
+}
+function panelAlert(html, kind = "warning", withSettings = false) {
+  const el = $("#cpAlert");
+  el.innerHTML = `<div class="alert alert-${kind} alert-soft text-sm"><span class="break-all">${html}</span>
+    ${withSettings ? `<button class="btn btn-xs" data-open-settings>設定を開く</button>` : ""}</div>`;
+  el.classList.remove("hidden");
+}
+function clearPanelAlert() { $("#cpAlert").classList.add("hidden"); $("#cpCands").classList.add("hidden"); }
+document.addEventListener("click", ev => { if (ev.target.closest("[data-open-settings]")) openSettings(); });
+
+function showCandidates(name, line, cands, note) {
+  const el = $("#cpCands");
+  el.innerHTML = `<div class="text-sm mb-1">${note}</div>
+    <ul class="menu bg-base-200 rounded-box w-full">
+      ${cands.map(c => `<li><a data-cand="${esc(c)}" class="mono text-sm break-all">${esc(c)}</a></li>`).join("")}
+    </ul>`;
+  el.classList.remove("hidden");
+  el.querySelectorAll("[data-cand]").forEach(a => a.addEventListener("click", () => openSource(a.dataset.cand, line, { direct: true })));
+}
+async function openSource(path, line, opts = {}) {
+  const req = ++panelReq;
+  clearPanelAlert(); panelState("busy");
+  $("#cpPath").textContent = path; $("#cpPath").title = path;
+  $("#cpSub").textContent = "";
+  $("#cpLine").classList.toggle("hidden", line == null); $("#cpLine").textContent = line != null ? `L${line}` : "";
+  $("#cpLang").classList.add("hidden");
+  curSrc = { path, line, abs: null };
+  if (!opts.direct && locState(path) === "no") {   // 存在しないと判定済み: Monaco は開かず案内だけ出す
+    const p = String(path).replace(/\\/g, "/"), root = ((state.cfg && state.cfg.source_root) || "").replace(/\\/g, "/").replace(/\/$/, "");
+    panelState("none");
+    if (!state.ex.rootOk) panelAlert("source_root が未設定、または存在しません。設定でエンジンのリポジトリルートを指定してください。", "warning", true);
+    else if (!p.includes("/")) panelAlert(`ソースが見つかりません: <b>${esc(p)}</b> は source_root (<span class="mono">${esc(root)}</span>) 以下にありません。`, "warning", true);
+    else {
+      const abs = /^([A-Za-z]:\/|\/)/.test(p) ? p : `${root}/${p}`;
+      panelAlert(`ソースが見つかりません: <b>${esc(p)}</b><br>source_root: <span class="mono">${esc(root)}</span><br>解決したパス: <span class="mono">${esc(abs)}</span>`, "warning", true);
+    }
+    return;
+  }
+  try {
+    const p = String(path).replace(/\\/g, "/");
+    // ファイル名のみ (スタックフレーム) は /api/find で候補を出す
+    if (!opts.direct && !p.includes("/")) {
+      const r = await api(`/api/find?name=${encodeURIComponent(p)}`);
+      if (req !== panelReq) return;
+      if (r.candidates.length === 0) {
+        panelState("none");
+        panelAlert(`<b>${esc(p)}</b> が source_root 以下に見つかりません。`, "warning", true);
+        return;
+      }
+      if (r.candidates.length > 1) {
+        panelState("none");
+        showCandidates(p, line, r.candidates, `<b>${esc(p)}</b> の候補が ${r.candidates.length} 件あります。開くファイルを選んでください。`);
+        return;
+      }
+      return openSource(r.candidates[0], line, { direct: true });
+    }
+    const src = await api(`/api/source?path=${encodeURIComponent(p)}`);
+    if (req !== panelReq) return;
+    await showInEditor(src, line, req);
+  } catch (e) {
+    if (req !== panelReq) return;
+    panelState("none");
+    const p = String(path).replace(/\\/g, "/");
+    if (e.code === "no_root") {
+      panelAlert("source_root が未設定、または存在しません。設定でエンジンのリポジトリルートを指定してください。", "warning", true);
+    } else if (e.code === "not_found" || e.code === "outside_root") {
+      panelAlert(`${esc(e.message)}`, e.code === "outside_root" ? "error" : "warning", true);
+      // 同名ファイルの候補を探す (source_root が別階層のとき用)
+      try {
+        const base = p.split("/").pop();
+        const r = await api(`/api/find?name=${encodeURIComponent(base)}`);
+        if (req === panelReq && r.candidates.length && e.code === "not_found") {
+          showCandidates(base, line, r.candidates, `同名ファイルの候補 (${r.candidates.length} 件):`);
+        }
+      } catch (_) { /* 候補なし */ }
+    } else {
+      panelAlert(esc(e.message), "error");
+    }
+  }
+}
+async function showInEditor(src, line, req) {
+  let monaco;
+  try { monaco = await loadMonaco(); }
+  catch (e) { if (req === panelReq) { panelState("none"); panelAlert(esc(e.message), "error"); } return; }
+  if (req !== panelReq) return;
+  panelState("editor");
+  if (!editor) {
+    editor = monaco.editor.create($("#editor"), {
+      readOnly: true, automaticLayout: true, theme: document.documentElement.dataset.theme === "dark" ? "vs-dark" : "vs",
+      minimap: { enabled: true }, scrollBeyondLastLine: false, glyphMargin: true, renderLineHighlight: "none",
+      fontSize: 13, domReadOnly: true, wordWrap: "off",
+    });
+  }
+  const old = curModel;
+  curModel = monaco.editor.createModel(src.content, src.language);
+  editor.setModel(curModel);
+  if (old) old.dispose();
+  curSrc = { path: src.path, line, abs: src.abs };
+  $("#cpPath").textContent = src.path; $("#cpPath").title = src.abs;
+  $("#cpSub").textContent = src.abs;
+  $("#cpLang").textContent = src.language; $("#cpLang").classList.remove("hidden");
+  editor.layout();
+  decos = editor.deltaDecorations(decos, []);
+  if (line != null) {
+    const total = curModel.getLineCount();
+    const ln = Math.min(Math.max(1, line), total);
+    if (ln !== line) panelAlert(`指定の行 ${line} がファイルの行数 (${total}) を超えているため、最終行を表示しています。ソースがログ出力時と異なる可能性があります。`, "warning");
+    decos = editor.deltaDecorations([], [{
+      range: new monaco.Range(ln, 1, ln, 1),
+      options: { isWholeLine: true, className: "sxx-hl-line", glyphMarginClassName: "sxx-hl-glyph" },
+    }]);
+    editor.setPosition({ lineNumber: ln, column: 1 });
+    editor.revealLineInCenter(ln);
+  } else {
+    editor.setScrollTop(0);
+  }
+}
+$("#cpCopy").addEventListener("click", () => {
+  if (!curSrc) return;
+  const base = curSrc.abs || curSrc.path;
+  copyText(curSrc.line != null ? `${base}:${curSrc.line}` : base);
+});
+/* スプリッタ (左右: ログ | 右ペイン / 上下: 詳細 | Monaco)。比率は localStorage に保存 (失敗しても動作) */
+const lsGet = k => { try { const v = parseFloat(localStorage.getItem(k)); return v > 0 && v < 1 ? v : null; } catch (_) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (_) {} };
+const MIN_LOG_W = 420, MIN_PANE_H = 120, K_H = "sxx.split.h", K_V = "sxx.split.v";
+let hFrac = lsGet(K_H) ?? 0.48, vFrac = lsGet(K_V) ?? 0.5;
+function applyH(w) {     // w: px (null なら比率から)
+  const total = panel.parentElement.clientWidth;
+  if (!total) return;
+  const max = Math.max(200, total - MIN_LOG_W - 6), min = Math.min(320, max);
+  panel.style.width = Math.min(Math.max(w ?? hFrac * total, min), max) + "px";
+}
+function applyV(h) {
+  const total = panel.clientHeight - 6;
+  if (total <= 0) return;
+  const max = Math.max(MIN_PANE_H, total - MIN_PANE_H);
+  $("#detailPane").style.height = Math.min(Math.max(h ?? vFrac * total, MIN_PANE_H), max) + "px";
+}
+window.addEventListener("resize", () => { applyH(); applyV(); });
+function dragger(el, axis) {
+  let start = 0, startSize = 0;
+  el.addEventListener("pointerdown", e => {
+    start = axis === "x" ? e.clientX : e.clientY;
+    startSize = axis === "x" ? panel.getBoundingClientRect().width : $("#detailPane").getBoundingClientRect().height;
+    el.setPointerCapture(e.pointerId); el.classList.add("drag"); e.preventDefault();
+  });
+  el.addEventListener("pointermove", e => {
+    if (!el.classList.contains("drag")) return;
+    if (axis === "x") applyH(startSize + (start - e.clientX)); else applyV(startSize + (e.clientY - start));
+  });
+  const end = e => {
+    if (!el.classList.contains("drag")) return;
+    el.classList.remove("drag"); try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+    if (axis === "x") { hFrac = panel.getBoundingClientRect().width / panel.parentElement.clientWidth; lsSet(K_H, hFrac.toFixed(4)); applyH(); }
+    else { vFrac = $("#detailPane").getBoundingClientRect().height / (panel.clientHeight - 6); lsSet(K_V, vFrac.toFixed(4)); applyV(); }
+  };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+}
+dragger($("#splitter"), "x"); dragger($("#vsplitter"), "y");
+applyH(); applyV();
+
+/* ---------- 設定 ---------- */
+function openSettings() {
+  $("#setSourceRoot").value = state.cfg ? state.cfg.source_root : "";
+  $("#setLogDir").value = state.cfg ? state.cfg.log_dir : "";
+  $("#setErr").classList.add("hidden");
+  $("#setAssets").textContent = ({ vendor: "vendor (ローカル)", cdn: "CDN (jsDelivr)", mixed: "一部 vendor / 一部 CDN" })[ASSET_MODE] || ASSET_MODE;
+  $("#settingsModal").showModal();
+}
+$("#settingsBtn").addEventListener("click", openSettings);
+/* 「参照…」: サーバ側 (この PC) でネイティブのフォルダ選択ダイアログを開く。保存は「保存」ボタン */
+document.querySelectorAll("[data-pick]").forEach(btn => btn.addEventListener("click", async () => {
+  if (btn.disabled) return;
+  const input = document.getElementById(btn.dataset.pick), label = btn.textContent;
+  document.querySelectorAll("[data-pick]").forEach(b => { b.disabled = true; });
+  btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+  $("#setErr").classList.add("hidden");
+  try {
+    const r = await postJson("/api/pick-folder", { initial: input.value.trim(), title: btn.dataset.title });
+    if (r.path) input.value = r.path;
+  } catch (e) {
+    $("#setErr").textContent = e.status === 501 ? "この環境ではフォルダ選択ダイアログを開けません。テキストで入力してください。" : e.message;
+    $("#setErr").classList.remove("hidden");
+  } finally {
+    btn.textContent = label;
+    document.querySelectorAll("[data-pick]").forEach(b => { b.disabled = false; });
+  }
+}));
+$("#setSave").addEventListener("click", async () => {
+  try {
+    const before = state.cfg ? state.cfg.log_dir : "";
+    state.cfg = await postJson("/api/config", { source_root: $("#setSourceRoot").value, log_dir: $("#setLogDir").value });
+    $("#settingsModal").close();
+    toast("設定を保存しました", "success");
+    if (state.cfg.warning) toast(state.cfg.warning, "warning");
+    await loadLogList();
+    if (state.cfg.log_dir !== before && state.logs.length && (!state.source || state.source.type === "server")) loadServerLog(state.logs[0].name);
+    updateInfo();
+    refreshExists();
+    if (curSrc) openSource(curSrc.path, curSrc.line);
+  } catch (e) {
+    $("#setErr").textContent = e.message; $("#setErr").classList.remove("hidden");
+  }
+});
+
+/* ---------- キーボード ---------- */
+document.addEventListener("keydown", ev => {
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "f") {
+    if (ev.target.closest && ev.target.closest("#editor")) return;   // Monaco 内は Monaco の検索
+    ev.preventDefault();
+    const q = $("#q");
+    $("#sidebarToggle").checked = true;
+    q.focus(); q.select();
+  } else if (ev.key === "Escape") {
+    if (document.querySelector("dialog[open]")) return;               // dialog は標準動作で閉じる
+    if (document.activeElement === $("#q") && $("#q").value) { $("#q").value = ""; state.query = ""; refresh(); }
+    else if (state.sel) clearSel();
+  }
+});
+
+/* ---------- 生存確認 (SSE) ----------
+   タブが開いている間 /api/alive をつなぎっぱなしにする。タブを閉じると切断され、サーバが全タブの切断を検知して自動終了する。
+   タイマー(setInterval)は非表示タブで間引かれるため使わない。 */
+(function watchAlive() {
+  if (!window.EventSource) return;
+  const es = new EventSource("/api/alive");
+  let leaving = false;
+  window.addEventListener("pagehide", () => { leaving = true; es.close(); });
+  window.addEventListener("beforeunload", () => { leaving = true; });
+  es.onerror = () => {      // サーバ終了。自動再接続で騒がないよう閉じて、画面上部に知らせる
+    es.close();
+    if (!leaving) $("#serverDown").classList.remove("hidden");
+  };
+})();
+
+/* ---------- 初期化 ---------- */
+(async function init() {
+  try {
+    state.cfg = await api("/api/config");
+    applyTheme(state.cfg.theme || "dark");
+    $("#groupMode").value = state.cfg.group_mode || "callsite";
+    if (state.cfg.warning) toast(state.cfg.warning, "warning");
+  } catch (e) { showNotice(`設定を取得できません: ${esc(e.message)}`); }
+  updateInfo();
+  await loadLogList();
+  const want = new URLSearchParams(location.search).get("log");
+  const first = want && state.logs.some(l => l.name === want) ? want : (state.logs[0] && state.logs[0].name);
+  if (first) await loadServerLog(first);
+  // 一覧に無い ?log= 指定は無視 (サーバ側でも log_dir 直下のみ許可)
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

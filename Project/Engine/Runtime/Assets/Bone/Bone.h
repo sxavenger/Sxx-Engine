@@ -42,7 +42,8 @@ public:
 		std::string name;
 		Transform3d transform;
 		std::vector<Node> children;
-		std::vector<Uuid> meshIds;
+		std::vector<Uuid> staticMeshIds;
+		std::vector<Uuid> skeletalMeshIds;
 
 	};
 
@@ -57,7 +58,7 @@ public:
 		//=========================================================================================
 
 		//=========================================================================================
-		// private variables
+		// public variables
 		//=========================================================================================
 
 		Node root;

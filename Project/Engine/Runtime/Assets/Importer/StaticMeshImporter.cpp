@@ -34,13 +34,19 @@ StaticMeshContents StaticMeshImporter::Import(const std::filesystem::path& filep
 	if (type == FileType::Other) {
 		//!< Assetファイル以外の場合はMetadataを作成.
 
-		//! directoryの追加
+		//!< directoryの追加
 		parent /= StaticMesh::kDirectory;
 		std::filesystem::create_directories(parent); //!< ディレクトリが存在しない場合は作成する
 
 		//!< metadataのファイル名の作成
 		const AssimpMesh& mesh = AssimpCommon::GetImporter(filepath).GetMesh(parameters.index); //!< assimpのmeshを取得
-		filename = std::filesystem::path(mesh.GetName()).replace_extension(kAssetFileExtension); //!< ファイル名をmesh名に変更
+
+		std::string name = std::string(mesh.GetName());
+		if (name.empty()) {
+			name = std::format("StaticMesh_{}", parameters.index); //!< mesh名が空の場合は, "StaticMesh_{index}"という名前を付ける
+		}
+
+		filename = std::filesystem::path(name).replace_extension(kAssetFileExtension); //!< ファイル名をmesh名に変更
 
 		//!< metadataが存在しているか確認する.
 		if (std::filesystem::exists(parent / filename)) {

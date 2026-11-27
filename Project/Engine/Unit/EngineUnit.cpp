@@ -57,6 +57,15 @@ void EngineUnit::Setup(Framework::Pipeline& pipeline) {
 		Graphics::Core::CheckDeviceStatus(); //!< deviceの状態をチェックする.
 	});
 
+	pipeline.SetProcess(Framework::Phase::Update, Framework::Priority::Lowest, [this]() {
+		World::EntityStorage::GetInstance()->ForEachRootActiveRecursive([](const RefPtr<World::EntityBehaviour>& entity) {
+			if (entity->HasComponent<World::TransformComponent>()) {
+				RefPtr<World::TransformComponent> transform = entity->GetComponent<World::TransformComponent>();
+				transform->Update(); //!< TransformComponentの更新処理
+			}
+		});
+	});
+
 	pipeline.SetProcess(Framework::Phase::EndFrame, Framework::Priority::Highest, [this]() {
 		//!< graphicsの終了frame処理
 		Graphics::Core::SubmitDirectQueueAdvance();
@@ -89,6 +98,7 @@ void EngineUnit::InitEngine() {
 	CrashHandler::Install();
 
 	STREAM_LOG_INFO("Sxavenger Engine >> version: {}", SXAVENGER_ENGINE_VERSION);
+	STREAM_LOG_INFO("Agility SDK >> version: 1.{}", D3D12_SDK_VERSION);
 	STREAM_LOG_INFO("Assimp >> version: {}", Assets::AssimpCommon::GetAssimpVersion());
 
 	configuration_.Load("Engine/Packages/config/Platform.toml");

@@ -10,8 +10,7 @@
 #include <Engine/Runtime/Graphics/Pipeline/ReflectedGraphicsPipelineState.h>
 
 //* engine [assets]
-#include <Engine/Runtime/Assets/Texture/Texture.h>
-#include <Engine/Runtime/Assets/Mesh/StaticMesh.h>
+#include <Engine/Runtime/Assets/Animation/AnimationSequence.h>
 #include <Engine/Runtime/Assets/Handle/AssetHandle.h>
 
 //* engine [world]
@@ -58,6 +57,8 @@ private:
 
 	Sxx::Rendering::SceneProxy scene_;
 	Sxx::Rendering::BufferCollection buffer_;
+
+	Sxx::Assets::AssetHandle<Sxx::Assets::AnimationSequence> animation_;
 
 	//=========================================================================================
 	// private methods

@@ -33,9 +33,11 @@ public:
 	// public methods
 	//=========================================================================================
 
-	void Cache(const std::shared_ptr<Assets::Texture>& texture);
+	void Cache(const std::shared_ptr<const Assets::Texture>& texture);
 
 	//* cache option *//
+
+	std::shared_ptr<const Assets::Texture> GetReference() const;
 
 	const Graphics::Descriptor& GetDescriptor() const { return descriptor_; }
 

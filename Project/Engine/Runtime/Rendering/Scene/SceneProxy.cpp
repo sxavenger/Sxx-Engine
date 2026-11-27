@@ -50,6 +50,7 @@ void SceneProxy::Setup() {
 
 void SceneProxy::Reset() {
 	staticMeshes.clear();
+	skeletalMeshes.clear();
 	directionalLights.clear();
 	pointLights.clear();
 	tlas.ResetInstance();
@@ -58,6 +59,10 @@ void SceneProxy::Reset() {
 
 void SceneProxy::AddMeshInstance(const StaticMeshInstance& instance) {
 	staticMeshes.emplace_back(instance);
+}
+
+void SceneProxy::AddMeshInstance(const SkeletalMeshInstance& instance) {
+	skeletalMeshes.emplace_back(instance);
 }
 
 void SceneProxy::AddLightInstance(const DirectionalLightInstance& instance) {

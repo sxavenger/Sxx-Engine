@@ -154,10 +154,10 @@ void RenderPassUpscaling::UpscalingBilinear(Graphics::GraphicsCommandContext& co
 
 	pipeline.BindShaderParameter(command, parameter);
 
-	const Vector3u& threadGroupSize = pipeline.GetThreadGroupSize();
+	const Graphics::ThreadGroupSize& threadGroupSize = pipeline.GetThreadGroupSize();
 	commandList->Dispatch(
-		Graphics::RoundUp(data.outputResolution.x, threadGroupSize.x),
-		Graphics::RoundUp(data.outputResolution.y, threadGroupSize.y),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.x, threadGroupSize.x),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.y, threadGroupSize.y),
 		1
 	);
 
@@ -190,8 +190,8 @@ void RenderPassUpscaling::UpscalingNIS(Graphics::GraphicsCommandContext& command
 
 	//!< NISは1グループで1ブロックを処理するため, ブロックサイズで割る.
 	command.GetCommandList()->Dispatch(
-		Graphics::RoundUp(data.outputResolution.x, UpscalerNIS::kBlockWidth),
-		Graphics::RoundUp(data.outputResolution.y, UpscalerNIS::kBlockHeight),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.x, UpscalerNIS::kBlockWidth),
+		Graphics::ThreadGroupSize::RoundUp(data.outputResolution.y, UpscalerNIS::kBlockHeight),
 		1
 	);
 

@@ -6,6 +6,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <Lib/Any/Any.h>
+
 //* c++
 #include <concepts>
 #include <optional>
@@ -45,6 +48,8 @@ protected:
 	//=========================================================================================
 
 	std::optional<uintptr_t> address_ = std::nullopt;
+
+	Any reference_; //!< キャッシュの参照先を保持するany
 
 };
 

@@ -43,7 +43,7 @@ public:
 
 	ID3D12ShaderReflectionConstantBuffer* GetConstantBufferByName(const std::string_view& name) const;
 
-	Vector3u GetThreadGroupSize() const;
+	ThreadGroupSize GetThreadGroupSize() const;
 
 	//* operator [copy / move] <ShaderBlob> *//
 

@@ -35,17 +35,15 @@ void SurfaceMaterialCache::Cache(const std::shared_ptr<const Assets::SurfaceMate
 	//!< bufferの作成
 	materialBuffer_ = SurfaceMaterialCache::CreateSurfaceMaterialBuffer(material->GetName());
 
-	//!< materialの保持
-	material_ = material;
-
-	//!< addressの取得
-	address_ = material->GetAddress();
+	//!< キャッシュの参照データの保持
+	reference_ = material;
+	address_   = material->GetAddress();
 
 	STREAM_LOG_INFO("Rendering::SurfaceMaterialCache | cache surface material completed. name: {}", material->GetName());
 }
 
 void SurfaceMaterialCache::Refresh() {
-	if (material_ == nullptr) {
+	if (!reference_.HasValue()) {
 		return; //!< materialがキャッシュされていない場合は何もしない
 	}
 
@@ -53,15 +51,17 @@ void SurfaceMaterialCache::Refresh() {
 		return; //!< material bufferが作成されていない場合は何もしない
 	}
 
-	Scheduler::TaskHandle handle = material_->GetTaskHandle();
+	std::shared_ptr<const Assets::SurfaceMaterial> material = GetReference(); //!< キャッシュの参照データを取得
+
+	Scheduler::TaskHandle handle = material->GetTaskHandle();
 
 	if (handle.GetState() != Scheduler::TaskState::State::Completed) {
-		STACK_LOG_WARNING("Rendering::SurfaceMaterialCache | surface material is not ready. name: {}", material_->GetName());
+		STACK_LOG_WARNING("Rendering::SurfaceMaterialCache | surface material is not ready. name: {}", material->GetName());
 		return; //!< taskが完了していない場合はキャッシュしない
 	}
 
 	//!< descriptionの取得
-	const Assets::SurfaceMaterial::Description& description = material_->GetDescription();
+	const Assets::SurfaceMaterial::Description& description = material->GetDescription();
 
 
 	//!< textureのキャッシュ
@@ -180,6 +180,10 @@ void SurfaceMaterialCache::Refresh() {
 	} else {
 		data.metallic = Material::Metallic::FromValue(description.metallic);
 	}
+}
+
+std::shared_ptr<const Assets::SurfaceMaterial> SurfaceMaterialCache::GetReference() const {
+	return reference_.Get<std::shared_ptr<const Assets::SurfaceMaterial>>(); //!< キャッシュの参照データを返す
 }
 
 bool SurfaceMaterialCache::HasTextureCache(const Uuid& uuid) {

@@ -21,7 +21,7 @@ SXAVENGER_ENGINE_USING_(Assets)
 // BoneImporter class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-BoneContents BoneImporter::Import(const std::filesystem::path& filepath, const ReferenceParameters& parameters) {
+BoneContents BoneImporter::Import(const std::filesystem::path& filepath, MAYBE_UNUSED const ReferenceParameters& parameters) {
 	STREAM_ASSERT(std::filesystem::exists(filepath), "bone file does not exist. filepath: {}", filepath.generic_string()); //!< ファイルが存在するか確認
 
 	BoneContents contents = {};
@@ -34,7 +34,7 @@ BoneContents BoneImporter::Import(const std::filesystem::path& filepath, const R
 	if (type == FileType::Other) {
 		//!< Assetファイル以外の場合はMetadataを作成.
 
-		//! directoryの追加
+		//!< directoryの追加
 		parent /= Bone::kDirectory;
 		std::filesystem::create_directories(parent); //!< ディレクトリが存在しない場合は作成する
 

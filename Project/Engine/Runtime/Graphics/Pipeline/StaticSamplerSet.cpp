@@ -11,7 +11,7 @@ SXAVENGER_ENGINE_USING_(Graphics)
 // StaticSamplerSet structure methods
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void StaticSamplerSet::SetSamplerFilter(const std::string& name, SampleFilter filter, SampleMode mode, UINT anisotropic) {
+void StaticSamplerSet::SetSamplerFilter(const std::string_view& name, SampleFilter filter, SampleMode mode, UINT anisotropic) {
 	D3D12_STATIC_SAMPLER_DESC desc = {};
 	desc.Filter          = static_cast<D3D12_FILTER>(filter);
 	desc.AddressU        = static_cast<D3D12_TEXTURE_ADDRESS_MODE>(mode);
@@ -24,26 +24,26 @@ void StaticSamplerSet::SetSamplerFilter(const std::string& name, SampleFilter fi
 	samplers[name] = desc;
 }
 
-void StaticSamplerSet::SetSamplerLinear(const std::string& name, SampleMode mode) {
+void StaticSamplerSet::SetSamplerLinear(const std::string_view& name, SampleMode mode) {
 	StaticSamplerSet::SetSamplerFilter(name, SampleFilter::Linear, mode, 0);
 }
 
-void StaticSamplerSet::SetSamplerPoint(const std::string& name, SampleMode mode) {
+void StaticSamplerSet::SetSamplerPoint(const std::string_view& name, SampleMode mode) {
 	StaticSamplerSet::SetSamplerFilter(name, SampleFilter::Point, mode, 0);
 }
 
-void StaticSamplerSet::SetSamplerAnisotropic(const std::string& name, SampleMode mode, UINT anisotropic) {
+void StaticSamplerSet::SetSamplerAnisotropic(const std::string_view& name, SampleMode mode, UINT anisotropic) {
 	StaticSamplerSet::SetSamplerFilter(name, SampleFilter::Anisotropic, mode, anisotropic);
 }
 
-bool StaticSamplerSet::Contains(const std::string& name) const {
-	return samplers.contains(name);
+bool StaticSamplerSet::Contains(const std::string_view& name) const {
+	return samplers.Contains(name);
 }
 
-D3D12_STATIC_SAMPLER_DESC StaticSamplerSet::GetSampler(const std::string& name, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) const {
-	STREAM_ASSERT(samplers.contains(name), "sampler is not found. sampler name: {}", name);
+D3D12_STATIC_SAMPLER_DESC StaticSamplerSet::GetSampler(const std::string_view& name, ShaderVisibility stage, UINT registerNumber, UINT registerSpace) const {
+	STREAM_ASSERT(samplers.Contains(name), "sampler is not found. sampler name: {}", name);
 
-	D3D12_STATIC_SAMPLER_DESC desc = samplers.at(name);
+	D3D12_STATIC_SAMPLER_DESC desc = samplers.At(name);
 	desc.ShaderRegister   = registerNumber;
 	desc.RegisterSpace    = registerSpace;
 	desc.ShaderVisibility = static_cast<D3D12_SHADER_VISIBILITY>(stage);

@@ -5,7 +5,8 @@
 //-----------------------------------------------------------------------------------------
 //* lib
 #include <Lib/Time/LocalTimePoint.h>
-#include <Lib/TracePoint/TracePoint.h>
+#include <Lib/Snapshot/Snapshot.h>
+#include <Lib/Snapshot/SnapshotDetailed.h>
 
 //* c++
 #include <cstdint>
@@ -13,7 +14,7 @@
 #include <concepts>
 #include <format>
 #include <string>
-#include <source_location>
+#include <filesystem>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // LoggerUtil namespace
@@ -77,10 +78,16 @@ namespace LoggerUtil {
 	//! @brief std::thread::idを文字列に変換する. (ex. L"main thread" or L"thread id: 00000")
 	std::wstring SerializeThreadstampW(std::thread::id id);
 
-	//! @brief std::source_locationを1行の文字列に変換する. (ex. "filename.cpp:123")
-	std::string SerializeLocationOneLineA(const std::source_location& location);
+	//! @brief fileとlineを1行の文字列に変換する. (ex. "filename.cpp:123")
+	std::string SerializeLocationFilenameOneLineA(const std::filesystem::path& file, uint_least32_t line);
 
-	//! @brief std::source_locationを1行の文字列に変換する. (ex. L"filename.cpp:123")
-	std::wstring SerializeLocationOneLineW(const std::source_location& location);
+	//! @brief fileとlineを1行の文字列に変換する. (ex. L"filename.cpp:123")
+	std::wstring SerializeLocationFilenameOneLineW(const std::filesystem::path& file, uint_least32_t line);
+
+	//! @brief fileとlineを1行の文字列に変換する. (ex. "../directory/filename.cpp:123")
+	std::string SerializeLocationOneLineA(const std::filesystem::path& file, uint_least32_t line);
+
+	//! @brief fileとlineを1行の文字列に変換する. (ex. L"../directory/filename.cpp:123")
+	std::wstring SerializeLocationOneLineW(const std::filesystem::path& file, uint_least32_t line);
 
 }

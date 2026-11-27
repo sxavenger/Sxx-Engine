@@ -67,10 +67,18 @@ std::wstring LoggerUtil::SerializeThreadstampW(std::thread::id id) {
 	return stamp.str();
 }
 
-std::string LoggerUtil::SerializeLocationOneLineA(const std::source_location& location) {
-	return std::format("{}:{}", std::filesystem::path(location.file_name()).filename().string(), location.line());
+std::string LoggerUtil::SerializeLocationFilenameOneLineA(const std::filesystem::path& file, uint_least32_t line) {
+	return std::format("{}:{}", file.filename().string(), line);
 }
 
-std::wstring LoggerUtil::SerializeLocationOneLineW(const std::source_location& location) {
-	return std::format(L"{}:{}", std::filesystem::path(location.file_name()).filename().wstring(), location.line());
+std::wstring LoggerUtil::SerializeLocationFilenameOneLineW(const std::filesystem::path& file, uint_least32_t line) {
+	return std::format(L"{}:{}", file.filename().wstring(), line);
+}
+
+std::string LoggerUtil::SerializeLocationOneLineA(const std::filesystem::path& file, uint_least32_t line) {
+	return std::format("{}:{}", file.generic_string(), line);
+}
+
+std::wstring LoggerUtil::SerializeLocationOneLineW(const std::filesystem::path& file, uint_least32_t line) {
+	return std::format(L"{}:{}", file.generic_wstring(), line);
 }

@@ -1,0 +1,107 @@
+#pragma once
+
+//-----------------------------------------------------------------------------------------
+// include
+//-----------------------------------------------------------------------------------------
+//* assets
+#include "../Base/BaseAsset.h"
+#include "Animation.h"
+#include "AnimationSequenceMetadata.h"
+
+//* engine
+#include <Runtime/Foundation.hpp>
+
+//* lib
+#include <Lib/Container/StringHashMap.h>
+#include <Lib/Time/TimePoint.h>
+#include <Lib/Math/Transform/Transform3d.h>
+
+//* c++
+#include <string>
+#include <optional>
+#include <unordered_map>
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Sxavenger Engine namespace
+////////////////////////////////////////////////////////////////////////////////////////////
+SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// AnimationSequence class
+////////////////////////////////////////////////////////////////////////////////////////////
+class AnimationSequence final
+	: public BaseAsset {
+public:
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// Description structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct Description {
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		bool ContainsBone(const std::string_view& name) const;
+
+		Transform3d SampleBoneTransform(const std::string_view& name, TimePointd<TimeUnit::Second> time) const;
+
+		//=========================================================================================
+		// public variables
+		//=========================================================================================
+
+		TimePointd<TimeUnit::Second> duration; //!< アニメーション全体時間
+		StringHashMap<Animation> boneAnimations; //!< bone名をキーにして, Animationを保持するmap
+
+		static inline const std::string_view kTranslationCurveName = "translation"; //!< translationのcurve名
+		static inline const std::string_view kRotationCurveName    = "rotation";    //!< rotationのcurve名
+		static inline const std::string_view kScaleCurveName       = "scale";       //!< scaleのcurve名
+
+	};
+
+public:
+
+	//=========================================================================================
+	// public methods
+	//=========================================================================================
+
+	//* constructor / destructor *//
+
+	AnimationSequence(const BaseAssetMetadata& metadata) noexcept : BaseAsset(metadata) {}
+	~AnimationSequence() noexcept override = default;
+
+	//* description option *//
+
+	const Description& GetDescription() const;
+
+	//=========================================================================================
+	// public variables
+	//=========================================================================================
+
+	//* directory *//
+
+	static inline const std::filesystem::path kDirectory = L"Animations"; //!< SkeletalAnimationの保存ディレクトリ
+
+private:
+
+	//=========================================================================================
+	// private variables
+	//=========================================================================================
+
+	//* metadata *//
+
+	AnimationSequenceMetadata metadata_;
+
+	//* description *//
+
+	Description description_;
+
+	//-----------------------------------------------------------------------------------------
+	// friend class
+	//-----------------------------------------------------------------------------------------
+	friend class AnimationSequenceBuilder;
+
+};
+
+SXAVENGER_ENGINE_NAMESPACE_END

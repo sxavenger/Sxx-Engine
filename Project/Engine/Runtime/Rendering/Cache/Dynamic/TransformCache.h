@@ -75,7 +75,7 @@ private:
 	// private variables
 	//=========================================================================================
 
-	//* projection *//
+	//* transform *//
 
 	Graphics::ConstantBuffer<TransformationData> transformationBuffer_;
 

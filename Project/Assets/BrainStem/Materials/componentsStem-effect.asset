@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"reference": {
+			"filepath": "../BrainStem.gltf",
+			"index": 1
+		}
+	},
+	"type": "SurfaceMaterial",
+	"uuid": "6b0fcbc3-7230-4bcf-ba01-7af6d1ea2f64"
+}

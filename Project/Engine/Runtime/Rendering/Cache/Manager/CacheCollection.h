@@ -31,6 +31,9 @@ public:
 	void Cache(uintptr_t address, const Args&... args);
 
 	template <DynamicCache T>
+	std::shared_ptr<T> GetCache(uintptr_t address);
+
+	template <DynamicCache T>
 	std::shared_ptr<const T> GetCache(uintptr_t address) const;
 
 	//* static cache option *//
@@ -65,6 +68,11 @@ private:
 template <DynamicCache T, typename... Args>
 inline void CacheCollection::Cache(uintptr_t address, const Args&... args) {
 	dynamicCollection_.Store<T>(address, args...);
+}
+
+template <DynamicCache T>
+inline std::shared_ptr<T> CacheCollection::GetCache(uintptr_t address) {
+	return dynamicCollection_.Get<T>(address);
 }
 
 template <DynamicCache T>

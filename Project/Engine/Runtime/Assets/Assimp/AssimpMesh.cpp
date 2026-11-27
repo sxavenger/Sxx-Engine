@@ -65,7 +65,7 @@ uint32_t AssimpMesh::GetFaceCount() const {
 }
 
 AssimpMesh::Triangle AssimpMesh::GetTriangle(uint32_t index) const {
-	STREAM_ASSERT(index < GetFaceCount(), "index is out of bounds.");
+	STREAM_ASSERT(index < mesh_->mNumFaces, "index is out of bounds.");
 	const aiFace& face = mesh_->mFaces[index];
 
 	STREAM_ASSERT(face.mNumIndices == 3, "face is not triangle.");
@@ -82,4 +82,8 @@ bool AssimpMesh::HasBone() const {
 
 uint32_t AssimpMesh::GetBoneCount() const {
 	return mesh_->mNumBones;
+}
+
+AssimpBone AssimpMesh::GetBone(uint32_t index) const {
+	return mesh_->mBones[index];
 }

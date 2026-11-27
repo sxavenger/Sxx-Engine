@@ -43,6 +43,14 @@ TaskHandle System::PushCopyQueueTask(const std::string_view& name, const GpuTask
 	return gpu_.PushTask(std::make_shared<GpuTask>(GpuTask::CreateCopyTask(name, function, priority)));
 }
 
+TaskHandle System::PushCopyQueueTask(const std::string_view& name, TaskPriority priority, const GpuTask::Function& function) {
+	return gpu_.PushTask(std::make_shared<GpuTask>(GpuTask::CreateCopyTask(name, function, priority)));
+}
+
 TaskHandle System::PushComputeQueueTask(const std::string_view& name, const GpuTask::Function& function, TaskPriority priority) {
+	return gpu_.PushTask(std::make_shared<GpuTask>(GpuTask::CreateComputeTask(name, function, priority)));
+}
+
+TaskHandle System::PushComputeQueueTask(const std::string_view& name, TaskPriority priority, const GpuTask::Function& function) {
 	return gpu_.PushTask(std::make_shared<GpuTask>(GpuTask::CreateComputeTask(name, function, priority)));
 }

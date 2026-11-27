@@ -24,7 +24,7 @@ public:
 	// public methods
 	//=========================================================================================
 
-	static void Increment() { ++currentFrame_; }
+	static void Increment() { currentFrame_++; }
 
 	static uint64_t GetCurrentFrame() { return currentFrame_; }
 

@@ -14,9 +14,6 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Lib/Logger/StreamLogger.h>
 #include <Lib/Logger/StackLogger.h>
 
-//* meshoptimizer
-#include <meshoptimizer/meshoptimizer.h>
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 // StaticMeshCache class methods
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +31,9 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	const Assets::StaticMesh::Description& description = mesh->GetDescription();
 
 	//!< 頂点bufferの作成
-	positionVertexBuffer_   = StaticMeshCache::CreatePositionVertexBuffer(mesh->GetName(), description);
-	staticMeshVertexBuffer_ = StaticMeshCache::CreateStaticMeshVertexBuffer(mesh->GetName(), description);
-	indexBuffer_            = StaticMeshCache::CreateIndexBuffer(mesh->GetName(), description);
+	positionVertexBuffer_ = StaticMeshCache::CreatePositionVertexBuffer(mesh->GetName(), description);
+	meshVertexBuffer_     = StaticMeshCache::CreateMeshVertexBuffer(mesh->GetName(), description);
+	indexBuffer_          = StaticMeshCache::CreateIndexBuffer(mesh->GetName(), description);
 
 	//!< meshlet bufferの作成
 	meshletBuffer_ = StaticMeshCache::CreateMeshletBuffer(mesh->GetName(), description);
@@ -44,10 +41,15 @@ void StaticMeshCache::Cache(const std::shared_ptr<Assets::StaticMesh>& mesh) {
 	//!< BLASの構築
 	BuildBottomLevelAccelerationStructure(mesh->GetName());
 
-	//!< addressの取得
-	address_ = mesh->GetAddress();
+	//!< キャッシュの参照データの保持
+	reference_ = mesh;
+	address_   = mesh->GetAddress();
 
 	STREAM_LOG_INFO("Rendering::StaticMeshCache | cache static mesh completed. name: {}", mesh->GetName());
+}
+
+std::shared_ptr<const Assets::StaticMesh> StaticMeshCache::GetReference() const {
+	return reference_.Get<std::shared_ptr<const Assets::StaticMesh>>(); //!< キャッシュの参照データを返す
 }
 
 PositionVertexBuffer StaticMeshCache::CreatePositionVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description) {
@@ -68,27 +70,27 @@ PositionVertexBuffer StaticMeshCache::CreatePositionVertexBuffer(const std::stri
 	return buffer;
 }
 
-StaticMeshVertexBuffer StaticMeshCache::CreateStaticMeshVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description) {
+MeshVertexBuffer StaticMeshCache::CreateMeshVertexBuffer(const std::string_view& name, const Assets::StaticMesh::Description& description) {
 
 	//!< bufferの作成
-	StaticMeshVertexBuffer buffer = StaticMeshVertexBuffer::Create(
+	MeshVertexBuffer buffer = MeshVertexBuffer::Create(
 		static_cast<UINT>(description.vertices.size()),
 		1
 	);
 
 	//!< bufferの各頂点のmesh情報を設定
 	for (size_t i = 0; i < description.vertices.size(); ++i) {
-		StaticMeshVertexBuffer::Vertex& vertex = buffer.vertices.At(i);
+		MeshVertexBuffer::Vertex& vertex = buffer.vertices.At(i);
 		vertex.texcoord = description.vertices[i].texcoord;
 		vertex.normal   = description.vertices[i].normal;
-		vertex.tangent  = StaticMeshVertexBuffer::Vertex::EncodeTangent(
+		vertex.tangent  = MeshVertexBuffer::Vertex::EncodeTangent(
 			description.vertices[i].normal,
 			description.vertices[i].tangent,
 			description.vertices[i].bitangent
 		);
 	}
 
-	buffer.vertices.SetName(std::format("StaticMeshCache | StaticMeshVertexBuffer | {}", name));
+	buffer.vertices.SetName(std::format("StaticMeshCache | MeshVertexBuffer | {}", name));
 	return buffer;
 }
 

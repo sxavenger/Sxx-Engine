@@ -75,8 +75,7 @@ public:
 
 	//* operator [cast] <T*> *//
 
-	constexpr operator T* const () { return pointer_; }
-	constexpr operator const T* () const { return pointer_; }
+	constexpr operator T* () const { return pointer_; }
 
 	//* operator [cast] <bool> *//
 
@@ -84,23 +83,19 @@ public:
 
 	//* operator [dereference] *//
 
-	T& operator*();
-	const T& operator*() const;
+	T& operator*() const;
 
 	//* operator [access] *//
 
-	T* operator->();
-	const T* operator->() const;
+	T* operator->() const;
 
 	//* pointer methods *//
 
 	constexpr void Reset() { pointer_ = nullptr; }
 
-	T* Get() noexcept { return pointer_; }
 	T* Get() const noexcept { return pointer_; }
 
-	T& GetRef();
-	const T& GetRef() const;
+	T& GetRef() const;
 
 	constexpr uintptr_t GetAddress() const { return reinterpret_cast<uintptr_t>(pointer_); }
 
@@ -119,37 +114,19 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-T& ReferencePointer<T>::operator*() {
+T& ReferencePointer<T>::operator*() const {
 	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }
 
 template <typename T>
-const T& ReferencePointer<T>::operator*() const {
-	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
-	return *pointer_;
-}
-
-template <typename T>
-T* ReferencePointer<T>::operator->() {
+T* ReferencePointer<T>::operator->() const {
 	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return pointer_;
 }
 
 template <typename T>
-const T* ReferencePointer<T>::operator->() const {
-	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
-	return pointer_;
-}
-
-template <typename T>
-inline T& ReferencePointer<T>::GetRef() {
-	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
-	return *pointer_;
-}
-
-template <typename T>
-inline const T& ReferencePointer<T>::GetRef() const {
+inline T& ReferencePointer<T>::GetRef() const {
 	STREAM_ASSERT(pointer_ != nullptr, "ReferencePointer is null.");
 	return *pointer_;
 }

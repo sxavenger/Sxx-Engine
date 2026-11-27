@@ -24,6 +24,16 @@ SXAVENGER_ENGINE_NAMESPACE_BEGIN_(Assets)
 struct ModelContents final {
 public:
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// MeshType enum
+	////////////////////////////////////////////////////////////////////////////////////////////
+	enum class MeshType : uint8_t {
+		Static,
+		Skeletal
+	};
+
+public:
+
 	//=========================================================================================
 	// public methods
 	//=========================================================================================
@@ -34,9 +44,11 @@ public:
 	// public variables
 	//=========================================================================================
 
-	std::vector<Uuid> meshIds;
+	std::vector<Uuid> staticMeshIds;
+	std::vector<Uuid> skeletalMeshIds;
 	std::vector<Uuid> materialIds;
 	Uuid boneId;
+	std::vector<Uuid> animationIds;
 
 	std::unordered_map<Uuid, Uuid> meshMaterialMap; //!< meshに対応するmaterialのuuidを格納するunordered_map
 };

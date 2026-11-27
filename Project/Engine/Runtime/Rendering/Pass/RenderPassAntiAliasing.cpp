@@ -159,10 +159,10 @@ void RenderPassAntiAliasing::AntiAliasingFXAA(Graphics::GraphicsCommandContext& 
 
 	pipeline.BindShaderParameter(command, parameter);
 
-	const Vector3u& threadGroupSize = pipeline.GetThreadGroupSize();
+	const Graphics::ThreadGroupSize& threadGroupSize = pipeline.GetThreadGroupSize();
 	commandList->Dispatch(
-		Graphics::RoundUp(data.renderResolution.x, threadGroupSize.x),
-		Graphics::RoundUp(data.renderResolution.y, threadGroupSize.y),
+		Graphics::ThreadGroupSize::RoundUp(data.renderResolution.x, threadGroupSize.x),
+		Graphics::ThreadGroupSize::RoundUp(data.renderResolution.y, threadGroupSize.y),
 		1
 	);
 

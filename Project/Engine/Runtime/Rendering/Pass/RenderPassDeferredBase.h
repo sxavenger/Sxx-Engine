@@ -32,6 +32,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////
 	enum class Pipeline : uint8_t {
 		StaticMesh,
+		SkeletalMesh,
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,8 @@ private:
 	void EndOpaqueMeshRenderPass(Graphics::GraphicsCommandContext& command, const BufferCollection& buffer);
 
 	void RenderStaticMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
+
+	void RenderSkeletalMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data);
 
 };
 

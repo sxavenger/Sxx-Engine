@@ -28,21 +28,21 @@ void ShaderBindingLayout::Reflect(ShaderVisibility visibility, const ShaderRefle
 }
 
 void ShaderBindingLayout::Reset() {
-	slots_.clear();
+	slots_.Clear();
 }
 
-bool ShaderBindingLayout::Contains(const std::string& name) const {
-	return slots_.contains(name);
+bool ShaderBindingLayout::Contains(const std::string_view& name) const {
+	return slots_.Contains(name);
 }
 
-ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string& name) {
-	STREAM_ASSERT(slots_.contains(name), "shader bind slot not found. name: {}", name);
-	return slots_.at(name);
+ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string_view& name) {
+	STREAM_ASSERT(slots_.Contains(name), "shader bind slot not found. name: {}", name);
+	return slots_.At(name);
 }
 
-const ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string& name) const {
-	STREAM_ASSERT(slots_.contains(name), "shader bind slot not found. name: {}", name);
-	return slots_.at(name);
+const ShaderBindingSlot& ShaderBindingLayout::GetSlot(const std::string_view& name) const {
+	STREAM_ASSERT(slots_.Contains(name), "shader bind slot not found. name: {}", name);
+	return slots_.At(name);
 }
 
 RootSignature ShaderBindingLayout::CreateGraphicsRootSignature(const Device& device, D3D12_ROOT_SIGNATURE_FLAGS flags) {
@@ -132,5 +132,5 @@ void ShaderBindingLayout::Insert(ShaderVisibility visibility, const D3D12_SHADER
 	slot.declaration        = declaration;
 
 	//!< 新しいslotを追加
-	slots_.emplace(declaration.name, slot);
+	slots_.Emplace(declaration.name, slot);
 }

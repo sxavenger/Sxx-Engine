@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING_(World)
 //-----------------------------------------------------------------------------------------
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 
 //* c++
 #include <limits>
@@ -33,7 +34,7 @@ EntityHandle EntityStorage::Register() {
 	EntityHandle handle = EntityHandle(allocator_.Allocate());
 	storage_.emplace(handle, std::make_unique<EntityBehaviour>(handle.GetHandle()));
 
-	STREAM_LOG_DEBUG("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
+	STACK_LOG_DEBUG("World::EntityStorage | entity registered. handle: {}", handle.GetHandle());
 	return handle;
 }
 
@@ -44,7 +45,7 @@ void EntityStorage::Unregister(EntityHandle handle) {
 	}
 
 	unregister_.emplace(handle);
-	STREAM_LOG_DEBUG("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
+	STACK_LOG_DEBUG("World::EntityStorage | entity unregistered. handle: {}", handle.GetHandle());
 }
 
 void EntityStorage::Destroy() {
@@ -71,7 +72,31 @@ RefPtr<EntityBehaviour> EntityStorage::GetEntity(EntityHandle handle) const {
 	return storage_.at(handle).get();
 }
 
+void EntityStorage::ForEachRootActiveRecursive(const std::function<void(const RefPtr<EntityBehaviour>&)>& function) {
+	//!< entityのrootを取得し、activeなentityに対して再帰的に処理を行う.
+	for (const auto& entity : storage_ | std::views::values) {
+		if (!entity->HasParent()) {
+			ForEachActiveRecursive(entity.get(), function);
+		}
+	}
+}
+
 EntityStorage* EntityStorage::GetInstance() noexcept {
 	static EntityStorage instance;
 	return &instance;
+}
+
+void EntityStorage::ForEachActiveRecursive(const RefPtr<EntityBehaviour>& entity, const std::function<void(const RefPtr<EntityBehaviour>&)>& function) {
+
+	if (!entity->IsActive()) {
+		return; //!< entityが非activeの場合は処理しない.
+	}
+
+	function(entity); //!< entityに対して処理を行う.
+
+	//!< entityの子供に対して再帰的に処理を行う.
+	for (const EntityHandle& handle : entity->GetChildren() | std::views::keys) {
+		const RefPtr<EntityBehaviour> child = EntityStorage::GetInstance()->GetEntity(handle);
+		ForEachActiveRecursive(child, function);
+	}
 }

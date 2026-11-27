@@ -89,7 +89,7 @@ public:
 
 	//! @brief FrameworkPhaseの処理を登録する
 	//! @param[in] phase    実行する箇所
-	//! @param[in] priority 処理順序
+	//! @param[in] priority 処理順序(Highestが最優先)
 	//! @param[in] function 処理内容
 	void SetProcess(Phase phase, uint8_t priority, const Process& function);
 

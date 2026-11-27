@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------------------
 // include
 //-----------------------------------------------------------------------------------------
+//* assets
+#include "AssimpBone.h"
+
 //* engine
 #include <Runtime/Foundation.hpp>
 
@@ -89,7 +92,7 @@ public:
 
 	uint32_t GetBoneCount() const;
 
-	// TODO: Bone関係の関数の追加.
+	AssimpBone GetBone(uint32_t index) const;
 
 private:
 

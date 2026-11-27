@@ -27,6 +27,7 @@
 #include "Buffer/ResourceAllocator.h"
 #include "Buffer/ConstantBuffer.h"
 #include "Buffer/DimensionBuffer.h"
+#include "Buffer/UnorderedDimensionBuffer.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -117,6 +118,11 @@ public:
 	template <typename T>
 	static DimensionBuffer<T> CreateDimensionBuffer(uint32_t capacity, uint8_t frameCount) {
 		return DimensionBuffer<T>::Create(Core::GetDevice(), Core::GetResourceAllocator(), capacity, frameCount);
+	}
+
+	template <typename T>
+	static UnorderedDimensionBuffer<T> CreateUnorderedDimensionBuffer(uint32_t capacity, uint8_t frameCount) {
+		return UnorderedDimensionBuffer<T>::Create(Core::GetDevice(), Core::GetResourceAllocator(), capacity, frameCount);
 	}
 
 private:

@@ -9,6 +9,9 @@
 //* engine
 #include <Runtime/Foundation.hpp>
 
+//* lib
+#include <Lib/Container/StringHashMap.h>
+
 //* c++
 #include <variant>
 #include <string>
@@ -65,14 +68,14 @@ public:
 
 	//* parameter binding option *//
 
-	void Set32bitConstants(const std::string& name, UINT num32bit, const void* data);
+	void Set32bitConstants(const std::string_view& name, UINT num32bit, const void* data);
 
 	template <typename T> requires std::is_trivially_copyable_v<T>
-	void Set32bitConstants(const std::string& name, const T& data);
+	void Set32bitConstants(const std::string_view& name, const T& data);
 
-	void SetAddress(const std::string& name, const D3D12_GPU_VIRTUAL_ADDRESS& address);
+	void SetAddress(const std::string_view& name, const D3D12_GPU_VIRTUAL_ADDRESS& address);
 
-	void SetHandle(const std::string& name, const D3D12_GPU_DESCRIPTOR_HANDLE& handle);
+	void SetHandle(const std::string_view& name, const D3D12_GPU_DESCRIPTOR_HANDLE& handle);
 
 	//* parameter container option *//
 
@@ -82,21 +85,21 @@ public:
 
 	//* parameter access option *//
 
-	bool Contains(const std::string& name) const;
+	bool Contains(const std::string_view& name) const;
 
-	const Parameter& GetParameter(const std::string& name) const;
+	const Parameter& GetParameter(const std::string_view& name) const;
 
-	const RootConstants& Get32bitConstants(const std::string& name) const;
+	const RootConstants& Get32bitConstants(const std::string_view& name) const;
 
-	const D3D12_GPU_VIRTUAL_ADDRESS& GetAddress(const std::string& name) const;
+	const D3D12_GPU_VIRTUAL_ADDRESS& GetAddress(const std::string_view& name) const;
 
-	const D3D12_GPU_DESCRIPTOR_HANDLE& GetHandle(const std::string& name) const;
+	const D3D12_GPU_DESCRIPTOR_HANDLE& GetHandle(const std::string_view& name) const;
 
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
 
-	std::unordered_map<std::string, Parameter> parameters;
+	StringHashMap<Parameter> parameters;
 
 };
 
@@ -105,7 +108,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T> requires std::is_trivially_copyable_v<T>
-void ShaderParameter::Set32bitConstants(const std::string& name, const T& data) {
+void ShaderParameter::Set32bitConstants(const std::string_view& name, const T& data) {
 	Set32bitConstants(name, sizeof(T) / RootConstants::k32bitConstantSize, &data);
 }
 

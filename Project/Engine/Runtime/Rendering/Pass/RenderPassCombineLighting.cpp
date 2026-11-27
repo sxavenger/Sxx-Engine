@@ -128,10 +128,10 @@ void RenderPassCombineLighting::Combine(Graphics::GraphicsCommandContext& comman
 
 	pipeline.BindShaderParameter(command, parameter);
 
-	const Vector3u& threadGroupSize = pipeline.GetThreadGroupSize();
+	const Graphics::ThreadGroupSize& threadGroupSize = pipeline.GetThreadGroupSize();
 	commandList->Dispatch(
-		Graphics::RoundUp(context.resolution.x, threadGroupSize.x),
-		Graphics::RoundUp(context.resolution.y, threadGroupSize.y),
+		Graphics::ThreadGroupSize::RoundUp(context.resolution.x, threadGroupSize.x),
+		Graphics::ThreadGroupSize::RoundUp(context.resolution.y, threadGroupSize.y),
 		1
 	);
 }
