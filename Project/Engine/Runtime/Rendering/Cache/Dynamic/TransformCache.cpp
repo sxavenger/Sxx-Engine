@@ -43,6 +43,6 @@ void TransformCache::Cache(const World::TransformComponent& transform) {
 	}
 
 	//!< transformationの転送
-	transformationBuffer_.At() = TransformationData::Transfer(transform.GetTransformation());
+	transformationBuffer_.At() = TransformationData::Transfer(transform.GetWorld());
 
 }
