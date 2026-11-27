@@ -6,6 +6,7 @@ SXAVENGER_ENGINE_USING_(Graphics)
 //-----------------------------------------------------------------------------------------
 //* lib
 #include <Lib/Logger/StreamLogger.h>
+#include <Lib/Logger/StackLogger.h>
 #include <Lib/Reflection/EnumUtil.h>
 
 //* dlss
@@ -26,7 +27,7 @@ void NGXContext::Install(const Device& device) {
 			message.remove_suffix(1); //!< 末尾の改行文字を削除する.
 		}
 
-		STREAM_LOG_DEBUG("Graphics::NGXContext - Callback | <{} - {}> {}", source, level, message);
+		STACK_LOG_DEBUG("Graphics::NGXContext - Callback | <{} - {}> {}", source, level, message);
 	};
 
 	NVSDK_NGX_Result result = NVSDK_NGX_D3D12_Init_with_ProjectID(
