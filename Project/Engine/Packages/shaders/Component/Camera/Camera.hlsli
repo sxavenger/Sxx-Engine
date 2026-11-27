@@ -36,6 +36,17 @@ namespace Component {
 			return projection_b / (ndc_depth - projection_a);
 		}
 
+		float32_t3 ReconstructViewPosition(uint32_t2 pixel_position, uint32_t2 resolution, float32_t depth) {
+
+			float32_t2 ndc_position = (float32_t2(pixel_position) + 0.5) / float32_t2(resolution) * 2.0 - 1.0;
+			ndc_position.y = -ndc_position.y; //!< NDCのY軸は上方向が正なので反転する
+
+			float32_t4 clip_position = float32_t4(ndc_position, depth, 1.0);
+			float32_t4 unprojected = mul(clip_position, projection_inverse);
+
+			return unprojected.xyz / unprojected.w;
+		}
+
 		//* matrix methods *//
 
 		static float32_t4x4 MakePerspective(float32_t fov, float32_t aspect, float32_t near, float32_t far) {
