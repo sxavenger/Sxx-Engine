@@ -112,22 +112,29 @@ void SandboxUnit::InitSandbox() {
 
 	{ //!< Objectの作成
 
-		//Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
-		Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/BrainStem/BrainStem.gltf");
+		Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/Sponza/sponza.gltf");
+		//Sxx::Assets::ModelContents contents = Sxx::Assets::ModelImporter::Import(L"Assets/BrainStem/BrainStem.gltf");
 		object_ = Sxx::World::EntityFactory::CreateModelEntity(contents);
 	}
 
 	{ //!< Lightの作成
 		light_->AddComponent<Sxx::World::TransformComponent>();
 		light_->AddComponent<Sxx::World::PointLightComponent>();
+		light_->AddComponent<Sxx::World::SkyLightComponent>();
 
 		auto transform = light_->GetComponent<Sxx::World::TransformComponent>();
 		transform->SetPosition({ 0.0f, 1.0f, -2.0f });
 
-		auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
-		light->SetColor({ 1.0f, 1.0f, 1.0f });
-		light->SetIntensity(4.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
-		light->SetRadius(200.0f);
+		//auto light = light_->GetComponent<Sxx::World::PointLightComponent>();
+		//light->SetColor({ 1.0f, 1.0f, 1.0f });
+		//light->SetIntensity(4.0f, Sxx::World::LightUnit::Candela, Sxx::World::LightingScale::Lambert);
+		//light->SetRadius(200.0f);
+
+		auto light = light_->GetComponent<Sxx::World::SkyLightComponent>();
+		light->SetEnvironment(Sxx::Assets::TextureImporter::Import(
+			L"Assets/textures/kloofendal_48d_partly_cloudy_puresky_1k.dds",
+			Sxx::Assets::TextureImporter::ReferenceParameters{ .encoding = Sxx::Graphics::EncodingColorSpace::Lightness, .isGenerateMipmap = false }
+		).id);
 	}
 
 	{ //!< Optionの初期化
@@ -315,6 +322,18 @@ void SandboxUnit::RenderSandbox() {
 			Sxx::Rendering::SceneProxy::PointLightInstance instance = {};
 			instance.light     = lightCache;
 			instance.transform = transform;
+
+			scene_.AddLightInstance(instance);
+		});
+
+		//!< SkyLightComponentのsceneへの追加
+		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::SkyLightComponent>([this](Sxx::World::SkyLightComponent* light) {
+
+			std::shared_ptr<const Sxx::Rendering::SkyLightCache> lightCache
+				= Sxx::Rendering::CacheCollection::GetInstance()->GetCache<Sxx::Rendering::SkyLightCache>(light->GetAddress());
+
+			Sxx::Rendering::SceneProxy::SkyLightInstance instance = {};
+			instance.light = lightCache;
 
 			scene_.AddLightInstance(instance);
 		});

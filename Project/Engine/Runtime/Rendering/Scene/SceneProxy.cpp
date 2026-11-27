@@ -53,6 +53,7 @@ void SceneProxy::Reset() {
 	skeletalMeshes.clear();
 	directionalLights.clear();
 	pointLights.clear();
+	skyLights.clear();
 	tlas.ResetInstance();
 	handle = nullptr;
 }
@@ -71,6 +72,10 @@ void SceneProxy::AddLightInstance(const DirectionalLightInstance& instance) {
 
 void SceneProxy::AddLightInstance(const PointLightInstance& instance) {
 	pointLights.emplace_back(instance);
+}
+
+void SceneProxy::AddLightInstance(const SkyLightInstance& instance) {
+	skyLights.emplace_back(instance);
 }
 
 const Graphics::TopLevelAccelerationStructure& SceneProxy::GetTopLevelAccelerationStructure() const {

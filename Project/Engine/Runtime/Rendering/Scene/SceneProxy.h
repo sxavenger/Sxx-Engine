@@ -12,6 +12,7 @@
 #include "../Cache/Dynamic/CameraCache.h"
 #include "../Cache/Dynamic/DirectionalLightCache.h"
 #include "../Cache/Dynamic/PointLightCache.h"
+#include "../Cache/Dynamic/SkyLightCache.h"
 
 //* engine
 #include <Runtime/Foundation.hpp>
@@ -96,6 +97,21 @@ public:
 
 	};
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// SkyLightInstance structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct SkyLightInstance {
+	public:
+
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		std::shared_ptr<const SkyLightCache> light;
+	
+	};
+
 public:
 
 	//=========================================================================================
@@ -114,6 +130,8 @@ public:
 
 	void AddLightInstance(const PointLightInstance& instance);
 
+	void AddLightInstance(const SkyLightInstance& instance);
+
 	const Graphics::TopLevelAccelerationStructure& GetTopLevelAccelerationStructure() const;
 
 	//=========================================================================================
@@ -125,6 +143,7 @@ public:
 
 	std::list<DirectionalLightInstance> directionalLights;
 	std::list<PointLightInstance> pointLights;
+	std::list<SkyLightInstance> skyLights;
 
 	Graphics::TopLevelAccelerationStructure tlas;
 	Scheduler::TaskHandle handle;

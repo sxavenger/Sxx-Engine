@@ -38,7 +38,31 @@ void InspectorPanel::OnDraw() {
 	if (auto component = entity->GetComponent<World::TransformComponent>()) {
 		auto& transform = component->GetTransform();
 
+		//!< Translationの編集
 		SxGui::DragVectorN<float, 3>("Translation", &transform.translation.x, 0.01f);
+
+		//!< Rotationの編集
+		{
+
+			//!< eulerの表示
+			Vector3f prev = Quaternionf::ToEuler(transform.rotation);
+			Vector3f edit = prev;
+
+			if (SxGui::DragVectorN<float, 3>("Rotation", &edit.x, 0.01f)) {
+				//!< eulerをQuaternionに変換して格納
+				Vector3f delta = edit - prev;
+
+				Vector3<Quaternionf> q = {
+					Quaternionf::AxisAngle(Vector3f::UnitX(), delta.x),
+					Quaternionf::AxisAngle(Vector3f::UnitY(), delta.y),
+					Quaternionf::AxisAngle(Vector3f::UnitZ(), delta.z)
+				};
+
+				transform.rotation *= q.x * q.y * q.z;
+			}
+		}
+
+		//!< Scaleの編集
 		SxGui::DragVectorN<float, 3>("Scale", &transform.scale.x, 0.01f);
 	}
 }

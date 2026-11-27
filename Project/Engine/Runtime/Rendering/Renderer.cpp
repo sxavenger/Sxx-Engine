@@ -10,14 +10,16 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include "Cache/Static/SkeletalMeshIntermediateCache.h"
 #include "Cache/Dynamic/TransformCache.h"
 #include "Cache/Dynamic/CameraCache.h"
+#include "Cache/Dynamic/SkinnedMeshCache.h"
 #include "Cache/Dynamic/DirectionalLightCache.h"
 #include "Cache/Dynamic/PointLightCache.h"
-#include "Cache/Dynamic/SkinnedMeshCache.h"
+#include "Cache/Dynamic/SkyLightCache.h"
 #include "Cache/Manager/CacheCollection.h"
 
 //* rendering [pass]
 #include "Pass/RenderPassDeferredBase.h"
 #include "Pass/RenderPassDirectLighting.h"
+#include "Pass/RenderPassEnvironmentLighting.h"
 #include "Pass/RenderPassCombineLighting.h"
 #include "Pass/RenderPassAntiAliasing.h"
 #include "Pass/RenderPassUpscaling.h"
@@ -40,6 +42,7 @@ SXAVENGER_ENGINE_USING_(Rendering)
 #include <Runtime/World/Component/Renderer/SkeletalMeshRendererComponent.h>
 #include <Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
 #include <Runtime/World/Component/Light/Punctual/PointLightComponent.h>
+#include <Runtime/World/Component/Light/Environment/SkyLightComponent.h>
 #include <Runtime/World/Entity/EntityBehaviour.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,6 +54,7 @@ void Renderer::Init() {
 	//!< Passの初期化
 	Renderer::InsertRenderPass<RenderPassDeferredBase>();
 	Renderer::InsertRenderPass<RenderPassDirectLighting>();
+	Renderer::InsertRenderPass<RenderPassEnvironmentLighting>();
 	Renderer::InsertRenderPass<RenderPassCombineLighting>();
 	Renderer::InsertRenderPass<RenderPassAntiAliasing>();
 	Renderer::InsertRenderPass<RenderPassUpscaling>();
@@ -211,6 +215,17 @@ void Renderer::Cache() {
 
 				//!< transformのcacheの更新
 				Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::TransformCache>(transform.GetAddress(), *transform);
+			});
+		});
+
+		handle.Wait();
+	}
+
+	{ //!< SkyLightComponentのcacheの更新
+		Scheduler::TaskHandle handle = Scheduler::System::PushCpuTask("SkyLight Component Cache", Scheduler::TaskPriority::Priority::High, []() {
+			Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::SkyLightComponent>([](Sxx::World::SkyLightComponent* light) {
+				//!< lightのcacheの更新
+				Sxx::Rendering::CacheCollection::GetInstance()->Cache<Sxx::Rendering::SkyLightCache>(light->GetAddress(), *light);
 			});
 		});
 

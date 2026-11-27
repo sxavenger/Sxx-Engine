@@ -5,7 +5,6 @@ SXAVENGER_ENGINE_USING_(Rendering)
 // include
 //-----------------------------------------------------------------------------------------
 //* rendering
-#include "../Buffer/MainBuffer.h"
 #include "../Buffer/LightingBuffer.h"
 #include "../Buffer/GBuffer.h"
 #include "../Buffer/DepthStencilBuffer.h"
@@ -70,7 +69,6 @@ RenderPassDirectLighting::RenderPassDirectLighting() {
 
 void RenderPassDirectLighting::Setup(MAYBE_UNUSED const PassContext& context) {
 	//!< bufferの確保
-	context.buffer->EnsureInstance<MainBuffer>(context.GetBufferResolution()); //!< ここでは使用されないが, 最終結果の描画先として確保しておく.
 	context.buffer->EnsureInstance<LightingBuffer>(context.GetBufferResolution());
 	context.buffer->EnsureInstance<GBuffer>(context.GetBufferResolution());
 	context.buffer->EnsureInstance<DepthStencilBuffer>(context.GetBufferResolution());
