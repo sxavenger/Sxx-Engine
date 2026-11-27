@@ -41,11 +41,13 @@ public:
 
 	const Assets::AssetHandle<Assets::SurfaceMaterial>& GetMaterial() const { return material_; }
 
-	//* joint option *//
+	//* armerture option *//
 
 	void SetJointName(const std::string_view& name) { jointName_ = name; }
 
 	const std::string_view GetJointName() const { return jointName_; }
+
+	RefPtr<const EntityBehaviour> FindArmatureEntity() const;
 
 	RefPtr<const EntityBehaviour> FindJointEntity() const;
 

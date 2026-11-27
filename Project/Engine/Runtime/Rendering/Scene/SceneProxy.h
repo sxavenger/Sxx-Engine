@@ -6,7 +6,10 @@
 //* rendering
 #include "../Cache/Static/StaticMeshCache.h"
 #include "../Cache/Static/SurfaceMaterialCache.h"
+#include "../Cache/Static/SkeletalMeshIntermediateCache.h"
 #include "../Cache/Dynamic/TransformCache.h"
+#include "../Cache/Dynamic/SkinnedMeshCache.h"
+#include "../Cache/Dynamic/CameraCache.h"
 #include "../Cache/Dynamic/DirectionalLightCache.h"
 #include "../Cache/Dynamic/PointLightCache.h"
 
@@ -44,6 +47,23 @@ public:
 		std::shared_ptr<const SurfaceMaterialCache> material;
 		std::shared_ptr<const TransformCache> transform;
 	
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// SkeletalMeshInstance structure
+	////////////////////////////////////////////////////////////////////////////////////////////
+	struct SkeletalMeshInstance {
+	public:
+
+		//=========================================================================================
+		// public methods
+		//=========================================================================================
+
+		std::shared_ptr<const SkinnedMeshCache> mesh;
+		std::shared_ptr<const SurfaceMaterialCache> material;
+		std::shared_ptr<const TransformCache> transform;
+		std::shared_ptr<const SkeletalMeshIntermediateCache> intermediate;
+
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,6 +108,8 @@ public:
 
 	void AddMeshInstance(const StaticMeshInstance& instance);
 
+	void AddMeshInstance(const SkeletalMeshInstance& instance);
+
 	void AddLightInstance(const DirectionalLightInstance& instance);
 
 	void AddLightInstance(const PointLightInstance& instance);
@@ -99,6 +121,7 @@ public:
 	//=========================================================================================
 
 	std::list<StaticMeshInstance> staticMeshes;
+	std::list<SkeletalMeshInstance> skeletalMeshes;
 
 	std::list<DirectionalLightInstance> directionalLights;
 	std::list<PointLightInstance> pointLights;

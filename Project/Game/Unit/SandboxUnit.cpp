@@ -17,11 +17,13 @@
 #include <Engine/Runtime/Assets/Importer/SurfaceMaterialImporter.h>
 #include <Engine/Runtime/Assets/Importer/StaticMeshImporter.h>
 #include <Engine/Runtime/Assets/Importer/ModelImporter.h>
+#include <Engine/Runtime/Assets/Importer/AnimationSequenceImporter.h>
 
 //* world [world]
 #include <Engine/Runtime/World/Component/Transform/TransformComponent.h>
 #include <Engine/Runtime/World/Component/Camera/CameraComponent.h>
 #include <Engine/Runtime/World/Component/Renderer/StaticMeshRendererComponent.h>
+#include <Engine/Runtime/World/Component/Renderer/SkeletalMeshRendererComponent.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/DirectionalLightComponent.h>
 #include <Engine/Runtime/World/Component/Light/Punctual/PointLightComponent.h>
 #include <Engine/Runtime/World/Entity/EntityBehaviour.h>
@@ -30,6 +32,8 @@
 //* engine [rendering]
 #include <Engine/Runtime/Rendering/Cache/Static/StaticMeshCache.h>
 #include <Engine/Runtime/Rendering/Cache/Static/SurfaceMaterialCache.h>
+#include <Engine/Runtime/Rendering/Cache/Static/SkeletalMeshIntermediateCache.h>
+#include <Engine/Runtime/Rendering/Cache/Dynamic/SkinnedMeshCache.h>
 #include <Engine/Runtime/Rendering/Cache/Dynamic/CameraCache.h>
 #include <Engine/Runtime/Rendering/Cache/Dynamic/TransformCache.h>
 #include <Engine/Runtime/Rendering/Cache/Dynamic/DirectionalLightCache.h>
@@ -141,6 +145,8 @@ void SandboxUnit::InitSandbox() {
 		auto viewport = Sxx::Framework::Context::GetUnit<Sxx::SlateEditorUnit>()->GetPanel<Sxx::Editor::ViewportPanel>();
 		viewport->SetBufferCollection(&buffer_);
 	}
+
+	animation_ = Sxx::Assets::AnimationSequenceImporter::Import(L"Assets/BrainStem/BrainStem.gltf", Sxx::Assets::AnimationSequenceImporter::ReferenceParameters{ .index = 0 }).id;
 }
 
 void SandboxUnit::TermSandbox() {
@@ -185,9 +191,9 @@ void SandboxUnit::UpdateSandbox() {
 		transform->SetPosition(position);
 	}
 
-	Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {
+	/*Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::TransformComponent>([](Sxx::World::TransformComponent* transform) {
 		transform->Update();
-	});
+	});*/
 }
 
 void SandboxUnit::RenderSandbox() {
@@ -219,6 +225,58 @@ void SandboxUnit::RenderSandbox() {
 			instance.mesh      = mesh;
 			instance.material  = material;
 			instance.transform = transform;
+
+			scene_.AddMeshInstance(instance);
+		});
+
+		//!< SkeletalMeshRendererComponentのsceneへの追加
+		Sxx::World::ComponentStorage::GetInstance()->ForEachActive<Sxx::World::SkeletalMeshRendererComponent>([this](Sxx::World::SkeletalMeshRendererComponent* renderer) {
+
+			auto collection = Sxx::Rendering::CacheCollection::GetInstance();
+
+			const Sxx::Assets::AssetHandle<Sxx::Assets::SkeletalMesh>& mesh        = renderer->GetMesh();
+			const Sxx::Assets::AssetHandle<Sxx::Assets::SurfaceMaterial>& material = renderer->GetMaterial();
+
+			if (!mesh.HasUuid() || !collection->HasCache(mesh.GetUuid())) {
+				return; //!< intermediateが存在しない (GetCacheはat()のため存在確認が必要)
+			}
+
+			if (!material.HasUuid() || !collection->HasCache(material.GetUuid())) {
+				return; //!< materialが存在しない
+			}
+
+			std::shared_ptr<const Sxx::Rendering::SkeletalMeshIntermediateCache> intermediate
+				= collection->GetCache<Sxx::Rendering::SkeletalMeshIntermediateCache>(mesh.GetUuid());
+
+			if (!intermediate->HasCache()) {
+				return; //!< intermediateが未完了の場合, SkinnedMeshCacheは作成されていない (dynamicのGetはassertのため)
+			}
+
+			std::shared_ptr<const Sxx::Rendering::SkinnedMeshCache> skinned
+				= collection->GetCache<Sxx::Rendering::SkinnedMeshCache>(renderer->GetAddress());
+
+			std::shared_ptr<const Sxx::Rendering::SurfaceMaterialCache> materialCache
+				= collection->GetCache<Sxx::Rendering::SurfaceMaterialCache>(material.GetUuid());
+
+			//!< transformの取得
+			//!< skinning結果はattach joint local空間のため, attach jointのtransformを使用する. 無い場合はownerをfallbackとする.
+			RefPtr<Sxx::World::EntityBehaviour> owner = renderer->GetOwner();
+			uintptr_t transformAddress = owner->GetComponent<Sxx::World::TransformComponent>().GetAddress();
+
+			const RefPtr<const Sxx::World::EntityBehaviour>& attachJoint = skinned->GetAttachJointEntity();
+
+			if (attachJoint != nullptr && attachJoint->HasComponent<Sxx::World::TransformComponent>()) {
+				transformAddress = attachJoint->GetComponent<Sxx::World::TransformComponent>().GetAddress();
+			}
+
+			std::shared_ptr<const Sxx::Rendering::TransformCache> transform
+				= collection->GetCache<Sxx::Rendering::TransformCache>(transformAddress);
+
+			Sxx::Rendering::SceneProxy::SkeletalMeshInstance instance = {};
+			instance.intermediate = intermediate;
+			instance.mesh         = skinned;
+			instance.material     = materialCache;
+			instance.transform    = transform;
 
 			scene_.AddMeshInstance(instance);
 		});

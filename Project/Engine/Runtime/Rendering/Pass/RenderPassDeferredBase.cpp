@@ -38,6 +38,24 @@ RenderPassDeferredBase::RenderPassDeferredBase() {
 		);
 	}
 
+	{
+		Graphics::GraphicsPipelineState::Desc desc = {};
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.vs.hlsl", Graphics::CompileProfile::Vertex, L"main"));
+		desc.SetShaderBlob(Graphics::Core::CompileShader(L"Engine/Packages/shaders/RenderPass/DeferredBase/Deferred.ps.hlsl", Graphics::CompileProfile::Pixel, L"main"));
+		desc.SetRasterizer(D3D12_CULL_MODE_BACK, D3D12_FILL_MODE_SOLID);
+		desc.SetBlendMode(0, Graphics::BlendModeColor::None, Graphics::BlendModeTransparent::None);
+		desc.SetPrimitive(Graphics::PrimitiveTopology::TriangleList);
+		desc.SetDepthStencil(true);
+		desc.SetDepthStencilFormat(DepthStencilBuffer::GetFormat(DepthStencilBuffer::Layout::SceneRender));
+		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferA));
+		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferB));
+		desc.AppendRenderTargetFormat(GBuffer::GetFormat(GBuffer::Layout::GBufferC));
+
+		pipelines_[Pipeline::SkeletalMesh] = Graphics::ReflectedGraphicsPipelineState::Create(
+			Graphics::Core::GetDevice(),
+			desc
+		);
+	}
 
 }
 
@@ -63,6 +81,7 @@ void RenderPassDeferredBase::Execute(Graphics::GraphicsCommandContext& command, 
 		BeginOpaqueMeshRenderPass(command, *context.buffer);
 
 		RenderStaticMesh(command, context, context.GetContextData());
+		RenderSkeletalMesh(command, context, context.GetContextData());
 
 		EndOpaqueMeshRenderPass(command, *context.buffer);
 
@@ -187,5 +206,48 @@ void RenderPassDeferredBase::RenderStaticMesh(Graphics::GraphicsCommandContext& 
 			1,
 			1
 		);
+	}
+}
+
+void RenderPassDeferredBase::RenderSkeletalMesh(Graphics::GraphicsCommandContext& command, const PassContext& context, const PassContext::ContextData& data) {
+
+	auto commandList     = command.GetCommandList();
+	const auto& pipeline = pipelines_[Pipeline::SkeletalMesh];
+
+	pipeline.BindPipeline(command, data.renderResolution); //!< VS pipelineなのでtopologyもここで設定される
+
+	Graphics::ShaderParameter parameter;
+
+	//!< 共通parameterの設定
+	parameter.Set32bitConstants("Context", data);
+	parameter.Set32bitConstants("PassData", data_);
+
+	//!< camera情報の設定
+	parameter.SetAddress("gCameraProjection", context.camera.camera->GetProjectionBuffer().GetGpuVirtualAddress());
+	parameter.SetAddress("gCameraTransform",  context.camera.transform->GetTransformationBuffer().GetGpuVirtualAddress());
+
+	//!< skeletal meshの描画
+	for (const auto& instance : context.scene->skeletalMeshes) {
+
+		if (!instance.intermediate->HasCache() || !instance.mesh->HasCache() || !instance.material->HasCache()) {
+			continue; //!< キャッシュがない場合は描画しない
+		}
+
+		//!< 頂点情報の設定 (skinning後のbuffer)
+		parameter.SetAddress("gPositions", instance.mesh->GetPositionBuffer().GetGpuVirtualAddress());
+		parameter.SetAddress("gVertices",  instance.mesh->GetMeshVertexBuffer().GetGpuVirtualAddress());
+
+		//!< object情報の設定
+		parameter.SetAddress("gTransform", instance.transform->GetTransformationBuffer().GetGpuVirtualAddress());
+		parameter.SetAddress("gMaterial",  instance.material->GetMaterialBuffer().material.GetGpuVirtualAddress());
+
+		pipeline.BindShaderParameter(command, parameter);
+
+		//!< index bufferの設定
+		const TriangleIndexDimensionBuffer& indexBuffer = instance.intermediate->GetIndexBuffer();
+		const D3D12_INDEX_BUFFER_VIEW view = indexBuffer.GetIndexBufferView();
+		commandList->IASetIndexBuffer(&view);
+
+		commandList->DrawIndexedInstanced(indexBuffer.GetIndexCount(), 1, 0, 0, 0);
 	}
 }
