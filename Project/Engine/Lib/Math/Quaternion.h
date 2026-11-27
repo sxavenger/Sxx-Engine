@@ -167,6 +167,8 @@ public:
 
 	static Quaternion LookForward(const Vector3<T>& forward, const Vector3<T>& up = Vector3<T>::UnitY()) noexcept;
 
+	static Vector3<T> ToEuler(const Quaternion& q) noexcept;
+
 	//=========================================================================================
 	// public variables
 	//=========================================================================================
@@ -319,6 +321,41 @@ Quaternion<T> Quaternion<T>::LookForward(const Vector3<T>& forward, const Vector
 	Vector3<T> newUp = Math::Normalize(Math::Cross(forward, right));
 	Vector3<T> modified = Quaternion::RotateVector(Vector3<T>::Up(), q);
 	return Quaternion::FromToRotation(modified, newUp) * q;
+}
+
+template <std::floating_point T>
+Vector3<T> Quaternion<T>::ToEuler(const Quaternion& q) noexcept {
+
+	T pitch = T(0);
+	T yaw   = T(0);
+	T roll  = T(0);
+
+	{ //!< pitch
+		T y = T(2) * (q.imaginary.y * q.imaginary.z + q.w * q.imaginary.x);
+		T x = q.w * q.w - q.imaginary.x * q.imaginary.x - q.imaginary.y * q.imaginary.y + q.imaginary.z * q.imaginary.z;
+		if (y <= Math::kEpsilon<T> && x <= Math::kEpsilon<T>) {
+			pitch = std::atan2(q.imaginary.x, q.w) * T(2);
+		} else {
+			pitch = std::atan2(y, x);
+		}
+	}
+
+	{ //!< roll
+		T y = T(2) * (q.imaginary.x * q.imaginary.y + q.w * q.imaginary.z);
+		T x = q.w * q.w + q.imaginary.x * q.imaginary.x - q.imaginary.y * q.imaginary.y - q.imaginary.z * q.imaginary.z;
+		if (y <= Math::kEpsilon<T> && x <= Math::kEpsilon<T>) {
+			roll = T(0);
+		} else {
+			roll = std::atan2(y, x);
+		}
+	}
+
+	{ //!< yaw
+		T x = -T(2) * (q.imaginary.x * q.imaginary.z - q.w * q.imaginary.y);
+		yaw = std::asin(std::clamp(x, -T(1), T(1)));
+	}
+
+	return { pitch, yaw, roll };
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
